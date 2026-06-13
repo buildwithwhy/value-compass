@@ -154,7 +154,11 @@ export function BrowseView() {
         </details>
       )}
 
-      {view === 'matrix' ? (
+      {sorted.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
+          No makers match your search and filters.
+        </div>
+      ) : view === 'matrix' ? (
         <MatrixView
           makers={sorted}
           fitById={fitById}

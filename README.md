@@ -18,7 +18,7 @@ Then open the URL Vite prints (e.g. `http://localhost:5173/`).
 On startup the app loads and sanity-checks the three data files and logs the counts to the browser console:
 
 ```
-🧭 Value Compass data  makers: 18  ·  funders: 34  ·  resolved funder→maker edges: 85
+🧭 Value Compass data  makers: 18  ·  funders: 34  ·  resolved funder→maker edges: 89
 ```
 
 Other scripts:
@@ -38,23 +38,19 @@ npm run preview   # serve the production build locally
 
 ## Data
 
-All data is read **only** from the files in this folder — nothing is fetched or invented:
+All data lives in **`src/data/`** and is imported statically — nothing is fetched or invented:
 
 | File | What it is |
 |---|---|
-| `value_compass_makers.json` | 18 AI makers, each scored on the 5 value axes + a factual `capital_profile` (copied to `src/data/makers.json`). |
-| `value_compass_funders.json` | 34 funder nodes with cross-holdings into the makers; many carry `notable_for` reputation tags (copied to `src/data/funders.json`). |
-| `value_compass_rubric.md` | The scoring methodology, rendered as the About page (copied to `src/data/rubric.md`). |
+| `src/data/makers.json` | 18 AI makers, each scored on the 5 value axes + a factual `capital_profile`. |
+| `src/data/funders.json` | 34 funder nodes with cross-holdings into the makers; many carry `notable_for` reputation tags. |
+| `src/data/rubric.md` | The scoring methodology, rendered as the About page. |
 
-> The data files are copied into `src/data/` at build time so Vite can import them statically. To refresh after editing the originals, re-copy them:
-> ```bash
-> cp value_compass_makers.json value_compass_funders.json src/data/
-> cp value_compass_rubric.md src/data/rubric.md
-> ```
+These three files are the single source of truth — edit them in place to update the app.
 
 ### Join rule
 
-Funder→maker edges are built **by matching `funders[].makers_backed` / `owns_outright` to `makers[].id`** — never on display name. An edge whose target doesn't resolve to a maker `id` logs a `console.warn` rather than crashing. With the current data, all **85** edges resolve cleanly.
+Funder→maker edges are built **by matching `funders[].makers_backed` / `owns_outright` to `makers[].id`** — never on display name. An edge whose target doesn't resolve to a maker `id` logs a `console.warn` rather than crashing. With the current data, all **89** edges resolve cleanly.
 
 ## The five axes (all 0–4, higher = better)
 

@@ -91,8 +91,17 @@ export function CompareView() {
           </div>
         </details>
         <div>
-          <div className="mb-1 text-xs font-bold uppercase tracking-wider text-slate-500">
+          <div className="mb-1 flex items-center gap-3 text-xs font-bold uppercase tracking-wider text-slate-500">
             Makers ({selectedIds.length}/{MAX} selected)
+            {selectedIds.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setSelectedIds([])}
+                className="font-medium normal-case text-violet-700 hover:underline"
+              >
+                Clear selection
+              </button>
+            )}
           </div>
           <div className="flex flex-wrap gap-1.5">
             {selectable.map((m) => {

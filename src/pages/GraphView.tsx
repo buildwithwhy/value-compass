@@ -165,6 +165,9 @@ export function GraphView() {
     }
   }
 
+  const didFitRef = useRef(false)
+  const fitView = () => fgRef.current?.zoomToFit(500, 60)
+
   function openNode(n: GraphNode) {
     if (n.kind === 'maker') setSelection({ kind: 'maker', id: n.maker!.id })
     else setSelection({ kind: 'funder', name: n.funder!.name })
@@ -353,6 +356,14 @@ export function GraphView() {
             { value: 'both', label: 'Both' },
           ]}
         />
+        <button
+          type="button"
+          onClick={fitView}
+          className="rounded-md border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
+          title="Re-center and zoom to fit all visible nodes"
+        >
+          Fit to view
+        </button>
         <span className="text-xs text-slate-400">
           {sizeBy === 'funder_reach'
             ? 'Funders sized by how many of the 18 they back.'
@@ -379,8 +390,25 @@ export function GraphView() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_280px]">
         <div
           ref={containerRef}
-          className="hidden h-[620px] overflow-hidden rounded-xl border border-slate-200 bg-white md:block"
+          className="relative hidden h-[620px] overflow-hidden rounded-xl border border-slate-200 bg-white md:block"
         >
+          {filteredData.nodes.length === 0 && (
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 bg-white/80 text-center text-sm text-slate-500">
+              <p>No nodes match the current filters.</p>
+              <button
+                type="button"
+                onClick={() => {
+                  setTierFilter(new Set())
+                  setJurisFilter(new Set())
+                  setProductFilter(new Set())
+                  setParentFilter(new Set())
+                }}
+                className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-violet-700 hover:bg-slate-50"
+              >
+                Clear all filters
+              </button>
+            </div>
+          )}
           <ForceGraph2D
             ref={fgRef as any}
             graphData={filteredData}
@@ -414,6 +442,12 @@ export function GraphView() {
             onNodeHover={(n: GraphNode | null) => setHoverId(n ? n.id : null)}
             onNodeClick={(n: GraphNode) => openNode(n)}
             onBackgroundClick={() => setSelection(null)}
+            onEngineStop={() => {
+              if (!didFitRef.current && filteredData.nodes.length) {
+                fitView()
+                didFitRef.current = true
+              }
+            }}
             cooldownTicks={120}
             d3VelocityDecay={0.3}
           />

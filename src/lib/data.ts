@@ -342,18 +342,26 @@ export function sanityCheck(): void {
 
 // ---- Filter option helpers -------------------------------------------------
 
-export function allJurisdictions(): string[] {
-  return [...new Set(makers.map((m) => m.jurisdiction))].sort()
-}
-
-export function allProducts(): string[] {
+// Computed once over the static dataset — stable references avoid re-sorting
+// and prevent needless re-renders from new array identities each call.
+const _jurisdictions = [...new Set(makers.map((m) => m.jurisdiction))].sort()
+const _products = (() => {
   const set = new Set<string>()
   for (const m of makers) for (const p of m.products_models) set.add(p)
   return [...set].sort()
+})()
+const _parentBuckets = [...new Set(funders.map((f) => parentBucket(f.parent_type)))]
+
+export function allJurisdictions(): string[] {
+  return _jurisdictions
+}
+
+export function allProducts(): string[] {
+  return _products
 }
 
 export function allParentBuckets(): ParentBucket[] {
-  return [...new Set(funders.map((f) => parentBucket(f.parent_type)))]
+  return _parentBuckets
 }
 
 // Numeric score or null (n/a → null so the UI renders a gap, never a 0).
