@@ -4,7 +4,7 @@ import {
   CONCERN_LEGEND,
   evaluateMaker,
   INDEPENDENCE_LABELS,
-  reputationGist,
+  reputationReasons,
   type LensResult,
 } from '../lib/lens'
 import { useCapitalLens } from '../lib/lensContext'
@@ -122,7 +122,7 @@ export function CapitalFitBadge({
                     governance associations that may shape its incentives — you decide whether they
                     matter.
                   </p>
-                  <ul className="mt-1.5 space-y-1">
+                  <ul className="mt-1.5 space-y-2">
                     {repBackers.map((f) => (
                       <li key={f.name} className="leading-snug">
                         {onOpenFunder ? (
@@ -137,7 +137,11 @@ export function CapitalFitBadge({
                         ) : (
                           <span className="font-semibold">{f.name}</span>
                         )}
-                        <span className="text-amber-700"> — {reputationGist(f)}</span>
+                        <ul className="ml-3 mt-0.5 list-disc space-y-0.5 text-amber-800 marker:text-amber-400">
+                          {reputationReasons(f).map((reason, i) => (
+                            <li key={i}>{reason}</li>
+                          ))}
+                        </ul>
                       </li>
                     ))}
                   </ul>

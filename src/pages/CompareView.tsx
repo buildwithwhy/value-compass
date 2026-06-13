@@ -15,7 +15,7 @@ import { ValueRadar, type RadarSeries } from '../components/ValueRadar'
 import { Chip, SectionTitle } from '../components/ui'
 import { isDeepPocket } from '../components/FunderCard'
 import { CapitalLensPanel } from '../components/CapitalLensPanel'
-import { CONCERN_LEGEND, evaluateMaker, reputationGist } from '../lib/lens'
+import { CONCERN_LEGEND, evaluateMaker, reputationReasons } from '../lib/lens'
 import { useCapitalLens } from '../lib/lensContext'
 
 // Distinct overlay palette (independent of tier color so series stay readable).
@@ -230,21 +230,21 @@ function CapitalFitRanking({ makers: sel }: { makers: Maker[] }) {
                           : []
                       return (
                         <li key={h.key} className="text-[11px] leading-snug">
-                          <span className="mr-1 rounded-full bg-amber-100 px-2 py-0.5 font-medium text-amber-800">
+                          <span className="rounded-full bg-amber-100 px-2 py-0.5 font-medium text-amber-800">
                             {h.label}
                           </span>
                           {repBackers.length > 0 ? (
-                            <span className="text-slate-500">
-                              {repBackers.map((f, i) => (
-                                <span key={f.name}>
-                                  {i > 0 && '; '}
-                                  <span className="font-medium text-slate-600">{f.name}</span> (
-                                  {reputationGist(f)})
-                                </span>
+                            <ul className="mt-1 space-y-0.5">
+                              {repBackers.map((f) => (
+                                <li key={f.name} className="text-slate-500">
+                                  <span className="font-medium text-slate-700">{f.name}</span>
+                                  {' — '}
+                                  {reputationReasons(f).join('; ')}
+                                </li>
                               ))}
-                            </span>
+                            </ul>
                           ) : (
-                            <span className="text-slate-500">{h.detail}</span>
+                            <span className="ml-1 text-slate-500">{h.detail}</span>
                           )}
                         </li>
                       )
