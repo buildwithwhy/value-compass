@@ -1,0 +1,121 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+/* Visible focus ring for keyboard users */
+:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* Markdown (About page) styling */
+.prose-vc h1 {
+  font-size: 1.875rem;
+  font-weight: 800;
+  margin: 1.5rem 0 0.75rem;
+  line-height: 1.2;
+}
+.prose-vc h2 {
+  font-size: 1.375rem;
+  font-weight: 700;
+  margin: 2rem 0 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0.35rem;
+}
+.prose-vc h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 1.25rem 0 0.4rem;
+}
+.prose-vc p {
+  margin: 0.6rem 0;
+  line-height: 1.65;
+}
+.prose-vc ul,
+.prose-vc ol {
+  margin: 0.6rem 0;
+  padding-left: 1.4rem;
+  line-height: 1.6;
+}
+.prose-vc li {
+  margin: 0.25rem 0;
+}
+.prose-vc ul {
+  list-style: disc;
+}
+.prose-vc ol {
+  list-style: decimal;
+}
+.prose-vc strong {
+  font-weight: 700;
+}
+.prose-vc em {
+  font-style: italic;
+}
+.prose-vc code {
+  background: #f1f5f9;
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.25rem;
+  font-size: 0.85em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.prose-vc a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+.prose-vc hr {
+  margin: 2rem 0;
+  border: 0;
+  border-top: 1px solid #e2e8f0;
+}
+.prose-vc blockquote {
+  border-left: 3px solid #cbd5e1;
+  padding-left: 1rem;
+  color: #475569;
+  margin: 0.8rem 0;
+}
+.prose-vc table {
+  border-collapse: collapse;
+  margin: 1rem 0;
+  width: 100%;
+  font-size: 0.9rem;
+}
+.prose-vc th,
+.prose-vc td {
+  border: 1px solid #e2e8f0;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+.prose-vc th {
+  background: #f1f5f9;
+  font-weight: 600;
+}
+
+/* Hatched fill used for B-confidence visual styling */
+.hatch-b {
+  background-image: repeating-linear-gradient(
+    45deg,
+    currentColor,
+    currentColor 2px,
+    transparent 2px,
+    transparent 5px
+  );
+}
