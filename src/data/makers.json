@@ -32,7 +32,8 @@
     },
     "products_note": "products_models are listed inside each maker node for filtering/comparison; they are NOT separate nodes.",
     "join_key": "Each maker has an 'id' (short name). funders[].makers_backed and owns_outright reference makers by this id. Join on id, NOT on display 'name'.",
-    "capital_profile_note": "Each maker has a factual 'capital_profile' (objective attributes). The Capital Lens (user-configurable) decides which attributes count as concerns; it is NOT a fixed 6th score."
+    "capital_profile_note": "Each maker has a factual 'capital_profile' (objective attributes). The Capital Lens (user-configurable) decides which attributes count as concerns; it is NOT a fixed 6th score.",
+    "last_freshness_review": "2026-06-13: verified xAI/SpaceX (closed Feb 2026), Anthropic ($965B Series H + confidential IPO), OpenAI (Oct 2025 recapitalization), Cohere/Aleph Alpha (announced Apr 2026), DeepSeek (~$7.4B round near closing + V4), Meta (Muse Spark closed-weight pivot Apr 2026), Moonshot (~$10B+). Tool-layer valuations are date-stamped (late 2025-early 2026) and were not re-verified individually."
   },
   "makers": [
     {
@@ -154,7 +155,7 @@
         "Nvidia",
         "Thrive Capital"
       ],
-      "structure": "Nonprofit-controlled PBC; capped-profit history",
+      "structure": "For-profit PBC (OpenAI Group) controlled by the nonprofit OpenAI Foundation; recapitalized Oct 2025 (capped-profit model scrapped)",
       "stated_values": "Ensure AGI benefits all of humanity; broad distribution of benefits.",
       "tension_hook": "'Benefit all humanity' nonprofit origins vs. for-profit restructuring, founder departures, and commercial pace.",
       "axes": {
@@ -171,9 +172,9 @@
         "culture_esg": {
           "score": 2,
           "confidence": "B",
-          "note": "Repeated governance turmoil (2023 board crisis, safety-team departures) and the contested for-profit conversion; environmental non-disclosure.",
+          "note": "Repeated governance turmoil (2023 board crisis, safety-team departures) and a contested for-profit conversion, completed Oct 2025; environmental non-disclosure.",
           "sources": [
-            "https://www.nbcnews.com/tech/tech-news/openai-restructuring-company-structure-chatgpt-invest-own-rcna240138"
+            "https://www.cnbc.com/2025/10/28/open-ai-for-profit-microsoft.html"
           ]
         },
         "labour_integrity": {
@@ -188,17 +189,19 @@
         "wealth_dispersion": {
           "score": 2,
           "confidence": "B",
-          "note": "Nonprofit-on-top caps some concentration, but economics still concentrated (Microsoft ~27%, SoftBank).",
+          "note": "After the Oct 2025 recapitalization the nonprofit OpenAI Foundation holds ~26% and controls the board, Microsoft ~27%, and ~47% sits with employees and investors - control rests with the nonprofit and economics are moderately spread (no single holder >27%), not capped.",
           "sources": [
-            "https://www.nbcnews.com/tech/tech-news/openai-restructuring-company-structure-chatgpt-invest-own-rcna240138"
+            "https://www.cnbc.com/2025/10/28/open-ai-for-profit-microsoft.html",
+            "https://openai.com/our-structure/"
           ]
         },
         "public_sharing": {
           "score": 3,
           "confidence": "B",
-          "note": "Nonprofit-controlled PBC + $25B Foundation pledge; but the capped->uncapped->nonprofit-control reversal is a live stated-vs-observed gap.",
+          "note": "The nonprofit OpenAI Foundation controls the for-profit PBC and holds a ~$130B equity stake earmarked for philanthropy (health, AI resilience); but the capped-profit -> PBC reversal is a live stated-vs-observed gap.",
           "sources": [
-            "https://www.nbcnews.com/tech/tech-news/openai-restructuring-company-structure-chatgpt-invest-own-rcna240138",
+            "https://www.cnbc.com/2025/10/28/open-ai-for-profit-microsoft.html",
+            "https://openai.com/index/evolving-our-structure/",
             "https://www.effectivealtruism.org/articles/cullen-okeefe-the-windfall-clause-sharing-the-benefits-of-advanced-ai"
           ]
         }
@@ -391,8 +394,8 @@
       "vc_independent": "public company (founder-controlled)",
       "products_models": [
         "Llama (open weights)",
-        "Meta AI assistant",
-        "Muse Spark"
+        "Muse Spark (closed-weight, Apr 2026)",
+        "Meta AI assistant"
       ],
       "founders": [
         "Mark Zuckerberg (CEO, voting control)",
@@ -403,17 +406,18 @@
         "Meta Platforms (self-funded)"
       ],
       "structure": "Public; founder retains majority voting via dual-class",
-      "stated_values": "Open-weight AI to democratize access; 'personal superintelligence.'",
-      "tension_hook": "Open-weight 'democratization' vs. ad-driven attention model and 2025 leadership upheaval.",
+      "stated_values": "Historically open-weight (Llama) to democratize access, but pivoted to a closed, proprietary frontier model (Muse Spark, Apr 2026); 'personal superintelligence.'",
+      "tension_hook": "Open-weight 'democratization' rhetoric vs. the April 2026 pivot to a closed, proprietary frontier model and the earlier Llama 4 benchmark-integrity issues.",
       "axes": {
         "transparency": {
           "score": 2,
           "confidence": "A",
-          "note": "FMTI 2025 score halved (60->31); released no technical report for Llama 4 — openness of weights did not equal transparency.",
+          "note": "FMTI 2025 score halved (60->31); released no technical report for Llama 4 — openness of weights did not equal transparency. Now also shipping the closed-weight Muse Spark (Apr 2026).",
           "sources": [
             "https://crfm.stanford.edu/fmti/December-2025/index.html",
             "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
-            "https://arxiv.org/html/2512.10169v1"
+            "https://arxiv.org/html/2512.10169v1",
+            "https://www.cnbc.com/2026/04/08/meta-debuts-first-major-ai-model-since-14-billion-deal-to-bring-in-alexandr-wang.html"
           ]
         },
         "culture_esg": {
@@ -442,8 +446,10 @@
         "public_sharing": {
           "score": 2,
           "confidence": "B",
-          "note": "Open-weight Llama releases function as a public good (free access); no profit-sharing commitment.",
-          "sources": []
+          "note": "Still releases Llama as open weights (a public good), but pivoted to closed, proprietary Muse Spark at the frontier (Apr 2026), narrowing the public-benefit claim; no profit-sharing commitment.",
+          "sources": [
+            "https://www.cnbc.com/2026/04/08/meta-debuts-first-major-ai-model-since-14-billion-deal-to-bring-in-alexandr-wang.html"
+          ]
         }
       },
       "capital_profile": {
@@ -547,18 +553,20 @@
       "jurisdiction": "China (Hangzhou)",
       "vc_independent": "hedge-fund-parented (High-Flyer)",
       "products_models": [
+        "DeepSeek-V series (V3 / V4, Apr 2026)",
         "DeepSeek-R series (R1)",
-        "DeepSeek-V series",
         "DeepSeek app"
       ],
       "founders": [
         "Liang Wenfeng (2023) - also founder of High-Flyer"
       ],
       "lead_backers": [
-        "High-Flyer (primary)",
-        "Tencent / CATL / China IC Fund (reported)"
+        "High-Flyer (controlling parent)",
+        "Tencent",
+        "CATL",
+        "National AI Industry Investment Fund (round near closing, Jun 2026)"
       ],
-      "structure": "Private; China-based",
+      "structure": "Private; China-based; first-ever external round (~$7.4B led by Tencent & CATL, with the state-backed National AI Industry Fund) near closing as of June 2026",
       "stated_values": "Open-source, research-driven AGI for all; radical cost efficiency.",
       "tension_hook": "Open/for-all framing vs. Chinese data-governance and state-adjacent funding context.",
       "axes": {
@@ -597,7 +605,9 @@
           "score": 3,
           "confidence": "B",
           "note": "Gives models away as open weights at very low or zero cost — strong de facto public benefit, though no formal pledge.",
-          "sources": []
+          "sources": [
+            "https://www.investing.com/news/stock-market-news/deepseek-nears-74-billion-funding-led-by-tencent-93CH-4723930"
+          ]
         }
       },
       "capital_profile": {
@@ -1324,9 +1334,9 @@
         "PSP Investments",
         "Salesforce Ventures"
       ],
-      "structure": "Private; Canada; reported Aleph Alpha merger talks",
+      "structure": "Private; Canada; announced April 2026 acquisition of Germany's Aleph Alpha (~$20B combined entity; $600M Schwarz Group financing), expected to close later 2026",
       "stated_values": "Secure, private, enterprise-grade AI; customer data stays with the customer; sovereign deployment.",
-      "tension_hook": "'Sovereign/private' positioning vs. US chipmaker capital and reported European-consolidation financing.",
+      "tension_hook": "'Sovereign/private' positioning vs. US chipmaker capital (Nvidia, AMD) and the April 2026 Aleph Alpha acquisition consolidating European sovereign AI.",
       "axes": {
         "transparency": {
           "score": 2,
@@ -1362,7 +1372,9 @@
           "score": 3,
           "confidence": "C",
           "note": "Runs Cohere For AI, a nonprofit open research lab, and releases the open multilingual Aya models.",
-          "sources": []
+          "sources": [
+            "https://siliconangle.com/2026/04/24/ai-startups-cohere-aleph-alpha-merge-600m-new-funding/"
+          ]
         }
       },
       "capital_profile": {
@@ -1401,7 +1413,7 @@
         "HongShan (Sequoia China)",
         "IDG"
       ],
-      "structure": "Private; China; ~$20B+ valuation reported",
+      "structure": "Private; China; ~$10B+ valuation (Feb 2026, up from $4.3B Series C in Dec 2025); IPO planned H2 2026",
       "stated_values": "Long-context AGI; open-weight Kimi models; consumer + developer access.",
       "tension_hook": "Open-weights / 'AGI for all' framing vs. Alibaba/Tencent strategic control and Chinese data-governance context.",
       "axes": {
