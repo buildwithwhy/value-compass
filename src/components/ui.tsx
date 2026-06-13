@@ -22,7 +22,7 @@ export function Chip({
         aria-pressed={active}
         className={`${base} ${
           active
-            ? 'border-indigo-400 bg-indigo-100 text-indigo-800'
+            ? 'border-teal-400 bg-teal-100 text-teal-800'
             : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50'
         }`}
       >

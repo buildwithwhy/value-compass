@@ -15,7 +15,7 @@ const AboutView = lazy(() => import('./pages/AboutView').then((m) => ({ default:
 function RouteFallback() {
   return (
     <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-16 text-sm text-slate-400">
-      <span className="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-indigo-500" />
+      <span className="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-teal-500" />
       Loading…
     </div>
   )

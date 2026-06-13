@@ -15,7 +15,7 @@ export function MakerPage() {
     return (
       <div className="mx-auto max-w-3xl px-4 py-10 text-center">
         <p className="text-slate-600">Maker “{id}” not found.</p>
-        <Link to="/browse" className="text-indigo-700 hover:underline">
+        <Link to="/browse" className="text-teal-700 hover:underline">
           ← Back to browse
         </Link>
       </div>
@@ -24,7 +24,7 @@ export function MakerPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-5">
-      <Link to="/browse" className="mb-3 inline-block text-sm text-indigo-700 hover:underline">
+      <Link to="/browse" className="mb-3 inline-block text-sm text-teal-700 hover:underline">
         ← All makers
       </Link>
       <MakerDetail maker={maker} onOpenFunder={setFunderName} />

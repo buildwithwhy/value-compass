@@ -97,7 +97,7 @@ export function CompareView() {
               <button
                 type="button"
                 onClick={() => setSelectedIds([])}
-                className="font-medium normal-case text-indigo-700 hover:underline"
+                className="font-medium normal-case text-teal-700 hover:underline"
               >
                 Clear selection
               </button>
@@ -319,7 +319,7 @@ function CompareTable({ makers: sel, colors }: { makers: Maker[]; colors: string
                   onClick={() =>
                     setExpanded(allExpanded ? new Set() : new Set(AXIS_KEYS as readonly string[]))
                   }
-                  className="text-left text-[11px] font-medium text-indigo-700 hover:underline"
+                  className="text-left text-[11px] font-medium text-teal-700 hover:underline"
                 >
                   {allExpanded ? 'Collapse all reasons' : 'Show all reasons ▾'}
                 </button>
@@ -351,7 +351,7 @@ function CompareTable({ makers: sel, colors }: { makers: Maker[]; colors: string
                       type="button"
                       onClick={() => toggleRow(key)}
                       aria-expanded={isOpen}
-                      className="flex items-center gap-1.5 text-left hover:text-indigo-700"
+                      className="flex items-center gap-1.5 text-left hover:text-teal-700"
                       title="Show the reason & sources behind these scores"
                     >
                       <span
@@ -470,8 +470,8 @@ function CompareTable({ makers: sel, colors }: { makers: Maker[]; colors: string
               </td>
             ))}
           </tr>
-          <tr className="border-t-2 border-indigo-200 bg-indigo-50/40">
-            <td className="sticky left-0 bg-indigo-50/40 px-3 py-2 font-medium text-indigo-800">
+          <tr className="border-t-2 border-teal-200 bg-teal-50/40">
+            <td className="sticky left-0 bg-teal-50/40 px-3 py-2 font-medium text-teal-800">
               Capital fit (your lens)
             </td>
             {sel.map((m) => {

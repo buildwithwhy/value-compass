@@ -296,14 +296,14 @@ export function GraphView() {
             if (e.key === 'Enter' && searchMatch) focusNode(searchMatch)
           }}
           placeholder="Search a node (maker or funder)…"
-          className="w-64 rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:border-indigo-400"
+          className="w-64 rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:border-teal-400"
           aria-label="Search nodes"
         />
         {searchMatch && (
           <button
             type="button"
             onClick={() => focusNode(searchMatch)}
-            className="text-sm text-indigo-700 hover:underline"
+            className="text-sm text-teal-700 hover:underline"
           >
             Focus “{searchMatch.label}”
           </button>
@@ -403,7 +403,7 @@ export function GraphView() {
                   setProductFilter(new Set())
                   setParentFilter(new Set())
                 }}
-                className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-indigo-700 hover:bg-slate-50"
+                className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-teal-700 hover:bg-slate-50"
               >
                 Clear all filters
               </button>
@@ -623,7 +623,7 @@ function Segmented({
               i > 0 ? 'border-l border-slate-300' : ''
             } ${
               value === o.value
-                ? 'bg-indigo-600 text-white'
+                ? 'bg-teal-700 text-white'
                 : 'bg-white text-slate-600 hover:bg-slate-50'
             }`}
           >

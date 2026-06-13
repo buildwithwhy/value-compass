@@ -32,11 +32,11 @@ export function AboutView() {
       </div>
 
       {/* Capital Lens — explain that it is separate from the scored axes */}
-      <div className="mt-4 rounded-xl border-2 border-dashed border-indigo-200 bg-indigo-50/40 p-4">
-        <h2 className="flex items-center gap-1.5 text-sm font-extrabold uppercase tracking-wider text-indigo-800">
+      <div className="mt-4 rounded-xl border-2 border-dashed border-teal-200 bg-teal-50/40 p-4">
+        <h2 className="flex items-center gap-1.5 text-sm font-extrabold uppercase tracking-wider text-teal-800">
           🔍 The Capital Lens — your filter, not a sixth score
         </h2>
-        <p className="mt-1.5 text-sm leading-snug text-indigo-900">
+        <p className="mt-1.5 text-sm leading-snug text-teal-900">
           The five axes above measure <strong>conduct</strong>. <strong>Capital character</strong> —
           who the money comes from — is value-laden: “clean capital” depends on what you care about.
           So it is kept deliberately separate. Each maker carries a neutral, factual{' '}

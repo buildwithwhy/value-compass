@@ -27,7 +27,7 @@ function Toggle({
       {/* In-flow flex knob — cannot overflow onto the label */}
       <span
         className={`mt-0.5 flex h-5 w-9 shrink-0 items-center rounded-full p-0.5 transition-colors ${
-          on ? 'bg-indigo-600' : 'bg-slate-300'
+          on ? 'bg-teal-700' : 'bg-slate-300'
         }`}
       >
         <span
@@ -51,22 +51,22 @@ function Toggle({
 export function CapitalLensPanel({ compact = false }: { compact?: boolean }) {
   const { lens, reset, isDefault } = useCapitalLens()
   return (
-    <div className="rounded-xl border border-indigo-200 bg-indigo-50/60 p-3">
+    <div className="rounded-xl border border-teal-200 bg-teal-50/60 p-3">
       <div className="mb-1 flex items-center justify-between">
-        <h3 className="flex items-center gap-1.5 text-sm font-bold text-indigo-900">
+        <h3 className="flex items-center gap-1.5 text-sm font-bold text-teal-900">
           🔍 Your Capital Lens
         </h3>
         {!isDefault && (
           <button
             type="button"
             onClick={reset}
-            className="text-xs font-medium text-indigo-700 hover:underline"
+            className="text-xs font-medium text-teal-700 hover:underline"
           >
             Reset to default
           </button>
         )}
       </div>
-      <p className="mb-2 text-xs leading-snug text-indigo-700">
+      <p className="mb-2 text-xs leading-snug text-teal-700">
         Pick which capital attributes <em>you</em> count as concerns. This is a personal lens — not a
         score and not a sixth axis. It re-computes “capital fit” live.
       </p>

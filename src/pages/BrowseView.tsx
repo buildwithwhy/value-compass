@@ -99,7 +99,7 @@ export function BrowseView() {
               aria-pressed={view === v}
               onClick={() => setView(v)}
               className={`px-3 py-1.5 text-sm font-medium capitalize ${
-                view === v ? 'bg-indigo-600 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'
+                view === v ? 'bg-teal-700 text-white' : 'bg-white text-slate-600 hover:bg-slate-50'
               }`}
             >
               {v === 'matrix' ? '▣ Matrix' : '⊞ Cards'}
@@ -115,7 +115,7 @@ export function BrowseView() {
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search makers…"
-          className="w-full max-w-sm rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:border-indigo-400"
+          className="w-full max-w-sm rounded-md border border-slate-300 px-3 py-1.5 text-sm focus:border-teal-400"
           aria-label="Search makers"
         />
         <div className="flex flex-wrap gap-1.5">
@@ -152,8 +152,8 @@ export function BrowseView() {
 
       {/* Capital Lens — drives the "Capital fit" column; collapsible to keep focus on scores */}
       {view === 'matrix' && (
-        <details className="mb-3 rounded-xl border border-indigo-200 bg-indigo-50/40">
-          <summary className="cursor-pointer px-3 py-2 text-sm font-bold text-indigo-900">
+        <details className="mb-3 rounded-xl border border-teal-200 bg-teal-50/40">
+          <summary className="cursor-pointer px-3 py-2 text-sm font-bold text-teal-900">
             🔍 Capital Lens — tune the “Capital fit” column
           </summary>
           <div className="px-3 pb-3">
@@ -284,7 +284,7 @@ function SortHeader({
       onClick={onClick}
       title={title}
       className={`inline-flex items-center gap-0.5 font-semibold ${
-        active ? 'text-indigo-700' : 'text-slate-600 hover:text-slate-900'
+        active ? 'text-teal-700' : 'text-slate-600 hover:text-slate-900'
       }`}
     >
       {label}
@@ -333,7 +333,7 @@ function MatrixView({
                 />
               </th>
             ))}
-            <th className="border-l border-indigo-200 bg-indigo-50/40 px-2 py-2 text-center">
+            <th className="border-l border-teal-200 bg-teal-50/40 px-2 py-2 text-center">
               <SortHeader
                 label="Capital fit"
                 title="Capital fit under your current Capital Lens — higher = fewer of your concerns present. Lens-dependent, not an objective rating."
@@ -358,11 +358,11 @@ function MatrixView({
             <tr
               key={m.id}
               onClick={() => navigate(`/maker/${encodeURIComponent(m.id)}`)}
-              className="cursor-pointer border-b border-slate-100 last:border-0 hover:bg-indigo-50/40"
+              className="cursor-pointer border-b border-slate-100 last:border-0 hover:bg-teal-50/40"
             >
               <th
                 scope="row"
-                className="sticky left-0 z-10 bg-white px-3 py-2 text-left font-semibold text-slate-800 group-hover:bg-indigo-50"
+                className="sticky left-0 z-10 bg-white px-3 py-2 text-left font-semibold text-slate-800 group-hover:bg-teal-50"
               >
                 <span className="flex items-center gap-2">
                   <span
@@ -384,7 +384,7 @@ function MatrixView({
                   </td>
                 )
               })}
-              <td className="border-l border-indigo-100 bg-indigo-50/30 px-2 py-1.5 text-center">
+              <td className="border-l border-teal-100 bg-teal-50/30 px-2 py-1.5 text-center">
                 {(() => {
                   const fit = fitById.get(m.id) ?? 0
                   return (
@@ -425,7 +425,7 @@ function CardsView({ makers: rows }: { makers: Maker[] }) {
         >
           <div className="flex items-center gap-2">
             <span className="h-3 w-3 rounded-full" style={{ background: TIER_COLORS[m.tier] }} />
-            <h2 className="font-bold text-slate-900 group-hover:text-indigo-700">{m.name}</h2>
+            <h2 className="font-bold text-slate-900 group-hover:text-teal-700">{m.name}</h2>
           </div>
           <div className="mt-1.5 flex flex-wrap gap-1.5">
             {m.category && <Tag label="" value={m.category} tone="sky" />}

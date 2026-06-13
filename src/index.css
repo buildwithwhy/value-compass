@@ -20,9 +20,9 @@ body {
   color: #0f172a;
 }
 
-/* Visible focus ring for keyboard users (brand indigo) */
+/* Visible focus ring for keyboard users (brand teal) */
 :focus-visible {
-  outline: 2px solid #4f46e5;
+  outline: 2px solid #0f766e;
   outline-offset: 2px;
 }
 

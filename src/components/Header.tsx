@@ -14,7 +14,7 @@ export function Header() {
         <NavLink to="/" end className="flex items-center gap-2 text-lg font-extrabold text-slate-900">
           <span aria-hidden>🧭</span>
           <span>
-            Value <span className="text-indigo-700">Compass</span>
+            Value <span className="text-teal-700">Compass</span>
           </span>
         </NavLink>
         <nav aria-label="Primary" className="flex flex-wrap items-center gap-1">
@@ -26,7 +26,7 @@ export function Header() {
               className={({ isActive }) =>
                 `rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
                   isActive
-                    ? 'bg-indigo-100 text-indigo-800'
+                    ? 'bg-teal-100 text-teal-800'
                     : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                 }`
               }
