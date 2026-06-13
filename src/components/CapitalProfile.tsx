@@ -1,6 +1,12 @@
 import type { ReactNode } from 'react'
 import { backersFor } from '../lib/data'
-import { CONCERN_LEGEND, evaluateMaker, INDEPENDENCE_LABELS, type LensResult } from '../lib/lens'
+import {
+  CONCERN_LEGEND,
+  evaluateMaker,
+  INDEPENDENCE_LABELS,
+  reputationGist,
+  type LensResult,
+} from '../lib/lens'
 import { useCapitalLens } from '../lib/lensContext'
 import type { Funder, Maker } from '../lib/types'
 import { SectionTitle } from './ui'
@@ -111,7 +117,12 @@ export function CapitalFitBadge({
                   className="rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-xs text-amber-900"
                 >
                   <span className="font-semibold">{h.label}</span>
-                  <ul className="mt-1 space-y-1">
+                  <p className="mt-0.5 text-[11px] italic leading-snug text-amber-700">
+                    Why this is here: who funds a maker can carry political, geopolitical or
+                    governance associations that may shape its incentives — you decide whether they
+                    matter.
+                  </p>
+                  <ul className="mt-1.5 space-y-1">
                     {repBackers.map((f) => (
                       <li key={f.name} className="leading-snug">
                         {onOpenFunder ? (
@@ -119,14 +130,14 @@ export function CapitalFitBadge({
                             type="button"
                             onClick={() => onOpenFunder(f.name)}
                             className="font-semibold text-amber-900 underline decoration-amber-400 underline-offset-2 hover:text-amber-700"
-                            title={`See why — open ${f.name}`}
+                            title={`Open ${f.name} for full details & sources`}
                           >
                             {f.name} ↗
                           </button>
                         ) : (
                           <span className="font-semibold">{f.name}</span>
                         )}
-                        <span className="text-amber-700"> — {f.notable_for![0]}</span>
+                        <span className="text-amber-700"> — {reputationGist(f)}</span>
                       </li>
                     ))}
                   </ul>

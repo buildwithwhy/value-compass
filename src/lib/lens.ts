@@ -1,5 +1,5 @@
 import { backersFor } from './data'
-import type { CapitalProfile, Maker } from './types'
+import type { CapitalProfile, Funder, Maker } from './types'
 
 // ---------------------------------------------------------------------------
 // Capital Lens — a USER-CONFIGURABLE filter, never a fixed sixth score.
@@ -55,6 +55,23 @@ export interface ConcernHit {
   key: string
   label: string
   detail: string
+}
+
+/**
+ * A brief, on-point reason a funder is flagged for reputation — the first
+ * *substantive* association, skipping a pure "Co-founded by X" identification
+ * lead-in (so a16z surfaces its Trump-administration alignment, Founders Fund
+ * surfaces Thiel's political donations, etc.). Full list + sources live on the
+ * funder popup. Appends "…" when there are further associations.
+ */
+export function reputationGist(f: Funder): string {
+  const items = f.notable_for ?? []
+  if (!items.length) return ''
+  const first = items[0]
+  const pureIdentification =
+    /^(co-founders?|co-founded by|founders?|founded by)\b/i.test(first) && !/[;,(]/.test(first)
+  const rest = pureIdentification && items.length > 1 ? items.slice(1) : items
+  return rest.length > 1 ? `${rest[0]} …` : rest[0]
 }
 
 // Plain-English meaning of each concern tag, for an explanatory key.

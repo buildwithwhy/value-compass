@@ -15,7 +15,7 @@ import { ValueRadar, type RadarSeries } from '../components/ValueRadar'
 import { Chip, SectionTitle } from '../components/ui'
 import { isDeepPocket } from '../components/FunderCard'
 import { CapitalLensPanel } from '../components/CapitalLensPanel'
-import { CONCERN_LEGEND, evaluateMaker } from '../lib/lens'
+import { CONCERN_LEGEND, evaluateMaker, reputationGist } from '../lib/lens'
 import { useCapitalLens } from '../lib/lensContext'
 
 // Distinct overlay palette (independent of tier color so series stay readable).
@@ -239,7 +239,7 @@ function CapitalFitRanking({ makers: sel }: { makers: Maker[] }) {
                                 <span key={f.name}>
                                   {i > 0 && '; '}
                                   <span className="font-medium text-slate-600">{f.name}</span> (
-                                  {f.notable_for![0]})
+                                  {reputationGist(f)})
                                 </span>
                               ))}
                             </span>
