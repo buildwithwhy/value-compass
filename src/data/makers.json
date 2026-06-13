@@ -1,1471 +1,1471 @@
 {
-  "_meta": {
-    "title": "Value Compass - Scored Maker Dataset",
-    "version": "v3",
-    "count": 18,
-    "polarity": "ALL axes scored 0-4 where HIGHER = more pro-social (more transparent, better culture/ESG, more labour & supply-chain integrity, more dispersed ownership, more public wealth-sharing). A high-scoring maker draws a large polygon on the compass.",
-    "scale": {
-      "0": "worst-in-class / extractive / opaque",
-      "1": "below norm",
-      "2": "industry-typical",
-      "3": "above norm / credible commitments",
-      "4": "best-in-class / binding & verified",
-      "n/a": "insufficient evidence (never scored as 0)"
-    },
-    "confidence": {
-      "A": "strong / externally validated (e.g., FMTI score exists)",
-      "B": "moderate / some primary disclosure or credible reporting",
-      "C": "thin / inferred / single-source"
-    },
-    "axis_aliases": {
-      "labour_integrity": "your 'exploitation' axis, polarity-flipped",
-      "wealth_dispersion": "your 'wealth distribution' axis, higher = more dispersed"
-    },
-    "tags_not_scored": {
-      "vc_independent": "categorical tag",
-      "jurisdiction": "factual descriptor"
-    },
-    "key_anchors": {
-      "transparency": "Stanford FMTI 2025 (avg 40.69/100; IBM 95 high; xAI & Midjourney 14 low). 0-4 mapping: 0=<=12, 1=13-29, 2=30-49, 3=50-74, 4=>=75.",
-      "environmental_note": "FMTI 2025 found 10 of 13 firms disclose NOTHING on energy/carbon/water - the environmental sub-indicator is near-zero sector-wide.",
-      "labour_benchmark": "Global-South data labelers commonly earn ~$1.50-2/hr; OpenAI/Sama Kenya is the canonical documented case."
-    },
-    "products_note": "products_models are listed inside each maker node for filtering/comparison; they are NOT separate nodes.",
-    "join_key": "Each maker has an 'id' (short name). funders[].makers_backed and owns_outright reference makers by this id. Join on id, NOT on display 'name'.",
-    "capital_profile_note": "Each maker has a factual 'capital_profile' (objective attributes). The Capital Lens (user-configurable) decides which attributes count as concerns; it is NOT a fixed 6th score.",
-    "last_freshness_review": "2026-06-13: verified xAI/SpaceX (closed Feb 2026), Anthropic ($965B Series H + confidential IPO), OpenAI (Oct 2025 recapitalization), Cohere/Aleph Alpha (announced Apr 2026), DeepSeek (~$7.4B round near closing + V4), Meta (Muse Spark closed-weight pivot Apr 2026), Moonshot (~$10B+). Tool-layer valuations are date-stamped (late 2025-early 2026) and were not re-verified individually."
-  },
-  "makers": [
-    {
-      "name": "Anthropic",
-      "id": "Anthropic",
-      "tier": "frontier",
-      "jurisdiction": "US (Delaware PBC; San Francisco)",
-      "vc_independent": "VC-backed (hyperscaler-strategic)",
-      "products_models": [
-        "Claude (Opus/Sonnet/Haiku)",
-        "Claude Code",
-        "Claude API"
-      ],
-      "founders": [
-        "Dario Amodei (CEO)",
-        "Daniela Amodei (President)",
-        "+5 ex-OpenAI researchers (2021)"
-      ],
-      "lead_backers": [
-        "Amazon (largest)",
-        "Google/Alphabet",
-        "Lightspeed",
-        "Spark Capital"
-      ],
-      "structure": "Public Benefit Corporation; Long-Term Benefit Trust",
-      "stated_values": "Safety-first, beneficial AI at the frontier; Constitutional AI; interpretability.",
-      "tension_hook": "Safety-first framing vs. participating in the same capability/compute race it warns about.",
-      "axes": {
-        "transparency": {
-          "score": 2,
-          "confidence": "A",
-          "note": "Most transparent frontier lab in FMTI 2025 (rose to 2nd of the 6 longitudinal firms) but still only industry-typical; opaque on data/compute/environment.",
-          "sources": [
-            "https://crfm.stanford.edu/fmti/December-2025/index.html",
-            "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
-            "https://arxiv.org/html/2512.10169v1"
-          ]
+    "_meta": {
+        "title": "Value Compass - Scored Maker Dataset",
+        "version": "v3",
+        "count": 18,
+        "polarity": "ALL axes scored 0-4 where HIGHER = more pro-social (more transparent, better culture/ESG, more labour & supply-chain integrity, more dispersed ownership, more public wealth-sharing). A high-scoring maker draws a large polygon on the compass.",
+        "scale": {
+            "0": "worst-in-class / extractive / opaque",
+            "1": "below norm",
+            "2": "industry-typical",
+            "3": "above norm / credible commitments",
+            "4": "best-in-class / binding & verified",
+            "n/a": "insufficient evidence (never scored as 0)"
         },
-        "culture_esg": {
-          "score": 3,
-          "confidence": "B",
-          "note": "Strong mission-aligned culture and unusually robust governance (PBC + Long-Term Benefit Trust); but zero environmental disclosure like all peers.",
-          "sources": [
-            "https://crfm.stanford.edu/fmti/December-2025/index.html",
-            "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
-          ]
+        "confidence": {
+            "A": "strong / externally validated (e.g., FMTI score exists)",
+            "B": "moderate / some primary disclosure or credible reporting",
+            "C": "thin / inferred / single-source"
         },
-        "labour_integrity": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Relies on outsourced RLHF/labeling vendors with no public disclosure; no major documented abuses, but supply chain is opaque.",
-          "sources": [
-            "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
-            "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
-          ]
+        "axis_aliases": {
+            "labour_integrity": "your 'exploitation' axis, polarity-flipped",
+            "wealth_dispersion": "your 'wealth distribution' axis, higher = more dispersed"
         },
-        "wealth_dispersion": {
-          "score": 1,
-          "confidence": "B",
-          "note": "Economics heavily concentrated in Amazon (~15-19%) and Google (~14%); the trust governs mission, not the cap table.",
-          "sources": [
-            "https://fortune.com/2026/06/04/amazon-google-billions-anthropic-ipo/"
-          ]
+        "tags_not_scored": {
+            "vc_independent": "categorical tag",
+            "jurisdiction": "factual descriptor"
         },
-        "public_sharing": {
-          "score": 3,
-          "confidence": "B",
-          "note": "PBC + Long-Term Benefit Trust as binding structure; founders signed the Giving Pledge; paid-access model limits free reach.",
-          "sources": [
-            "https://www.effectivealtruism.org/articles/cullen-okeefe-the-windfall-clause-sharing-the-benefits-of-advanced-ai"
-          ]
+        "key_anchors": {
+            "transparency": "Stanford FMTI 2025 (avg 40.69/100; IBM 95 high; xAI & Midjourney 14 low). 0-4 mapping: 0=<=12, 1=13-29, 2=30-49, 3=50-74, 4=>=75.",
+            "environmental_note": "FMTI 2025 found 10 of 13 firms disclose NOTHING on energy/carbon/water - the environmental sub-indicator is near-zero sector-wide.",
+            "labour_benchmark": "Global-South data labelers commonly earn ~$1.50-2/hr; OpenAI/Sama Kenya is the canonical documented case."
+        },
+        "products_note": "products_models are listed inside each maker node for filtering/comparison; they are NOT separate nodes.",
+        "join_key": "Each maker has an 'id' (short name). funders[].makers_backed and owns_outright reference makers by this id. Join on id, NOT on display 'name'.",
+        "capital_profile_note": "Each maker has a factual 'capital_profile' (objective attributes). The Capital Lens (user-configurable) decides which attributes count as concerns; it is NOT a fixed 6th score.",
+        "last_freshness_review": "2026-06-13: verified xAI/SpaceX (closed Feb 2026), Anthropic ($965B Series H + confidential IPO), OpenAI (Oct 2025 recapitalization), Cohere/Aleph Alpha (announced Apr 2026), DeepSeek (~$7.4B round near closing + V4), Meta (Muse Spark closed-weight pivot Apr 2026), Moonshot (~$10B+). Tool-layer valuations are date-stamped (late 2025-early 2026) and were not re-verified individually."
+    },
+    "makers": [
+        {
+            "name": "Anthropic",
+            "id": "Anthropic",
+            "tier": "frontier",
+            "jurisdiction": "US (Delaware PBC; San Francisco)",
+            "vc_independent": "VC-backed (hyperscaler-strategic)",
+            "products_models": [
+                "Claude (Opus/Sonnet/Haiku)",
+                "Claude Code",
+                "Claude API"
+            ],
+            "founders": [
+                "Dario Amodei (CEO)",
+                "Daniela Amodei (President)",
+                "+5 ex-OpenAI researchers (2021)"
+            ],
+            "lead_backers": [
+                "Amazon (largest)",
+                "Google/Alphabet",
+                "Lightspeed",
+                "Spark Capital"
+            ],
+            "structure": "Public Benefit Corporation; Long-Term Benefit Trust",
+            "stated_values": "Safety-first, beneficial AI at the frontier; Constitutional AI; interpretability.",
+            "tension_hook": "Safety-first framing vs. participating in the same capability/compute race it warns about.",
+            "axes": {
+                "transparency": {
+                    "score": 2,
+                    "confidence": "A",
+                    "note": "Most transparent frontier lab in FMTI 2025 (rose to 2nd of the 6 longitudinal firms) but still only industry-typical; opaque on data/compute/environment.",
+                    "sources": [
+                        "https://crfm.stanford.edu/fmti/December-2025/index.html",
+                        "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+                        "https://arxiv.org/html/2512.10169v1"
+                    ]
+                },
+                "culture_esg": {
+                    "score": 3,
+                    "confidence": "B",
+                    "note": "Strong mission-aligned culture and unusually robust governance (PBC + Long-Term Benefit Trust); but zero environmental disclosure like all peers.",
+                    "sources": [
+                        "https://crfm.stanford.edu/fmti/December-2025/index.html",
+                        "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
+                    ]
+                },
+                "labour_integrity": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Relies on outsourced RLHF/labeling vendors with no public disclosure; no major documented abuses, but supply chain is opaque.",
+                    "sources": [
+                        "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+                        "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
+                    ]
+                },
+                "wealth_dispersion": {
+                    "score": 1,
+                    "confidence": "B",
+                    "note": "Economics heavily concentrated in Amazon (~15-19%) and Google (~14%); the trust governs mission, not the cap table.",
+                    "sources": [
+                        "https://fortune.com/2026/06/04/amazon-google-billions-anthropic-ipo/"
+                    ]
+                },
+                "public_sharing": {
+                    "score": 3,
+                    "confidence": "B",
+                    "note": "PBC + Long-Term Benefit Trust as binding structure; founders signed the Giving Pledge; paid-access model limits free reach.",
+                    "sources": [
+                        "https://www.effectivealtruism.org/articles/cullen-okeefe-the-windfall-clause-sharing-the-benefits-of-advanced-ai"
+                    ]
+                }
+            },
+            "capital_profile": {
+                "independence_type": "vc_backed",
+                "founder_control": false,
+                "sovereign_state": [
+                    "Gulf (UAE/Qatar/Saudi)",
+                    "Singapore (GIC/Temasek)"
+                ],
+                "big_tech_capital": [
+                    "Alphabet / Google",
+                    "Amazon",
+                    "Microsoft"
+                ],
+                "competitor_entanglement": true,
+                "circular_vendor": [
+                    "Nvidia"
+                ],
+                "index_held": false,
+                "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
+            }
+        },
+        {
+            "name": "OpenAI",
+            "id": "OpenAI",
+            "tier": "frontier",
+            "jurisdiction": "US (Delaware; nonprofit-controlled PBC; San Francisco)",
+            "vc_independent": "VC-backed (nonprofit-controlled)",
+            "products_models": [
+                "ChatGPT",
+                "GPT-5 / o-series",
+                "Sora",
+                "DALL-E",
+                "API"
+            ],
+            "founders": [
+                "Sam Altman (CEO)",
+                "Greg Brockman",
+                "Ilya Sutskever",
+                "Elon Musk",
+                "Wojciech Zaremba",
+                "John Schulman (2015)"
+            ],
+            "lead_backers": [
+                "Microsoft (largest equity holder ~27%)",
+                "Amazon (up to $50B committed, 2026)",
+                "SoftBank",
+                "Nvidia",
+                "Thrive Capital"
+            ],
+            "structure": "For-profit PBC (OpenAI Group) controlled by the nonprofit OpenAI Foundation; recapitalized Oct 2025 (capped-profit model scrapped)",
+            "stated_values": "Ensure AGI benefits all of humanity; broad distribution of benefits.",
+            "tension_hook": "'Benefit all humanity' nonprofit origins vs. for-profit restructuring, founder departures, and commercial pace.",
+            "axes": {
+                "transparency": {
+                    "score": 2,
+                    "confidence": "A",
+                    "note": "FMTI 2025 middle group but declined ~14 points; near the bottom of the firms tracked all three years; limited o3 disclosure.",
+                    "sources": [
+                        "https://crfm.stanford.edu/fmti/December-2025/index.html",
+                        "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+                        "https://arxiv.org/html/2512.10169v1"
+                    ]
+                },
+                "culture_esg": {
+                    "score": 2,
+                    "confidence": "B",
+                    "note": "Repeated governance turmoil (2023 board crisis, safety-team departures) and a contested for-profit conversion, completed Oct 2025; environmental non-disclosure.",
+                    "sources": [
+                        "https://www.cnbc.com/2025/10/28/open-ai-for-profit-microsoft.html"
+                    ]
+                },
+                "labour_integrity": {
+                    "score": 1,
+                    "confidence": "B",
+                    "note": "Documented Kenya/Sama case: moderators paid ~$2/hr to review violent content with inadequate support.",
+                    "sources": [
+                        "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+                        "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
+                    ]
+                },
+                "wealth_dispersion": {
+                    "score": 2,
+                    "confidence": "B",
+                    "note": "After the Oct 2025 recapitalization the nonprofit OpenAI Foundation holds ~26% and controls the board, Microsoft ~27%, and ~47% sits with employees and investors - control rests with the nonprofit and economics are moderately spread (no single holder >27%), not capped.",
+                    "sources": [
+                        "https://www.cnbc.com/2025/10/28/open-ai-for-profit-microsoft.html",
+                        "https://openai.com/our-structure/"
+                    ]
+                },
+                "public_sharing": {
+                    "score": 2,
+                    "confidence": "B",
+                    "note": "Scrapped its binding 'capped-profit' sharing mechanism in the Oct 2025 for-profit conversion. What remains is nonprofit control plus the OpenAI Foundation's ~26% (~$130B) stake funding philanthropy (health, AI resilience) - real machinery, but removing the profit cap is a live stated-vs-observed gap against the 'benefit all of humanity' claim.",
+                    "sources": [
+                        "https://www.cnbc.com/2025/10/28/open-ai-for-profit-microsoft.html",
+                        "https://openai.com/index/evolving-our-structure/",
+                        "https://www.effectivealtruism.org/articles/cullen-okeefe-the-windfall-clause-sharing-the-benefits-of-advanced-ai"
+                    ]
+                }
+            },
+            "capital_profile": {
+                "independence_type": "vc_backed",
+                "founder_control": false,
+                "sovereign_state": [
+                    "Gulf (UAE/Qatar/Saudi)",
+                    "Singapore (GIC/Temasek)"
+                ],
+                "big_tech_capital": [
+                    "Amazon",
+                    "Microsoft"
+                ],
+                "competitor_entanglement": true,
+                "circular_vendor": [
+                    "Nvidia"
+                ],
+                "index_held": false,
+                "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
+            }
+        },
+        {
+            "name": "Google DeepMind",
+            "id": "Google DeepMind",
+            "tier": "frontier",
+            "jurisdiction": "US/UK (Alphabet subsidiary; London + Mountain View)",
+            "vc_independent": "corporate-owned (Alphabet)",
+            "products_models": [
+                "Gemini",
+                "Gemma (open weights)",
+                "Imagen",
+                "Veo",
+                "NotebookLM",
+                "AlphaFold"
+            ],
+            "founders": [
+                "Demis Hassabis (CEO)",
+                "Shane Legg",
+                "Mustafa Suleyman (DeepMind, 2010)"
+            ],
+            "lead_backers": [
+                "Alphabet (wholly owned)"
+            ],
+            "structure": "Subsidiary of Alphabet",
+            "stated_values": "Solve intelligence to advance science and benefit humanity; responsible AI.",
+            "tension_hook": "Research-for-humanity mission vs. ad-revenue parent and enterprise-productivity pressure.",
+            "axes": {
+                "transparency": {
+                    "score": 2,
+                    "confidence": "A",
+                    "note": "FMTI 2025 middle group; criticized for delayed Gemini model cards/technical reports.",
+                    "sources": [
+                        "https://crfm.stanford.edu/fmti/December-2025/index.html",
+                        "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+                        "https://arxiv.org/html/2512.10169v1"
+                    ]
+                },
+                "culture_esg": {
+                    "score": 3,
+                    "confidence": "B",
+                    "note": "Alphabet publishes mature corporate sustainability reporting; offset by founder dual-class voting control.",
+                    "sources": [
+                        "https://crfm.stanford.edu/fmti/December-2025/index.html",
+                        "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
+                    ]
+                },
+                "labour_integrity": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Opaque rater supply chain; vendor-rater pay/condition complaints reported across Google's contractors.",
+                    "sources": [
+                        "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+                        "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
+                    ]
+                },
+                "wealth_dispersion": {
+                    "score": 0,
+                    "confidence": "A",
+                    "note": "Wholly owned by Alphabet; founders Page and Brin hold >51% of voting power via dual-class shares.",
+                    "sources": []
+                },
+                "public_sharing": {
+                    "score": 1,
+                    "confidence": "C",
+                    "note": "Open Gemma weights and Google.org philanthropy, but no AI-specific public-benefit/windfall structure.",
+                    "sources": []
+                }
+            },
+            "capital_profile": {
+                "independence_type": "corporate_owned",
+                "founder_control": "Page & Brin (>51% Alphabet voting)",
+                "sovereign_state": [],
+                "big_tech_capital": [
+                    "Alphabet / Google"
+                ],
+                "competitor_entanglement": true,
+                "circular_vendor": [],
+                "index_held": true,
+                "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
+            }
+        },
+        {
+            "name": "xAI",
+            "id": "xAI",
+            "tier": "frontier",
+            "jurisdiction": "US (PBC; now a SpaceX subsidiary; TX/CA)",
+            "vc_independent": "corporate-owned (SpaceX) / founder-controlled",
+            "products_models": [
+                "Grok",
+                "Grok API",
+                "X integration"
+            ],
+            "founders": [
+                "Elon Musk (2023)"
+            ],
+            "lead_backers": [
+                "Nvidia (led Series E)",
+                "absorbed into SpaceX",
+                "QIA",
+                "MGX",
+                "Humain/Saudi PIF"
+            ],
+            "structure": "PBC; now a wholly owned SpaceX subsidiary",
+            "stated_values": "Understand the true nature of the universe; maximally truth-seeking; anti-censorship.",
+            "tension_hook": "'Maximally truth-seeking/neutral' claim vs. owner control, X integration, and model-steering episodes.",
+            "axes": {
+                "transparency": {
+                    "score": 1,
+                    "confidence": "A",
+                    "note": "Tied for the lowest score in FMTI 2025 (14/100); discloses almost nothing about data, model, or practices.",
+                    "sources": [
+                        "https://crfm.stanford.edu/fmti/December-2025/index.html",
+                        "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+                        "https://arxiv.org/html/2512.10169v1"
+                    ]
+                },
+                "culture_esg": {
+                    "score": 0,
+                    "confidence": "A",
+                    "note": "Operated dozens of unpermitted gas turbines in a predominantly Black South Memphis community; sued under the Clean Air Act by the NAACP/SELC/Earthjustice.",
+                    "sources": [
+                        "https://time.com/7308925/elon-musk-memphis-ai-data-center/",
+                        "https://earthjustice.org/case/xai-illegal-gas-power-plant-data-center-colossus"
+                    ]
+                },
+                "labour_integrity": {
+                    "score": 1,
+                    "confidence": "C",
+                    "note": "Minimal labour disclosure; rapid build-out with little visibility into data work.",
+                    "sources": [
+                        "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+                        "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
+                    ]
+                },
+                "wealth_dispersion": {
+                    "score": 0,
+                    "confidence": "A",
+                    "note": "Elon Musk holds supermajority control; xAI was absorbed into Musk-controlled SpaceX.",
+                    "sources": []
+                },
+                "public_sharing": {
+                    "score": 1,
+                    "confidence": "C",
+                    "note": "PBC in form only; no substantive public-sharing mechanism; Grok is paid/closed.",
+                    "sources": []
+                }
+            },
+            "capital_profile": {
+                "independence_type": "corporate_owned",
+                "founder_control": "Elon Musk (supermajority via SpaceX)",
+                "sovereign_state": [
+                    "Gulf (UAE/Qatar/Saudi)"
+                ],
+                "big_tech_capital": [],
+                "competitor_entanglement": false,
+                "circular_vendor": [
+                    "Nvidia"
+                ],
+                "index_held": false,
+                "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
+            }
+        },
+        {
+            "name": "Meta (AI)",
+            "id": "Meta",
+            "tier": "frontier",
+            "jurisdiction": "US (Delaware; founder voting control; CA)",
+            "vc_independent": "public company (founder-controlled)",
+            "products_models": [
+                "Llama (open weights)",
+                "Muse Spark (closed-weight, Apr 2026)",
+                "Meta AI assistant"
+            ],
+            "founders": [
+                "Mark Zuckerberg (CEO, voting control)",
+                "Alexandr Wang (Chief AI Officer)",
+                "Shengjia Zhao (chief scientist, MSL)"
+            ],
+            "lead_backers": [
+                "Meta Platforms (self-funded)"
+            ],
+            "structure": "Public; founder retains majority voting via dual-class",
+            "stated_values": "Historically open-weight (Llama) to democratize access, but pivoted to a closed, proprietary frontier model (Muse Spark, Apr 2026); 'personal superintelligence.'",
+            "tension_hook": "Open-weight 'democratization' rhetoric vs. the April 2026 pivot to a closed, proprietary frontier model and the earlier Llama 4 benchmark-integrity issues.",
+            "axes": {
+                "transparency": {
+                    "score": 2,
+                    "confidence": "A",
+                    "note": "FMTI 2025 score halved (60->31); released no technical report for Llama 4 — openness of weights did not equal transparency. Now also shipping the closed-weight Muse Spark (Apr 2026).",
+                    "sources": [
+                        "https://crfm.stanford.edu/fmti/December-2025/index.html",
+                        "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+                        "https://arxiv.org/html/2512.10169v1",
+                        "https://www.cnbc.com/2026/04/08/meta-debuts-first-major-ai-model-since-14-billion-deal-to-bring-in-alexandr-wang.html"
+                    ]
+                },
+                "culture_esg": {
+                    "score": 2,
+                    "confidence": "B",
+                    "note": "2025 AI-org turmoil (LeCun departure, Llama 4 benchmark-integrity allegations, $100M poaching); founder voting control; corporate sustainability reporting exists.",
+                    "sources": [
+                        "https://www.entrepreneur.com/business-news/ex-meta-ai-chief-slams-new-boss-as-young-and/501611"
+                    ]
+                },
+                "labour_integrity": {
+                    "score": 1,
+                    "confidence": "B",
+                    "note": "Holds ~49% of Scale AI; documented Kenyan content-moderator litigation over pay and trauma.",
+                    "sources": [
+                        "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+                        "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
+                    ]
+                },
+                "wealth_dispersion": {
+                    "score": 0,
+                    "confidence": "A",
+                    "note": "Zuckerberg retains voting control via dual-class; AI effort is self-funded by Meta.",
+                    "sources": []
+                },
+                "public_sharing": {
+                    "score": 2,
+                    "confidence": "B",
+                    "note": "Still releases Llama as open weights (a public good), but pivoted to closed, proprietary Muse Spark at the frontier (Apr 2026), narrowing the public-benefit claim; no profit-sharing commitment.",
+                    "sources": [
+                        "https://www.cnbc.com/2026/04/08/meta-debuts-first-major-ai-model-since-14-billion-deal-to-bring-in-alexandr-wang.html"
+                    ]
+                }
+            },
+            "capital_profile": {
+                "independence_type": "self_or_public",
+                "founder_control": "Mark Zuckerberg (dual-class voting control)",
+                "sovereign_state": [],
+                "big_tech_capital": [],
+                "competitor_entanglement": false,
+                "circular_vendor": [],
+                "index_held": true,
+                "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
+            }
+        },
+        {
+            "name": "Mistral AI",
+            "id": "Mistral",
+            "tier": "frontier",
+            "jurisdiction": "France (Paris; EU)",
+            "vc_independent": "VC-backed",
+            "products_models": [
+                "Mistral Large/Medium/Small",
+                "Mixtral",
+                "Le Chat",
+                "Codestral"
+            ],
+            "founders": [
+                "Arthur Mensch (CEO)",
+                "Guillaume Lample",
+                "Timothee Lacroix (2023)"
+            ],
+            "lead_backers": [
+                "ASML (largest, ~11%)",
+                "a16z",
+                "General Catalyst",
+                "Nvidia",
+                "Microsoft",
+                "Lightspeed",
+                "DST Global"
+            ],
+            "structure": "Private; France-based",
+            "stated_values": "Open, portable, efficient models; European AI sovereignty.",
+            "tension_hook": "Open/sovereign-Europe positioning vs. reliance on US backers and a Dutch strategic lead investor.",
+            "axes": {
+                "transparency": {
+                    "score": 1,
+                    "confidence": "A",
+                    "note": "FMTI 2025 score fell by more than two-thirds (to 18/100) despite open weights.",
+                    "sources": [
+                        "https://crfm.stanford.edu/fmti/December-2025/index.html",
+                        "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+                        "https://arxiv.org/html/2512.10169v1"
+                    ]
+                },
+                "culture_esg": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Operates under stronger EU labour norms, but publishes little ESG detail.",
+                    "sources": []
+                },
+                "labour_integrity": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Smaller footprint and EU context; labeling supply chain not disclosed.",
+                    "sources": [
+                        "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+                        "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
+                    ]
+                },
+                "wealth_dispersion": {
+                    "score": 2,
+                    "confidence": "B",
+                    "note": "Founders plus diverse VCs; ASML is largest shareholder (~11%) but no single majority.",
+                    "sources": []
+                },
+                "public_sharing": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Open-weight releases and a European public-interest/sovereignty framing; no profit pledge.",
+                    "sources": []
+                }
+            },
+            "capital_profile": {
+                "independence_type": "vc_backed",
+                "founder_control": false,
+                "sovereign_state": [],
+                "big_tech_capital": [
+                    "Microsoft"
+                ],
+                "competitor_entanglement": true,
+                "circular_vendor": [
+                    "Nvidia"
+                ],
+                "index_held": false,
+                "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
+            }
+        },
+        {
+            "name": "DeepSeek",
+            "id": "DeepSeek",
+            "tier": "frontier",
+            "jurisdiction": "China (Hangzhou)",
+            "vc_independent": "hedge-fund-parented (High-Flyer)",
+            "products_models": [
+                "DeepSeek-V series (V3 / V4, Apr 2026)",
+                "DeepSeek-R series (R1)",
+                "DeepSeek app"
+            ],
+            "founders": [
+                "Liang Wenfeng (2023) - also founder of High-Flyer"
+            ],
+            "lead_backers": [
+                "High-Flyer (controlling parent)",
+                "Tencent",
+                "CATL",
+                "National AI Industry Investment Fund (round near closing, Jun 2026)"
+            ],
+            "structure": "Private; China-based; first-ever external round (~$7.4B led by Tencent & CATL, with the state-backed National AI Industry Fund) near closing as of June 2026",
+            "stated_values": "Open-source, research-driven AGI for all; radical cost efficiency.",
+            "tension_hook": "Open/for-all framing vs. Chinese data-governance and state-adjacent funding context.",
+            "axes": {
+                "transparency": {
+                    "score": 2,
+                    "confidence": "A",
+                    "note": "FMTI 2025 middle group; open weights but opaque on data and training — openness is not transparency.",
+                    "sources": [
+                        "https://crfm.stanford.edu/fmti/December-2025/index.html",
+                        "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+                        "https://arxiv.org/html/2512.10169v1"
+                    ]
+                },
+                "culture_esg": {
+                    "score": 1,
+                    "confidence": "C",
+                    "note": "No ESG disclosure; quant-fund parent culture; little public information.",
+                    "sources": []
+                },
+                "labour_integrity": {
+                    "score": 1,
+                    "confidence": "C",
+                    "note": "Opaque; Chinese data-labour context with no disclosure.",
+                    "sources": [
+                        "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+                        "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
+                    ]
+                },
+                "wealth_dispersion": {
+                    "score": 0,
+                    "confidence": "B",
+                    "note": "Founder Liang Wenfeng controls ~89.5% via the High-Flyer parent.",
+                    "sources": []
+                },
+                "public_sharing": {
+                    "score": 3,
+                    "confidence": "B",
+                    "note": "Gives models away as open weights at very low or zero cost — strong de facto public benefit, though no formal pledge.",
+                    "sources": [
+                        "https://www.investing.com/news/stock-market-news/deepseek-nears-74-billion-funding-led-by-tencent-93CH-4723930"
+                    ]
+                }
+            },
+            "capital_profile": {
+                "independence_type": "hedge_fund_parented",
+                "founder_control": "Liang Wenfeng (~89.5% via High-Flyer)",
+                "sovereign_state": [
+                    "China-linked (reported state fund + High-Flyer)"
+                ],
+                "big_tech_capital": [],
+                "competitor_entanglement": false,
+                "circular_vendor": [],
+                "index_held": false,
+                "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
+            }
+        },
+        {
+            "name": "Microsoft",
+            "id": "Microsoft",
+            "tier": "frontier_and_funder",
+            "jurisdiction": "US (Washington state; widely held public co.)",
+            "vc_independent": "public company",
+            "products_models": [
+                "Copilot (M365 / Windows / GitHub)",
+                "MAI models (MAI-Thinking-1, MAI-Code-1, MAI-Voice, MAI-Image)",
+                "Azure AI Foundry"
+            ],
+            "founders": [
+                "Bill Gates & Paul Allen (1975)",
+                "Satya Nadella (CEO)",
+                "Mustafa Suleyman (CEO, Microsoft AI)"
+            ],
+            "lead_backers": [
+                "Public company",
+                "also the ~$13B+ lead backer of OpenAI"
+            ],
+            "structure": "Public; dual role - maker (MAI/Copilot) AND funder (OpenAI)",
+            "stated_values": "Empower every person and organization to achieve more; 'humanist superintelligence.'",
+            "tension_hook": "Funds OpenAI while shipping competing MAI models - edge points at OpenAI both ways.",
+            "axes": {
+                "transparency": {
+                    "score": 2,
+                    "confidence": "B",
+                    "note": "Not in FMTI 2025; publishes an annual Responsible AI Transparency Report and model cards, but MAI disclosure is new/limited.",
+                    "sources": [
+                        "https://crfm.stanford.edu/fmti/December-2025/index.html",
+                        "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
+                    ]
+                },
+                "culture_esg": {
+                    "score": 3,
+                    "confidence": "B",
+                    "note": "Established sustainability reporting and a carbon-negative-by-2030 pledge; offset by datacenter energy/water strain and layoffs.",
+                    "sources": []
+                },
+                "labour_integrity": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Uses content-moderation/data vendors; some historical moderator-harm reporting; limited disclosure.",
+                    "sources": [
+                        "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+                        "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
+                    ]
+                },
+                "wealth_dispersion": {
+                    "score": 4,
+                    "confidence": "A",
+                    "note": "Widely held public company with no founder control bloc — the most dispersed ownership in the set.",
+                    "sources": []
+                },
+                "public_sharing": {
+                    "score": 2,
+                    "confidence": "B",
+                    "note": "Large corporate philanthropy and broad affordable access; no AI-specific public-benefit structure.",
+                    "sources": []
+                }
+            },
+            "capital_profile": {
+                "independence_type": "self_or_public",
+                "founder_control": false,
+                "sovereign_state": [],
+                "big_tech_capital": [],
+                "competitor_entanglement": false,
+                "circular_vendor": [],
+                "index_held": true,
+                "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
+            }
+        },
+        {
+            "name": "Perplexity",
+            "id": "Perplexity",
+            "tier": "tool",
+            "category": "Answer engine / search",
+            "jurisdiction": "US (San Francisco)",
+            "vc_independent": "VC-backed",
+            "products_models": [
+                "Perplexity answer engine",
+                "Comet browser",
+                "Sonar API"
+            ],
+            "founders": [
+                "Aravind Srinivas (CEO)",
+                "Denis Yarats",
+                "Johnny Ho",
+                "Andy Konwinski (2022)"
+            ],
+            "lead_backers": [
+                "Nvidia",
+                "Jeff Bezos",
+                "IVP",
+                "NEA",
+                "Accel",
+                "SoftBank"
+            ],
+            "structure": "Private",
+            "stated_values": "Accurate, cited answers; 'where knowledge begins.'",
+            "tension_hook": "Accuracy/cited-sources promise vs. publisher disputes over content sourcing.",
+            "axes": {
+                "transparency": {
+                    "score": 1,
+                    "confidence": "C",
+                    "note": "Not FMTI-scored; limited disclosure on how it sources and ranks answers; runs on others' models.",
+                    "sources": [
+                        "https://crfm.stanford.edu/fmti/December-2025/index.html",
+                        "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
+                    ]
+                },
+                "culture_esg": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Young startup; no major culture scandals; little ESG disclosure.",
+                    "sources": []
+                },
+                "labour_integrity": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Inherits upstream model-supply-chain labour; publisher disputes over content sourcing.",
+                    "sources": [
+                        "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+                        "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
+                    ]
+                },
+                "wealth_dispersion": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Founders plus many VCs and strategics (Nvidia, SoftBank, Bezos); no single majority.",
+                    "sources": []
+                },
+                "public_sharing": {
+                    "score": 1,
+                    "confidence": "C",
+                    "note": "Free tier exists; no structural public-benefit commitment.",
+                    "sources": []
+                }
+            },
+            "capital_profile": {
+                "independence_type": "vc_backed",
+                "founder_control": false,
+                "sovereign_state": [],
+                "big_tech_capital": [],
+                "competitor_entanglement": false,
+                "circular_vendor": [
+                    "Nvidia"
+                ],
+                "index_held": false,
+                "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
+            }
+        },
+        {
+            "name": "Midjourney",
+            "id": "Midjourney",
+            "tier": "tool",
+            "category": "Image generation",
+            "jurisdiction": "US (San Francisco)",
+            "vc_independent": "independent (bootstrapped)",
+            "products_models": [
+                "Midjourney V7",
+                "Video model"
+            ],
+            "founders": [
+                "David Holz (2021)"
+            ],
+            "lead_backers": [
+                "None - bootstrapped, self-funded"
+            ],
+            "structure": "Independent; founder-owned; no outside VC",
+            "stated_values": "Expand human imagination and creativity; independence.",
+            "tension_hook": "No funder values to map (the outlier) vs. artist-consent / copyright litigation.",
+            "axes": {
+                "transparency": {
+                    "score": 1,
+                    "confidence": "A",
+                    "note": "Tied for the lowest FMTI 2025 score (14/100); no model or data disclosure.",
+                    "sources": [
+                        "https://crfm.stanford.edu/fmti/December-2025/index.html",
+                        "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+                        "https://arxiv.org/html/2512.10169v1"
+                    ]
+                },
+                "culture_esg": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Tiny profitable team; no ESG disclosure; no notable workplace scandal.",
+                    "sources": []
+                },
+                "labour_integrity": {
+                    "score": 1,
+                    "confidence": "B",
+                    "note": "Sued by Disney/Universal (2025) and a 2023 artists' class action over uncompensated training on creators' work.",
+                    "sources": [
+                        "https://www.cnn.com/2025/06/11/tech/disney-universal-midjourney-ai-copyright-lawsuit",
+                        "https://www.cnbc.com/2025/06/11/disney-universal-midjourney-ai-copyright.html"
+                    ]
+                },
+                "wealth_dispersion": {
+                    "score": 1,
+                    "confidence": "B",
+                    "note": "Founder-owned with no outside equity — concentrated in one person, though free of any backer bloc.",
+                    "sources": []
+                },
+                "public_sharing": {
+                    "score": 1,
+                    "confidence": "C",
+                    "note": "Paid-only, closed, no open weights or public-benefit commitment.",
+                    "sources": []
+                }
+            },
+            "capital_profile": {
+                "independence_type": "independent",
+                "founder_control": "David Holz (founder-owned)",
+                "sovereign_state": [],
+                "big_tech_capital": [],
+                "competitor_entanglement": false,
+                "circular_vendor": [],
+                "index_held": false,
+                "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
+            }
+        },
+        {
+            "name": "ElevenLabs",
+            "id": "ElevenLabs",
+            "tier": "tool",
+            "category": "Voice / audio AI",
+            "jurisdiction": "US/UK (US-incorporated; London roots)",
+            "vc_independent": "VC-backed",
+            "products_models": [
+                "Text-to-speech / voice",
+                "Voice cloning",
+                "Dubbing",
+                "Conversational agents"
+            ],
+            "founders": [
+                "Mati Staniszewski (CEO)",
+                "Piotr Dabkowski (2022)"
+            ],
+            "lead_backers": [
+                "a16z",
+                "ICONIQ",
+                "Sequoia",
+                "Lightspeed"
+            ],
+            "structure": "Private",
+            "stated_values": "Make content accessible in any voice and language; ethical audio AI with safeguards.",
+            "tension_hook": "Consent / anti-misuse safeguards vs. voice-cloning and deepfake abuse cases.",
+            "axes": {
+                "transparency": {
+                    "score": 1,
+                    "confidence": "C",
+                    "note": "Not FMTI-scored; closed models; discloses some safety/consent tooling but little else.",
+                    "sources": [
+                        "https://crfm.stanford.edu/fmti/December-2025/index.html",
+                        "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
+                    ]
+                },
+                "culture_esg": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Young startup; voice-misuse governance questions; little ESG disclosure.",
+                    "sources": []
+                },
+                "labour_integrity": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Voice-actor consent concerns balanced by some consent and provenance tooling.",
+                    "sources": [
+                        "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+                        "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
+                    ]
+                },
+                "wealth_dispersion": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Founders plus a broad VC syndicate (a16z, ICONIQ, Sequoia); no single majority.",
+                    "sources": []
+                },
+                "public_sharing": {
+                    "score": 1,
+                    "confidence": "C",
+                    "note": "Free tier; no structural public-benefit commitment.",
+                    "sources": []
+                }
+            },
+            "capital_profile": {
+                "independence_type": "vc_backed",
+                "founder_control": false,
+                "sovereign_state": [],
+                "big_tech_capital": [],
+                "competitor_entanglement": false,
+                "circular_vendor": [],
+                "index_held": false,
+                "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
+            }
+        },
+        {
+            "name": "Canva",
+            "id": "Canva",
+            "tier": "tool",
+            "category": "Design / SMB creative",
+            "jurisdiction": "Australia (Sydney)",
+            "vc_independent": "VC-backed",
+            "products_models": [
+                "Canva",
+                "Magic Studio (Magic Write / Magic Design)",
+                "Affinity"
+            ],
+            "founders": [
+                "Melanie Perkins (CEO)",
+                "Cliff Obrecht",
+                "Cameron Adams (2013)"
+            ],
+            "lead_backers": [
+                "Sequoia",
+                "Blackbird",
+                "Bessemer",
+                "Felicis",
+                "General Catalyst",
+                "T. Rowe Price"
+            ],
+            "structure": "Private; large secondary rounds",
+            "stated_values": "Empower everyone to design; 'two-step plan' - succeed then do good.",
+            "tension_hook": "'Do good' mission vs. scale, creator-displacement concerns, and AI training-data questions.",
+            "axes": {
+                "transparency": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Not a foundation-model developer; standard SaaS disclosure but limited AI-stack transparency.",
+                    "sources": [
+                        "https://crfm.stanford.edu/fmti/December-2025/index.html",
+                        "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
+                    ]
+                },
+                "culture_esg": {
+                    "score": 3,
+                    "confidence": "B",
+                    "note": "Strong workplace and social reputation; Pledge 1% and Canva Foundation; comparatively light emitter.",
+                    "sources": [
+                        "https://www.pledge1percent.org/canva-raises-at-40-billion-valuation-its-founders-are-pledging/"
+                    ]
+                },
+                "labour_integrity": {
+                    "score": 3,
+                    "confidence": "C",
+                    "note": "Pays a large contributor community for content — a comparatively better creator-compensation posture.",
+                    "sources": []
+                },
+                "wealth_dispersion": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Founder stakes significant but broad employee ownership and a wide investor base.",
+                    "sources": [
+                        "https://www.pledge1percent.org/canva-raises-at-40-billion-valuation-its-founders-are-pledging/"
+                    ]
+                },
+                "public_sharing": {
+                    "score": 4,
+                    "confidence": "B",
+                    "note": "Founders pledged ~30% of their equity to charity (Pledge 1%) and offer free education/nonprofit tiers — best-in-class among the tools.",
+                    "sources": [
+                        "https://www.pledge1percent.org/canva-raises-at-40-billion-valuation-its-founders-are-pledging/"
+                    ]
+                }
+            },
+            "capital_profile": {
+                "independence_type": "vc_backed",
+                "founder_control": false,
+                "sovereign_state": [],
+                "big_tech_capital": [],
+                "competitor_entanglement": false,
+                "circular_vendor": [],
+                "index_held": false,
+                "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
+            }
+        },
+        {
+            "name": "Lovable",
+            "id": "Lovable",
+            "tier": "tool",
+            "category": "Vibe-coding / app builder",
+            "jurisdiction": "Sweden (Stockholm; EU)",
+            "vc_independent": "VC-backed",
+            "products_models": [
+                "Lovable app builder"
+            ],
+            "founders": [
+                "Anton Osika (CEO)",
+                "Fabian Hedin (2023, Sweden)"
+            ],
+            "lead_backers": [
+                "Accel",
+                "CapitalG",
+                "Menlo Ventures",
+                "Creandum",
+                "NVentures (Nvidia)"
+            ],
+            "structure": "Private; Stockholm",
+            "stated_values": "Let anyone build software in natural language; democratize software creation.",
+            "tension_hook": "'Anyone can build' vs. security/quality of generated apps and dependence on frontier-model APIs.",
+            "axes": {
+                "transparency": {
+                    "score": 1,
+                    "confidence": "C",
+                    "note": "App layer built on frontier APIs; minimal disclosure about its own stack.",
+                    "sources": [
+                        "https://crfm.stanford.edu/fmti/December-2025/index.html",
+                        "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
+                    ]
+                },
+                "culture_esg": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Very young, fast-scaling startup; little public information.",
+                    "sources": []
+                },
+                "labour_integrity": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Inherited exposure: depends on frontier-model APIs whose upstream labour it does not control.",
+                    "sources": [
+                        "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+                        "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
+                    ]
+                },
+                "wealth_dispersion": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Founder-heavy early cap table plus Accel/CapitalG and others.",
+                    "sources": []
+                },
+                "public_sharing": {
+                    "score": 1,
+                    "confidence": "C",
+                    "note": "Free tier; no structural public-benefit commitment.",
+                    "sources": []
+                }
+            },
+            "capital_profile": {
+                "independence_type": "vc_backed",
+                "founder_control": false,
+                "sovereign_state": [],
+                "big_tech_capital": [
+                    "Alphabet / Google"
+                ],
+                "competitor_entanglement": false,
+                "circular_vendor": [
+                    "Nvidia"
+                ],
+                "index_held": false,
+                "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
+            }
+        },
+        {
+            "name": "Replit",
+            "id": "Replit",
+            "tier": "tool",
+            "category": "Coding / agentic dev",
+            "jurisdiction": "US (San Francisco)",
+            "vc_independent": "VC-backed",
+            "products_models": [
+                "Replit IDE",
+                "Replit Agent"
+            ],
+            "founders": [
+                "Amjad Masad (CEO)",
+                "Faris Masad",
+                "Haya Odeh (2016)"
+            ],
+            "lead_backers": [
+                "a16z",
+                "Khosla Ventures",
+                "Coatue",
+                "Y Combinator",
+                "QIA",
+                "Google AI Futures Fund"
+            ],
+            "structure": "Private",
+            "stated_values": "Bring the next billion software creators online; accessible coding and agents.",
+            "tension_hook": "Empowerment/accessibility mission vs. agent-reliability incidents and monetization-shift friction.",
+            "axes": {
+                "transparency": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Developer-community openness, but its AI agent stack is largely opaque; not FMTI-scored.",
+                    "sources": [
+                        "https://crfm.stanford.edu/fmti/December-2025/index.html",
+                        "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
+                    ]
+                },
+                "culture_esg": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Startup; some past monetization/community friction; little ESG disclosure.",
+                    "sources": []
+                },
+                "labour_integrity": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Inherited exposure via frontier-model APIs; little direct data-labour.",
+                    "sources": [
+                        "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+                        "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
+                    ]
+                },
+                "wealth_dispersion": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Founders plus a16z/Coatue/QIA and others; no single majority.",
+                    "sources": []
+                },
+                "public_sharing": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Education and free-access mission ('next billion creators'); no profit-sharing structure.",
+                    "sources": []
+                }
+            },
+            "capital_profile": {
+                "independence_type": "vc_backed",
+                "founder_control": false,
+                "sovereign_state": [
+                    "Gulf (UAE/Qatar/Saudi)"
+                ],
+                "big_tech_capital": [
+                    "Alphabet / Google"
+                ],
+                "competitor_entanglement": false,
+                "circular_vendor": [],
+                "index_held": false,
+                "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
+            }
+        },
+        {
+            "name": "Gamma",
+            "id": "Gamma",
+            "tier": "tool",
+            "category": "Presentations / docs",
+            "jurisdiction": "US (San Francisco)",
+            "vc_independent": "VC-backed",
+            "products_models": [
+                "Gamma presentations / sites / docs"
+            ],
+            "founders": [
+                "Grant Lee (CEO)",
+                "Jon Noronha",
+                "James Fox (2020)"
+            ],
+            "lead_backers": [
+                "a16z (led Series B)",
+                "Accel"
+            ],
+            "structure": "Private; lean / capital-efficient",
+            "stated_values": "Reimagine how ideas are presented; AI-native, design-free creation.",
+            "tension_hook": "Lean/efficient ethos vs. quality-vs-volume questions and frontier-API dependence.",
+            "axes": {
+                "transparency": {
+                    "score": 1,
+                    "confidence": "C",
+                    "note": "App layer on frontier APIs; minimal disclosure about its own stack.",
+                    "sources": [
+                        "https://crfm.stanford.edu/fmti/December-2025/index.html",
+                        "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
+                    ]
+                },
+                "culture_esg": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Lean, profitable, small team; little public ESG information.",
+                    "sources": []
+                },
+                "labour_integrity": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Inherited exposure via frontier-model APIs.",
+                    "sources": [
+                        "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+                        "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
+                    ]
+                },
+                "wealth_dispersion": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Founder-heavy; capital-efficient with Accel/Forerunner.",
+                    "sources": []
+                },
+                "public_sharing": {
+                    "score": 1,
+                    "confidence": "C",
+                    "note": "Free tier; no structural public-benefit commitment.",
+                    "sources": []
+                }
+            },
+            "capital_profile": {
+                "independence_type": "vc_backed",
+                "founder_control": false,
+                "sovereign_state": [],
+                "big_tech_capital": [],
+                "competitor_entanglement": false,
+                "circular_vendor": [],
+                "index_held": false,
+                "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
+            }
+        },
+        {
+            "name": "Cursor (Anysphere)",
+            "id": "Cursor",
+            "tier": "tool",
+            "category": "AI coding / IDE",
+            "jurisdiction": "US (San Francisco)",
+            "vc_independent": "VC-backed",
+            "products_models": [
+                "Cursor IDE"
+            ],
+            "founders": [
+                "Michael Truell (CEO)",
+                "Sualeh Asif",
+                "Arvid Lunnemark",
+                "Aman Sanger (2022, MIT)"
+            ],
+            "lead_backers": [
+                "Accel & Coatue",
+                "Thrive Capital",
+                "a16z",
+                "DST Global",
+                "Nvidia",
+                "Google"
+            ],
+            "structure": "Private; >$1B ARR",
+            "stated_values": "Make software engineering dramatically faster; AI-native coding for professional developers.",
+            "tension_hook": "'Empower developers' built entirely on Anthropic/OpenAI models it competes with and depends on.",
+            "axes": {
+                "transparency": {
+                    "score": 1,
+                    "confidence": "C",
+                    "note": "Closed product built on frontier APIs; minimal disclosure about its own stack.",
+                    "sources": [
+                        "https://crfm.stanford.edu/fmti/December-2025/index.html",
+                        "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
+                    ]
+                },
+                "culture_esg": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Fast-scaling startup; little public information.",
+                    "sources": []
+                },
+                "labour_integrity": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Inherited exposure: depends on Anthropic/OpenAI models whose upstream labour it does not control.",
+                    "sources": [
+                        "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+                        "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
+                    ]
+                },
+                "wealth_dispersion": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Founders plus Accel/Coatue/Thrive/a16z; no single majority.",
+                    "sources": []
+                },
+                "public_sharing": {
+                    "score": 1,
+                    "confidence": "C",
+                    "note": "Paid product; no structural public-benefit commitment.",
+                    "sources": []
+                }
+            },
+            "capital_profile": {
+                "independence_type": "vc_backed",
+                "founder_control": false,
+                "sovereign_state": [],
+                "big_tech_capital": [
+                    "Alphabet / Google"
+                ],
+                "competitor_entanglement": false,
+                "circular_vendor": [
+                    "Nvidia"
+                ],
+                "index_held": false,
+                "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
+            }
+        },
+        {
+            "name": "Cohere",
+            "id": "Cohere",
+            "tier": "frontier",
+            "category": "Enterprise / sovereign LLM",
+            "jurisdiction": "Canada (Toronto)",
+            "vc_independent": "VC-backed",
+            "products_models": [
+                "Command (LLM)",
+                "Embed",
+                "Rerank",
+                "North (enterprise)",
+                "Aya (open multilingual)"
+            ],
+            "founders": [
+                "Aidan Gomez (CEO, co-author of the Transformer paper)",
+                "Nick Frosst",
+                "Ivan Zhang (2019, Toronto)"
+            ],
+            "lead_backers": [
+                "Radical Ventures & Inovia",
+                "Nvidia",
+                "AMD",
+                "PSP Investments",
+                "Salesforce Ventures"
+            ],
+            "structure": "Private; Canada; announced April 2026 acquisition of Germany's Aleph Alpha (~$20B combined entity; $600M Schwarz Group financing), expected to close later 2026",
+            "stated_values": "Secure, private, enterprise-grade AI; customer data stays with the customer; sovereign deployment.",
+            "tension_hook": "'Sovereign/private' positioning vs. US chipmaker capital (Nvidia, AMD) and the April 2026 Aleph Alpha acquisition consolidating European sovereign AI.",
+            "axes": {
+                "transparency": {
+                    "score": 2,
+                    "confidence": "B",
+                    "note": "Not in FMTI 2025; publishes model cards and emphasizes audited enterprise outputs.",
+                    "sources": [
+                        "https://crfm.stanford.edu/fmti/December-2025/index.html",
+                        "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
+                    ]
+                },
+                "culture_esg": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Enterprise/governed-AI positioning; limited public ESG disclosure.",
+                    "sources": []
+                },
+                "labour_integrity": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Trains largely on licensed/enterprise data; less creator-scraping controversy.",
+                    "sources": [
+                        "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+                        "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
+                    ]
+                },
+                "wealth_dispersion": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Founders plus Radical/Inovia and strategics (Nvidia, AMD, Salesforce).",
+                    "sources": []
+                },
+                "public_sharing": {
+                    "score": 3,
+                    "confidence": "C",
+                    "note": "Runs Cohere For AI, a nonprofit open research lab, and releases the open multilingual Aya models.",
+                    "sources": [
+                        "https://siliconangle.com/2026/04/24/ai-startups-cohere-aleph-alpha-merge-600m-new-funding/"
+                    ]
+                }
+            },
+            "capital_profile": {
+                "independence_type": "vc_backed",
+                "founder_control": false,
+                "sovereign_state": [],
+                "big_tech_capital": [],
+                "competitor_entanglement": false,
+                "circular_vendor": [
+                    "AMD",
+                    "Nvidia"
+                ],
+                "index_held": false,
+                "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
+            }
+        },
+        {
+            "name": "Moonshot AI (Kimi)",
+            "id": "Moonshot",
+            "tier": "frontier",
+            "category": "Frontier lab - China",
+            "jurisdiction": "China (Beijing)",
+            "vc_independent": "VC-backed (strategic-corp heavy)",
+            "products_models": [
+                "Kimi chatbot",
+                "Kimi K-series models (open weights)"
+            ],
+            "founders": [
+                "Yang Zhilin / Zhilin Yang (CEO)",
+                "Zhou Xinyu",
+                "Wu Yuxin (2023, Beijing)"
+            ],
+            "lead_backers": [
+                "Alibaba",
+                "Tencent",
+                "HongShan (Sequoia China)",
+                "IDG"
+            ],
+            "structure": "Private; China; ~$10B+ valuation (Feb 2026, up from $4.3B Series C in Dec 2025); IPO planned H2 2026",
+            "stated_values": "Long-context AGI; open-weight Kimi models; consumer + developer access.",
+            "tension_hook": "Open-weights / 'AGI for all' framing vs. Alibaba/Tencent strategic control and Chinese data-governance context.",
+            "axes": {
+                "transparency": {
+                    "score": 1,
+                    "confidence": "C",
+                    "note": "Not FMTI-scored; open-weight Kimi models but opaque practices, similar to DeepSeek.",
+                    "sources": [
+                        "https://crfm.stanford.edu/fmti/December-2025/index.html",
+                        "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
+                    ]
+                },
+                "culture_esg": {
+                    "score": 1,
+                    "confidence": "C",
+                    "note": "Little public information; no ESG disclosure.",
+                    "sources": []
+                },
+                "labour_integrity": {
+                    "score": 1,
+                    "confidence": "C",
+                    "note": "Opaque; Chinese data-labour context with no disclosure.",
+                    "sources": [
+                        "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+                        "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
+                    ]
+                },
+                "wealth_dispersion": {
+                    "score": 1,
+                    "confidence": "C",
+                    "note": "Strategic concentration via Alibaba and Tencent backing.",
+                    "sources": []
+                },
+                "public_sharing": {
+                    "score": 2,
+                    "confidence": "C",
+                    "note": "Open-weight Kimi releases plus free consumer access; no formal pledge.",
+                    "sources": []
+                }
+            },
+            "capital_profile": {
+                "independence_type": "vc_backed",
+                "founder_control": false,
+                "sovereign_state": [
+                    "China-linked (Alibaba/Tencent; PRC governance context)"
+                ],
+                "big_tech_capital": [],
+                "competitor_entanglement": false,
+                "circular_vendor": [],
+                "index_held": false,
+                "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
+            }
         }
-      },
-      "capital_profile": {
-        "independence_type": "vc_backed",
-        "founder_control": false,
-        "sovereign_state": [
-          "Gulf (UAE/Qatar/Saudi)",
-          "Singapore (GIC/Temasek)"
-        ],
-        "big_tech_capital": [
-          "Alphabet / Google",
-          "Amazon",
-          "Microsoft"
-        ],
-        "competitor_entanglement": true,
-        "circular_vendor": [
-          "Nvidia"
-        ],
-        "index_held": false,
-        "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
-      }
-    },
-    {
-      "name": "OpenAI",
-      "id": "OpenAI",
-      "tier": "frontier",
-      "jurisdiction": "US (Delaware; nonprofit-controlled PBC; San Francisco)",
-      "vc_independent": "VC-backed (nonprofit-controlled)",
-      "products_models": [
-        "ChatGPT",
-        "GPT-5 / o-series",
-        "Sora",
-        "DALL-E",
-        "API"
-      ],
-      "founders": [
-        "Sam Altman (CEO)",
-        "Greg Brockman",
-        "Ilya Sutskever",
-        "Elon Musk",
-        "Wojciech Zaremba",
-        "John Schulman (2015)"
-      ],
-      "lead_backers": [
-        "Microsoft (largest equity holder ~27%)",
-        "Amazon (up to $50B committed, 2026)",
-        "SoftBank",
-        "Nvidia",
-        "Thrive Capital"
-      ],
-      "structure": "For-profit PBC (OpenAI Group) controlled by the nonprofit OpenAI Foundation; recapitalized Oct 2025 (capped-profit model scrapped)",
-      "stated_values": "Ensure AGI benefits all of humanity; broad distribution of benefits.",
-      "tension_hook": "'Benefit all humanity' nonprofit origins vs. for-profit restructuring, founder departures, and commercial pace.",
-      "axes": {
-        "transparency": {
-          "score": 2,
-          "confidence": "A",
-          "note": "FMTI 2025 middle group but declined ~14 points; near the bottom of the firms tracked all three years; limited o3 disclosure.",
-          "sources": [
-            "https://crfm.stanford.edu/fmti/December-2025/index.html",
-            "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
-            "https://arxiv.org/html/2512.10169v1"
-          ]
-        },
-        "culture_esg": {
-          "score": 2,
-          "confidence": "B",
-          "note": "Repeated governance turmoil (2023 board crisis, safety-team departures) and a contested for-profit conversion, completed Oct 2025; environmental non-disclosure.",
-          "sources": [
-            "https://www.cnbc.com/2025/10/28/open-ai-for-profit-microsoft.html"
-          ]
-        },
-        "labour_integrity": {
-          "score": 1,
-          "confidence": "B",
-          "note": "Documented Kenya/Sama case: moderators paid ~$2/hr to review violent content with inadequate support.",
-          "sources": [
-            "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
-            "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
-          ]
-        },
-        "wealth_dispersion": {
-          "score": 2,
-          "confidence": "B",
-          "note": "After the Oct 2025 recapitalization the nonprofit OpenAI Foundation holds ~26% and controls the board, Microsoft ~27%, and ~47% sits with employees and investors - control rests with the nonprofit and economics are moderately spread (no single holder >27%), not capped.",
-          "sources": [
-            "https://www.cnbc.com/2025/10/28/open-ai-for-profit-microsoft.html",
-            "https://openai.com/our-structure/"
-          ]
-        },
-        "public_sharing": {
-          "score": 3,
-          "confidence": "B",
-          "note": "The nonprofit OpenAI Foundation controls the for-profit PBC and holds a ~$130B equity stake earmarked for philanthropy (health, AI resilience); but the capped-profit -> PBC reversal is a live stated-vs-observed gap.",
-          "sources": [
-            "https://www.cnbc.com/2025/10/28/open-ai-for-profit-microsoft.html",
-            "https://openai.com/index/evolving-our-structure/",
-            "https://www.effectivealtruism.org/articles/cullen-okeefe-the-windfall-clause-sharing-the-benefits-of-advanced-ai"
-          ]
-        }
-      },
-      "capital_profile": {
-        "independence_type": "vc_backed",
-        "founder_control": false,
-        "sovereign_state": [
-          "Gulf (UAE/Qatar/Saudi)",
-          "Singapore (GIC/Temasek)"
-        ],
-        "big_tech_capital": [
-          "Amazon",
-          "Microsoft"
-        ],
-        "competitor_entanglement": true,
-        "circular_vendor": [
-          "Nvidia"
-        ],
-        "index_held": false,
-        "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
-      }
-    },
-    {
-      "name": "Google DeepMind",
-      "id": "Google DeepMind",
-      "tier": "frontier",
-      "jurisdiction": "US/UK (Alphabet subsidiary; London + Mountain View)",
-      "vc_independent": "corporate-owned (Alphabet)",
-      "products_models": [
-        "Gemini",
-        "Gemma (open weights)",
-        "Imagen",
-        "Veo",
-        "NotebookLM",
-        "AlphaFold"
-      ],
-      "founders": [
-        "Demis Hassabis (CEO)",
-        "Shane Legg",
-        "Mustafa Suleyman (DeepMind, 2010)"
-      ],
-      "lead_backers": [
-        "Alphabet (wholly owned)"
-      ],
-      "structure": "Subsidiary of Alphabet",
-      "stated_values": "Solve intelligence to advance science and benefit humanity; responsible AI.",
-      "tension_hook": "Research-for-humanity mission vs. ad-revenue parent and enterprise-productivity pressure.",
-      "axes": {
-        "transparency": {
-          "score": 2,
-          "confidence": "A",
-          "note": "FMTI 2025 middle group; criticized for delayed Gemini model cards/technical reports.",
-          "sources": [
-            "https://crfm.stanford.edu/fmti/December-2025/index.html",
-            "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
-            "https://arxiv.org/html/2512.10169v1"
-          ]
-        },
-        "culture_esg": {
-          "score": 3,
-          "confidence": "B",
-          "note": "Alphabet publishes mature corporate sustainability reporting; offset by founder dual-class voting control.",
-          "sources": [
-            "https://crfm.stanford.edu/fmti/December-2025/index.html",
-            "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
-          ]
-        },
-        "labour_integrity": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Opaque rater supply chain; vendor-rater pay/condition complaints reported across Google's contractors.",
-          "sources": [
-            "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
-            "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
-          ]
-        },
-        "wealth_dispersion": {
-          "score": 0,
-          "confidence": "A",
-          "note": "Wholly owned by Alphabet; founders Page and Brin hold >51% of voting power via dual-class shares.",
-          "sources": []
-        },
-        "public_sharing": {
-          "score": 1,
-          "confidence": "C",
-          "note": "Open Gemma weights and Google.org philanthropy, but no AI-specific public-benefit/windfall structure.",
-          "sources": []
-        }
-      },
-      "capital_profile": {
-        "independence_type": "corporate_owned",
-        "founder_control": "Page & Brin (>51% Alphabet voting)",
-        "sovereign_state": [],
-        "big_tech_capital": [
-          "Alphabet / Google"
-        ],
-        "competitor_entanglement": true,
-        "circular_vendor": [],
-        "index_held": true,
-        "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
-      }
-    },
-    {
-      "name": "xAI",
-      "id": "xAI",
-      "tier": "frontier",
-      "jurisdiction": "US (PBC; now a SpaceX subsidiary; TX/CA)",
-      "vc_independent": "corporate-owned (SpaceX) / founder-controlled",
-      "products_models": [
-        "Grok",
-        "Grok API",
-        "X integration"
-      ],
-      "founders": [
-        "Elon Musk (2023)"
-      ],
-      "lead_backers": [
-        "Nvidia (led Series E)",
-        "absorbed into SpaceX",
-        "QIA",
-        "MGX",
-        "Humain/Saudi PIF"
-      ],
-      "structure": "PBC; now a wholly owned SpaceX subsidiary",
-      "stated_values": "Understand the true nature of the universe; maximally truth-seeking; anti-censorship.",
-      "tension_hook": "'Maximally truth-seeking/neutral' claim vs. owner control, X integration, and model-steering episodes.",
-      "axes": {
-        "transparency": {
-          "score": 1,
-          "confidence": "A",
-          "note": "Tied for the lowest score in FMTI 2025 (14/100); discloses almost nothing about data, model, or practices.",
-          "sources": [
-            "https://crfm.stanford.edu/fmti/December-2025/index.html",
-            "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
-            "https://arxiv.org/html/2512.10169v1"
-          ]
-        },
-        "culture_esg": {
-          "score": 0,
-          "confidence": "A",
-          "note": "Operated dozens of unpermitted gas turbines in a predominantly Black South Memphis community; sued under the Clean Air Act by the NAACP/SELC/Earthjustice.",
-          "sources": [
-            "https://time.com/7308925/elon-musk-memphis-ai-data-center/",
-            "https://earthjustice.org/case/xai-illegal-gas-power-plant-data-center-colossus"
-          ]
-        },
-        "labour_integrity": {
-          "score": 1,
-          "confidence": "C",
-          "note": "Minimal labour disclosure; rapid build-out with little visibility into data work.",
-          "sources": [
-            "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
-            "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
-          ]
-        },
-        "wealth_dispersion": {
-          "score": 0,
-          "confidence": "A",
-          "note": "Elon Musk holds supermajority control; xAI was absorbed into Musk-controlled SpaceX.",
-          "sources": []
-        },
-        "public_sharing": {
-          "score": 1,
-          "confidence": "C",
-          "note": "PBC in form only; no substantive public-sharing mechanism; Grok is paid/closed.",
-          "sources": []
-        }
-      },
-      "capital_profile": {
-        "independence_type": "corporate_owned",
-        "founder_control": "Elon Musk (supermajority via SpaceX)",
-        "sovereign_state": [
-          "Gulf (UAE/Qatar/Saudi)"
-        ],
-        "big_tech_capital": [],
-        "competitor_entanglement": false,
-        "circular_vendor": [
-          "Nvidia"
-        ],
-        "index_held": false,
-        "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
-      }
-    },
-    {
-      "name": "Meta (AI)",
-      "id": "Meta",
-      "tier": "frontier",
-      "jurisdiction": "US (Delaware; founder voting control; CA)",
-      "vc_independent": "public company (founder-controlled)",
-      "products_models": [
-        "Llama (open weights)",
-        "Muse Spark (closed-weight, Apr 2026)",
-        "Meta AI assistant"
-      ],
-      "founders": [
-        "Mark Zuckerberg (CEO, voting control)",
-        "Alexandr Wang (Chief AI Officer)",
-        "Shengjia Zhao (chief scientist, MSL)"
-      ],
-      "lead_backers": [
-        "Meta Platforms (self-funded)"
-      ],
-      "structure": "Public; founder retains majority voting via dual-class",
-      "stated_values": "Historically open-weight (Llama) to democratize access, but pivoted to a closed, proprietary frontier model (Muse Spark, Apr 2026); 'personal superintelligence.'",
-      "tension_hook": "Open-weight 'democratization' rhetoric vs. the April 2026 pivot to a closed, proprietary frontier model and the earlier Llama 4 benchmark-integrity issues.",
-      "axes": {
-        "transparency": {
-          "score": 2,
-          "confidence": "A",
-          "note": "FMTI 2025 score halved (60->31); released no technical report for Llama 4 — openness of weights did not equal transparency. Now also shipping the closed-weight Muse Spark (Apr 2026).",
-          "sources": [
-            "https://crfm.stanford.edu/fmti/December-2025/index.html",
-            "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
-            "https://arxiv.org/html/2512.10169v1",
-            "https://www.cnbc.com/2026/04/08/meta-debuts-first-major-ai-model-since-14-billion-deal-to-bring-in-alexandr-wang.html"
-          ]
-        },
-        "culture_esg": {
-          "score": 2,
-          "confidence": "B",
-          "note": "2025 AI-org turmoil (LeCun departure, Llama 4 benchmark-integrity allegations, $100M poaching); founder voting control; corporate sustainability reporting exists.",
-          "sources": [
-            "https://www.entrepreneur.com/business-news/ex-meta-ai-chief-slams-new-boss-as-young-and/501611"
-          ]
-        },
-        "labour_integrity": {
-          "score": 1,
-          "confidence": "B",
-          "note": "Holds ~49% of Scale AI; documented Kenyan content-moderator litigation over pay and trauma.",
-          "sources": [
-            "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
-            "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
-          ]
-        },
-        "wealth_dispersion": {
-          "score": 0,
-          "confidence": "A",
-          "note": "Zuckerberg retains voting control via dual-class; AI effort is self-funded by Meta.",
-          "sources": []
-        },
-        "public_sharing": {
-          "score": 2,
-          "confidence": "B",
-          "note": "Still releases Llama as open weights (a public good), but pivoted to closed, proprietary Muse Spark at the frontier (Apr 2026), narrowing the public-benefit claim; no profit-sharing commitment.",
-          "sources": [
-            "https://www.cnbc.com/2026/04/08/meta-debuts-first-major-ai-model-since-14-billion-deal-to-bring-in-alexandr-wang.html"
-          ]
-        }
-      },
-      "capital_profile": {
-        "independence_type": "self_or_public",
-        "founder_control": "Mark Zuckerberg (dual-class voting control)",
-        "sovereign_state": [],
-        "big_tech_capital": [],
-        "competitor_entanglement": false,
-        "circular_vendor": [],
-        "index_held": true,
-        "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
-      }
-    },
-    {
-      "name": "Mistral AI",
-      "id": "Mistral",
-      "tier": "frontier",
-      "jurisdiction": "France (Paris; EU)",
-      "vc_independent": "VC-backed",
-      "products_models": [
-        "Mistral Large/Medium/Small",
-        "Mixtral",
-        "Le Chat",
-        "Codestral"
-      ],
-      "founders": [
-        "Arthur Mensch (CEO)",
-        "Guillaume Lample",
-        "Timothee Lacroix (2023)"
-      ],
-      "lead_backers": [
-        "ASML (largest, ~11%)",
-        "a16z",
-        "General Catalyst",
-        "Nvidia",
-        "Microsoft",
-        "Lightspeed",
-        "DST Global"
-      ],
-      "structure": "Private; France-based",
-      "stated_values": "Open, portable, efficient models; European AI sovereignty.",
-      "tension_hook": "Open/sovereign-Europe positioning vs. reliance on US backers and a Dutch strategic lead investor.",
-      "axes": {
-        "transparency": {
-          "score": 1,
-          "confidence": "A",
-          "note": "FMTI 2025 score fell by more than two-thirds (to 18/100) despite open weights.",
-          "sources": [
-            "https://crfm.stanford.edu/fmti/December-2025/index.html",
-            "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
-            "https://arxiv.org/html/2512.10169v1"
-          ]
-        },
-        "culture_esg": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Operates under stronger EU labour norms, but publishes little ESG detail.",
-          "sources": []
-        },
-        "labour_integrity": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Smaller footprint and EU context; labeling supply chain not disclosed.",
-          "sources": [
-            "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
-            "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
-          ]
-        },
-        "wealth_dispersion": {
-          "score": 2,
-          "confidence": "B",
-          "note": "Founders plus diverse VCs; ASML is largest shareholder (~11%) but no single majority.",
-          "sources": []
-        },
-        "public_sharing": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Open-weight releases and a European public-interest/sovereignty framing; no profit pledge.",
-          "sources": []
-        }
-      },
-      "capital_profile": {
-        "independence_type": "vc_backed",
-        "founder_control": false,
-        "sovereign_state": [],
-        "big_tech_capital": [
-          "Microsoft"
-        ],
-        "competitor_entanglement": true,
-        "circular_vendor": [
-          "Nvidia"
-        ],
-        "index_held": false,
-        "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
-      }
-    },
-    {
-      "name": "DeepSeek",
-      "id": "DeepSeek",
-      "tier": "frontier",
-      "jurisdiction": "China (Hangzhou)",
-      "vc_independent": "hedge-fund-parented (High-Flyer)",
-      "products_models": [
-        "DeepSeek-V series (V3 / V4, Apr 2026)",
-        "DeepSeek-R series (R1)",
-        "DeepSeek app"
-      ],
-      "founders": [
-        "Liang Wenfeng (2023) - also founder of High-Flyer"
-      ],
-      "lead_backers": [
-        "High-Flyer (controlling parent)",
-        "Tencent",
-        "CATL",
-        "National AI Industry Investment Fund (round near closing, Jun 2026)"
-      ],
-      "structure": "Private; China-based; first-ever external round (~$7.4B led by Tencent & CATL, with the state-backed National AI Industry Fund) near closing as of June 2026",
-      "stated_values": "Open-source, research-driven AGI for all; radical cost efficiency.",
-      "tension_hook": "Open/for-all framing vs. Chinese data-governance and state-adjacent funding context.",
-      "axes": {
-        "transparency": {
-          "score": 2,
-          "confidence": "A",
-          "note": "FMTI 2025 middle group; open weights but opaque on data and training — openness is not transparency.",
-          "sources": [
-            "https://crfm.stanford.edu/fmti/December-2025/index.html",
-            "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
-            "https://arxiv.org/html/2512.10169v1"
-          ]
-        },
-        "culture_esg": {
-          "score": 1,
-          "confidence": "C",
-          "note": "No ESG disclosure; quant-fund parent culture; little public information.",
-          "sources": []
-        },
-        "labour_integrity": {
-          "score": 1,
-          "confidence": "C",
-          "note": "Opaque; Chinese data-labour context with no disclosure.",
-          "sources": [
-            "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
-            "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
-          ]
-        },
-        "wealth_dispersion": {
-          "score": 0,
-          "confidence": "B",
-          "note": "Founder Liang Wenfeng controls ~89.5% via the High-Flyer parent.",
-          "sources": []
-        },
-        "public_sharing": {
-          "score": 3,
-          "confidence": "B",
-          "note": "Gives models away as open weights at very low or zero cost — strong de facto public benefit, though no formal pledge.",
-          "sources": [
-            "https://www.investing.com/news/stock-market-news/deepseek-nears-74-billion-funding-led-by-tencent-93CH-4723930"
-          ]
-        }
-      },
-      "capital_profile": {
-        "independence_type": "hedge_fund_parented",
-        "founder_control": "Liang Wenfeng (~89.5% via High-Flyer)",
-        "sovereign_state": [
-          "China-linked (reported state fund + High-Flyer)"
-        ],
-        "big_tech_capital": [],
-        "competitor_entanglement": false,
-        "circular_vendor": [],
-        "index_held": false,
-        "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
-      }
-    },
-    {
-      "name": "Microsoft",
-      "id": "Microsoft",
-      "tier": "frontier_and_funder",
-      "jurisdiction": "US (Washington state; widely held public co.)",
-      "vc_independent": "public company",
-      "products_models": [
-        "Copilot (M365 / Windows / GitHub)",
-        "MAI models (MAI-Thinking-1, MAI-Code-1, MAI-Voice, MAI-Image)",
-        "Azure AI Foundry"
-      ],
-      "founders": [
-        "Bill Gates & Paul Allen (1975)",
-        "Satya Nadella (CEO)",
-        "Mustafa Suleyman (CEO, Microsoft AI)"
-      ],
-      "lead_backers": [
-        "Public company",
-        "also the ~$13B+ lead backer of OpenAI"
-      ],
-      "structure": "Public; dual role - maker (MAI/Copilot) AND funder (OpenAI)",
-      "stated_values": "Empower every person and organization to achieve more; 'humanist superintelligence.'",
-      "tension_hook": "Funds OpenAI while shipping competing MAI models - edge points at OpenAI both ways.",
-      "axes": {
-        "transparency": {
-          "score": 2,
-          "confidence": "B",
-          "note": "Not in FMTI 2025; publishes an annual Responsible AI Transparency Report and model cards, but MAI disclosure is new/limited.",
-          "sources": [
-            "https://crfm.stanford.edu/fmti/December-2025/index.html",
-            "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
-          ]
-        },
-        "culture_esg": {
-          "score": 3,
-          "confidence": "B",
-          "note": "Established sustainability reporting and a carbon-negative-by-2030 pledge; offset by datacenter energy/water strain and layoffs.",
-          "sources": []
-        },
-        "labour_integrity": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Uses content-moderation/data vendors; some historical moderator-harm reporting; limited disclosure.",
-          "sources": [
-            "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
-            "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
-          ]
-        },
-        "wealth_dispersion": {
-          "score": 4,
-          "confidence": "A",
-          "note": "Widely held public company with no founder control bloc — the most dispersed ownership in the set.",
-          "sources": []
-        },
-        "public_sharing": {
-          "score": 2,
-          "confidence": "B",
-          "note": "Large corporate philanthropy and broad affordable access; no AI-specific public-benefit structure.",
-          "sources": []
-        }
-      },
-      "capital_profile": {
-        "independence_type": "self_or_public",
-        "founder_control": false,
-        "sovereign_state": [],
-        "big_tech_capital": [],
-        "competitor_entanglement": false,
-        "circular_vendor": [],
-        "index_held": true,
-        "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
-      }
-    },
-    {
-      "name": "Perplexity",
-      "id": "Perplexity",
-      "tier": "tool",
-      "category": "Answer engine / search",
-      "jurisdiction": "US (San Francisco)",
-      "vc_independent": "VC-backed",
-      "products_models": [
-        "Perplexity answer engine",
-        "Comet browser",
-        "Sonar API"
-      ],
-      "founders": [
-        "Aravind Srinivas (CEO)",
-        "Denis Yarats",
-        "Johnny Ho",
-        "Andy Konwinski (2022)"
-      ],
-      "lead_backers": [
-        "Nvidia",
-        "Jeff Bezos",
-        "IVP",
-        "NEA",
-        "Accel",
-        "SoftBank"
-      ],
-      "structure": "Private",
-      "stated_values": "Accurate, cited answers; 'where knowledge begins.'",
-      "tension_hook": "Accuracy/cited-sources promise vs. publisher disputes over content sourcing.",
-      "axes": {
-        "transparency": {
-          "score": 1,
-          "confidence": "C",
-          "note": "Not FMTI-scored; limited disclosure on how it sources and ranks answers; runs on others' models.",
-          "sources": [
-            "https://crfm.stanford.edu/fmti/December-2025/index.html",
-            "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
-          ]
-        },
-        "culture_esg": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Young startup; no major culture scandals; little ESG disclosure.",
-          "sources": []
-        },
-        "labour_integrity": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Inherits upstream model-supply-chain labour; publisher disputes over content sourcing.",
-          "sources": [
-            "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
-            "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
-          ]
-        },
-        "wealth_dispersion": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Founders plus many VCs and strategics (Nvidia, SoftBank, Bezos); no single majority.",
-          "sources": []
-        },
-        "public_sharing": {
-          "score": 1,
-          "confidence": "C",
-          "note": "Free tier exists; no structural public-benefit commitment.",
-          "sources": []
-        }
-      },
-      "capital_profile": {
-        "independence_type": "vc_backed",
-        "founder_control": false,
-        "sovereign_state": [],
-        "big_tech_capital": [],
-        "competitor_entanglement": false,
-        "circular_vendor": [
-          "Nvidia"
-        ],
-        "index_held": false,
-        "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
-      }
-    },
-    {
-      "name": "Midjourney",
-      "id": "Midjourney",
-      "tier": "tool",
-      "category": "Image generation",
-      "jurisdiction": "US (San Francisco)",
-      "vc_independent": "independent (bootstrapped)",
-      "products_models": [
-        "Midjourney V7",
-        "Video model"
-      ],
-      "founders": [
-        "David Holz (2021)"
-      ],
-      "lead_backers": [
-        "None - bootstrapped, self-funded"
-      ],
-      "structure": "Independent; founder-owned; no outside VC",
-      "stated_values": "Expand human imagination and creativity; independence.",
-      "tension_hook": "No funder values to map (the outlier) vs. artist-consent / copyright litigation.",
-      "axes": {
-        "transparency": {
-          "score": 1,
-          "confidence": "A",
-          "note": "Tied for the lowest FMTI 2025 score (14/100); no model or data disclosure.",
-          "sources": [
-            "https://crfm.stanford.edu/fmti/December-2025/index.html",
-            "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
-            "https://arxiv.org/html/2512.10169v1"
-          ]
-        },
-        "culture_esg": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Tiny profitable team; no ESG disclosure; no notable workplace scandal.",
-          "sources": []
-        },
-        "labour_integrity": {
-          "score": 1,
-          "confidence": "B",
-          "note": "Sued by Disney/Universal (2025) and a 2023 artists' class action over uncompensated training on creators' work.",
-          "sources": [
-            "https://www.cnn.com/2025/06/11/tech/disney-universal-midjourney-ai-copyright-lawsuit",
-            "https://www.cnbc.com/2025/06/11/disney-universal-midjourney-ai-copyright.html"
-          ]
-        },
-        "wealth_dispersion": {
-          "score": 1,
-          "confidence": "B",
-          "note": "Founder-owned with no outside equity — concentrated in one person, though free of any backer bloc.",
-          "sources": []
-        },
-        "public_sharing": {
-          "score": 1,
-          "confidence": "C",
-          "note": "Paid-only, closed, no open weights or public-benefit commitment.",
-          "sources": []
-        }
-      },
-      "capital_profile": {
-        "independence_type": "independent",
-        "founder_control": "David Holz (founder-owned)",
-        "sovereign_state": [],
-        "big_tech_capital": [],
-        "competitor_entanglement": false,
-        "circular_vendor": [],
-        "index_held": false,
-        "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
-      }
-    },
-    {
-      "name": "ElevenLabs",
-      "id": "ElevenLabs",
-      "tier": "tool",
-      "category": "Voice / audio AI",
-      "jurisdiction": "US/UK (US-incorporated; London roots)",
-      "vc_independent": "VC-backed",
-      "products_models": [
-        "Text-to-speech / voice",
-        "Voice cloning",
-        "Dubbing",
-        "Conversational agents"
-      ],
-      "founders": [
-        "Mati Staniszewski (CEO)",
-        "Piotr Dabkowski (2022)"
-      ],
-      "lead_backers": [
-        "a16z",
-        "ICONIQ",
-        "Sequoia",
-        "Lightspeed"
-      ],
-      "structure": "Private",
-      "stated_values": "Make content accessible in any voice and language; ethical audio AI with safeguards.",
-      "tension_hook": "Consent / anti-misuse safeguards vs. voice-cloning and deepfake abuse cases.",
-      "axes": {
-        "transparency": {
-          "score": 1,
-          "confidence": "C",
-          "note": "Not FMTI-scored; closed models; discloses some safety/consent tooling but little else.",
-          "sources": [
-            "https://crfm.stanford.edu/fmti/December-2025/index.html",
-            "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
-          ]
-        },
-        "culture_esg": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Young startup; voice-misuse governance questions; little ESG disclosure.",
-          "sources": []
-        },
-        "labour_integrity": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Voice-actor consent concerns balanced by some consent and provenance tooling.",
-          "sources": [
-            "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
-            "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
-          ]
-        },
-        "wealth_dispersion": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Founders plus a broad VC syndicate (a16z, ICONIQ, Sequoia); no single majority.",
-          "sources": []
-        },
-        "public_sharing": {
-          "score": 1,
-          "confidence": "C",
-          "note": "Free tier; no structural public-benefit commitment.",
-          "sources": []
-        }
-      },
-      "capital_profile": {
-        "independence_type": "vc_backed",
-        "founder_control": false,
-        "sovereign_state": [],
-        "big_tech_capital": [],
-        "competitor_entanglement": false,
-        "circular_vendor": [],
-        "index_held": false,
-        "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
-      }
-    },
-    {
-      "name": "Canva",
-      "id": "Canva",
-      "tier": "tool",
-      "category": "Design / SMB creative",
-      "jurisdiction": "Australia (Sydney)",
-      "vc_independent": "VC-backed",
-      "products_models": [
-        "Canva",
-        "Magic Studio (Magic Write / Magic Design)",
-        "Affinity"
-      ],
-      "founders": [
-        "Melanie Perkins (CEO)",
-        "Cliff Obrecht",
-        "Cameron Adams (2013)"
-      ],
-      "lead_backers": [
-        "Sequoia",
-        "Blackbird",
-        "Bessemer",
-        "Felicis",
-        "General Catalyst",
-        "T. Rowe Price"
-      ],
-      "structure": "Private; large secondary rounds",
-      "stated_values": "Empower everyone to design; 'two-step plan' - succeed then do good.",
-      "tension_hook": "'Do good' mission vs. scale, creator-displacement concerns, and AI training-data questions.",
-      "axes": {
-        "transparency": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Not a foundation-model developer; standard SaaS disclosure but limited AI-stack transparency.",
-          "sources": [
-            "https://crfm.stanford.edu/fmti/December-2025/index.html",
-            "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
-          ]
-        },
-        "culture_esg": {
-          "score": 3,
-          "confidence": "B",
-          "note": "Strong workplace and social reputation; Pledge 1% and Canva Foundation; comparatively light emitter.",
-          "sources": [
-            "https://www.pledge1percent.org/canva-raises-at-40-billion-valuation-its-founders-are-pledging/"
-          ]
-        },
-        "labour_integrity": {
-          "score": 3,
-          "confidence": "C",
-          "note": "Pays a large contributor community for content — a comparatively better creator-compensation posture.",
-          "sources": []
-        },
-        "wealth_dispersion": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Founder stakes significant but broad employee ownership and a wide investor base.",
-          "sources": [
-            "https://www.pledge1percent.org/canva-raises-at-40-billion-valuation-its-founders-are-pledging/"
-          ]
-        },
-        "public_sharing": {
-          "score": 4,
-          "confidence": "B",
-          "note": "Founders pledged ~30% of their equity to charity (Pledge 1%) and offer free education/nonprofit tiers — best-in-class among the tools.",
-          "sources": [
-            "https://www.pledge1percent.org/canva-raises-at-40-billion-valuation-its-founders-are-pledging/"
-          ]
-        }
-      },
-      "capital_profile": {
-        "independence_type": "vc_backed",
-        "founder_control": false,
-        "sovereign_state": [],
-        "big_tech_capital": [],
-        "competitor_entanglement": false,
-        "circular_vendor": [],
-        "index_held": false,
-        "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
-      }
-    },
-    {
-      "name": "Lovable",
-      "id": "Lovable",
-      "tier": "tool",
-      "category": "Vibe-coding / app builder",
-      "jurisdiction": "Sweden (Stockholm; EU)",
-      "vc_independent": "VC-backed",
-      "products_models": [
-        "Lovable app builder"
-      ],
-      "founders": [
-        "Anton Osika (CEO)",
-        "Fabian Hedin (2023, Sweden)"
-      ],
-      "lead_backers": [
-        "Accel",
-        "CapitalG",
-        "Menlo Ventures",
-        "Creandum",
-        "NVentures (Nvidia)"
-      ],
-      "structure": "Private; Stockholm",
-      "stated_values": "Let anyone build software in natural language; democratize software creation.",
-      "tension_hook": "'Anyone can build' vs. security/quality of generated apps and dependence on frontier-model APIs.",
-      "axes": {
-        "transparency": {
-          "score": 1,
-          "confidence": "C",
-          "note": "App layer built on frontier APIs; minimal disclosure about its own stack.",
-          "sources": [
-            "https://crfm.stanford.edu/fmti/December-2025/index.html",
-            "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
-          ]
-        },
-        "culture_esg": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Very young, fast-scaling startup; little public information.",
-          "sources": []
-        },
-        "labour_integrity": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Inherited exposure: depends on frontier-model APIs whose upstream labour it does not control.",
-          "sources": [
-            "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
-            "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
-          ]
-        },
-        "wealth_dispersion": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Founder-heavy early cap table plus Accel/CapitalG and others.",
-          "sources": []
-        },
-        "public_sharing": {
-          "score": 1,
-          "confidence": "C",
-          "note": "Free tier; no structural public-benefit commitment.",
-          "sources": []
-        }
-      },
-      "capital_profile": {
-        "independence_type": "vc_backed",
-        "founder_control": false,
-        "sovereign_state": [],
-        "big_tech_capital": [
-          "Alphabet / Google"
-        ],
-        "competitor_entanglement": false,
-        "circular_vendor": [
-          "Nvidia"
-        ],
-        "index_held": false,
-        "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
-      }
-    },
-    {
-      "name": "Replit",
-      "id": "Replit",
-      "tier": "tool",
-      "category": "Coding / agentic dev",
-      "jurisdiction": "US (San Francisco)",
-      "vc_independent": "VC-backed",
-      "products_models": [
-        "Replit IDE",
-        "Replit Agent"
-      ],
-      "founders": [
-        "Amjad Masad (CEO)",
-        "Faris Masad",
-        "Haya Odeh (2016)"
-      ],
-      "lead_backers": [
-        "a16z",
-        "Khosla Ventures",
-        "Coatue",
-        "Y Combinator",
-        "QIA",
-        "Google AI Futures Fund"
-      ],
-      "structure": "Private",
-      "stated_values": "Bring the next billion software creators online; accessible coding and agents.",
-      "tension_hook": "Empowerment/accessibility mission vs. agent-reliability incidents and monetization-shift friction.",
-      "axes": {
-        "transparency": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Developer-community openness, but its AI agent stack is largely opaque; not FMTI-scored.",
-          "sources": [
-            "https://crfm.stanford.edu/fmti/December-2025/index.html",
-            "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
-          ]
-        },
-        "culture_esg": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Startup; some past monetization/community friction; little ESG disclosure.",
-          "sources": []
-        },
-        "labour_integrity": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Inherited exposure via frontier-model APIs; little direct data-labour.",
-          "sources": [
-            "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
-            "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
-          ]
-        },
-        "wealth_dispersion": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Founders plus a16z/Coatue/QIA and others; no single majority.",
-          "sources": []
-        },
-        "public_sharing": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Education and free-access mission ('next billion creators'); no profit-sharing structure.",
-          "sources": []
-        }
-      },
-      "capital_profile": {
-        "independence_type": "vc_backed",
-        "founder_control": false,
-        "sovereign_state": [
-          "Gulf (UAE/Qatar/Saudi)"
-        ],
-        "big_tech_capital": [
-          "Alphabet / Google"
-        ],
-        "competitor_entanglement": false,
-        "circular_vendor": [],
-        "index_held": false,
-        "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
-      }
-    },
-    {
-      "name": "Gamma",
-      "id": "Gamma",
-      "tier": "tool",
-      "category": "Presentations / docs",
-      "jurisdiction": "US (San Francisco)",
-      "vc_independent": "VC-backed",
-      "products_models": [
-        "Gamma presentations / sites / docs"
-      ],
-      "founders": [
-        "Grant Lee (CEO)",
-        "Jon Noronha",
-        "James Fox (2020)"
-      ],
-      "lead_backers": [
-        "a16z (led Series B)",
-        "Accel"
-      ],
-      "structure": "Private; lean / capital-efficient",
-      "stated_values": "Reimagine how ideas are presented; AI-native, design-free creation.",
-      "tension_hook": "Lean/efficient ethos vs. quality-vs-volume questions and frontier-API dependence.",
-      "axes": {
-        "transparency": {
-          "score": 1,
-          "confidence": "C",
-          "note": "App layer on frontier APIs; minimal disclosure about its own stack.",
-          "sources": [
-            "https://crfm.stanford.edu/fmti/December-2025/index.html",
-            "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
-          ]
-        },
-        "culture_esg": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Lean, profitable, small team; little public ESG information.",
-          "sources": []
-        },
-        "labour_integrity": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Inherited exposure via frontier-model APIs.",
-          "sources": [
-            "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
-            "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
-          ]
-        },
-        "wealth_dispersion": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Founder-heavy; capital-efficient with Accel/Forerunner.",
-          "sources": []
-        },
-        "public_sharing": {
-          "score": 1,
-          "confidence": "C",
-          "note": "Free tier; no structural public-benefit commitment.",
-          "sources": []
-        }
-      },
-      "capital_profile": {
-        "independence_type": "vc_backed",
-        "founder_control": false,
-        "sovereign_state": [],
-        "big_tech_capital": [],
-        "competitor_entanglement": false,
-        "circular_vendor": [],
-        "index_held": false,
-        "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
-      }
-    },
-    {
-      "name": "Cursor (Anysphere)",
-      "id": "Cursor",
-      "tier": "tool",
-      "category": "AI coding / IDE",
-      "jurisdiction": "US (San Francisco)",
-      "vc_independent": "VC-backed",
-      "products_models": [
-        "Cursor IDE"
-      ],
-      "founders": [
-        "Michael Truell (CEO)",
-        "Sualeh Asif",
-        "Arvid Lunnemark",
-        "Aman Sanger (2022, MIT)"
-      ],
-      "lead_backers": [
-        "Accel & Coatue",
-        "Thrive Capital",
-        "a16z",
-        "DST Global",
-        "Nvidia",
-        "Google"
-      ],
-      "structure": "Private; >$1B ARR",
-      "stated_values": "Make software engineering dramatically faster; AI-native coding for professional developers.",
-      "tension_hook": "'Empower developers' built entirely on Anthropic/OpenAI models it competes with and depends on.",
-      "axes": {
-        "transparency": {
-          "score": 1,
-          "confidence": "C",
-          "note": "Closed product built on frontier APIs; minimal disclosure about its own stack.",
-          "sources": [
-            "https://crfm.stanford.edu/fmti/December-2025/index.html",
-            "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
-          ]
-        },
-        "culture_esg": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Fast-scaling startup; little public information.",
-          "sources": []
-        },
-        "labour_integrity": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Inherited exposure: depends on Anthropic/OpenAI models whose upstream labour it does not control.",
-          "sources": [
-            "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
-            "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
-          ]
-        },
-        "wealth_dispersion": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Founders plus Accel/Coatue/Thrive/a16z; no single majority.",
-          "sources": []
-        },
-        "public_sharing": {
-          "score": 1,
-          "confidence": "C",
-          "note": "Paid product; no structural public-benefit commitment.",
-          "sources": []
-        }
-      },
-      "capital_profile": {
-        "independence_type": "vc_backed",
-        "founder_control": false,
-        "sovereign_state": [],
-        "big_tech_capital": [
-          "Alphabet / Google"
-        ],
-        "competitor_entanglement": false,
-        "circular_vendor": [
-          "Nvidia"
-        ],
-        "index_held": false,
-        "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
-      }
-    },
-    {
-      "name": "Cohere",
-      "id": "Cohere",
-      "tier": "frontier",
-      "category": "Enterprise / sovereign LLM",
-      "jurisdiction": "Canada (Toronto)",
-      "vc_independent": "VC-backed",
-      "products_models": [
-        "Command (LLM)",
-        "Embed",
-        "Rerank",
-        "North (enterprise)",
-        "Aya (open multilingual)"
-      ],
-      "founders": [
-        "Aidan Gomez (CEO, co-author of the Transformer paper)",
-        "Nick Frosst",
-        "Ivan Zhang (2019, Toronto)"
-      ],
-      "lead_backers": [
-        "Radical Ventures & Inovia",
-        "Nvidia",
-        "AMD",
-        "PSP Investments",
-        "Salesforce Ventures"
-      ],
-      "structure": "Private; Canada; announced April 2026 acquisition of Germany's Aleph Alpha (~$20B combined entity; $600M Schwarz Group financing), expected to close later 2026",
-      "stated_values": "Secure, private, enterprise-grade AI; customer data stays with the customer; sovereign deployment.",
-      "tension_hook": "'Sovereign/private' positioning vs. US chipmaker capital (Nvidia, AMD) and the April 2026 Aleph Alpha acquisition consolidating European sovereign AI.",
-      "axes": {
-        "transparency": {
-          "score": 2,
-          "confidence": "B",
-          "note": "Not in FMTI 2025; publishes model cards and emphasizes audited enterprise outputs.",
-          "sources": [
-            "https://crfm.stanford.edu/fmti/December-2025/index.html",
-            "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
-          ]
-        },
-        "culture_esg": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Enterprise/governed-AI positioning; limited public ESG disclosure.",
-          "sources": []
-        },
-        "labour_integrity": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Trains largely on licensed/enterprise data; less creator-scraping controversy.",
-          "sources": [
-            "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
-            "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
-          ]
-        },
-        "wealth_dispersion": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Founders plus Radical/Inovia and strategics (Nvidia, AMD, Salesforce).",
-          "sources": []
-        },
-        "public_sharing": {
-          "score": 3,
-          "confidence": "C",
-          "note": "Runs Cohere For AI, a nonprofit open research lab, and releases the open multilingual Aya models.",
-          "sources": [
-            "https://siliconangle.com/2026/04/24/ai-startups-cohere-aleph-alpha-merge-600m-new-funding/"
-          ]
-        }
-      },
-      "capital_profile": {
-        "independence_type": "vc_backed",
-        "founder_control": false,
-        "sovereign_state": [],
-        "big_tech_capital": [],
-        "competitor_entanglement": false,
-        "circular_vendor": [
-          "AMD",
-          "Nvidia"
-        ],
-        "index_held": false,
-        "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
-      }
-    },
-    {
-      "name": "Moonshot AI (Kimi)",
-      "id": "Moonshot",
-      "tier": "frontier",
-      "category": "Frontier lab - China",
-      "jurisdiction": "China (Beijing)",
-      "vc_independent": "VC-backed (strategic-corp heavy)",
-      "products_models": [
-        "Kimi chatbot",
-        "Kimi K-series models (open weights)"
-      ],
-      "founders": [
-        "Yang Zhilin / Zhilin Yang (CEO)",
-        "Zhou Xinyu",
-        "Wu Yuxin (2023, Beijing)"
-      ],
-      "lead_backers": [
-        "Alibaba",
-        "Tencent",
-        "HongShan (Sequoia China)",
-        "IDG"
-      ],
-      "structure": "Private; China; ~$10B+ valuation (Feb 2026, up from $4.3B Series C in Dec 2025); IPO planned H2 2026",
-      "stated_values": "Long-context AGI; open-weight Kimi models; consumer + developer access.",
-      "tension_hook": "Open-weights / 'AGI for all' framing vs. Alibaba/Tencent strategic control and Chinese data-governance context.",
-      "axes": {
-        "transparency": {
-          "score": 1,
-          "confidence": "C",
-          "note": "Not FMTI-scored; open-weight Kimi models but opaque practices, similar to DeepSeek.",
-          "sources": [
-            "https://crfm.stanford.edu/fmti/December-2025/index.html",
-            "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
-          ]
-        },
-        "culture_esg": {
-          "score": 1,
-          "confidence": "C",
-          "note": "Little public information; no ESG disclosure.",
-          "sources": []
-        },
-        "labour_integrity": {
-          "score": 1,
-          "confidence": "C",
-          "note": "Opaque; Chinese data-labour context with no disclosure.",
-          "sources": [
-            "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
-            "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south"
-          ]
-        },
-        "wealth_dispersion": {
-          "score": 1,
-          "confidence": "C",
-          "note": "Strategic concentration via Alibaba and Tencent backing.",
-          "sources": []
-        },
-        "public_sharing": {
-          "score": 2,
-          "confidence": "C",
-          "note": "Open-weight Kimi releases plus free consumer access; no formal pledge.",
-          "sources": []
-        }
-      },
-      "capital_profile": {
-        "independence_type": "vc_backed",
-        "founder_control": false,
-        "sovereign_state": [
-          "China-linked (Alibaba/Tencent; PRC governance context)"
-        ],
-        "big_tech_capital": [],
-        "competitor_entanglement": false,
-        "circular_vendor": [],
-        "index_held": false,
-        "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
-      }
-    }
-  ]
+    ]
 }
