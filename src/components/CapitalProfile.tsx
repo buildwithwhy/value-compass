@@ -57,11 +57,24 @@ export function CapitalProfileCard({ maker }: { maker: Maker }) {
 }
 
 /** Fit gauge + triggered concerns, always labeled "your capital lens". */
-export function CapitalFitBadge({ maker, result }: { maker: Maker; result?: LensResult }) {
+export function CapitalFitBadge({
+  maker,
+  result,
+  onOpenFunder,
+}: {
+  maker: Maker
+  result?: LensResult
+  onOpenFunder?: (name: string) => void
+}) {
   const { lens } = useCapitalLens()
   const r = result ?? evaluateMaker(maker, lens)
   const color =
     r.fit >= 80 ? '#16a34a' : r.fit >= 50 ? '#ca8a04' : r.fit >= 25 ? '#ea580c' : '#dc2626'
+  // Backers (of this maker) that carry reputation associations — used to make
+  // the "backer reputation" flag explain *why* and link to each funder.
+  const repBackers: Funder[] = backersFor(maker.id)
+    .map((b) => b.funder)
+    .filter((f) => (f.notable_for ?? []).length > 0)
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4">
       <div className="flex items-center gap-4">
@@ -91,15 +104,43 @@ export function CapitalFitBadge({ maker, result }: { maker: Maker; result?: Lens
             Flagged under your lens
           </p>
           <ul className="space-y-1.5">
-            {r.hits.map((h) => (
-              <li
-                key={h.key}
-                className="rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-xs text-amber-900"
-              >
-                <span className="font-semibold">{h.label}</span>
-                <span className="text-amber-700"> — {h.detail}</span>
-              </li>
-            ))}
+            {r.hits.map((h) =>
+              h.key === 'backer_reputation' && repBackers.length > 0 ? (
+                <li
+                  key={h.key}
+                  className="rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-xs text-amber-900"
+                >
+                  <span className="font-semibold">{h.label}</span>
+                  <ul className="mt-1 space-y-1">
+                    {repBackers.map((f) => (
+                      <li key={f.name} className="leading-snug">
+                        {onOpenFunder ? (
+                          <button
+                            type="button"
+                            onClick={() => onOpenFunder(f.name)}
+                            className="font-semibold text-amber-900 underline decoration-amber-400 underline-offset-2 hover:text-amber-700"
+                            title={`See why — open ${f.name}`}
+                          >
+                            {f.name} ↗
+                          </button>
+                        ) : (
+                          <span className="font-semibold">{f.name}</span>
+                        )}
+                        <span className="text-amber-700"> — {f.notable_for![0]}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              ) : (
+                <li
+                  key={h.key}
+                  className="rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-xs text-amber-900"
+                >
+                  <span className="font-semibold">{h.label}</span>
+                  <span className="text-amber-700"> — {h.detail}</span>
+                </li>
+              ),
+            )}
           </ul>
         </div>
       ) : (
@@ -133,7 +174,13 @@ export function CapitalFitBadge({ maker, result }: { maker: Maker; result?: Lens
 }
 
 /** Backer reputation — neutral factual associations, sources, v1 caveat. */
-export function BackerReputation({ maker }: { maker: Maker }) {
+export function BackerReputation({
+  maker,
+  onOpenFunder,
+}: {
+  maker: Maker
+  onOpenFunder?: (name: string) => void
+}) {
   const backers: Funder[] = backersFor(maker.id)
     .map((b) => b.funder)
     .filter((f) => (f.notable_for ?? []).length > 0)
@@ -150,7 +197,20 @@ export function BackerReputation({ maker }: { maker: Maker }) {
       <div className="space-y-2">
         {backers.map((f) => (
           <div key={f.name} className="rounded-lg border border-slate-200 bg-white p-3">
-            <div className="mb-1 font-semibold text-slate-800">{f.name}</div>
+            <div className="mb-1 font-semibold text-slate-800">
+              {onOpenFunder ? (
+                <button
+                  type="button"
+                  onClick={() => onOpenFunder(f.name)}
+                  className="text-violet-700 underline decoration-violet-300 underline-offset-2 hover:text-violet-900"
+                  title={`Open ${f.name}`}
+                >
+                  {f.name} ↗
+                </button>
+              ) : (
+                f.name
+              )}
+            </div>
             <ul className="list-inside list-disc space-y-0.5 text-sm text-slate-600">
               {(f.notable_for ?? []).map((n, i) => (
                 <li key={i}>{n}</li>

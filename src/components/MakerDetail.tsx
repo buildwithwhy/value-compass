@@ -128,14 +128,14 @@ export function MakerDetail({
           </p>
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
             <CapitalLensPanel compact />
-            <CapitalFitBadge maker={maker} />
+            <CapitalFitBadge maker={maker} onOpenFunder={onOpenFunder} />
           </div>
           <div className="mt-3">
             <SectionTitle>Factual capital profile</SectionTitle>
             <CapitalProfileCard maker={maker} />
           </div>
           <div className="mt-3">
-            <BackerReputation maker={maker} />
+            <BackerReputation maker={maker} onOpenFunder={onOpenFunder} />
           </div>
         </div>
       )}

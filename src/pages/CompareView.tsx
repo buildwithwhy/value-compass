@@ -221,14 +221,34 @@ function CapitalFitRanking({ makers: sel }: { makers: Maker[] }) {
                 </span>
                 {result.hits.length > 0 ? (
                   <ul className="mt-1 space-y-0.5">
-                    {result.hits.map((h) => (
-                      <li key={h.key} className="text-[11px] leading-snug">
-                        <span className="mr-1 rounded-full bg-amber-100 px-2 py-0.5 font-medium text-amber-800">
-                          {h.label}
-                        </span>
-                        <span className="text-slate-500">{h.detail}</span>
-                      </li>
-                    ))}
+                    {result.hits.map((h) => {
+                      const repBackers =
+                        h.key === 'backer_reputation'
+                          ? backersFor(maker.id)
+                              .map((b) => b.funder)
+                              .filter((f) => (f.notable_for ?? []).length > 0)
+                          : []
+                      return (
+                        <li key={h.key} className="text-[11px] leading-snug">
+                          <span className="mr-1 rounded-full bg-amber-100 px-2 py-0.5 font-medium text-amber-800">
+                            {h.label}
+                          </span>
+                          {repBackers.length > 0 ? (
+                            <span className="text-slate-500">
+                              {repBackers.map((f, i) => (
+                                <span key={f.name}>
+                                  {i > 0 && '; '}
+                                  <span className="font-medium text-slate-600">{f.name}</span> (
+                                  {f.notable_for![0]})
+                                </span>
+                              ))}
+                            </span>
+                          ) : (
+                            <span className="text-slate-500">{h.detail}</span>
+                          )}
+                        </li>
+                      )
+                    })}
                   </ul>
                 ) : (
                   <div className="mt-0.5 text-[11px] text-emerald-700">No concerns flagged.</div>
