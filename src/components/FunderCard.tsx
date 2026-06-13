@@ -32,7 +32,7 @@ export function FunderCard({
           type="button"
           onClick={onOpen ? () => onOpen(funder.name) : undefined}
           className={`text-left font-semibold text-slate-800 ${
-            onOpen ? 'hover:text-violet-700 hover:underline' : ''
+            onOpen ? 'hover:text-indigo-700 hover:underline' : ''
           }`}
         >
           {funder.name}

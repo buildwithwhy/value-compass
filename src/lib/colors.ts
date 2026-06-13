@@ -19,7 +19,7 @@ export const PARENT_COLORS: Record<ParentBucket, string> = {
   sovereign_wealth: '#ca8a04', // amber/gold
   venture_growth: '#16a34a', // green
   strategic_corporate: '#475569', // slate
-  crossover: '#9333ea', // purple
+  crossover: '#2563eb', // blue — the open slot; distinct from frontier violet & hyperscaler teal
   index_manager: '#78716c', // stone (passive owners)
   hedge_fund_parent: '#dc2626', // red
   strategic_conglomerate: '#c2410c', // burnt orange

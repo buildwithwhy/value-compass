@@ -114,16 +114,16 @@ export function MakerDetail({
       {/* Capital character — deliberately separate from the conduct radar.
           Factual profile (neutral) + the user-configurable Capital Lens. */}
       {maker.capital_profile && (
-        <div className="rounded-xl border-2 border-dashed border-violet-200 bg-violet-50/30 p-4">
+        <div className="rounded-xl border-2 border-dashed border-indigo-200 bg-indigo-50/30 p-4">
           <div className="mb-1 flex items-center gap-2">
-            <h3 className="text-sm font-extrabold uppercase tracking-wider text-violet-800">
+            <h3 className="text-sm font-extrabold uppercase tracking-wider text-indigo-800">
               Capital character
             </h3>
-            <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-bold uppercase text-violet-700">
+            <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-bold uppercase text-indigo-700">
               your lens · not a 6th score
             </span>
           </div>
-          <p className="mb-3 text-xs text-violet-700">
+          <p className="mb-3 text-xs text-indigo-700">
             Who the money comes from — kept separate from the 5-axis conduct compass above.
           </p>
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">

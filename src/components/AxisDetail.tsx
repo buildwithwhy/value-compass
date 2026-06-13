@@ -11,7 +11,7 @@ function ScoreDots({ score }: { score: number | null }) {
       {[0, 1, 2, 3].map((i) => (
         <span
           key={i}
-          className={`h-2.5 w-2.5 rounded-full ${i < score ? 'bg-violet-600' : 'bg-slate-200'}`}
+          className={`h-2.5 w-2.5 rounded-full ${i < score ? 'bg-indigo-600' : 'bg-slate-200'}`}
         />
       ))}
       <span className="ml-1 text-xs font-bold text-slate-700">{score}/4</span>

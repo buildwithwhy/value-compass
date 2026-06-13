@@ -217,7 +217,7 @@ export function BackerReputation({
                 <button
                   type="button"
                   onClick={() => onOpenFunder(f.name)}
-                  className="text-violet-700 underline decoration-violet-300 underline-offset-2 hover:text-violet-900"
+                  className="text-indigo-700 underline decoration-indigo-300 underline-offset-2 hover:text-indigo-900"
                   title={`Open ${f.name}`}
                 >
                   {f.name} ↗

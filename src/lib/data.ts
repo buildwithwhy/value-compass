@@ -42,6 +42,15 @@ export const AXIS_SHORT: Record<AxisKey, string> = {
   public_sharing: 'Public sharing',
 }
 
+// Single readable word for very tight spots (card axis bars).
+export const AXIS_ABBR: Record<AxisKey, string> = {
+  transparency: 'Transp.',
+  culture_esg: 'ESG',
+  labour_integrity: 'Labour',
+  wealth_dispersion: 'Wealth',
+  public_sharing: 'Public',
+}
+
 // ---- Lookups ---------------------------------------------------------------
 
 const makerById = new Map<string, Maker>()
