@@ -120,6 +120,8 @@ export interface AxisEvidence {
   /** The narrow fact the source settles. Preserved even when the score is not. */
   supported_fact: string | null
   source_date: string
+  /** What the source actually covers — populated where scope matters. */
+  source_scope: string | null
   unsupported_clauses: string[]
   /** The rubric rule that would license a whole-axis score, or that none does. */
   scoring_rule: string

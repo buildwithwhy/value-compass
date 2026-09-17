@@ -54,6 +54,7 @@ const FALLBACK: AxisEvidence = {
   claim_support: 'none',
   supported_fact: null,
   source_date: 'not stated in record',
+  source_scope: null,
   unsupported_clauses: [],
   scoring_rule: 'No classification on record.',
   justifies_whole: false,

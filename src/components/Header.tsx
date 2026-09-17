@@ -6,6 +6,7 @@ import { usePriorities } from '../lib/prioritiesContext'
 const NAV = [
   { to: '/browse', label: 'Browse' },
   { to: '/compare', label: 'Compare' },
+  { to: '/recommend', label: 'Recommend' },
   { to: '/switch', label: 'Switching' },
   { to: '/graph', label: 'Ownership' },
   { to: '/about', label: 'Methodology' },

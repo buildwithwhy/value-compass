@@ -347,34 +347,50 @@ describe('unequal coverage is not presented as a definitive ordering', () => {
       mode: 'custom',
     }
     const { placed } = orderByPriorities(makers, transparencyOnly)
-    // DeepSeek joined this set once its FMTI value (32) was verified and
-    // transcribed on 2026-09-17 — the band mapping can now be checked.
+    // All eight FMTI-scored makers joined this set on 2026-09-17, when the
+    // official labelled chart was inspected and every value transcribed.
     expect(placed.map((p) => p.maker.id).sort()).toEqual([
+      'Anthropic',
       'DeepSeek',
+      'Google DeepMind',
       'Meta',
       'Midjourney',
       'Mistral',
+      'OpenAI',
       'xAI',
     ])
   })
 
   it('admits a score once the value its rule consumes is transcribed', () => {
-    const ev = axisEvidenceFor('DeepSeek', 'transparency')
-    expect(ev.supported_fact).toMatch(/32\/100/)
-    expect(ev.justifies_whole).toBe(true)
-    expect(ev.decision_eligible).toBe(true)
-    // Verification is dated, and the scope names the model the score attaches to.
-    expect(ev.justification_note).toMatch(/2026-09-17/)
-    expect(ev.supported_fact).toMatch(/DeepSeek-R1/)
+    // Every FMTI value was read off the official labelled chart on 2026-09-17,
+    // after text extraction from the paper PDF had missed the figure entirely.
+    const expected: Record<string, number> = {
+      Anthropic: 46,
+      'Google DeepMind': 41,
+      OpenAI: 35,
+      DeepSeek: 32,
+      Meta: 31,
+      Mistral: 18,
+      Midjourney: 14,
+      xAI: 14,
+    }
+    for (const [id, score] of Object.entries(expected)) {
+      const ev = axisEvidenceFor(id, 'transparency')
+      expect(ev.supported_fact).toContain(`${score}/100`)
+      expect(ev.justifies_whole).toBe(true)
+      expect(ev.decision_eligible).toBe(true)
+      expect(ev.justification_note).toMatch(/2026-09-17/)
+    }
   })
 
-  it('keeps the three unobtainable FMTI scores ineligible rather than guessing', () => {
-    for (const id of ['Anthropic', 'OpenAI', 'Google DeepMind']) {
-      const ev = axisEvidenceFor(id, 'transparency')
-      expect(ev.claim_support).toBe('establishes_fact')
-      expect(ev.justifies_whole).toBe(false)
-      expect(ev.justification_note).toMatch(/not resolvable from the cited sources/i)
-    }
+  it('scopes an FMTI score as developer transparency, not a current product score', () => {
+    const ev = axisEvidenceFor('Anthropic', 'transparency')
+    expect(ev.source_scope).toMatch(/DEVELOPER transparency/)
+    expect(ev.source_scope).toMatch(/organisational practices/)
+    // Names the flagship the assessment was run against, without reducing the
+    // score to a model score.
+    expect(ev.source_scope).toMatch(/Claude 4/)
+    expect(ev.source_scope).toMatch(/not a score of any current consumer product/)
   })
 
   it('reports a uniform ordering as uniform', () => {
@@ -392,10 +408,9 @@ describe('unequal coverage is not presented as a definitive ordering', () => {
     const rows = criterionComparison([maker('Anthropic'), maker('Midjourney')], withExample)
     expect(rows.length).toBe(5)
     const transparency = rows.find((r) => r.axis === 'transparency')
-    // Midjourney's FMTI value is transcribed; Anthropic's is not, so only one
-    // side is eligible — and the row still shows both, with a reason.
-    expect(transparency?.scored.map((s) => s.maker.id)).toEqual(['Midjourney'])
-    expect(transparency?.missing.map((m) => m.maker.id)).toEqual(['Anthropic'])
+    // Both sides are now eligible on transparency, ordered high to low.
+    expect(transparency?.scored.map((s) => s.maker.id)).toEqual(['Anthropic', 'Midjourney'])
+    expect(transparency?.missing).toHaveLength(0)
     const labour = rows.find((r) => r.axis === 'labour_integrity')
     expect(labour?.missing.map((m) => m.maker.id)).toContain('Anthropic')
     expect(labour?.missing[0].reason).toBeTruthy()

@@ -15,6 +15,9 @@ const PrioritiesView = lazy(() =>
   import('./pages/PrioritiesView').then((m) => ({ default: m.PrioritiesView })),
 )
 const SwitchView = lazy(() => import('./pages/SwitchView').then((m) => ({ default: m.SwitchView })))
+const RecommendView = lazy(() =>
+  import('./pages/RecommendView').then((m) => ({ default: m.RecommendView })),
+)
 const AboutView = lazy(() => import('./pages/AboutView').then((m) => ({ default: m.AboutView })))
 
 function RouteFallback() {
@@ -40,6 +43,7 @@ export default function App() {
               <Route path="/maker/:id" element={<MakerPage />} />
               <Route path="/compare" element={<CompareView />} />
               <Route path="/priorities" element={<PrioritiesView />} />
+              <Route path="/recommend" element={<RecommendView />} />
               <Route path="/switch" element={<SwitchView />} />
               <Route path="/switch/:from" element={<SwitchView />} />
               <Route path="/switch/:from/:to" element={<SwitchView />} />

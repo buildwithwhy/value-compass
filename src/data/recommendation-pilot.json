@@ -1,51 +1,53 @@
 {
   "_meta": {
     "title": "Recommendation pilot — everyday AI assistants",
-    "purpose": "Test whether ValueCompass can support one useful recommendation journey. Deliberately narrow: one category, six alternatives, four criteria. Not a general scoring layer.",
+    "purpose": "Test whether the surviving evidence can carry one useful recommendation journey. One category, six alternatives, six criteria. Not a general scoring layer, and no aggregate score.",
     "researched_on": "2026-09-17",
-    "researcher": "automated_provisional",
-    "provenance_note": "Every finding here was produced by a model reading a source, not by a human re-reading it. Nothing is marked human-reviewed. Where a fetch failed or a source did not carry the claim, that is recorded rather than filled in.",
+    "provenance": "automated_provisional",
+    "provenance_note": "Every finding was produced by a model reading a source, not by a human re-reading it. Nothing is marked human-reviewed.",
+    "corrections_applied": [
+      "Portability decomposed into content export, service migration and independent model hosting. Publishing model weights does not make a hosted assistant portable.",
+      "Control decomposed into individual control, founder-bloc control and board rights. Two founders holding 52.7% between them does not establish that either one controls unilaterally.",
+      "Public benefit compares mechanisms in force on equivalent dimensions. A withdrawn mechanism informs a separately stated continuity preference; it is not an automatic demotion on current arrangements.",
+      "Proposed changes are recorded as proposed, not as current state.",
+      "'No confirmed match among the researched options' replaces any claim of incompatibility."
+    ],
     "claim_types": {
-      "established_outcome": "A thing that happened or a state recorded in a filing, licence, index or court record.",
-      "company_statement": "The company's own description of itself. True as a statement; the underlying fact may be unverified.",
-      "commitment": "A stated future intention. Check whether it is binding, and whether it has since been withdrawn.",
-      "allegation": "A claim made by a party to a dispute, not settled.",
-      "third_party_report": "An outlet's characterisation. Check whether it cites a filing or is inference."
+      "established_outcome": "Recorded in a filing, licence, index or court record.",
+      "company_statement": "The company's own description. True as a statement; the underlying fact may be unverified.",
+      "commitment": "A stated future intention. Check whether it is binding and whether it still stands.",
+      "allegation": "Claimed by a party to a dispute, not settled.",
+      "third_party_report": "An outlet's characterisation. Check whether it cites a filing or infers."
     },
-    "rules": {
-      "unknown": "Unknown is neither a positive nor a negative finding. It never counts toward or against an alternative.",
-      "hard_requirement": "An unknown hard requirement remains unconfirmed. The alternative is not shortlisted and is not excluded — it is unassessable.",
-      "shortlist": "A shortlist is produced only where the evidence supports one. Slots are never filled to reach a target number."
+    "status_values": {
+      "in_force": "Operating now, on the evidence.",
+      "proposed": "Reported or announced, not established as in force.",
+      "withdrawn": "Existed and was removed. Evidence about the provider, not a neutral absence."
+    },
+    "decision_rules": {
+      "soft_by_default": "Priorities are soft preferences. They order and explain; they never exclude.",
+      "hard_opt_in": "A criterion becomes an exclusion rule only when the user explicitly designates it a requirement, and only for criteria the evidence can actually assess.",
+      "unknown": "Unknown is neither positive nor negative. An unresolved requirement leaves an option unconfirmed — not excluded, and not shortlisted.",
+      "no_filling": "Shortlist slots are never filled to reach a number."
     }
   },
 
   "category": {
     "id": "everyday_assistant",
     "label": "Everyday AI assistants",
-    "definition": "A general-purpose conversational assistant a non-specialist uses for drafting, summarising, explaining and answering questions, through a chat interface.",
+    "definition": "A general-purpose conversational assistant used for drafting, summarising, explaining and answering questions.",
     "why_this_category": {
-      "user_relevance": "It is the highest-frequency, most personal AI choice most people make, it is genuinely substitutable — switching costs are a habit and a subscription, not a data migration — and the same task can be done by any of the alternatives, so the choice really can turn on values rather than capability.",
-      "evidence_coverage": "Six of the providers are already makers in this dataset, so no new entity set is needed. It is also the category where the strongest surviving evidence sits: model access and licensing is publicly checkable from licence files, and provider governance is covered by proxy statements and charters. Categories like AI coding tools would have failed on both counts — thinner governance records and much weaker substitutability.",
-      "honest_caveat": "Capability differences between these products are real and are not assessed here. This pilot answers 'which of these fits what I care about', not 'which is best at the task'."
+      "user_relevance": "The highest-frequency personal AI choice most people make, and genuinely substitutable — the switching cost is a habit and a subscription, not a data migration.",
+      "evidence_coverage": "Six providers are already makers in this dataset, and it is where evidence is obtainable: licences are public and versioned, and provider governance is covered by proxy statements and charters.",
+      "honest_caveat": "Capability differences between the six are real and not assessed. This answers 'which fits what I care about', not 'which is best at the task'."
     }
   },
 
   "functional_requirements": [
-    {
-      "id": "fr_general_chat",
-      "label": "General-purpose conversational assistant",
-      "why": "Without this the alternatives are not substitutes."
-    },
-    {
-      "id": "fr_end_user_access",
-      "label": "Usable by an individual without a developer account",
-      "why": "The journey is a consumer choice, not an API integration."
-    },
-    {
-      "id": "fr_no_cost_entry",
-      "label": "Some no-cost entry path",
-      "why": "Not required by every user, but it changes who can act on a recommendation."
-    }
+    { "id": "fr_general_chat", "label": "General-purpose conversational assistant" },
+    { "id": "fr_web", "label": "Usable in a browser without a developer account" },
+    { "id": "fr_mobile", "label": "Mobile app available" },
+    { "id": "fr_free_entry", "label": "Some no-cost entry path" }
   ],
 
   "alternatives": [
@@ -53,297 +55,327 @@
       "id": "chatgpt",
       "product": "ChatGPT",
       "provider_maker_id": "OpenAI",
-      "configuration": "Consumer web and mobile assistant",
-      "functional_status": {
-        "fr_general_chat": "assumed_from_dataset",
-        "fr_end_user_access": "assumed_from_dataset",
-        "fr_no_cost_entry": "not_verified"
-      },
-      "verification_note": "Product identity taken from the existing makers.json record. Not independently re-verified in this pass — see gaps."
+      "identity_status": "verified_secondary",
+      "identity_source": "openai.com/chatgpt/pricing/ referenced in search results; direct fetches of openai.com paths returned HTTP 403",
+      "identity_note": "Consumer freemium assistant. Plan structure reported as Free $0, Go $8, Plus $20, Pro tiers above. Not read from the official page directly in this pass.",
+      "functional": {
+        "fr_general_chat": "verified_secondary",
+        "fr_web": "verified_secondary",
+        "fr_mobile": "unknown",
+        "fr_free_entry": "verified_secondary"
+      }
     },
     {
       "id": "claude",
       "product": "Claude",
       "provider_maker_id": "Anthropic",
-      "configuration": "Consumer web and mobile assistant",
-      "functional_status": {
-        "fr_general_chat": "assumed_from_dataset",
-        "fr_end_user_access": "assumed_from_dataset",
-        "fr_no_cost_entry": "not_verified"
-      },
-      "verification_note": "Product identity taken from the existing makers.json record. Not independently re-verified in this pass."
+      "identity_status": "verified_official",
+      "identity_source": "anthropic.com/claude → 301 → claude.com/product/overview, read 2026-09-17",
+      "identity_note": "Official page states Claude runs on web and mobile (iOS and Android) with desktop apps for macOS and Windows. Named models: Mythos, Fable, Opus, Sonnet, Haiku. Plans listed are Pro, Max, Team, Enterprise — a free plan is not stated on that page.",
+      "functional": {
+        "fr_general_chat": "verified_official",
+        "fr_web": "verified_official",
+        "fr_mobile": "verified_official",
+        "fr_free_entry": "unknown"
+      }
     },
     {
       "id": "gemini",
       "product": "Gemini",
       "provider_maker_id": "Google DeepMind",
-      "configuration": "Consumer web and mobile assistant",
-      "functional_status": {
+      "identity_status": "not_verified",
+      "identity_source": "gemini.google.com could not be fetched (parse error: header overflow)",
+      "identity_note": "Product identity carried from the makers.json record only. Governance findings attach to Alphabet, the parent, not to the DeepMind subsidiary.",
+      "functional": {
         "fr_general_chat": "assumed_from_dataset",
-        "fr_end_user_access": "assumed_from_dataset",
-        "fr_no_cost_entry": "not_verified"
-      },
-      "verification_note": "Product identity taken from the existing makers.json record. Provider is the Alphabet subsidiary; governance findings attach to Alphabet, not to DeepMind separately."
+        "fr_web": "assumed_from_dataset",
+        "fr_mobile": "unknown",
+        "fr_free_entry": "unknown"
+      }
     },
     {
       "id": "copilot",
       "product": "Microsoft Copilot",
       "provider_maker_id": "Microsoft",
-      "configuration": "Consumer assistant across Windows and M365 surfaces",
-      "functional_status": {
-        "fr_general_chat": "assumed_from_dataset",
-        "fr_end_user_access": "assumed_from_dataset",
-        "fr_no_cost_entry": "not_verified"
-      },
-      "verification_note": "Product identity taken from the existing makers.json record. Note the underlying model may be OpenAI's or Microsoft's own MAI series depending on surface — which provider a user is actually choosing is itself unresolved."
+      "identity_status": "verified_official",
+      "identity_source": "copilot.microsoft.com, read 2026-09-17",
+      "identity_note": "Official page presents 'Microsoft Copilot: Your AI companion' with a chat entry point. Pricing, sign-in requirements and the underlying model are not stated on the page. Which provider a user is actually choosing is unresolved, because the model behind Copilot varies by surface.",
+      "functional": {
+        "fr_general_chat": "verified_official",
+        "fr_web": "verified_official",
+        "fr_mobile": "unknown",
+        "fr_free_entry": "unknown"
+      }
     },
     {
       "id": "le_chat",
-      "product": "Le Chat",
+      "product": "Vibe (app stores still list it as Le Chat by Mistral AI)",
       "provider_maker_id": "Mistral",
-      "configuration": "Consumer web and mobile assistant",
-      "functional_status": {
-        "fr_general_chat": "verified_secondary",
-        "fr_end_user_access": "verified_secondary",
-        "fr_no_cost_entry": "verified_secondary"
-      },
-      "verification_note": "Free tier reported at roughly 20–25 messages per day as of 2026, from secondary aggregator sources rather than Mistral's own pricing page. One source also refers to Le Chat being renamed 'Vibe'; product identity is therefore not fully settled."
+      "identity_status": "verified_official_but_in_flux",
+      "identity_source": "mistral.ai, read 2026-09-17",
+      "identity_note": "The official homepage presents the assistant as 'Vibe', while the App Store and Google Play badges in the footer still read 'Le Chat by Mistral AI'. A rename appears to be in progress. A free tier is not stated on the homepage; a reported 20–25 messages/day free allowance comes from secondary aggregators only.",
+      "functional": {
+        "fr_general_chat": "verified_official",
+        "fr_web": "verified_official",
+        "fr_mobile": "verified_official",
+        "fr_free_entry": "verified_secondary"
+      }
     },
     {
       "id": "deepseek_app",
-      "product": "DeepSeek assistant",
+      "product": "DeepSeek",
       "provider_maker_id": "DeepSeek",
-      "configuration": "Consumer chat app",
-      "functional_status": {
-        "fr_general_chat": "unconfirmed",
-        "fr_end_user_access": "unconfirmed",
-        "fr_no_cost_entry": "unconfirmed"
-      },
-      "verification_note": "The hosted deepseek-reasoner API alias was retired on 2026-07-24 and users directed to V4 endpoints. Current consumer-app availability could not be confirmed: the page carrying the retirement date is an unaffiliated third-party site that explicitly disclaims association with DeepSeek. Treated as functionally unconfirmed."
+      "identity_status": "verified_official",
+      "identity_source": "deepseek.com → 302 → chat.deepseek.com, checked 2026-09-17",
+      "identity_note": "The official domain resolves to a consumer web chat interface, which establishes the product exists. The app interior returned 403 to automated fetching, so in-product details are unverified. Correction to an earlier pass: retirement of the hosted deepseek-reasoner API alias on 2026-07-24 concerns an API endpoint and does NOT establish retirement of the consumer product.",
+      "functional": {
+        "fr_general_chat": "verified_official",
+        "fr_web": "verified_official",
+        "fr_mobile": "unknown",
+        "fr_free_entry": "unknown"
+      }
     }
   ],
 
   "criteria": [
     {
-      "id": "c_voting_control",
-      "label": "Voting control",
-      "concept": "Whether an individual or small group can outvote everyone else on governance. Distinct from owning the upside.",
-      "why_users_care": "It determines who can reverse a commitment. A company can be widely owned and still be controlled by two people.",
-      "not_to_be_confused_with": "economic ownership"
+      "id": "c_individual_control",
+      "label": "No individual with majority voting control",
+      "concept": "Whether any single person holds more than 50% of voting power and could act unilaterally.",
+      "distinct_from": "Founder-bloc control. Two founders with 52.7% between them is not one founder with 52.7%.",
+      "supported": true
     },
     {
-      "id": "c_economic_ownership",
-      "label": "Economic ownership concentration",
-      "concept": "Who holds the financial upside, and how concentrated it is. Distinct from who can vote.",
-      "why_users_care": "It shows who is enriched by the product's success, which is a different question from who directs it."
+      "id": "c_founder_bloc_control",
+      "label": "No founder bloc with majority voting control",
+      "concept": "Whether founders acting together hold more than 50% of voting power.",
+      "distinct_from": "Individual control. A bloc requires agreement between its members; an individual does not.",
+      "supported": true
+    },
+    {
+      "id": "c_board_rights",
+      "label": "Who holds board-election rights",
+      "concept": "Which party can elect or remove directors, independently of economic ownership.",
+      "distinct_from": "Voting power over ordinary resolutions.",
+      "supported": true
     },
     {
       "id": "c_public_benefit",
-      "label": "Public-benefit commitment structure",
-      "concept": "Whether a legal structure obliges the company to weigh non-shareholder interests — and whether it is binding, revocable, or a pledge.",
-      "why_users_care": "It is the difference between a stated intention and one someone can enforce.",
-      "note": "A commitment that was later withdrawn is evidence about the company, not a neutral absence."
+      "label": "Public-benefit mechanism in force",
+      "concept": "A legal structure currently obliging the company to weigh non-shareholder interests.",
+      "distinct_from": "Commitment continuity — whether past commitments have been kept. That is a separate preference.",
+      "supported": true
     },
     {
-      "id": "c_model_access",
-      "label": "Model access and licensing",
-      "concept": "Whether the model weights are published, under what licence, and whether a user could run them independently of the provider.",
-      "why_users_care": "It is the practical measure of whether leaving is possible. It is also the criterion this dataset can currently evidence best — licences are public, versioned and checkable.",
-      "selection_note": "Chosen partly because it is well-evidenced. That is a stated bias and it favours the open-weight providers. It was not chosen because it produces a convenient winner — it produces an uncomfortable one, since the best-evidenced option on this criterion is also the one whose consumer product we could not confirm exists."
+      "id": "c_commitment_continuity",
+      "label": "Commitment continuity",
+      "concept": "Whether public-benefit mechanisms this provider adopted have been kept or withdrawn.",
+      "distinct_from": "What is in force now. A provider can have a strong current mechanism and a record of withdrawing an earlier one.",
+      "supported": true
+    },
+    {
+      "id": "c_model_hosting",
+      "label": "Independent model hosting",
+      "concept": "Whether model weights are published under a licence permitting you to run them yourself.",
+      "distinct_from": "Whether the hosted assistant is portable. Publishing weights says nothing about exporting your data or leaving the service.",
+      "supported": true
+    },
+    {
+      "id": "c_content_export",
+      "label": "Export of your own content",
+      "concept": "Whether you can take your conversations and files out.",
+      "supported": false,
+      "unsupported_note": "Not researched for any of the six. This is the portability dimension most users actually mean, and we have nothing on it."
+    },
+    {
+      "id": "c_service_migration",
+      "label": "Migration to another service",
+      "concept": "Whether exported content can be usefully imported elsewhere.",
+      "supported": false,
+      "unsupported_note": "Not researched for any of the six."
     }
   ],
 
-  "findings": [
+  "assessments": [
     {
       "alternative": "gemini",
-      "criterion": "c_voting_control",
-      "claim": "Larry Page and Sergey Brin together control 52.7% of Alphabet's total voting power. Class B shares carry ten votes each and are held by insiders; Class C carries none.",
+      "criterion": "c_individual_control",
+      "verdict": "meets",
+      "status": "in_force",
+      "claim": "No single Alphabet shareholder holds majority voting power. Page holds 27.1% and Brin 25.2% of total voting power individually.",
       "claim_type": "established_outcome",
-      "source": "Alphabet 2026 annual meeting proxy statement, via search of proxy reporting",
-      "source_date": "2026-04 (proxy filing)",
-      "scope": "Alphabet Inc., the parent. Does not separately describe governance of the Google DeepMind subsidiary.",
-      "uncertainty": "The percentage was read from reporting of the proxy, not from the filing document itself. The figure is specific and internally consistent (Page 27.1% + Brin 25.2% = 52.3%, reported total 52.7%), but a direct read of the filing would settle it.",
-      "provenance": "automated_provisional",
-      "decision_use": "eligible"
+      "source": "Alphabet 2026 annual meeting proxy statement, via reporting of the filing",
+      "source_date": "2026-04",
+      "scope": "Alphabet Inc., the parent. Does not describe governance of the Google DeepMind subsidiary separately.",
+      "uncertainty": "Percentages read from reporting of the proxy rather than the filing itself. They are internally consistent with the reported 52.7% combined.",
+      "provenance": "automated_provisional"
+    },
+    {
+      "alternative": "gemini",
+      "criterion": "c_founder_bloc_control",
+      "verdict": "fails",
+      "status": "in_force",
+      "claim": "Page and Brin together control 52.7% of Alphabet's total voting power, through Class B shares carrying ten votes each. Class C carries none.",
+      "claim_type": "established_outcome",
+      "source": "Alphabet 2026 annual meeting proxy statement, via reporting of the filing",
+      "source_date": "2026-04",
+      "scope": "Alphabet Inc., the parent.",
+      "uncertainty": "As above. A bloc holding is not the same as either founder acting alone.",
+      "provenance": "automated_provisional"
+    },
+    {
+      "alternative": "claude",
+      "criterion": "c_board_rights",
+      "verdict": "meets",
+      "status": "in_force",
+      "claim": "A Long-Term Benefit Trust holds Class T shares carrying no economic rights, which elect an increasing number of a seven-member board, intended to reach a majority. The Trust had three trustees as of 2026-08-19.",
+      "claim_type": "company_statement",
+      "source": "Anthropic's description of the Trust, as reported 2026-08-19",
+      "source_date": "structure announced 2023; composition reported 2026-08-19",
+      "scope": "Anthropic's corporate governance. Says nothing about the Claude product.",
+      "uncertainty": "The reporting characterises the mechanism rather than quoting the charter, and notes the IPO prospectus was confidential. Trustee count fell from five in the 2023 description to three.",
+      "provenance": "automated_provisional"
     },
     {
       "alternative": "claude",
       "criterion": "c_public_benefit",
-      "claim": "Anthropic is a Delaware Public Benefit Corporation. A Long-Term Benefit Trust holds Class T shares carrying no economic rights, which elect an increasing number of a seven-member board, intended to reach a majority.",
+      "verdict": "meets",
+      "status": "in_force",
+      "claim": "Anthropic is a Delaware Public Benefit Corporation, permitting directors to weigh public benefit against shareholder returns.",
       "claim_type": "company_statement",
-      "source": "Anthropic's own description of the Trust, as reported 2026-08-19",
-      "source_date": "structure announced 2023; status reported 2026-08-19",
-      "scope": "Corporate governance of Anthropic. Says nothing about the Claude product.",
-      "uncertainty": "The reporting outlet characterises the board-election mechanism rather than quoting a charter, and notes the IPO prospectus was confidential at the time of writing.",
-      "provenance": "automated_provisional",
-      "decision_use": "eligible_with_caveat"
+      "source": "Company disclosures as reported 2026-08-19",
+      "source_date": "2026-08-19",
+      "scope": "Corporate form.",
+      "uncertainty": "Reported from company disclosures, not read from a charter or filing.",
+      "provenance": "automated_provisional"
     },
     {
       "alternative": "claude",
-      "criterion": "c_voting_control",
-      "claim": "Founders are reported to be receiving a new class of stock with enhanced voting rights ahead of the IPO. The vote ratio has not been disclosed and Anthropic has not commented on specifics.",
+      "criterion": "c_individual_control",
+      "verdict": "unconfirmed",
+      "status": "proposed",
+      "claim": "Founders are reported to be receiving a new class of stock with enhanced voting rights ahead of the IPO. The vote ratio is undisclosed and Anthropic has not commented.",
       "claim_type": "third_party_report",
-      "source": "Outlet report, 2026-08-19",
+      "source": "Outlet report",
       "source_date": "2026-08-19",
       "scope": "Pre-IPO capital structure.",
-      "uncertainty": "High. The central number — the vote ratio — is explicitly undisclosed. This is the kind of claim that cannot drive a decision either way.",
-      "provenance": "automated_provisional",
-      "decision_use": "not_eligible"
-    },
-    {
-      "alternative": "claude",
-      "criterion": "c_public_benefit",
-      "claim": "The Long-Term Benefit Trust had three trustees as of 2026-08-19, reduced from four after a trustee departed on 2026-08-04.",
-      "claim_type": "third_party_report",
-      "source": "Outlet report, 2026-08-19",
-      "source_date": "2026-08-19",
-      "scope": "Trust composition on that date only. A trust's membership changes; this is a snapshot.",
-      "uncertainty": "The 2023 description of the Trust said five members. The reduction to three is recent and the direction of travel is unclear.",
-      "provenance": "automated_provisional",
-      "decision_use": "context_only"
+      "uncertainty": "High. The decisive number is explicitly undisclosed. This is a proposed change, not a change in force, and it cannot count either way.",
+      "provenance": "automated_provisional"
     },
     {
       "alternative": "chatgpt",
       "criterion": "c_public_benefit",
-      "claim": "OpenAI operates as a for-profit PBC controlled by the nonprofit OpenAI Foundation. The capped-profit mechanism was removed in the October 2025 recapitalisation.",
+      "verdict": "meets",
+      "status": "in_force",
+      "claim": "OpenAI operates as a for-profit Public Benefit Corporation controlled by the nonprofit OpenAI Foundation.",
       "claim_type": "established_outcome",
-      "source": "Contemporaneous reporting cited in makers.json; OpenAI's own structure page was not reachable in this pass (HTTP 403).",
+      "source": "Contemporaneous reporting cited in makers.json; openai.com/our-structure returned HTTP 403 in this pass",
       "source_date": "2025-10-28",
       "scope": "Corporate structure as at the recapitalisation.",
-      "uncertainty": "Carried forward from the existing dataset record, not re-verified against a primary source in this pass. The withdrawal of the profit cap is the decision-relevant part and is well attested.",
-      "provenance": "automated_provisional",
-      "decision_use": "eligible_with_caveat"
+      "uncertainty": "Carried from the dataset record, not re-verified against a primary source.",
+      "provenance": "automated_provisional"
     },
     {
       "alternative": "chatgpt",
-      "criterion": "c_economic_ownership",
-      "claim": "After the October 2025 recapitalisation the OpenAI Foundation holds about 26% and controls the board, Microsoft about 27%, and about 47% sits with employees and investors.",
+      "criterion": "c_board_rights",
+      "verdict": "meets",
+      "status": "in_force",
+      "claim": "The nonprofit OpenAI Foundation holds approximately 26% and controls the board.",
       "claim_type": "established_outcome",
       "source": "Contemporaneous reporting cited in makers.json",
       "source_date": "2025-10-28",
-      "scope": "Ownership at the recapitalisation. Eleven months old at time of research.",
+      "scope": "Ownership and board control at the recapitalisation, eleven months before this research.",
       "uncertainty": "Not re-verified in this pass.",
-      "provenance": "automated_provisional",
-      "decision_use": "eligible_with_caveat"
-    },
-    {
-      "alternative": "claude",
-      "criterion": "c_economic_ownership",
-      "claim": "Amazon holds roughly 15–19% and Google roughly 14% of Anthropic's economics.",
-      "claim_type": "established_outcome",
-      "source": "Reporting cited in makers.json",
-      "source_date": "2026-06-04",
-      "scope": "Economic stakes, not voting rights.",
-      "uncertainty": "Not re-verified in this pass. Predates the IPO reporting above, which implies the cap table has since changed.",
-      "provenance": "automated_provisional",
-      "decision_use": "eligible_with_caveat"
-    },
-    {
-      "alternative": "deepseek_app",
-      "criterion": "c_model_access",
-      "claim": "DeepSeek-R1 weights are published under the MIT licence, downloadable from Hugging Face, and permit commercial use, modification and derivative works including distillation.",
-      "claim_type": "established_outcome",
-      "source": "DeepSeek-R1 repository licence file and model card",
-      "source_date": "licence current as at 2026-09-17",
-      "scope": "The R1 model weights. Not the consumer app, and not the current V4 flagship, whose licence was not checked.",
-      "uncertainty": "Low for R1 itself. The gap is that the user-facing product may not run R1: the hosted reasoner alias was retired 2026-07-24.",
-      "provenance": "automated_provisional",
-      "decision_use": "eligible"
-    },
-    {
-      "alternative": "le_chat",
-      "criterion": "c_model_access",
-      "claim": "Mistral publishes open weights for its current lineup: Large 3 and Small 4 under Apache 2.0, Medium 3.5 under a modified MIT licence, all self-hostable with commercial use and fine-tuning permitted.",
-      "claim_type": "third_party_report",
-      "source": "Secondary aggregator coverage of Mistral's model documentation",
-      "source_date": "reported for 2026, read 2026-09-17",
-      "scope": "Model weights. Le Chat the product is a hosted service built on them.",
-      "uncertainty": "Moderate. Mistral's own documentation was not read directly; the 'modified MIT' terms for Medium 3.5 in particular need reading before being relied on, because a modified permissive licence can carry use restrictions.",
-      "provenance": "automated_provisional",
-      "decision_use": "eligible_with_caveat"
+      "provenance": "automated_provisional"
     },
     {
       "alternative": "chatgpt",
-      "criterion": "c_model_access",
-      "claim": "The model behind ChatGPT is not published as downloadable weights.",
+      "criterion": "c_commitment_continuity",
+      "verdict": "fails",
+      "status": "withdrawn",
+      "claim": "The capped-profit mechanism, an earlier binding limit on investor returns, was removed in the October 2025 recapitalisation.",
       "claim_type": "established_outcome",
-      "source": "Not verified in this pass",
-      "source_date": null,
-      "scope": null,
-      "uncertainty": "Widely understood and consistent with the FMTI scoring of o3 as a closed model, but not checked against a source in this pass. Recorded as unverified rather than assumed.",
-      "provenance": "automated_provisional",
-      "decision_use": "not_eligible"
-    },
-    {
-      "alternative": "claude",
-      "criterion": "c_model_access",
-      "claim": "The model behind Claude is not published as downloadable weights.",
-      "claim_type": "established_outcome",
-      "source": "Not verified in this pass",
-      "source_date": null,
-      "scope": null,
-      "uncertainty": "Same as above — likely, unchecked, recorded as unverified.",
-      "provenance": "automated_provisional",
-      "decision_use": "not_eligible"
-    },
-    {
-      "alternative": "gemini",
-      "criterion": "c_model_access",
-      "claim": "Gemini flagship weights are not published, though Google publishes the separate Gemma open-weight family.",
-      "claim_type": "established_outcome",
-      "source": "Not verified in this pass; Gemma appears in the makers.json product record",
-      "source_date": null,
-      "scope": "Gemma is a different model family from the one behind the Gemini assistant. Treating Gemma as portability for a Gemini user would be a category error.",
-      "uncertainty": "Unverified in this pass.",
-      "provenance": "automated_provisional",
-      "decision_use": "not_eligible"
-    },
-    {
-      "alternative": "copilot",
-      "criterion": "c_voting_control",
-      "claim": "Microsoft is described in the existing dataset as a widely held public company with no founder control bloc.",
-      "claim_type": "company_statement",
-      "source": "makers.json record, which carries no source for this claim",
-      "source_date": null,
-      "scope": null,
-      "uncertainty": "This is exactly the kind of unsourced record the evidence rule excludes. A proxy statement would settle it in one read; none was consulted.",
-      "provenance": "automated_provisional",
-      "decision_use": "not_eligible"
+      "source": "Contemporaneous reporting cited in makers.json",
+      "source_date": "2025-10-28",
+      "scope": "One mechanism, withdrawn on one date. Not a judgement about the structures currently in force.",
+      "uncertainty": "Well attested. What it implies about future commitments is an inference the user makes, not a finding.",
+      "provenance": "automated_provisional"
     },
     {
       "alternative": "deepseek_app",
-      "criterion": "c_voting_control",
-      "claim": "Founder Liang Wenfeng is recorded as controlling roughly 89.5% via the High-Flyer parent.",
+      "criterion": "c_model_hosting",
+      "verdict": "unconfirmed",
+      "status": "in_force",
+      "claim": "DeepSeek-R1 weights are published under the MIT licence and downloadable, permitting commercial use, modification and derivative works.",
+      "claim_type": "established_outcome",
+      "source": "DeepSeek-R1 repository licence and model card",
+      "source_date": "licence current as at 2026-09-17",
+      "scope": "The R1 model weights only. NOT the consumer assistant, and not the current V4 flagship, whose licence was not inspected.",
+      "uncertainty": "The licence finding is solid for R1. What is unresolved is the link to the product: which model chat.deepseek.com routes to is unverified, so this does not establish that a user of the assistant could host what they are actually using.",
+      "provenance": "automated_provisional"
+    },
+    {
+      "alternative": "le_chat",
+      "criterion": "c_model_hosting",
+      "verdict": "unconfirmed",
+      "status": "in_force",
+      "claim": "Mistral is reported to publish open weights for its current lineup — Large 3 and Small 4 under Apache 2.0, Medium 3.5 under a modified MIT licence — self-hostable with commercial use permitted.",
       "claim_type": "third_party_report",
-      "source": "makers.json record, which carries no source for this claim",
+      "source": "Secondary aggregator coverage of Mistral's model documentation",
+      "source_date": "read 2026-09-17",
+      "scope": "Model weights. Vibe/Le Chat is a hosted service built on them.",
+      "uncertainty": "The licence files were not inspected. 'Modified MIT' is the phrase that matters — a modified permissive licence can carry use restrictions that would defeat the requirement entirely. Model routing for the hosted assistant is also unverified.",
+      "provenance": "automated_provisional"
+    },
+    {
+      "alternative": "chatgpt",
+      "criterion": "c_model_hosting",
+      "verdict": "unconfirmed",
+      "status": "in_force",
+      "claim": "No published downloadable weights for the model behind ChatGPT.",
+      "claim_type": "established_outcome",
+      "source": "Not verified in this pass",
       "source_date": null,
       "scope": null,
-      "uncertainty": "Unsourced in the dataset and not verified here. If true it is decisive for the voting-control criterion, which makes leaving it unverified the more serious gap.",
-      "provenance": "automated_provisional",
-      "decision_use": "not_eligible"
+      "uncertainty": "Widely understood, consistent with FMTI's assessment of o3 as closed. Recorded as unverified rather than assumed, so it cannot be used as an evidenced exclusion.",
+      "provenance": "automated_provisional"
+    },
+    {
+      "alternative": "claude",
+      "criterion": "c_model_hosting",
+      "verdict": "unconfirmed",
+      "status": "in_force",
+      "claim": "No published downloadable weights for the models behind Claude.",
+      "claim_type": "established_outcome",
+      "source": "Not verified in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Likely, unchecked, recorded as unverified.",
+      "provenance": "automated_provisional"
+    },
+    {
+      "alternative": "gemini",
+      "criterion": "c_model_hosting",
+      "verdict": "unconfirmed",
+      "status": "in_force",
+      "claim": "Gemini flagship weights are not published. Google publishes the separate Gemma open-weight family.",
+      "claim_type": "established_outcome",
+      "source": "Not verified in this pass",
+      "source_date": null,
+      "scope": "Gemma is a different model family from the one behind the Gemini assistant. Treating Gemma as portability for a Gemini user would be a category error.",
+      "uncertainty": "Unverified in this pass.",
+      "provenance": "automated_provisional"
     }
   ],
 
   "criterion_coverage": {
-    "c_voting_control": {
-      "assessable": ["gemini"],
-      "unassessable": ["chatgpt", "claude", "copilot", "le_chat", "deepseek_app"],
-      "note": "One of six. The single assessable alternative fails the criterion."
-    },
-    "c_economic_ownership": {
-      "assessable": ["chatgpt", "claude"],
-      "unassessable": ["gemini", "copilot", "le_chat", "deepseek_app"],
-      "note": "Both assessable findings are carried from the dataset rather than re-verified, and both are dated."
-    },
-    "c_public_benefit": {
-      "assessable": ["chatgpt", "claude"],
-      "unassessable": ["gemini", "copilot", "le_chat", "deepseek_app"],
-      "note": "For the other four, no public-benefit structure is recorded. That is an absence of record, not a finding that none exists."
-    },
-    "c_model_access": {
-      "assessable": ["le_chat", "deepseek_app"],
-      "unassessable": ["chatgpt", "claude", "gemini", "copilot"],
-      "note": "The best-covered criterion, and the only one where a positive finding exists for more than one alternative."
-    }
+    "c_individual_control": { "assessed": ["gemini"], "unassessed": ["chatgpt", "claude", "copilot", "le_chat", "deepseek_app"] },
+    "c_founder_bloc_control": { "assessed": ["gemini"], "unassessed": ["chatgpt", "claude", "copilot", "le_chat", "deepseek_app"] },
+    "c_board_rights": { "assessed": ["claude", "chatgpt"], "unassessed": ["gemini", "copilot", "le_chat", "deepseek_app"] },
+    "c_public_benefit": { "assessed": ["claude", "chatgpt"], "unassessed": ["gemini", "copilot", "le_chat", "deepseek_app"] },
+    "c_commitment_continuity": { "assessed": ["chatgpt"], "unassessed": ["claude", "gemini", "copilot", "le_chat", "deepseek_app"] },
+    "c_model_hosting": { "assessed": [], "unassessed": ["chatgpt", "claude", "gemini", "copilot", "le_chat", "deepseek_app"] },
+    "c_content_export": { "assessed": [], "unassessed": ["chatgpt", "claude", "gemini", "copilot", "le_chat", "deepseek_app"] },
+    "c_service_migration": { "assessed": [], "unassessed": ["chatgpt", "claude", "gemini", "copilot", "le_chat", "deepseek_app"] }
   }
 }

@@ -129,102 +129,61 @@ const NO_RULE =
   'None. The rubric lists sub-indicators for this axis but states no rule for combining them into a 0–4 score.'
 const FMTI_RULE =
   'rubric.md §1 — "External anchor: Stanford FMTI 2025 (use directly where it exists) … Map FMTI/100 → 0–4", with bands in makers.json _meta.key_anchors.transparency.'
-const FMTI_DATE = 'December 2025 (FMTI 2025 edition)'
+const FMTI_DATE = '2025-12-11 (the 2025 Foundation Model Transparency Index)'
 const NOT_STATED = 'not stated in record'
 
 const R = (o) => ({ provenance: 'automated_provisional', ...o })
 
+
+// Verified 2026-09-17 by inspecting the official total-scores chart.
+// [score out of 100, flagship model the assessment was conducted against]
+const FMTI_2025 = {
+  'Anthropic/transparency': [46, 'Claude 4'],
+  'Google DeepMind/transparency': [41, 'Gemini 2.5'],
+  'OpenAI/transparency': [35, 'o3'],
+  'DeepSeek/transparency': [32, 'DeepSeek-R1'],
+  'Meta/transparency': [31, 'Llama 4'],
+  'Mistral/transparency': [18, 'Mistral Medium 3'],
+  'Midjourney/transparency': [14, 'Midjourney V7'],
+  'xAI/transparency': [14, 'Grok 3'],
+}
+
+const fmtiBand = (n) => (n <= 12 ? 0 : n <= 29 ? 1 : n <= 49 ? 2 : n <= 74 ? 3 : 4)
+
+const FMTI_ENTRIES = Object.fromEntries(
+  Object.entries(FMTI_2025).map(([key, [score, flagship]]) => {
+    const maker = key.split('/')[0]
+    return [
+      key,
+      R({
+        claim_support: 'establishes_fact',
+        supported_fact: `${maker} scored ${score}/100 on the 2025 Foundation Model Transparency Index.`,
+        source_date: FMTI_DATE,
+        source_scope: `Stanford assesses DEVELOPER transparency, including organisational practices, conducted against the developer's then-flagship model (${flagship}). It is not exclusively a model score, and it is not a score of any current consumer product.`,
+        unsupported_clauses: [],
+        scoring_rule: FMTI_RULE,
+        justifies_whole: true,
+        justification_note: `Verified 2026-09-17 from the official labelled chart. ${score} falls in band ${fmtiBand(score)}. Read it as evidence about the organisation as assessed in December 2025, not about what its assistant does today.`,
+      }),
+    ]
+  }),
+)
+
 const CLAIM_REVIEW = {
   // ---- Transparency: the one axis with a whole-axis rule -----------------
-  // Justified where the FMTI value the rule consumes is actually transcribed.
-  'xAI/transparency': R({
-    claim_support: 'establishes_fact',
-    supported_fact: 'xAI scored 14/100 in FMTI 2025, tied lowest of the firms scored.',
-    source_date: FMTI_DATE,
-    unsupported_clauses: [],
-    scoring_rule: FMTI_RULE,
-    justifies_whole: true,
-    justification_note: 'Recorded value 14 falls in band 13–29 → 1. Recorded score is 1.',
-  }),
-  'Midjourney/transparency': R({
-    claim_support: 'establishes_fact',
-    supported_fact: 'Midjourney scored 14/100 in FMTI 2025, tied lowest of the firms scored.',
-    source_date: FMTI_DATE,
-    unsupported_clauses: ['"no model or data disclosure" — a broader claim than the index value'],
-    scoring_rule: FMTI_RULE,
-    justifies_whole: true,
-    justification_note: 'Recorded value 14 falls in band 13–29 → 1. Recorded score is 1.',
-  }),
-  'Mistral/transparency': R({
-    claim_support: 'establishes_fact',
-    supported_fact: 'Mistral scored 18/100 in FMTI 2025, down more than two-thirds.',
-    source_date: FMTI_DATE,
-    unsupported_clauses: [],
-    scoring_rule: FMTI_RULE,
-    justifies_whole: true,
-    justification_note: 'Recorded value 18 falls in band 13–29 → 1. Recorded score is 1.',
-  }),
-  'Meta/transparency': R({
-    claim_support: 'establishes_fact',
-    supported_fact: 'Meta’s FMTI score fell from 60 to 31 between the 2024 and 2025 editions.',
-    source_date: FMTI_DATE,
-    unsupported_clauses: [
-      '"released no technical report for Llama 4"',
-      '"now also shipping the closed-weight Muse Spark"',
-    ],
-    scoring_rule: FMTI_RULE,
-    justifies_whole: true,
-    justification_note: 'Recorded value 31 falls in band 30–49 → 2. Recorded score is 2.',
-  }),
-
-  // Same rule, but the value it consumes is not transcribed — only a
-  // qualitative position. Mapping "middle group" to a band is a judgement the
-  // rule does not make, so the score is unresolved until the number is recorded.
-  'Anthropic/transparency': R({
-    claim_support: 'establishes_fact',
-    supported_fact:
-      'Anthropic was the highest-scoring frontier lab in FMTI 2025, rising to 2nd of the six longitudinal firms.',
-    source_date: FMTI_DATE,
-    unsupported_clauses: ['"opaque on data/compute/environment" — not carried by the index position'],
-    scoring_rule: FMTI_RULE,
-    justifies_whole: false,
-    justification_note:
-      'Attempted 2026-09-17 across the index page, the arXiv HTML, the Stanford HAI article and the 49-page paper PDF. None states Anthropic’s numeric score; the paper reports only the middle-group average of 36 and a rank. The rule maps a number to a band, so it cannot be applied. Not resolvable from the cited sources.',
-  }),
-  'OpenAI/transparency': R({
-    claim_support: 'establishes_fact',
-    supported_fact:
-      'OpenAI placed in the FMTI 2025 middle group, down roughly 14 points year on year.',
-    source_date: FMTI_DATE,
-    unsupported_clauses: ['"limited o3 disclosure"'],
-    scoring_rule: FMTI_RULE,
-    justifies_whole: false,
-    justification_note:
-      'Attempted 2026-09-17 across all four cited sources. The paper and index report OpenAI’s decline of 14 points and its rank, never the 2025 score. Not resolvable from the cited sources.',
-  }),
-  'Google DeepMind/transparency': R({
-    claim_support: 'establishes_fact',
-    supported_fact: 'Google DeepMind placed in the FMTI 2025 middle group.',
-    source_date: FMTI_DATE,
-    unsupported_clauses: ['"criticized for delayed Gemini model cards/technical reports"'],
-    scoring_rule: FMTI_RULE,
-    justifies_whole: false,
-    justification_note:
-      'Attempted 2026-09-17 across all four cited sources. Google appears only in the middle-group list (average 36); no numeric score is stated. Not resolvable from the cited sources.',
-  }),
-  // Verified 2026-09-17 against the cited index page, which states DeepSeek's
-  // score numerically. The band mapping can now be checked.
-  'DeepSeek/transparency': R({
-    claim_support: 'establishes_fact',
-    supported_fact:
-      'DeepSeek scored 32/100 in the 2025 FMTI, its first year in the index. The score is attached to its flagship DeepSeek-R1.',
-    source_date: FMTI_DATE,
-    unsupported_clauses: ['"opaque on data and training" — a broader claim than the index value'],
-    scoring_rule: FMTI_RULE,
-    justifies_whole: true,
-    justification_note:
-      'Verified 2026-09-17 from crfm.stanford.edu/fmti/December-2025/index.html, which states DeepSeek 32. Band 30–49 → 2. Recorded score is 2.',
-  }),
+  //
+  // All eight FMTI-scored makers here were verified on 2026-09-17 by inspecting
+  // the official labelled chart at
+  // crfm.stanford.edu/fmti/December-2025/figures/total_scores.webp
+  //
+  // An earlier pass concluded four of these were "not resolvable from the cited
+  // sources" after text extraction failed on the paper PDF. That was wrong: the
+  // values were printed on a chart the whole time. Text extraction missing a
+  // labelled figure is a reason to look at the image, not to stop.
+  //
+  // Internal check: the thirteen charted values average 40.69 — exactly the
+  // published figure — and the three cluster averages (78 / 36 / 15) reproduce.
+  ...FMTI_ENTRIES,
 
   // ---- Axes with no aggregation rule -------------------------------------
   // Narrow facts established and preserved; whole-axis scores unresolved.
@@ -517,6 +476,7 @@ function classifyAxis(maker, axisKey, axis) {
     claim_support: review.claim_support,
     supported_fact: review.supported_fact,
     source_date: review.source_date,
+    source_scope: review.source_scope ?? null,
     unsupported_clauses: review.unsupported_clauses,
     scoring_rule: review.scoring_rule,
     justifies_whole: review.justifies_whole,
@@ -543,6 +503,7 @@ for (const m of makers) {
       claim_support: e.claim_support,
       supported_fact: e.supported_fact,
       source_date: e.source_date,
+      source_scope: e.source_scope,
       unsupported_clauses: e.unsupported_clauses,
       scoring_rule: e.scoring_rule,
       justifies_whole: e.justifies_whole,
