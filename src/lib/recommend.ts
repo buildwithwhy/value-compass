@@ -21,12 +21,24 @@ import pilotRaw from '../data/recommendation-pilot.json'
 
 const raw = pilotRaw as any
 
+export interface ProviderRef {
+  maker_id: string
+  status: string
+  source?: string
+  retrieval_status?: string
+  retrieval_note?: string
+  note?: string
+}
+
 export interface PilotAlternative {
   id: string
   product: string
-  provider_maker_id: string
-  identity_status: string
-  identity_source: string
+  /** Who operates the product. Governance criteria attach here. */
+  product_provider: ProviderRef
+  /** Whose model serves it. May be unknown without affecting the above. */
+  model_provider: ProviderRef
+  /** Which model version. Licensing criteria attach here. */
+  model_release: { name: string; status: string; note?: string }
   identity_note: string
   functional: Record<string, string>
 }
@@ -35,6 +47,10 @@ export interface PilotCriterion {
   id: string
   label: string
   concept: string
+  /** Which of the three identities this criterion can speak to. */
+  applies_to: 'product' | 'product_provider' | 'model_release'
+  /** The broader claim this finding must NOT be read as. */
+  does_not_establish?: string
   distinct_from?: string
   supported: boolean
   unsupported_note?: string
@@ -92,7 +108,11 @@ export type FunctionalState = 'confirmed' | 'unknown'
  *  confirmation, so it reads as unknown rather than as a pass. */
 export function functionalState(alt: PilotAlternative, reqId: string): FunctionalState {
   const v = alt.functional[reqId]
-  return v === 'verified_official' || v === 'verified_secondary' ? 'confirmed' : 'unknown'
+  return v === 'verified_official' ||
+    v === 'verified_official_documentation' ||
+    v === 'verified_secondary'
+    ? 'confirmed'
+    : 'unknown'
 }
 
 // ---- The result --------------------------------------------------------
@@ -104,13 +124,17 @@ export interface CriterionOutcome {
   assessment?: Assessment
 }
 
+export type Bucket = 'confirmed_match' | 'requirement_not_confirmed' | 'excluded'
+
 export interface AlternativeOutcome {
   alternative: PilotAlternative
-  /** confirmed_match | potentially_relevant | excluded */
-  bucket: 'confirmed_match' | 'potentially_relevant' | 'excluded'
+  bucket: Bucket
   /** Requirements the evidence says it meets. */
   met: CriterionOutcome[]
-  /** Requirements or priorities with no eligible evidence either way. */
+  /**
+   * No eligible evidence either way. Requirements here block a confirmed
+   * match; preferences here are reported and otherwise ignored.
+   */
   unresolved: CriterionOutcome[]
   /** Evidence that it fails a stated requirement — the only basis for exclusion. */
   failed: CriterionOutcome[]
@@ -133,7 +157,8 @@ export interface RecommendationInput {
 
 export interface RecommendationResult {
   confirmed: AlternativeOutcome[]
-  potential: AlternativeOutcome[]
+  /** Hard requirements we cannot confirm either way. Never shown as satisfied. */
+  notConfirmed: AlternativeOutcome[]
   excluded: AlternativeOutcome[]
   /** Criteria the user picked that we cannot assess for anyone. */
   blindCriteria: PilotCriterion[]
@@ -180,11 +205,22 @@ export function recommend(input: RecommendationInput): RecommendationResult {
         label: functionalRequirements.find((f) => f.id === reqId)?.label ?? reqId,
       }))
 
-    // Exclusion requires evidence of failure against a stated requirement.
-    // Nothing else excludes — not a functional gap, and never an unknown.
-    let bucket: AlternativeOutcome['bucket']
+    // Three states, and the middle one exists so an unknown requirement is
+    // never rendered as satisfied.
+    //
+    //   excluded                  evidence says it FAILS a stated requirement
+    //   requirement_not_confirmed a stated requirement (including a functional
+    //                             one) cannot be confirmed either way
+    //   confirmed_match           every stated requirement is evidenced met
+    //
+    // Unknown SOFT preferences land in `unresolved` and are reported, but they
+    // do not move an option out of confirmed_match — an unknown preference must
+    // neither reward nor penalise.
+    const unresolvedRequirements = unresolved.filter((r) => r.weight === 'requirement')
+    let bucket: Bucket
     if (failed.length > 0) bucket = 'excluded'
-    else if (unresolved.length > 0 || functionalGaps.length > 0) bucket = 'potentially_relevant'
+    else if (unresolvedRequirements.length > 0 || functionalGaps.length > 0)
+      bucket = 'requirement_not_confirmed'
     else bucket = 'confirmed_match'
 
     return {
@@ -212,12 +248,14 @@ export function recommend(input: RecommendationInput): RecommendationResult {
     a.alternative.product.localeCompare(b.alternative.product)
 
   const confirmed = outcomes.filter((o) => o.bucket === 'confirmed_match').sort(byEvidence)
-  const potential = outcomes.filter((o) => o.bucket === 'potentially_relevant').sort(byEvidence)
+  const notConfirmed = outcomes
+    .filter((o) => o.bucket === 'requirement_not_confirmed')
+    .sort(byEvidence)
   const excluded = outcomes.filter((o) => o.bucket === 'excluded').sort(byEvidence)
 
   return {
     confirmed,
-    potential,
+    notConfirmed,
     excluded,
     blindCriteria,
     noConfirmedMatch: confirmed.length === 0,

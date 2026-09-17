@@ -6,195 +6,345 @@ import {
   criterionIsAssessable,
   functionalState,
   recommend,
+  type AlternativeOutcome,
+  type CriterionOutcome,
 } from '../recommend'
 
-const ids = (list: { alternative: { id: string } }[]) => list.map((o) => o.alternative.id).sort()
+const ids = (list: AlternativeOutcome[]) => list.map((o) => o.alternative.id).sort()
+const critIds = (list: CriterionOutcome[]) => list.map((r) => r.criterion.id)
+const all = (r: { confirmed: AlternativeOutcome[]; notConfirmed: AlternativeOutcome[] }) => [
+  ...r.confirmed,
+  ...r.notConfirmed,
+]
+const F = ['fr_general_chat']
 
-describe('the corrected predicates are kept apart', () => {
-  it('does not let a founder bloc stand in for individual control', () => {
-    const individual = assessmentFor('gemini', 'c_individual_control')
-    const bloc = assessmentFor('gemini', 'c_founder_bloc_control')
-    // Same underlying filing, opposite verdicts — because they are different questions.
-    expect(individual?.verdict).toBe('meets')
-    expect(bloc?.verdict).toBe('fails')
-    expect(individual?.claim).toMatch(/27\.1|25\.2/)
-    expect(bloc?.claim).toMatch(/52\.7/)
-  })
+// ---------------------------------------------------------------------------
+// 1. An unknown hard requirement is never shown as satisfied
+// ---------------------------------------------------------------------------
 
-  it('does not treat published weights as proof a hosted assistant is portable', () => {
-    // R1's licence is solid; the link to the product is not, so the verdict is
-    // unconfirmed rather than a pass.
-    const a = assessmentFor('deepseek_app', 'c_model_hosting')
-    expect(a?.verdict).toBe('unconfirmed')
-    expect(a?.scope).toMatch(/NOT the consumer assistant/)
-    expect(a?.uncertainty).toMatch(/which model .* routes to is unverified/i)
-  })
-
-  it('keeps content export and service migration as separate, unresearched criteria', () => {
-    for (const id of ['c_content_export', 'c_service_migration']) {
-      const c = criteria.find((x) => x.id === id)
-      expect(c?.supported).toBe(false)
-      expect(criterionIsAssessable(id)).toBe(false)
+describe('unknown hard requirements', () => {
+  it('never places an option with an unknown requirement in confirmed matches', () => {
+    const r = recommend({
+      functional: F,
+      priorities: ['c_public_benefit'],
+      requirements: ['c_public_benefit'],
+    })
+    for (const o of r.confirmed) {
+      expect(critIds(o.met)).toContain('c_public_benefit')
+      expect(critIds(o.unresolved)).not.toContain('c_public_benefit')
     }
+    // The four with no finding are visible in their own group, not hidden.
+    expect(ids(r.notConfirmed)).toEqual(['copilot', 'deepseek_app', 'gemini', 'le_chat'])
+    for (const o of r.notConfirmed) expect(critIds(o.unresolved)).toContain('c_public_benefit')
   })
 
-  it('records a withdrawn mechanism under continuity, not under current arrangements', () => {
-    const current = assessmentFor('chatgpt', 'c_public_benefit')
-    const continuity = assessmentFor('chatgpt', 'c_commitment_continuity')
-    expect(current?.verdict).toBe('meets')
-    expect(current?.status).toBe('in_force')
-    expect(continuity?.verdict).toBe('fails')
-    expect(continuity?.status).toBe('withdrawn')
-  })
-
-  it('records a proposed change as proposed, never as in force', () => {
-    const a = assessmentFor('claude', 'c_individual_control')
-    expect(a?.status).toBe('proposed')
-    expect(a?.verdict).toBe('unconfirmed')
+  it('keeps them visible, unshortlisted and unexcluded', () => {
+    // Migration is assessable (Claude is evidenced to fail), so the
+    // designation stands. The other five are unknown.
+    const r = recommend({
+      functional: F,
+      priorities: ['c_service_migration'],
+      requirements: ['c_service_migration'],
+    })
+    expect(r.confirmed).toHaveLength(0)
+    expect(ids(r.excluded)).toEqual(['claude'])
+    expect(ids(r.notConfirmed)).toEqual([
+      'chatgpt',
+      'copilot',
+      'deepseek_app',
+      'gemini',
+      'le_chat',
+    ])
   })
 })
 
-describe('priorities are soft unless explicitly made requirements', () => {
-  it('never excludes on a soft priority, however bad the finding', () => {
-    const r = recommend({
-      functional: ['fr_general_chat'],
-      priorities: ['c_founder_bloc_control'],
-      requirements: [],
-    })
-    // Gemini is evidenced to fail, but as a preference that is a trade-off.
-    expect(r.excluded).toHaveLength(0)
-    const gemini = [...r.confirmed, ...r.potential].find((o) => o.alternative.id === 'gemini')
-    expect(gemini?.tradeoffs.map((t) => t.criterion.id)).toContain('c_founder_bloc_control')
-  })
+// ---------------------------------------------------------------------------
+// 2. An unknown SOFT preference neither rewards nor penalises
+// ---------------------------------------------------------------------------
 
-  it('excludes only on evidence of failure against a stated requirement', () => {
-    const r = recommend({
-      functional: ['fr_general_chat'],
-      priorities: ['c_founder_bloc_control'],
-      requirements: ['c_founder_bloc_control'],
-    })
-    expect(ids(r.excluded)).toEqual(['gemini'])
-    // The other five are unconfirmed, not excluded.
-    expect(ids(r.potential)).not.toContain('gemini')
-    expect(r.potential.length + r.confirmed.length).toBe(alternatives.length - 1)
-  })
-
-  it('never lets an unknown exclude anything', () => {
-    const r = recommend({
-      functional: ['fr_general_chat'],
-      priorities: ['c_model_hosting'],
-      requirements: ['c_model_hosting'],
-    })
-    expect(r.excluded).toHaveLength(0)
-    expect(r.confirmed).toHaveLength(0)
-    expect(r.potential).toHaveLength(alternatives.length)
-  })
-
-  it('refuses to make an unassessable criterion a requirement', () => {
-    expect(criterionIsAssessable('c_content_export')).toBe(false)
-    const r = recommend({
-      functional: ['fr_general_chat'],
+describe('unknown soft preferences', () => {
+  it('does not demote an option out of confirmed matches', () => {
+    // Export is a requirement all five meet; model hosting is a soft preference
+    // nobody has a finding on. The unknown must not move anyone.
+    const withoutPreference = recommend({
+      functional: F,
       priorities: ['c_content_export'],
       requirements: ['c_content_export'],
     })
-    // The designation is ignored rather than excluding all six.
-    expect(r.excluded).toHaveLength(0)
-    expect(r.blindCriteria.map((c) => c.id)).toContain('c_content_export')
+    const withPreference = recommend({
+      functional: F,
+      priorities: ['c_content_export', 'c_model_hosting'],
+      requirements: ['c_content_export'],
+    })
+    expect(ids(withPreference.confirmed)).toEqual(ids(withoutPreference.confirmed))
+    expect(withPreference.confirmed.length).toBeGreaterThan(0)
   })
-})
 
-describe('the three worked scenarios', () => {
-  it('scenario 1 — portability: no confirmed match, two options unresolved', () => {
+  it('reports the unknown preference rather than silently dropping it', () => {
     const r = recommend({
-      functional: ['fr_general_chat', 'fr_web'],
-      priorities: ['c_model_hosting'],
-      requirements: ['c_model_hosting'],
+      functional: F,
+      priorities: ['c_content_export', 'c_model_hosting'],
+      requirements: ['c_content_export'],
     })
-    expect(r.noConfirmedMatch).toBe(true)
-    expect(r.excluded).toHaveLength(0)
-    // Every option carries the same unresolved requirement, and says so.
-    for (const o of r.potential) {
-      expect(o.unresolved.map((u) => u.criterion.id)).toContain('c_model_hosting')
-    }
+    for (const o of r.confirmed) expect(critIds(o.unresolved)).toContain('c_model_hosting')
   })
 
-  it('scenario 2 — control: the answer depends on which predicate is meant', () => {
-    const asIndividual = recommend({
-      functional: ['fr_general_chat'],
-      priorities: ['c_individual_control'],
-      requirements: ['c_individual_control'],
-    })
-    const asBloc = recommend({
-      functional: ['fr_general_chat'],
-      priorities: ['c_founder_bloc_control'],
-      requirements: ['c_founder_bloc_control'],
-    })
-    // Same provider, same filing, opposite outcomes.
-    expect(asIndividual.excluded).toHaveLength(0)
-    expect(ids(asBloc.excluded)).toEqual(['gemini'])
-    const geminiIndividual = [...asIndividual.confirmed, ...asIndividual.potential].find(
-      (o) => o.alternative.id === 'gemini',
-    )
-    expect(geminiIndividual?.met.map((m) => m.criterion.id)).toContain('c_individual_control')
-  })
-
-  it('scenario 3 — public benefit: two options match on current arrangements, unranked', () => {
+  it('does not let a soft preference exclude, however bad the finding', () => {
     const r = recommend({
-      functional: ['fr_general_chat'],
-      priorities: ['c_public_benefit'],
-      requirements: ['c_public_benefit'],
-    })
-    const matching = [...r.confirmed, ...r.potential].filter((o) =>
-      o.met.some((m) => m.criterion.id === 'c_public_benefit'),
-    )
-    expect(ids(matching)).toEqual(['chatgpt', 'claude'])
-    expect(r.excluded).toHaveLength(0)
-  })
-
-  it('scenario 3 + continuity separates a withdrawn mechanism from a current one', () => {
-    const r = recommend({
-      functional: ['fr_general_chat'],
-      priorities: ['c_public_benefit', 'c_commitment_continuity'],
-      requirements: ['c_public_benefit'],
-    })
-    const chatgpt = [...r.confirmed, ...r.potential].find((o) => o.alternative.id === 'chatgpt')
-    // Still meets the current-arrangements requirement…
-    expect(chatgpt?.met.map((m) => m.criterion.id)).toContain('c_public_benefit')
-    // …and the withdrawal shows up as a trade-off, not as an exclusion.
-    expect(chatgpt?.tradeoffs.map((t) => t.criterion.id)).toContain('c_commitment_continuity')
-    expect(r.excluded).toHaveLength(0)
-  })
-
-  it('combining portability with public benefit yields no confirmed match, not incompatibility', () => {
-    const r = recommend({
-      functional: ['fr_general_chat'],
-      priorities: ['c_public_benefit', 'c_model_hosting'],
-      requirements: ['c_public_benefit', 'c_model_hosting'],
-    })
-    expect(r.noConfirmedMatch).toBe(true)
-    // Crucially: nothing is excluded. Nothing establishes incompatibility.
-    expect(r.excluded).toHaveLength(0)
-  })
-})
-
-describe('light functional eligibility is honest about itself', () => {
-  it('reads an assumption carried from older records as unknown, not as a pass', () => {
-    const gemini = alternatives.find((a) => a.id === 'gemini')!
-    expect(gemini.functional.fr_general_chat).toBe('assumed_from_dataset')
-    expect(functionalState(gemini, 'fr_general_chat')).toBe('unknown')
-  })
-
-  it('counts an officially verified capability as confirmed', () => {
-    const claude = alternatives.find((a) => a.id === 'claude')!
-    expect(functionalState(claude, 'fr_mobile')).toBe('confirmed')
-  })
-
-  it('never excludes on a functional gap alone', () => {
-    const r = recommend({
-      functional: ['fr_general_chat', 'fr_mobile', 'fr_free_entry'],
-      priorities: ['c_public_benefit'],
+      functional: F,
+      priorities: ['c_founder_bloc_majority_voting'],
       requirements: [],
     })
     expect(r.excluded).toHaveLength(0)
+    const gemini = all(r).find((o) => o.alternative.id === 'gemini')
+    expect(critIds(gemini!.tradeoffs)).toContain('c_founder_bloc_majority_voting')
+  })
+})
+
+// ---------------------------------------------------------------------------
+// 3. Precisely scoped control language
+// ---------------------------------------------------------------------------
+
+describe('control criteria stay within what the evidence shows', () => {
+  it('states voting power, not control of the company', () => {
+    for (const id of ['c_individual_majority_voting', 'c_founder_bloc_majority_voting']) {
+      const c = criteria.find((x) => x.id === id)!
+      expect(c.label).toMatch(/voting power/)
+      expect(c.label).not.toMatch(/controls the company|override the board/)
+      expect(c.does_not_establish).toBeTruthy()
+    }
+    const individual = criteria.find((c) => c.id === 'c_individual_majority_voting')!
+    expect(individual.does_not_establish).toMatch(/no individual controls the company/i)
+    expect(individual.does_not_establish).toMatch(/override the board/i)
+  })
+
+  it('keeps the individual and bloc questions apart on the same filing', () => {
+    const individual = assessmentFor('gemini', 'c_individual_majority_voting')
+    const bloc = assessmentFor('gemini', 'c_founder_bloc_majority_voting')
+    expect(individual?.verdict).toBe('meets')
+    expect(bloc?.verdict).toBe('fails')
+    expect(individual?.scope).toMatch(/does not establish that no individual controls/i)
+    expect(bloc?.scope).toMatch(/does not establish that they vote together/i)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// 4. Product provider / model provider / model release
+// ---------------------------------------------------------------------------
+
+describe('the three identities are applied only where they answer the question', () => {
+  it('leaves product-provider identity intact when model routing is unknown', () => {
+    const copilot = alternatives.find((a) => a.id === 'copilot')!
+    expect(copilot.model_provider.maker_id).toBe('unknown')
+    // Unknown model, established operator.
+    expect(copilot.product_provider.maker_id).toBe('Microsoft')
+    expect(copilot.product_provider.status).toMatch(/verified_official/)
+  })
+
+  it('still applies provider-level governance findings despite unknown routing', () => {
+    const r = recommend({
+      functional: F,
+      priorities: ['c_individual_majority_voting'],
+      requirements: ['c_individual_majority_voting'],
+    })
+    // Copilot's model is unknown; Microsoft's share structure is not.
+    expect(ids(r.confirmed)).toContain('copilot')
+  })
+
+  it('attaches each criterion to the identity it can speak to', () => {
+    const byId = Object.fromEntries(criteria.map((c) => [c.id, c.applies_to]))
+    expect(byId.c_individual_majority_voting).toBe('product_provider')
+    expect(byId.c_public_benefit).toBe('product_provider')
+    expect(byId.c_content_export).toBe('product')
+    expect(byId.c_model_hosting).toBe('model_release')
+  })
+
+  it('records a retrieval failure separately from factual uncertainty', () => {
+    const chatgpt = alternatives.find((a) => a.id === 'chatgpt')!
+    expect(chatgpt.product_provider.retrieval_status).toBe('blocked')
+    // A 403 did not stop the product identity being established.
+    expect(chatgpt.product_provider.status).toMatch(/verified_official/)
+    expect(chatgpt.product_provider.retrieval_note).toMatch(/not uncertainty about the product/i)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// 5. Export, migration and model hosting stay separate
+// ---------------------------------------------------------------------------
+
+describe('the three portability questions are distinct', () => {
+  it('confirms export for five of six from official documentation', () => {
+    const r = recommend({
+      functional: F,
+      priorities: ['c_content_export'],
+      requirements: ['c_content_export'],
+    })
+    expect(ids(r.confirmed)).toEqual(['chatgpt', 'claude', 'copilot', 'gemini', 'le_chat'])
+    expect(ids(r.notConfirmed)).toEqual(['deepseek_app'])
+    expect(r.excluded).toHaveLength(0)
+  })
+
+  it('does not let an export finding answer the migration question', () => {
+    const exportOk = assessmentFor('claude', 'c_content_export')
+    const migration = assessmentFor('claude', 'c_service_migration')
+    expect(exportOk?.verdict).toBe('meets')
+    expect(migration?.verdict).toBe('fails')
+    expect(migration?.scope).toMatch(/does not address importing Claude data/i)
+  })
+
+  it('does not let a model licence answer either of them', () => {
+    const hosting = assessmentFor('deepseek_app', 'c_model_hosting')
+    expect(hosting?.verdict).toBe('unconfirmed')
+    expect(hosting?.scope).toMatch(/R1 model release only/i)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// 6. The four exercise cases from the brief
+// ---------------------------------------------------------------------------
+
+describe('exercise: a soft preference with mixed evidence', () => {
+  const r = recommend({
+    functional: F,
+    priorities: ['c_founder_bloc_majority_voting'],
+    requirements: [],
+  })
+
+  it('shows one match, one trade-off and four unknowns, excluding nobody', () => {
+    expect(r.excluded).toHaveLength(0)
+    expect(r.confirmed).toHaveLength(alternatives.length)
+    const copilot = all(r).find((o) => o.alternative.id === 'copilot')!
+    const gemini = all(r).find((o) => o.alternative.id === 'gemini')!
+    expect(critIds(copilot.supportingPriorities)).toContain('c_founder_bloc_majority_voting')
+    expect(critIds(gemini.tradeoffs)).toContain('c_founder_bloc_majority_voting')
+    const unknowns = all(r).filter((o) =>
+      critIds(o.unresolved).includes('c_founder_bloc_majority_voting'),
+    )
+    expect(ids(unknowns)).toEqual(['chatgpt', 'claude', 'deepseek_app', 'le_chat'])
+  })
+})
+
+describe('exercise: a hard requirement with confirmed matches and unknown options', () => {
+  const r = recommend({
+    functional: F,
+    priorities: ['c_content_export'],
+    requirements: ['c_content_export'],
+  })
+
+  it('shortlists only the evidenced five and isolates the unknown', () => {
+    expect(r.confirmed).toHaveLength(5)
+    expect(ids(r.notConfirmed)).toEqual(['deepseek_app'])
+    expect(r.excluded).toHaveLength(0)
+    expect(r.noConfirmedMatch).toBe(false)
+  })
+
+  it('carries the evidence for each shortlisted option', () => {
+    for (const o of r.confirmed) {
+      const row = o.met.find((m) => m.criterion.id === 'c_content_export')!
+      expect(row.assessment?.claim).toBeTruthy()
+      expect(row.assessment?.source).toBeTruthy()
+      expect(row.assessment?.source_date).toBeTruthy()
+    }
+  })
+})
+
+describe('exercise: a requirement with no confirmed match', () => {
+  const r = recommend({
+    functional: F,
+    priorities: ['c_service_migration'],
+    requirements: ['c_service_migration'],
+  })
+
+  it('returns no match, one evidenced exclusion and five unconfirmed', () => {
+    expect(r.noConfirmedMatch).toBe(true)
+    expect(r.confirmed).toHaveLength(0)
+    // Excluded only because Anthropic states it — not because five are unknown.
+    expect(ids(r.excluded)).toEqual(['claude'])
+    expect(r.notConfirmed).toHaveLength(5)
+  })
+
+  it('does not invent a winner from the unconfirmed five', () => {
+    for (const o of r.notConfirmed) {
+      expect(critIds(o.met)).not.toContain('c_service_migration')
+      expect(critIds(o.unresolved)).toContain('c_service_migration')
+    }
+  })
+
+  it('an unassessable requirement is ignored rather than emptying the list', () => {
+    // Model hosting has no decided finding anywhere, so it cannot be a
+    // requirement. It degrades to a preference instead of excluding all six.
+    expect(criterionIsAssessable('c_model_hosting')).toBe(false)
+    const hosting = recommend({
+      functional: F,
+      priorities: ['c_model_hosting'],
+      requirements: ['c_model_hosting'],
+    })
+    expect(hosting.excluded).toHaveLength(0)
+    expect(hosting.confirmed).toHaveLength(alternatives.length)
+    expect(hosting.blindCriteria.map((c) => c.id)).toContain('c_model_hosting')
+  })
+})
+
+describe('exercise: the two distinct voting-control preferences', () => {
+  const asIndividual = recommend({
+    functional: F,
+    priorities: ['c_individual_majority_voting'],
+    requirements: ['c_individual_majority_voting'],
+  })
+  const asBloc = recommend({
+    functional: F,
+    priorities: ['c_founder_bloc_majority_voting'],
+    requirements: ['c_founder_bloc_majority_voting'],
+  })
+
+  it('shortlists Gemini under one reading and excludes it under the other', () => {
+    expect(ids(asIndividual.confirmed)).toEqual(['copilot', 'gemini'])
+    expect(ids(asBloc.confirmed)).toEqual(['copilot'])
+    expect(ids(asBloc.excluded)).toEqual(['gemini'])
+    expect(asIndividual.excluded).toHaveLength(0)
+  })
+
+  it('leaves the same four unconfirmed under both readings', () => {
+    expect(ids(asIndividual.notConfirmed)).toEqual(['chatgpt', 'claude', 'deepseek_app', 'le_chat'])
+    expect(ids(asBloc.notConfirmed)).toEqual(['chatgpt', 'claude', 'deepseek_app', 'le_chat'])
+  })
+})
+
+// ---------------------------------------------------------------------------
+// 7. Functional eligibility stays light and honest
+// ---------------------------------------------------------------------------
+
+describe('light functional eligibility', () => {
+  it('counts official documentation as confirmation', () => {
+    const gemini = alternatives.find((a) => a.id === 'gemini')!
+    expect(functionalState(gemini, 'fr_general_chat')).toBe('confirmed')
+  })
+
+  it('treats an unresearched capability as unknown, not a pass', () => {
+    const gemini = alternatives.find((a) => a.id === 'gemini')!
+    expect(functionalState(gemini, 'fr_mobile')).toBe('unknown')
+  })
+
+  it('moves an option to requirement-not-confirmed on a functional gap, never excludes', () => {
+    const r = recommend({
+      functional: ['fr_general_chat', 'fr_mobile'],
+      priorities: ['c_content_export'],
+      requirements: ['c_content_export'],
+    })
+    expect(r.excluded).toHaveLength(0)
+    const gemini = r.notConfirmed.find((o) => o.alternative.id === 'gemini')
+    expect(gemini?.functionalGaps.map((g) => g.id)).toContain('fr_mobile')
+  })
+
+  it('refuses to make an unassessable criterion a requirement', () => {
+    const unassessable = criteria.filter((c) => !criterionIsAssessable(c.id))
+    expect(unassessable.map((c) => c.id)).toContain('c_model_hosting')
+    const r = recommend({
+      functional: F,
+      priorities: ['c_model_hosting'],
+      requirements: ['c_model_hosting'],
+    })
+    expect(r.excluded).toHaveLength(0)
+    expect(r.blindCriteria.map((c) => c.id)).toContain('c_model_hosting')
   })
 })

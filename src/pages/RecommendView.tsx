@@ -90,15 +90,44 @@ function OutcomeCard({ o }: { o: AlternativeOutcome }) {
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h3 className="text-base font-bold text-slate-900">{o.alternative.product}</h3>
         <Link
-          to={`/maker/${encodeURIComponent(o.alternative.provider_maker_id)}`}
+          to={`/maker/${encodeURIComponent(o.alternative.product_provider.maker_id)}`}
           className="text-xs text-teal-700 hover:underline"
         >
-          {o.alternative.provider_maker_id} ↗
+          {o.alternative.product_provider.maker_id} ↗
         </Link>
       </div>
       <p className="mt-1 text-xs leading-snug text-slate-600">{o.alternative.identity_note}</p>
-      <p className="mt-0.5 text-[11px] text-slate-400">
-        Identity: {o.alternative.identity_status.replace(/_/g, ' ')} · {o.alternative.identity_source}
+
+      {/* Three identities, kept apart. An unknown model does not unsettle who
+          operates the product, or any governance finding about them. */}
+      <dl className="mt-2 grid grid-cols-1 gap-1 rounded-md border border-slate-200 bg-slate-50 p-2 text-[11px] sm:grid-cols-3">
+        <div>
+          <dt className="font-semibold uppercase tracking-wide text-slate-400">Operated by</dt>
+          <dd className="text-slate-700">{o.alternative.product_provider.maker_id}</dd>
+        </div>
+        <div>
+          <dt className="font-semibold uppercase tracking-wide text-slate-400">Model provider</dt>
+          <dd className={o.alternative.model_provider.maker_id === 'unknown' ? 'text-slate-400' : 'text-slate-700'}>
+            {o.alternative.model_provider.maker_id === 'unknown'
+              ? 'not established'
+              : o.alternative.model_provider.maker_id}
+          </dd>
+        </div>
+        <div>
+          <dt className="font-semibold uppercase tracking-wide text-slate-400">Model release</dt>
+          <dd className={o.alternative.model_release.status === 'unknown' ? 'text-slate-400' : 'text-slate-700'}>
+            {o.alternative.model_release.name}
+          </dd>
+        </div>
+      </dl>
+      <p className="mt-1 text-[11px] leading-snug text-slate-400">
+        Operator: {o.alternative.product_provider.status.replace(/_/g, ' ')} ·{' '}
+        {o.alternative.product_provider.source}
+        {o.alternative.product_provider.retrieval_status === 'blocked' && (
+          <span className="mt-0.5 block text-slate-500">
+            Retrieval note: {o.alternative.product_provider.retrieval_note}
+          </span>
+        )}
       </p>
 
       {o.functionalGaps.length > 0 && (
@@ -268,6 +297,11 @@ export function RecommendView() {
                           Not the same as: {c.distinct_from}
                         </span>
                       )}
+                      {c.does_not_establish && (
+                        <span className="mt-0.5 block text-[11px] leading-snug text-amber-700">
+                          Does not establish: {c.does_not_establish}
+                        </span>
+                      )}
                       {!c.supported && c.unsupported_note && (
                         <span className="mt-1 block rounded border border-amber-200 bg-amber-50 px-2 py-1 text-[11px] leading-snug text-amber-900">
                           {c.unsupported_note}
@@ -345,17 +379,18 @@ export function RecommendView() {
             )}
           </div>
 
-          {result.potential.length > 0 && (
+          {result.notConfirmed.length > 0 && (
             <div>
               <SectionTitle>
-                Potentially relevant, with unresolved requirements ({result.potential.length})
+                Requirement not confirmed ({result.notConfirmed.length})
               </SectionTitle>
               <p className="mb-2 max-w-3xl text-xs leading-snug text-slate-500">
-                Not shortlisted and not ruled out. Each is missing a finding we would need before
-                saying either way.
+                Something you made a requirement cannot be confirmed either way for these. They are
+                <strong> not</strong> shortlisted — an unknown requirement is never shown as
+                satisfied — and they are not ruled out either. Each says exactly what is missing.
               </p>
               <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-                {result.potential.map((o) => (
+                {result.notConfirmed.map((o) => (
                   <OutcomeCard key={o.alternative.id} o={o} />
                 ))}
               </div>
