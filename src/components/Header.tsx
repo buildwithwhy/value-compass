@@ -1,10 +1,10 @@
 import { NavLink } from 'react-router-dom'
 
 const NAV = [
-  { to: '/', label: 'Graph', end: true },
   { to: '/browse', label: 'Browse makers' },
   { to: '/compare', label: 'Compare' },
-  { to: '/about', label: 'About' },
+  { to: '/graph', label: 'Ownership graph' },
+  { to: '/about', label: 'Methodology' },
 ]
 
 export function Header() {
@@ -22,7 +22,6 @@ export function Header() {
             <NavLink
               key={item.to}
               to={item.to}
-              end={item.end}
               className={({ isActive }) =>
                 `rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
                   isActive
@@ -36,7 +35,7 @@ export function Header() {
           ))}
         </nav>
         <p className="ml-auto hidden text-xs text-slate-500 md:block">
-          Values &amp; money-flows behind major AI makers
+          See what your AI choices support
         </p>
       </div>
     </header>

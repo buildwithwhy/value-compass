@@ -1,20 +1,125 @@
 import { getMaker, parentBucket } from '../lib/data'
 import { DEEP_POCKET_BUCKETS, PARENT_COLORS, PARENT_LABELS } from '../lib/colors'
-import type { Funder } from '../lib/types'
+import {
+  associationsAreUnverified,
+  relationshipFor,
+  relationshipStatusLabels,
+  relationshipTypeLabels,
+} from '../lib/evidence'
+import type { Funder, Relationship } from '../lib/types'
 import { SectionTitle, Swatch } from './ui'
 
 export function isDeepPocket(f: Funder): boolean {
   return DEEP_POCKET_BUCKETS.includes(parentBucket(f.parent_type))
 }
 
+const TYPE_SHORT: Record<Relationship['type'], string> = {
+  outright_ownership: 'Owns outright',
+  controlling_stake: 'Controlling stake',
+  equity_investment: 'Equity stake',
+  funding_commitment: 'Funding commitment',
+  commercial_dependency: 'Investor & supplier',
+  passive_economic: 'Passive index holding',
+  unspecified: 'Stake type not recorded',
+}
+
+const STATUS_TONE: Record<Relationship['status'], string> = {
+  completed: 'border-slate-300 bg-slate-100 text-slate-700',
+  announced: 'border-amber-300 bg-amber-50 text-amber-800',
+  pending: 'border-amber-300 bg-amber-50 text-amber-800',
+  contingent: 'border-amber-300 bg-amber-50 text-amber-800',
+  unspecified: 'border-dashed border-slate-300 bg-white text-slate-500',
+}
+
+/**
+ * What a funder→maker line actually is. Without this, an announced commitment,
+ * a supplier who also invested and outright ownership all read the same.
+ */
+export function RelationshipChips({
+  funderName,
+  makerId,
+  ownsOutright,
+}: {
+  funderName: string
+  makerId?: string
+  ownsOutright?: boolean
+}) {
+  const rel = makerId ? relationshipFor(funderName, makerId) : undefined
+  if (!rel) {
+    if (ownsOutright) {
+      return (
+        <span className="inline-flex items-center rounded border border-slate-300 bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-slate-700">
+          owns outright
+        </span>
+      )
+    }
+    return (
+      <span
+        title="This dataset records that the funder backs this maker, but not what kind of stake it is."
+        className="inline-flex items-center rounded border border-dashed border-slate-300 bg-white px-1.5 py-0.5 text-[10px] font-semibold text-slate-500"
+      >
+        stake type not recorded
+      </span>
+    )
+  }
+  return (
+    <span className="inline-flex flex-wrap items-center gap-1">
+      <span
+        title={relationshipTypeLabels[rel.type]}
+        className="inline-flex items-center rounded border border-slate-300 bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-700"
+      >
+        {TYPE_SHORT[rel.type]}
+      </span>
+      {rel.status !== 'completed' && (
+        <span
+          title={relationshipStatusLabels[rel.status]}
+          className={`inline-flex items-center rounded border px-1.5 py-0.5 text-[10px] font-semibold ${STATUS_TONE[rel.status]}`}
+        >
+          {rel.status}
+        </span>
+      )}
+      {rel.voting === 'none_stated' && (
+        <span
+          title="The record states this holding carries no votes and no board seat."
+          className="inline-flex items-center rounded border border-slate-300 bg-white px-1.5 py-0.5 text-[10px] font-semibold text-slate-600"
+        >
+          no votes
+        </span>
+      )}
+      {rel.as_of && (
+        <span className="text-[10px] text-slate-400">as of {rel.as_of}</span>
+      )}
+    </span>
+  )
+}
+
+/** The quoted record behind a relationship, shown under the chips. */
+export function RelationshipQuote({
+  funderName,
+  makerId,
+}: {
+  funderName: string
+  makerId?: string
+}) {
+  const rel = makerId ? relationshipFor(funderName, makerId) : undefined
+  if (!rel?.quote) return null
+  return (
+    <p className="mt-1 text-[11px] leading-snug text-slate-500">
+      “{rel.quote}” <span className="text-slate-400">— {rel.quoted_from}</span>
+    </p>
+  )
+}
+
 /** Compact funder card used in the reverse-lookup funder picture. */
 export function FunderCard({
   funder,
+  makerId,
   ownsOutright,
   onOpen,
   highlightShared,
 }: {
   funder: Funder
+  makerId?: string
   ownsOutright?: boolean
   onOpen?: (name: string) => void
   highlightShared?: boolean
@@ -37,22 +142,22 @@ export function FunderCard({
         >
           {funder.name}
         </button>
-        <div className="flex shrink-0 flex-col items-end gap-1">
-          {ownsOutright && (
-            <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">
-              owns outright
-            </span>
-          )}
-          {deep && (
-            <span className="rounded bg-rose-100 px-1.5 py-0.5 text-[10px] font-bold uppercase text-rose-700">
-              deep-pocket
-            </span>
-          )}
-        </div>
+        {deep && (
+          <span
+            title="ValueCompass tag: a hyperscaler, sovereign fund or index manager — backers with balance sheets large enough to shape terms."
+            className="shrink-0 rounded bg-rose-100 px-1.5 py-0.5 text-[10px] font-bold uppercase text-rose-700"
+          >
+            deep-pocket
+          </span>
+        )}
       </div>
       <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-500">
         <Swatch color={PARENT_COLORS[bucket]} />
         {PARENT_LABELS[bucket]}
+      </div>
+      <div className="mt-1.5">
+        <RelationshipChips funderName={funder.name} makerId={makerId} ownsOutright={ownsOutright} />
+        <RelationshipQuote funderName={funder.name} makerId={makerId} />
       </div>
       {funder.key_people && funder.key_people.length > 0 && (
         <p className="mt-1.5 text-xs text-slate-600">
@@ -103,8 +208,10 @@ export function FunderDetail({
       </div>
 
       {funder.flag && (
-        <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm leading-snug text-amber-900">
-          <span className="font-bold">Why it matters: </span>
+        <div className="rounded-lg border border-violet-300 bg-violet-50 p-3 text-sm leading-snug text-violet-900">
+          <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-violet-700">
+            ValueCompass assessment — our reading, not a sourced fact
+          </p>
           {funder.flag}
         </div>
       )}
@@ -125,7 +232,18 @@ export function FunderDetail({
 
       {funder.notable_for && funder.notable_for.length > 0 && (
         <div>
-          <SectionTitle>Notable for (v1 — factual association, not a judgment)</SectionTitle>
+          <SectionTitle>
+            Notable for
+            <span
+              className={`ml-2 rounded-full border px-2 py-0.5 text-[10px] font-semibold normal-case tracking-normal ${
+                associationsAreUnverified(funder)
+                  ? 'border-dashed border-slate-400 bg-white text-slate-500'
+                  : 'border-emerald-300 bg-emerald-50 text-emerald-800'
+              }`}
+            >
+              {associationsAreUnverified(funder) ? 'Unverified' : 'Sourced'}
+            </span>
+          </SectionTitle>
           <ul className="list-inside list-disc space-y-0.5 text-sm text-slate-700">
             {funder.notable_for.map((n, i) => (
               <li key={i}>{n}</li>
@@ -154,8 +272,10 @@ export function FunderDetail({
               })}
             </div>
           )}
-          <p className="mt-1 text-[11px] italic text-slate-400">
-            Stated as fact, neutral. The Capital Lens lets you decide what concerns you.
+          <p className="mt-1 text-[11px] leading-snug text-slate-500">
+            {associationsAreUnverified(funder)
+              ? 'No source on record for these associations. Treat them as leads for research, not as established fact.'
+              : 'Recorded without a good-or-bad reading. Whether any of it concerns you is your call.'}
           </p>
         </div>
       )}
@@ -173,30 +293,30 @@ export function FunderDetail({
 
       {backed.length > 0 && (
         <div>
-          <SectionTitle>
-            Backs {backed.length} of the 18 makers{funder.owns_economically ? '' : ''}
-          </SectionTitle>
-          <div className="flex flex-wrap gap-1.5">
+          <SectionTitle>Holds a stake in {backed.length} of the 18 makers</SectionTitle>
+          <ul className="space-y-1.5">
             {backed.map((id) => {
               const m = getMaker(id)
               const owns = (funder.owns_outright ?? []).includes(id)
               return (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={onOpenMaker ? () => onOpenMaker(id) : undefined}
-                  className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${
-                    owns
-                      ? 'border-slate-800 bg-slate-800 text-white'
-                      : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
-                  }`}
-                >
-                  {m ? m.name : id}
-                  {owns && ' (owns)'}
-                </button>
+                <li key={id} className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={onOpenMaker ? () => onOpenMaker(id) : undefined}
+                    className="rounded-full border border-slate-300 bg-white px-2.5 py-0.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                  >
+                    {m ? m.name : id}
+                  </button>
+                  <RelationshipChips funderName={funder.name} makerId={id} ownsOutright={owns} />
+                </li>
               )
             })}
-          </div>
+          </ul>
+          <p className="mt-2 text-xs leading-snug text-slate-500">
+            A stake is not control, and it does not mean a share of what you pay for these products
+            goes to this funder. Where this dataset does not record what kind of stake it is, the
+            entry says so.
+          </p>
         </div>
       )}
 
@@ -206,8 +326,10 @@ export function FunderDetail({
           <p className="text-sm leading-snug text-slate-700">
             {funder.owns_economically.join(', ')}
           </p>
-          <p className="mt-1 text-xs italic text-slate-400">
-            Passive index ownership — the deepest layer of public-market exposure.
+          <p className="mt-1 text-xs leading-snug text-slate-500">
+            Index-fund ownership of these public companies. It is economic exposure exercised
+            through routine governance votes — not a stake in any private maker, and not a claim on
+            what you pay for their products.
           </p>
         </div>
       )}

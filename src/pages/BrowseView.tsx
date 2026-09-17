@@ -7,13 +7,14 @@ import {
   AXIS_SHORT,
   allProducts,
   makers,
-  numericScore,
 } from '../lib/data'
 import { TIER_COLORS, TIER_LABELS, fitColor, scoreColor } from '../lib/colors'
+import { coverageFor, displayScore } from '../lib/evidence'
 import type { AxisKey, Confidence, Maker, Tier } from '../lib/types'
 import { evaluateMaker } from '../lib/lens'
 import { useCapitalLens } from '../lib/lensContext'
 import { ConfidenceBadge, ConfidenceLegend } from '../components/ConfidenceBadge'
+import { EvidenceLegend } from '../components/EvidenceBadge'
 import { CapitalLensPanel } from '../components/CapitalLensPanel'
 import { Chip, Tag } from '../components/ui'
 
@@ -23,7 +24,7 @@ type SortKey = AxisKey | 'name' | 'tier' | 'fit'
 type ViewMode = 'matrix' | 'cards'
 
 export function BrowseView() {
-  const { lens } = useCapitalLens()
+  const { lens, mode, chosen } = useCapitalLens()
   const fitById = useMemo(() => {
     const m = new Map<string, number>()
     for (const mk of makers) m.set(mk.id, evaluateMaker(mk, lens).fit)
@@ -55,9 +56,9 @@ export function BrowseView() {
       if (sortKey === 'tier') return (a.tier.localeCompare(b.tier) || a.name.localeCompare(b.name)) * dir
       if (sortKey === 'fit')
         return ((fitById.get(a.id) ?? 0) - (fitById.get(b.id) ?? 0)) * dir || a.name.localeCompare(b.name)
-      // axis: n/a always sorts last regardless of direction
-      const sa = numericScore(a.axes[sortKey]?.score)
-      const sb = numericScore(b.axes[sortKey]?.score)
+      // axis: makers with no score shown always sort last, in either direction
+      const sa = displayScore(a, sortKey).value
+      const sb = displayScore(b, sortKey).value
       if (sa == null && sb == null) return a.name.localeCompare(b.name)
       if (sa == null) return 1
       if (sb == null) return -1
@@ -65,6 +66,8 @@ export function BrowseView() {
     })
     return arr
   }, [filtered, sortKey, sortDir, fitById])
+
+  const coverage = useMemo(() => coverageFor(), [])
 
   const toggle = <T,>(set: Set<T>, val: T, setter: (s: Set<T>) => void) => {
     const next = new Set(set)
@@ -86,9 +89,13 @@ export function BrowseView() {
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
           <h1 className="text-xl font-extrabold text-slate-900">Browse makers</h1>
-          <p className="text-sm text-slate-500">
-            All {makers.length} makers across the 5 value axes (higher = better). Click any row or card
-            for the full compass, axis reasons &amp; sources, and funder picture.
+          <p className="max-w-2xl text-sm leading-snug text-slate-500">
+            All {makers.length} makers, scored 0–4 on five axes against a{' '}
+            <Link to="/about" className="text-teal-700 underline underline-offset-2">
+              published rubric
+            </Link>
+            . The scores are ValueCompass assessments, not measurements. Click any row for the
+            reasons, the sources, and who holds a stake.
           </p>
         </div>
         <div className="inline-flex overflow-hidden rounded-md border border-slate-300">
@@ -144,17 +151,30 @@ export function BrowseView() {
       </div>
 
       {/* Shared axis + score legend */}
-      <div className="mb-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-600">
-        <ScoreLegend />
+      <div className="mb-3 space-y-2 rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-600">
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+          <ScoreLegend />
+          <span className="text-slate-400">{sorted.length} shown</span>
+        </div>
+        <EvidenceLegend />
         <ConfidenceLegend />
-        <span className="text-slate-400">{sorted.length} shown</span>
+        <p className="border-t border-slate-100 pt-2 leading-snug text-slate-500">
+          Across all {coverage.total} assessments in the dataset,{' '}
+          <strong className="text-slate-700">{coverage.sourced}</strong> carry a source about the
+          maker they describe and{' '}
+          <strong className="text-slate-700">{coverage.notEstablished}</strong> rest only on what has
+          not been published — those show no score.
+        </p>
       </div>
 
       {/* Capital Lens — drives the "Capital fit" column; collapsible to keep focus on scores */}
       {view === 'matrix' && (
         <details className="mb-3 rounded-xl border border-teal-200 bg-teal-50/40">
           <summary className="cursor-pointer px-3 py-2 text-sm font-bold text-teal-900">
-            🔍 Capital Lens — tune the “Capital fit” column
+            🔍 Capital Lens —{' '}
+            {chosen
+              ? `tune the “Capital fit” column (${mode === 'example' ? 'example lens' : 'your lens'})`
+              : 'choose what matters to you to add a “Capital fit” column'}
           </summary>
           <div className="px-3 pb-3">
             <CapitalLensPanel />
@@ -170,6 +190,8 @@ export function BrowseView() {
         <MatrixView
           makers={sorted}
           fitById={fitById}
+          showFit={chosen}
+          lensLabel={mode === 'example' ? 'the example lens' : 'your lens'}
           sortKey={sortKey}
           sortDir={sortDir}
           onSort={setSort}
@@ -197,10 +219,10 @@ function ScoreLegend() {
       ))}
       <span className="text-slate-400">better</span>
       <span
-        className="ml-1 inline-flex h-4 items-center rounded border border-slate-300 bg-slate-100 px-1 text-[10px] text-slate-500"
-        title="insufficient evidence — rendered as a gap, never 0"
+        className="ml-1 inline-flex h-4 items-center rounded border border-dashed border-slate-300 bg-slate-50 px-1 text-[10px] text-slate-500"
+        title="Nothing published on this axis — shown as a gap, never as a zero."
       >
-        n/a
+        —
       </span>
     </span>
   )
@@ -211,11 +233,13 @@ function ScoreCell({
   score,
   confidence,
   note,
+  withheld,
   size = 'md',
 }: {
   score: number | null
   confidence?: Confidence
   note?: string
+  withheld?: boolean
   size?: 'md' | 'sm'
 }) {
   const bg = scoreColor(score)
@@ -225,10 +249,17 @@ function ScoreCell({
   if (score == null) {
     return (
       <span
-        title={note || 'insufficient evidence (n/a)'}
+        title={
+          withheld
+            ? 'Not established — nothing has been published on this. No score is shown, because undisclosed is not evidence of bad practice.'
+            : note || 'No score recorded.'
+        }
         className={`inline-flex ${dims} items-center justify-center rounded border border-dashed border-slate-300 bg-slate-50 text-[10px] font-medium text-slate-400`}
       >
-        n/a
+        {withheld ? '—' : 'n/a'}
+        <span className="sr-only">
+          {withheld ? 'not established, no score shown' : 'no score recorded'}
+        </span>
       </span>
     )
   }
@@ -298,12 +329,16 @@ function SortHeader({
 function MatrixView({
   makers: rows,
   fitById,
+  showFit,
+  lensLabel,
   sortKey,
   sortDir,
   onSort,
 }: {
   makers: Maker[]
   fitById: Map<string, number>
+  showFit: boolean
+  lensLabel: string
   sortKey: SortKey
   sortDir: 'asc' | 'desc'
   onSort: (k: SortKey) => void
@@ -333,15 +368,17 @@ function MatrixView({
                 />
               </th>
             ))}
-            <th className="border-l border-teal-200 bg-teal-50/40 px-2 py-2 text-center">
-              <SortHeader
-                label="Capital fit"
-                title="Capital fit under your current Capital Lens — higher = fewer of your concerns present. Lens-dependent, not an objective rating."
-                active={sortKey === 'fit'}
-                dir={sortDir}
-                onClick={() => onSort('fit')}
-              />
-            </th>
+            {showFit && (
+              <th className="border-l border-teal-200 bg-teal-50/40 px-2 py-2 text-center">
+                <SortHeader
+                  label="Capital fit"
+                  title={`How many of the attributes in ${lensLabel} are absent from each maker's record. It moves when the lens changes — it is not a rating of the company.`}
+                  active={sortKey === 'fit'}
+                  dir={sortDir}
+                  onClick={() => onSort('fit')}
+                />
+              </th>
+            )}
             <th className="px-3 py-2">
               <SortHeader
                 label="Tier"
@@ -374,41 +411,52 @@ function MatrixView({
               </th>
               {AXIS_KEYS.map((k) => {
                 const ax = m.axes[k]
+                const d = displayScore(m, k)
                 return (
                   <td key={k} className="px-2 py-1.5 text-center">
                     <ScoreCell
-                      score={numericScore(ax?.score)}
+                      score={d.value}
                       confidence={ax?.confidence}
                       note={ax?.note}
+                      withheld={d.withheld}
                     />
                   </td>
                 )
               })}
-              <td className="border-l border-teal-100 bg-teal-50/30 px-2 py-1.5 text-center">
-                {(() => {
-                  const fit = fitById.get(m.id) ?? 0
-                  return (
-                    <span
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-full border-[3px] text-xs font-extrabold"
-                      style={{ borderColor: fitColor(fit), color: fitColor(fit) }}
-                      title="Your capital lens (not an objective score)"
-                    >
-                      {fit}
-                    </span>
-                  )
-                })()}
-              </td>
+              {showFit && (
+                <td className="border-l border-teal-100 bg-teal-50/30 px-2 py-1.5 text-center">
+                  {(() => {
+                    const fit = fitById.get(m.id) ?? 0
+                    return (
+                      <span
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-full border-[3px] text-xs font-extrabold"
+                        style={{ borderColor: fitColor(fit), color: fitColor(fit) }}
+                        title={`Attributes in ${lensLabel} that are absent from this maker's record`}
+                      >
+                        {fit}
+                      </span>
+                    )
+                  })()}
+                </td>
+              )}
               <td className="px-3 py-2 text-xs text-slate-500">{TIER_LABELS[m.tier]}</td>
               <td className="px-3 py-2 text-xs text-slate-500">{m.jurisdiction}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      <p className="border-t border-slate-100 bg-slate-50 px-3 py-1.5 text-xs text-slate-500">
-        Cell color = score (red→green, higher is better). Solid = confidence A · hatched = B ·
-        outlined = C. The <strong>Capital fit</strong> column reflects your Capital Lens
-        (higher = fewer of your concerns present) — not an objective score. Hover a cell for the
-        reason; click a row for full detail.
+      <p className="border-t border-slate-100 bg-slate-50 px-3 py-1.5 text-xs leading-snug text-slate-500">
+        Cell colour = the assessed score (red→green). Solid = confidence A · hatched = B · outlined =
+        C. A dash (<span className="font-semibold">—</span>) means nothing has been published on that
+        axis, so no score is shown.
+        {showFit && (
+          <>
+            {' '}
+            The <strong>Capital fit</strong> column counts attributes in {lensLabel} that are absent
+            from each record; it changes with the lens and is not a rating of the company.
+          </>
+        )}{' '}
+        Hover a cell for the reason; click a row for the sources.
       </p>
     </div>
   )
@@ -436,15 +484,20 @@ function CardsView({ makers: rows }: { makers: Maker[] }) {
           <div className="mt-4 flex items-end justify-between gap-1.5">
             {AXIS_KEYS.map((k) => {
               const ax = m.axes[k]
-              const s = numericScore(ax?.score)
+              const d = displayScore(m, k)
+              const s = d.value
               const conf = ax?.confidence ?? 'A'
               return (
                 <div
                   key={k}
                   className="flex flex-1 flex-col items-center gap-1"
-                  title={`${AXIS_LABELS[k]}: ${s == null ? 'n/a' : `${s}/4`} (confidence ${conf})${
-                    ax?.note ? ` — ${ax.note}` : ''
-                  }`}
+                  title={
+                    d.withheld
+                      ? `${AXIS_LABELS[k]}: not established — nothing published, so no score is shown.`
+                      : `${AXIS_LABELS[k]}: ${s == null ? 'no score' : `${s}/4`} (confidence ${conf})${
+                          ax?.note ? ` — ${ax.note}` : ''
+                        }`
+                  }
                 >
                   <div className="flex h-16 w-full items-end">
                     {s == null ? (
@@ -473,9 +526,19 @@ function CardsView({ makers: rows }: { makers: Maker[] }) {
 
           <div className="mt-3 flex flex-wrap items-center gap-1 border-t border-slate-100 pt-2 text-xs text-slate-500">
             <span className="mr-1">Confidence:</span>
-            {AXIS_KEYS.map((k) => (
-              <ConfidenceBadge key={k} c={m.axes[k].confidence} />
-            ))}
+            {AXIS_KEYS.map((k) =>
+              displayScore(m, k).withheld ? (
+                <span
+                  key={k}
+                  title={`${AXIS_LABELS[k]}: not established`}
+                  className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded border border-dashed border-slate-300 px-1 text-[11px] font-bold leading-none text-slate-400"
+                >
+                  —
+                </span>
+              ) : (
+                <ConfidenceBadge key={k} c={m.axes[k].confidence} />
+              ),
+            )}
           </div>
         </Link>
       ))}

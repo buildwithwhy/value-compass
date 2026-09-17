@@ -2,10 +2,11 @@ import { backersFor } from './data'
 import type { CapitalProfile, Funder, Maker } from './types'
 
 // ---------------------------------------------------------------------------
-// Capital Lens — a USER-CONFIGURABLE filter, never a fixed sixth score.
-// Each concern maps to objective capital_profile fields (or, for backer
-// reputation, to the notable_for tags of a maker's funders). The user decides
-// which attributes count as concerns; we only state the facts.
+// Capital Lens — a visitor-configured filter, never a fixed sixth score.
+// Each concern maps to a factual capital_profile field (or, for backer
+// associations, to the notable_for tags of a maker's funders). We state the
+// facts; the visitor decides which of them count as concerns. Nothing is
+// switched on for them — see EMPTY_LENS and lensContext.
 // ---------------------------------------------------------------------------
 
 export interface LensConfig {
@@ -20,8 +21,23 @@ export interface LensConfig {
   index_concentration: boolean
 }
 
-// Defaults per the build prompt (index concentration OFF; everything else ON).
-export const DEFAULT_LENS: LensConfig = {
+// Nothing is a concern until a visitor says it is. A new visitor starts here,
+// and the interface asks rather than assuming.
+export const EMPTY_LENS: LensConfig = {
+  founder_autocracy: false,
+  sovereign: false,
+  sovereign_gulf: false,
+  sovereign_singapore: false,
+  sovereign_china: false,
+  big_tech: false,
+  circular_vendor: false,
+  backer_reputation: false,
+  index_concentration: false,
+}
+
+// An editorial starting point, offered by name. It is ValueCompass's example of
+// one way to look at capital — it is never described as the visitor's own.
+export const EXAMPLE_LENS: LensConfig = {
   founder_autocracy: true,
   sovereign: true,
   sovereign_gulf: true,
@@ -31,6 +47,15 @@ export const DEFAULT_LENS: LensConfig = {
   circular_vendor: true,
   backer_reputation: true,
   index_concentration: false,
+}
+
+/** 'unset' until the visitor either adopts the example lens or picks their own. */
+export type LensMode = 'unset' | 'example' | 'custom'
+
+export const LENS_MODE_LABELS: Record<LensMode, string> = {
+  unset: 'No lens chosen',
+  example: 'Example lens (ValueCompass editorial)',
+  custom: 'Your lens',
 }
 
 export type SovBucket = 'gulf' | 'singapore' | 'china' | 'other'
@@ -75,26 +100,26 @@ export function reputationReasons(f: Funder): string[] {
 
 // Plain-English meaning of each concern tag, for an explanatory key.
 export const CONCERN_LEGEND: { label: string; meaning: string }[] = [
-  { label: 'Founder autocracy', meaning: 'A founder holds outright or super-voting control.' },
+  { label: 'Founder control', meaning: 'A founder holds outright or super-voting control.' },
   {
     label: 'Sovereign / state capital',
-    meaning: 'Backed by a state-linked fund (Gulf, Singapore, or China-linked).',
+    meaning: 'A state-linked fund holds a stake (Gulf, Singapore, or China-linked).',
   },
   {
     label: 'Big Tech / competitor capital',
-    meaning: 'Funded by hyperscalers, and/or entangled with a direct competitor.',
+    meaning: 'A hyperscaler holds a stake, and/or a direct competitor is on the cap table.',
   },
   {
     label: 'Circular vendor ties',
     meaning: 'A chipmaker invests in it while it also buys that chipmaker’s hardware.',
   },
   {
-    label: 'Backer reputation & figure stances',
+    label: 'Backer associations',
     meaning: 'One or more backers carry notable public associations (see each maker’s detail).',
   },
   {
     label: 'Index concentration',
-    meaning: 'Economically held by passive index funds (universal-owner concern).',
+    meaning: 'A public parent is economically held by passive index funds.',
   },
 ]
 
@@ -120,7 +145,7 @@ export function evaluateMaker(maker: Maker, lens: LensConfig): LensResult {
     if (cp && cp.founder_control) {
       hits.push({
         key: 'founder_autocracy',
-        label: 'Founder autocracy',
+        label: 'Founder control',
         detail: typeof cp.founder_control === 'string' ? cp.founder_control : 'founder voting control',
       })
     }
@@ -179,13 +204,13 @@ export function evaluateMaker(maker: Maker, lens: LensConfig): LensResult {
     if (repBackers.length) {
       hits.push({
         key: 'backer_reputation',
-        label: 'Backer reputation & figure stances',
+        label: 'Backer associations',
         detail: repBackers.map((f) => f.name).join(', '),
       })
     }
   }
 
-  // Index concentration → index_held (OFF by default)
+  // Index concentration → index_held
   if (lens.index_concentration) {
     active++
     if (cp?.index_held) {

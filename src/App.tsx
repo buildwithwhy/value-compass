@@ -1,11 +1,12 @@
 import { Suspense, lazy } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Link, Route, Routes } from 'react-router-dom'
 import { CapitalLensProvider } from './lib/lensContext'
 import { Header } from './components/Header'
 
 // Route-level code splitting: the force-graph (Graph) and Recharts (Browse,
 // Compare, Maker) bundles load only when their route is first visited, keeping
-// the initial payload small.
+// the initial payload small. The landing page now carries neither.
+const HomeView = lazy(() => import('./pages/HomeView').then((m) => ({ default: m.HomeView })))
 const GraphView = lazy(() => import('./pages/GraphView').then((m) => ({ default: m.GraphView })))
 const BrowseView = lazy(() => import('./pages/BrowseView').then((m) => ({ default: m.BrowseView })))
 const MakerPage = lazy(() => import('./pages/MakerPage').then((m) => ({ default: m.MakerPage })))
@@ -29,19 +30,24 @@ export default function App() {
         <main className="flex-1">
           <Suspense fallback={<RouteFallback />}>
             <Routes>
-              <Route path="/" element={<GraphView />} />
+              <Route path="/" element={<HomeView />} />
+              <Route path="/graph" element={<GraphView />} />
               <Route path="/browse" element={<BrowseView />} />
               <Route path="/maker/:id" element={<MakerPage />} />
               <Route path="/compare" element={<CompareView />} />
               <Route path="/about" element={<AboutView />} />
-              <Route path="*" element={<GraphView />} />
+              <Route path="/about/working-draft" element={<AboutView draft />} />
+              <Route path="*" element={<HomeView />} />
             </Routes>
           </Suspense>
         </main>
-        <footer className="border-t border-slate-200 bg-white px-4 py-3 text-center text-xs text-slate-400">
-          Value Compass — a values & money-flow lens on AI makers. Funders are context, not scored.
-          Tension hooks are open questions, not verdicts. The Capital Lens is your personal filter,
-          not a score.
+        <footer className="border-t border-slate-200 bg-white px-4 py-3 text-center text-xs leading-relaxed text-slate-500">
+          Value Compass — what the companies behind AI tools own, take money from, and have put on
+          the record. Scores are our assessments against a{' '}
+          <Link to="/about" className="underline underline-offset-2 hover:text-slate-700">
+            published rubric
+          </Link>
+          ; funders are context and are never scored; an undisclosed practice earns no score at all.
         </footer>
       </div>
     </CapitalLensProvider>

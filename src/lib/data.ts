@@ -1,6 +1,7 @@
 import makersRaw from '../data/makers.json'
 import fundersRaw from '../data/funders.json'
 import rubricMarkdown from '../data/rubric.md?raw'
+import methodologyMarkdown from '../data/methodology.md?raw'
 import {
   AXIS_KEYS,
   type AxisKey,
@@ -23,7 +24,10 @@ export const funders = (fundersRaw as any).funders as Funder[]
 export const fundersMeta = (fundersRaw as any)._meta as Record<string, unknown>
 export const concentrationRanking = ((fundersRaw as any)
   .concentration_ranking_among_18_makers ?? []) as { funder: string; count: number; note?: string }[]
-export { rubricMarkdown }
+// methodologyMarkdown is the public methodology. rubricMarkdown is the original
+// internal design draft — kept for the record, and shown only on a page that
+// says what it is. It is not the site's published methodology.
+export { methodologyMarkdown, rubricMarkdown }
 
 export const AXIS_LABELS: Record<AxisKey, string> = {
   transparency: 'Transparency',

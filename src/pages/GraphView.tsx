@@ -277,11 +277,12 @@ export function GraphView() {
       {/* Intro / counts */}
       <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
         <div>
-          <h1 className="text-xl font-extrabold text-slate-900">Knowledge graph</h1>
-          <p className="text-sm text-slate-500">
-            {totalMakers} makers · {totalFunders} funders · {graph.resolvedEdgeCount} resolved
-            funder→maker edges. Node size = degree (frontier labs get a small boost). Hover to
-            highlight neighbors; click for detail.
+          <h1 className="text-xl font-extrabold text-slate-900">Ownership &amp; funding graph</h1>
+          <p className="max-w-3xl text-sm leading-snug text-slate-500">
+            Who owns and funds whom: {totalMakers} makers, {totalFunders} funder nodes,{' '}
+            {graph.resolvedEdgeCount} recorded stakes. Node size = number of connections (frontier
+            labs get a small boost). Hover to highlight neighbours; click any node for the detail and
+            sources. A line records a stake — not control, and not a route for your money.
           </p>
         </div>
       </div>

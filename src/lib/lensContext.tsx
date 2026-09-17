@@ -1,56 +1,77 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { DEFAULT_LENS, type LensConfig } from './lens'
+import { EMPTY_LENS, EXAMPLE_LENS, type LensConfig, type LensMode } from './lens'
 
-const STORAGE_KEY = 'value-compass.capital-lens.v1'
+// v2: the stored value now records WHETHER a lens was chosen, not just what it
+// contains. v1 wrote itself to storage on first mount, so a v1 value is no
+// evidence that anyone picked anything — it is ignored and cleared.
+const STORAGE_KEY = 'value-compass.capital-lens.v2'
+const LEGACY_KEY = 'value-compass.capital-lens.v1'
+
+interface StoredLens {
+  mode: LensMode
+  lens: LensConfig
+}
 
 interface LensContextValue {
   lens: LensConfig
+  mode: LensMode
+  /** True once the visitor has actually chosen something to care about. */
+  chosen: boolean
   setKey: (key: keyof LensConfig, value: boolean) => void
-  reset: () => void
-  isDefault: boolean
+  useExampleLens: () => void
+  clear: () => void
 }
 
 const LensContext = createContext<LensContextValue | null>(null)
 
-function loadLens(): LensConfig {
+function load(): StoredLens {
   try {
+    localStorage.removeItem(LEGACY_KEY)
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) return { ...DEFAULT_LENS, ...JSON.parse(raw) }
+    if (raw) {
+      const parsed = JSON.parse(raw) as Partial<StoredLens>
+      if (parsed && (parsed.mode === 'example' || parsed.mode === 'custom')) {
+        return { mode: parsed.mode, lens: { ...EMPTY_LENS, ...parsed.lens } }
+      }
+    }
   } catch {
     /* ignore */
   }
-  return DEFAULT_LENS
+  return { mode: 'unset', lens: EMPTY_LENS }
 }
 
 export function CapitalLensProvider({ children }: { children: ReactNode }) {
-  const [lens, setLens] = useState<LensConfig>(() => loadLens())
+  const [state, setState] = useState<StoredLens>(() => load())
 
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(lens))
+      if (state.mode === 'unset') localStorage.removeItem(STORAGE_KEY)
+      else localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
     } catch {
       /* ignore */
     }
-  }, [lens])
+  }, [state])
 
+  // Any manual toggle makes the lens the visitor's own, including a toggle that
+  // starts from the example — it is no longer ValueCompass's selection.
   const setKey = useCallback((key: keyof LensConfig, value: boolean) => {
-    setLens((prev) => {
-      const next = { ...prev, [key]: value }
-      // Turning the sovereign parent off/on is independent of sub-buckets, but
-      // if all sub-buckets are off, the sovereign concern is effectively idle —
-      // that's handled in evaluateMaker, so no extra coupling needed here.
-      return next
-    })
+    setState((prev) => ({ mode: 'custom', lens: { ...prev.lens, [key]: value } }))
   }, [])
 
-  const reset = useCallback(() => setLens(DEFAULT_LENS), [])
+  const useExampleLens = useCallback(() => setState({ mode: 'example', lens: EXAMPLE_LENS }), [])
+  const clear = useCallback(() => setState({ mode: 'unset', lens: EMPTY_LENS }), [])
 
-  const isDefault = useMemo(
-    () => (Object.keys(DEFAULT_LENS) as (keyof LensConfig)[]).every((k) => lens[k] === DEFAULT_LENS[k]),
-    [lens],
+  const value = useMemo(
+    () => ({
+      lens: state.lens,
+      mode: state.mode,
+      chosen: state.mode !== 'unset',
+      setKey,
+      useExampleLens,
+      clear,
+    }),
+    [state, setKey, useExampleLens, clear],
   )
-
-  const value = useMemo(() => ({ lens, setKey, reset, isDefault }), [lens, setKey, reset, isDefault])
   return <LensContext.Provider value={value}>{children}</LensContext.Provider>
 }
 

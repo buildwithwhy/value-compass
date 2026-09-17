@@ -7,8 +7,9 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts'
-import { AXIS_KEYS, AXIS_LABELS, AXIS_SHORT, numericScore } from '../lib/data'
+import { AXIS_KEYS, AXIS_LABELS, AXIS_SHORT } from '../lib/data'
 import { CONFIDENCE_STYLE } from '../lib/colors'
+import { displayScore } from '../lib/evidence'
 import type { AxisKey, Confidence, Maker } from '../lib/types'
 import { makersMeta } from '../lib/data'
 
@@ -26,19 +27,35 @@ interface RadarRow {
 // Custom vertex dot whose style encodes confidence (A solid, B mid, C hollow).
 function makeDot(maker: Maker, color: string) {
   return (props: any) => {
-    const { cx, cy, payload } = props
-    if (cx == null || cy == null || !payload) return <g />
+    const { cx, cy, payload, index } = props
+    // Recharts collects these into a list, so each one needs its own key.
+    const k = props.key ?? `${maker.id}-${payload?.axisKey ?? index}`
+    if (cx == null || cy == null || !payload) return <g key={k} />
     const axisKey = payload.axisKey as AxisKey
     const axis = maker.axes[axisKey]
-    if (!axis || numericScore(axis.score) == null) return <g /> // n/a → no dot (gap)
+    // No dot where no score is shown — a withheld or absent value is a gap in
+    // the polygon, never a zero.
+    if (!axis || displayScore(maker, axisKey).value == null) return <g key={k} />
     const conf = axis.confidence as Confidence
     const style = CONFIDENCE_STYLE[conf]
     const r = 4
     if (style.hollow) {
-      return <circle cx={cx} cy={cy} r={r} fill="#fff" stroke={color} strokeWidth={2} strokeDasharray="2 1.5" />
+      return (
+        <circle
+          key={k}
+          cx={cx}
+          cy={cy}
+          r={r}
+          fill="#fff"
+          stroke={color}
+          strokeWidth={2}
+          strokeDasharray="2 1.5"
+        />
+      )
     }
     return (
       <circle
+        key={k}
         cx={cx}
         cy={cy}
         r={r}
@@ -63,7 +80,9 @@ function CustomTooltip({ active, payload, scale }: any) {
         <div key={p.name} className="flex items-center gap-1.5">
           <span className="inline-block h-2 w-2 rounded-full" style={{ background: p.color }} />
           <span className="text-slate-600">{p.name}:</span>
-          <span className="font-semibold text-slate-800">{p.value ?? 'n/a'}</span>
+          <span className="font-semibold text-slate-800">
+            {p.value ?? 'no score shown'}
+          </span>
         </div>
       ))}
       <div className="mt-2 border-t border-slate-100 pt-1.5 text-[11px] leading-snug text-slate-500">
@@ -78,8 +97,9 @@ function CustomTooltip({ active, payload, scale }: any) {
 }
 
 /**
- * Value Compass radar. Higher = better (a larger polygon = a better-scoring
- * actor). Renders one polygon per series; n/a scores become gaps (never 0).
+ * Value Compass radar. One polygon per maker, plotting its scores under the
+ * published rubric — a wider shape means higher scores on these five axes, not
+ * a verdict on the company. Axes with no score shown become gaps, never zeros.
  */
 export function ValueRadar({
   series,
@@ -91,8 +111,7 @@ export function ValueRadar({
   const data: RadarRow[] = AXIS_KEYS.map((key) => {
     const row: RadarRow = { axis: AXIS_SHORT[key], axisKey: key }
     for (const s of series) {
-      const v = numericScore(s.maker.axes[key]?.score)
-      row[s.maker.id] = v // null for n/a → gap
+      row[s.maker.id] = displayScore(s.maker, key).value // null → gap
     }
     return row
   })

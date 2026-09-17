@@ -1,8 +1,10 @@
 import { backersFor } from '../lib/data'
 import { TIER_COLORS, TIER_LABELS } from '../lib/colors'
+import { makerCoverage } from '../lib/evidence'
 import type { Maker } from '../lib/types'
 import { AxisDetail } from './AxisDetail'
 import { ConfidenceLegend } from './ConfidenceBadge'
+import { EvidenceLegend } from './EvidenceBadge'
 import { FunderCard, isDeepPocket } from './FunderCard'
 import { PolarityLegend } from './PolarityLegend'
 import { Chip, SectionTitle, Tag } from './ui'
@@ -22,6 +24,7 @@ export function MakerDetail({
   const sortedBackers = [...backers].sort(
     (a, b) => Number(isDeepPocket(b.funder)) - Number(isDeepPocket(a.funder)),
   )
+  const cov = makerCoverage(maker)
 
   return (
     <div className="space-y-6">
@@ -62,13 +65,13 @@ export function MakerDetail({
 
       {/* Tension hook — open question, not a verdict */}
       {maker.tension_hook && (
-        <div className="rounded-lg border-l-4 border-amber-400 bg-amber-50 p-3">
-          <p className="text-xs font-bold uppercase tracking-wider text-amber-700">
-            Worth probing →
+        <div className="rounded-lg border-l-4 border-violet-400 bg-violet-50 p-3">
+          <p className="text-xs font-bold uppercase tracking-wider text-violet-700">
+            ValueCompass assessment — worth probing
           </p>
-          <p className="mt-1 text-sm leading-snug text-amber-900">{maker.tension_hook}</p>
-          <p className="mt-1 text-xs italic text-amber-600">
-            An open question to investigate — not a verdict.
+          <p className="mt-1 text-sm leading-snug text-violet-900">{maker.tension_hook}</p>
+          <p className="mt-1 text-xs text-violet-600">
+            An open question we think is worth asking — not a finding, and not a verdict.
           </p>
         </div>
       )}
@@ -77,20 +80,39 @@ export function MakerDetail({
       <div>
         <SectionTitle>Value Compass</SectionTitle>
         <PolarityLegend className="mb-2" />
+        {cov.total - cov.notEstablished < 3 && (
+          <p className="mb-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-xs leading-snug text-slate-600">
+            Only {cov.total - cov.notEstablished} of {cov.total} axes have a score to show for{' '}
+            {maker.name}, so there is no meaningful shape here. What is known is in the axis list
+            below; the rest is simply not published.
+          </p>
+        )}
         <ValueRadar series={[{ maker, color: TIER_COLORS[maker.tier] }]} height={300} />
-        <ConfidenceLegend />
+        <div className="mt-1 space-y-1.5">
+          <EvidenceLegend />
+          <ConfidenceLegend />
+        </div>
       </div>
 
       {/* Axis breakdown */}
       <div>
         <SectionTitle>Axis-by-axis</SectionTitle>
+        <p className="mb-2 text-xs leading-snug text-slate-500">
+          Of the {cov.total} axis assessments for {maker.name},{' '}
+          <span className="font-semibold text-slate-700">{cov.sourced}</span> carry a source about{' '}
+          {maker.name}, <span className="font-semibold text-slate-700">{cov.unsourced}</span> have no
+          source attached yet,{' '}
+          <span className="font-semibold text-slate-700">{cov.contextual}</span> reason from context,
+          and <span className="font-semibold text-slate-700">{cov.notEstablished}</span> rest only on
+          what has not been published — so no score is shown for those.
+        </p>
         <AxisDetail maker={maker} />
       </div>
 
       {/* Funder picture */}
       <div>
         <SectionTitle>
-          Funder picture — who backs {maker.name} ({backers.length})
+          Funder picture — who holds a stake in {maker.name} ({backers.length})
         </SectionTitle>
         {sortedBackers.length > 0 ? (
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -98,6 +120,7 @@ export function MakerDetail({
               <FunderCard
                 key={funder.name}
                 funder={funder}
+                makerId={maker.id}
                 ownsOutright={ownsOutright}
                 onOpen={onOpenFunder}
               />
@@ -120,11 +143,12 @@ export function MakerDetail({
               Capital character
             </h3>
             <span className="rounded-full bg-teal-100 px-2 py-0.5 text-[10px] font-bold uppercase text-teal-700">
-              your lens · not a 6th score
+              your priorities · not a 6th score
             </span>
           </div>
-          <p className="mb-3 text-xs text-teal-700">
-            Who the money comes from — kept separate from the 5-axis conduct compass above.
+          <p className="mb-3 text-xs leading-snug text-teal-700">
+            Where the money comes from, kept separate from the five scored axes above. The facts are
+            the same for everyone; which of them count as concerns is yours to set.
           </p>
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
             <CapitalLensPanel compact />

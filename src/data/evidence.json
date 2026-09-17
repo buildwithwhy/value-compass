@@ -1,0 +1,1502 @@
+{
+  "_meta": {
+    "title": "Value Compass — evidence classification",
+    "generated_by": "scripts/build-evidence.mjs (re-run after editing makers.json / funders.json)",
+    "what_this_is": "A derived layer. It adds no facts. For every recorded axis assessment it records what the written rationale rests on, which of its sources are about that maker, and whether the score may be shown or compared.",
+    "display_rule": "A score whose rationale establishes only that information is undisclosed is withheld from the compass, the matrix and all comparisons. The recorded value is preserved and shown on request.",
+    "comparison_rule": "A difference between two makers is only called when both assessments rest on evidence about that maker and carry confidence A or B.",
+    "bases": {
+      "sourced": "Rationale points at something on record and cites a source about this maker.",
+      "unsourced": "Rationale points at something on record, but no source about this maker is attached.",
+      "contextual": "Rationale reasons from jurisdiction, company size or position in the stack, not from evidence about this maker.",
+      "non_disclosure": "Rationale establishes only that the information is not published."
+    },
+    "summary": {
+      "axis_records": 90,
+      "by_basis": {
+        "sourced": 20,
+        "unsourced": 44,
+        "non_disclosure": 21,
+        "contextual": 5
+      },
+      "withheld": 21,
+      "comparable": 35,
+      "no_sources_at_all": 40,
+      "background_only": 27,
+      "confidence_c": 55,
+      "recorded_na": 0,
+      "funders_with_unverified_associations": 12,
+      "funders_with_associations": 14,
+      "funder_maker_edges": 89,
+      "edges_with_transcribed_detail": 20
+    }
+  },
+  "relationship_types": {
+    "outright_ownership": "Wholly owned by this entity.",
+    "controlling_stake": "A stake the record describes as controlling.",
+    "equity_investment": "Money invested for a stake. Not by itself control.",
+    "funding_commitment": "Money announced or committed. Check the status field for whether it has been paid.",
+    "commercial_dependency": "An investor who is also a supplier or customer of the maker.",
+    "passive_economic": "Index-fund ownership of a public parent. Economic exposure, exercised through routine governance votes.",
+    "unspecified": "This dataset records a backing relationship but not what kind."
+  },
+  "relationship_statuses": {
+    "completed": "The record describes this as done.",
+    "announced": "Announced. The record does not say it has closed.",
+    "pending": "The record describes it as not yet closed.",
+    "contingent": "Part or all of it depends on a future event.",
+    "unspecified": "The record does not say."
+  },
+  "background_sources": {
+    "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/": "Sector background on Global-South AI data work — not specific to any one maker.",
+    "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south": "Sector background on Global-South AI data labour — not specific to any one maker.",
+    "https://www.effectivealtruism.org/articles/cullen-okeefe-the-windfall-clause-sharing-the-benefits-of-advanced-ai": "Conceptual reference (the Windfall Clause proposal) — not a record of any maker’s commitments."
+  },
+  "axis_evidence": {
+    "Anthropic": {
+      "transparency": {
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [
+          "https://crfm.stanford.edu/fmti/December-2025/index.html",
+          "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+          "https://arxiv.org/html/2512.10169v1"
+        ],
+        "background_sources": [],
+        "context_used": []
+      },
+      "culture_esg": {
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [
+          "https://crfm.stanford.edu/fmti/December-2025/index.html",
+          "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
+        ],
+        "background_sources": [],
+        "context_used": []
+      },
+      "labour_integrity": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+            "why": "Sector background on Global-South AI data work — not specific to any one maker."
+          },
+          {
+            "url": "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south",
+            "why": "Sector background on Global-South AI data labour — not specific to any one maker."
+          }
+        ],
+        "context_used": [
+          "absence of reported incidents"
+        ]
+      },
+      "wealth_dispersion": {
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [
+          "https://fortune.com/2026/06/04/amazon-google-billions-anthropic-ipo/"
+        ],
+        "background_sources": [],
+        "context_used": []
+      },
+      "public_sharing": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://www.effectivealtruism.org/articles/cullen-okeefe-the-windfall-clause-sharing-the-benefits-of-advanced-ai",
+            "why": "Conceptual reference (the Windfall Clause proposal) — not a record of any maker’s commitments."
+          }
+        ],
+        "context_used": []
+      }
+    },
+    "OpenAI": {
+      "transparency": {
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [
+          "https://crfm.stanford.edu/fmti/December-2025/index.html",
+          "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+          "https://arxiv.org/html/2512.10169v1"
+        ],
+        "background_sources": [],
+        "context_used": []
+      },
+      "culture_esg": {
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [
+          "https://www.cnbc.com/2025/10/28/open-ai-for-profit-microsoft.html"
+        ],
+        "background_sources": [],
+        "context_used": []
+      },
+      "labour_integrity": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+            "why": "Sector background on Global-South AI data work — not specific to any one maker."
+          },
+          {
+            "url": "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south",
+            "why": "Sector background on Global-South AI data labour — not specific to any one maker."
+          }
+        ],
+        "context_used": []
+      },
+      "wealth_dispersion": {
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [
+          "https://www.cnbc.com/2025/10/28/open-ai-for-profit-microsoft.html",
+          "https://openai.com/our-structure/"
+        ],
+        "background_sources": [],
+        "context_used": []
+      },
+      "public_sharing": {
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [
+          "https://www.cnbc.com/2025/10/28/open-ai-for-profit-microsoft.html",
+          "https://openai.com/index/evolving-our-structure/"
+        ],
+        "background_sources": [
+          {
+            "url": "https://www.effectivealtruism.org/articles/cullen-okeefe-the-windfall-clause-sharing-the-benefits-of-advanced-ai",
+            "why": "Conceptual reference (the Windfall Clause proposal) — not a record of any maker’s commitments."
+          }
+        ],
+        "context_used": []
+      }
+    },
+    "Google DeepMind": {
+      "transparency": {
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [
+          "https://crfm.stanford.edu/fmti/December-2025/index.html",
+          "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+          "https://arxiv.org/html/2512.10169v1"
+        ],
+        "background_sources": [],
+        "context_used": []
+      },
+      "culture_esg": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://crfm.stanford.edu/fmti/December-2025/index.html",
+            "why": "The cited sources are the Stanford transparency index. They do not document the Alphabet sustainability reporting or the dual-class voting the score rests on."
+          },
+          {
+            "url": "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+            "why": "The cited sources are the Stanford transparency index. They do not document the Alphabet sustainability reporting or the dual-class voting the score rests on."
+          }
+        ],
+        "context_used": []
+      },
+      "labour_integrity": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+            "why": "Sector background on Global-South AI data work — not specific to any one maker."
+          },
+          {
+            "url": "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south",
+            "why": "Sector background on Global-South AI data labour — not specific to any one maker."
+          }
+        ],
+        "context_used": []
+      },
+      "wealth_dispersion": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      },
+      "public_sharing": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      }
+    },
+    "xAI": {
+      "transparency": {
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [
+          "https://crfm.stanford.edu/fmti/December-2025/index.html",
+          "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+          "https://arxiv.org/html/2512.10169v1"
+        ],
+        "background_sources": [],
+        "context_used": []
+      },
+      "culture_esg": {
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [
+          "https://time.com/7308925/elon-musk-memphis-ai-data-center/",
+          "https://earthjustice.org/case/xai-illegal-gas-power-plant-data-center-colossus"
+        ],
+        "background_sources": [],
+        "context_used": []
+      },
+      "labour_integrity": {
+        "basis": "non_disclosure",
+        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "withheld": true,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+            "why": "Sector background on Global-South AI data work — not specific to any one maker."
+          },
+          {
+            "url": "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south",
+            "why": "Sector background on Global-South AI data labour — not specific to any one maker."
+          }
+        ],
+        "context_used": []
+      },
+      "wealth_dispersion": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      },
+      "public_sharing": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      }
+    },
+    "Meta": {
+      "transparency": {
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [
+          "https://crfm.stanford.edu/fmti/December-2025/index.html",
+          "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+          "https://arxiv.org/html/2512.10169v1",
+          "https://www.cnbc.com/2026/04/08/meta-debuts-first-major-ai-model-since-14-billion-deal-to-bring-in-alexandr-wang.html"
+        ],
+        "background_sources": [],
+        "context_used": []
+      },
+      "culture_esg": {
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [
+          "https://www.entrepreneur.com/business-news/ex-meta-ai-chief-slams-new-boss-as-young-and/501611"
+        ],
+        "background_sources": [],
+        "context_used": []
+      },
+      "labour_integrity": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+            "why": "Sector background on Global-South AI data work — not specific to any one maker."
+          },
+          {
+            "url": "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south",
+            "why": "Sector background on Global-South AI data labour — not specific to any one maker."
+          }
+        ],
+        "context_used": []
+      },
+      "wealth_dispersion": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      },
+      "public_sharing": {
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [
+          "https://www.cnbc.com/2026/04/08/meta-debuts-first-major-ai-model-since-14-billion-deal-to-bring-in-alexandr-wang.html"
+        ],
+        "background_sources": [],
+        "context_used": []
+      }
+    },
+    "Mistral": {
+      "transparency": {
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [
+          "https://crfm.stanford.edu/fmti/December-2025/index.html",
+          "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+          "https://arxiv.org/html/2512.10169v1"
+        ],
+        "background_sources": [],
+        "context_used": []
+      },
+      "culture_esg": {
+        "basis": "non_disclosure",
+        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "withheld": true,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": [
+          "EU jurisdiction"
+        ]
+      },
+      "labour_integrity": {
+        "basis": "non_disclosure",
+        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "withheld": true,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+            "why": "Sector background on Global-South AI data work — not specific to any one maker."
+          },
+          {
+            "url": "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south",
+            "why": "Sector background on Global-South AI data labour — not specific to any one maker."
+          }
+        ],
+        "context_used": [
+          "EU jurisdiction",
+          "company size / age"
+        ]
+      },
+      "wealth_dispersion": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      },
+      "public_sharing": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      }
+    },
+    "DeepSeek": {
+      "transparency": {
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [
+          "https://crfm.stanford.edu/fmti/December-2025/index.html",
+          "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+          "https://arxiv.org/html/2512.10169v1"
+        ],
+        "background_sources": [],
+        "context_used": []
+      },
+      "culture_esg": {
+        "basis": "non_disclosure",
+        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "withheld": true,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": [
+          "parent-company sector"
+        ]
+      },
+      "labour_integrity": {
+        "basis": "non_disclosure",
+        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "withheld": true,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+            "why": "Sector background on Global-South AI data work — not specific to any one maker."
+          },
+          {
+            "url": "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south",
+            "why": "Sector background on Global-South AI data labour — not specific to any one maker."
+          }
+        ],
+        "context_used": [
+          "Chinese jurisdiction"
+        ]
+      },
+      "wealth_dispersion": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      },
+      "public_sharing": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://www.investing.com/news/stock-market-news/deepseek-nears-74-billion-funding-led-by-tencent-93CH-4723930",
+            "why": "The cited source reports the 2026 funding round. It does not document the open-weight releases or the pricing the score rests on."
+          }
+        ],
+        "context_used": []
+      }
+    },
+    "Microsoft": {
+      "transparency": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://crfm.stanford.edu/fmti/December-2025/index.html",
+            "why": "Stanford FMTI 2025 — this maker was not among the firms it scored, so it is context, not a measurement of this maker."
+          },
+          {
+            "url": "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+            "why": "Stanford FMTI 2025 — this maker was not among the firms it scored, so it is context, not a measurement of this maker."
+          }
+        ],
+        "context_used": []
+      },
+      "culture_esg": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      },
+      "labour_integrity": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+            "why": "Sector background on Global-South AI data work — not specific to any one maker."
+          },
+          {
+            "url": "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south",
+            "why": "Sector background on Global-South AI data labour — not specific to any one maker."
+          }
+        ],
+        "context_used": []
+      },
+      "wealth_dispersion": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      },
+      "public_sharing": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      }
+    },
+    "Perplexity": {
+      "transparency": {
+        "basis": "non_disclosure",
+        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "withheld": true,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://crfm.stanford.edu/fmti/December-2025/index.html",
+            "why": "Stanford FMTI 2025 — this maker was not among the firms it scored, so it is context, not a measurement of this maker."
+          },
+          {
+            "url": "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+            "why": "Stanford FMTI 2025 — this maker was not among the firms it scored, so it is context, not a measurement of this maker."
+          }
+        ],
+        "context_used": []
+      },
+      "culture_esg": {
+        "basis": "non_disclosure",
+        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "withheld": true,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": [
+          "absence of reported incidents"
+        ]
+      },
+      "labour_integrity": {
+        "basis": "contextual",
+        "rule": "The rationale reasons from sits on top of another maker’s models rather than from evidence about this maker.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+            "why": "Sector background on Global-South AI data work — not specific to any one maker."
+          },
+          {
+            "url": "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south",
+            "why": "Sector background on Global-South AI data labour — not specific to any one maker."
+          }
+        ],
+        "context_used": [
+          "sits on top of another maker’s models"
+        ]
+      },
+      "wealth_dispersion": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      },
+      "public_sharing": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      }
+    },
+    "Midjourney": {
+      "transparency": {
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [
+          "https://crfm.stanford.edu/fmti/December-2025/index.html",
+          "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+          "https://arxiv.org/html/2512.10169v1"
+        ],
+        "background_sources": [],
+        "context_used": []
+      },
+      "culture_esg": {
+        "basis": "non_disclosure",
+        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "withheld": true,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": [
+          "company size / age",
+          "absence of reported incidents"
+        ]
+      },
+      "labour_integrity": {
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [
+          "https://www.cnn.com/2025/06/11/tech/disney-universal-midjourney-ai-copyright-lawsuit",
+          "https://www.cnbc.com/2025/06/11/disney-universal-midjourney-ai-copyright.html"
+        ],
+        "background_sources": [],
+        "context_used": []
+      },
+      "wealth_dispersion": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      },
+      "public_sharing": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      }
+    },
+    "ElevenLabs": {
+      "transparency": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://crfm.stanford.edu/fmti/December-2025/index.html",
+            "why": "Stanford FMTI 2025 — this maker was not among the firms it scored, so it is context, not a measurement of this maker."
+          },
+          {
+            "url": "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+            "why": "Stanford FMTI 2025 — this maker was not among the firms it scored, so it is context, not a measurement of this maker."
+          }
+        ],
+        "context_used": []
+      },
+      "culture_esg": {
+        "basis": "non_disclosure",
+        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "withheld": true,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      },
+      "labour_integrity": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+            "why": "Sector background on Global-South AI data work — not specific to any one maker."
+          },
+          {
+            "url": "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south",
+            "why": "Sector background on Global-South AI data labour — not specific to any one maker."
+          }
+        ],
+        "context_used": []
+      },
+      "wealth_dispersion": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      },
+      "public_sharing": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      }
+    },
+    "Canva": {
+      "transparency": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://crfm.stanford.edu/fmti/December-2025/index.html",
+            "why": "Stanford FMTI 2025 — this maker was not among the firms it scored, so it is context, not a measurement of this maker."
+          },
+          {
+            "url": "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+            "why": "Stanford FMTI 2025 — this maker was not among the firms it scored, so it is context, not a measurement of this maker."
+          }
+        ],
+        "context_used": []
+      },
+      "culture_esg": {
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [
+          "https://www.pledge1percent.org/canva-raises-at-40-billion-valuation-its-founders-are-pledging/"
+        ],
+        "background_sources": [],
+        "context_used": []
+      },
+      "labour_integrity": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      },
+      "wealth_dispersion": {
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [
+          "https://www.pledge1percent.org/canva-raises-at-40-billion-valuation-its-founders-are-pledging/"
+        ],
+        "background_sources": [],
+        "context_used": []
+      },
+      "public_sharing": {
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [
+          "https://www.pledge1percent.org/canva-raises-at-40-billion-valuation-its-founders-are-pledging/"
+        ],
+        "background_sources": [],
+        "context_used": []
+      }
+    },
+    "Lovable": {
+      "transparency": {
+        "basis": "non_disclosure",
+        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "withheld": true,
+        "comparable": false,
+        "entity_sources": [
+          "https://crfm.stanford.edu/fmti/December-2025/index.html",
+          "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
+        ],
+        "background_sources": [],
+        "context_used": []
+      },
+      "culture_esg": {
+        "basis": "non_disclosure",
+        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "withheld": true,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": [
+          "company size / age"
+        ]
+      },
+      "labour_integrity": {
+        "basis": "contextual",
+        "rule": "The rationale reasons from sits on top of another maker’s models rather than from evidence about this maker.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+            "why": "Sector background on Global-South AI data work — not specific to any one maker."
+          },
+          {
+            "url": "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south",
+            "why": "Sector background on Global-South AI data labour — not specific to any one maker."
+          }
+        ],
+        "context_used": [
+          "sits on top of another maker’s models"
+        ]
+      },
+      "wealth_dispersion": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      },
+      "public_sharing": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      }
+    },
+    "Replit": {
+      "transparency": {
+        "basis": "non_disclosure",
+        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "withheld": true,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://crfm.stanford.edu/fmti/December-2025/index.html",
+            "why": "Stanford FMTI 2025 — this maker was not among the firms it scored, so it is context, not a measurement of this maker."
+          },
+          {
+            "url": "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+            "why": "Stanford FMTI 2025 — this maker was not among the firms it scored, so it is context, not a measurement of this maker."
+          }
+        ],
+        "context_used": []
+      },
+      "culture_esg": {
+        "basis": "non_disclosure",
+        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "withheld": true,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      },
+      "labour_integrity": {
+        "basis": "non_disclosure",
+        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "withheld": true,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+            "why": "Sector background on Global-South AI data work — not specific to any one maker."
+          },
+          {
+            "url": "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south",
+            "why": "Sector background on Global-South AI data labour — not specific to any one maker."
+          }
+        ],
+        "context_used": [
+          "sits on top of another maker’s models"
+        ]
+      },
+      "wealth_dispersion": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      },
+      "public_sharing": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      }
+    },
+    "Gamma": {
+      "transparency": {
+        "basis": "non_disclosure",
+        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "withheld": true,
+        "comparable": false,
+        "entity_sources": [
+          "https://crfm.stanford.edu/fmti/December-2025/index.html",
+          "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
+        ],
+        "background_sources": [],
+        "context_used": []
+      },
+      "culture_esg": {
+        "basis": "contextual",
+        "rule": "The rationale reasons from company size / age rather than from evidence about this maker.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": [
+          "company size / age"
+        ]
+      },
+      "labour_integrity": {
+        "basis": "contextual",
+        "rule": "The rationale reasons from sits on top of another maker’s models rather than from evidence about this maker.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+            "why": "Sector background on Global-South AI data work — not specific to any one maker."
+          },
+          {
+            "url": "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south",
+            "why": "Sector background on Global-South AI data labour — not specific to any one maker."
+          }
+        ],
+        "context_used": [
+          "sits on top of another maker’s models"
+        ]
+      },
+      "wealth_dispersion": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      },
+      "public_sharing": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      }
+    },
+    "Cursor": {
+      "transparency": {
+        "basis": "non_disclosure",
+        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "withheld": true,
+        "comparable": false,
+        "entity_sources": [
+          "https://crfm.stanford.edu/fmti/December-2025/index.html",
+          "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
+        ],
+        "background_sources": [],
+        "context_used": []
+      },
+      "culture_esg": {
+        "basis": "non_disclosure",
+        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "withheld": true,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": [
+          "company size / age"
+        ]
+      },
+      "labour_integrity": {
+        "basis": "contextual",
+        "rule": "The rationale reasons from sits on top of another maker’s models rather than from evidence about this maker.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+            "why": "Sector background on Global-South AI data work — not specific to any one maker."
+          },
+          {
+            "url": "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south",
+            "why": "Sector background on Global-South AI data labour — not specific to any one maker."
+          }
+        ],
+        "context_used": [
+          "sits on top of another maker’s models"
+        ]
+      },
+      "wealth_dispersion": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      },
+      "public_sharing": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      }
+    },
+    "Cohere": {
+      "transparency": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": true,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://crfm.stanford.edu/fmti/December-2025/index.html",
+            "why": "Stanford FMTI 2025 — this maker was not among the firms it scored, so it is context, not a measurement of this maker."
+          },
+          {
+            "url": "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+            "why": "Stanford FMTI 2025 — this maker was not among the firms it scored, so it is context, not a measurement of this maker."
+          }
+        ],
+        "context_used": []
+      },
+      "culture_esg": {
+        "basis": "non_disclosure",
+        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "withheld": true,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      },
+      "labour_integrity": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+            "why": "Sector background on Global-South AI data work — not specific to any one maker."
+          },
+          {
+            "url": "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south",
+            "why": "Sector background on Global-South AI data labour — not specific to any one maker."
+          }
+        ],
+        "context_used": []
+      },
+      "wealth_dispersion": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      },
+      "public_sharing": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://siliconangle.com/2026/04/24/ai-startups-cohere-aleph-alpha-merge-600m-new-funding/",
+            "why": "The cited source reports the Aleph Alpha merger financing. It does not document Cohere For AI or the Aya releases the score rests on."
+          }
+        ],
+        "context_used": []
+      }
+    },
+    "Moonshot": {
+      "transparency": {
+        "basis": "non_disclosure",
+        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "withheld": true,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://crfm.stanford.edu/fmti/December-2025/index.html",
+            "why": "Stanford FMTI 2025 — this maker was not among the firms it scored, so it is context, not a measurement of this maker."
+          },
+          {
+            "url": "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
+            "why": "Stanford FMTI 2025 — this maker was not among the firms it scored, so it is context, not a measurement of this maker."
+          }
+        ],
+        "context_used": [
+          "analogy to another maker"
+        ]
+      },
+      "culture_esg": {
+        "basis": "non_disclosure",
+        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "withheld": true,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      },
+      "labour_integrity": {
+        "basis": "non_disclosure",
+        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "withheld": true,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [
+          {
+            "url": "https://blogs.lse.ac.uk/medialse/2025/11/14/the-perilous-future-of-ai-work-in-the-global-south/",
+            "why": "Sector background on Global-South AI data work — not specific to any one maker."
+          },
+          {
+            "url": "https://www.brookings.edu/articles/reimagining-the-future-of-data-and-ai-labor-in-the-global-south",
+            "why": "Sector background on Global-South AI data labour — not specific to any one maker."
+          }
+        ],
+        "context_used": [
+          "Chinese jurisdiction"
+        ]
+      },
+      "wealth_dispersion": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      },
+      "public_sharing": {
+        "basis": "unsourced",
+        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "withheld": false,
+        "comparable": false,
+        "entity_sources": [],
+        "background_sources": [],
+        "context_used": []
+      }
+    }
+  },
+  "funder_association_status": {
+    "Andreessen Horowitz (a16z)": {
+      "associations_status": "partially_sourced",
+      "source_count": 1,
+      "claim_count": 3
+    },
+    "MGX": {
+      "associations_status": "partially_sourced",
+      "source_count": 1,
+      "claim_count": 2
+    },
+    "Qatar Investment Authority (QIA)": {
+      "associations_status": "unverified",
+      "source_count": 0,
+      "claim_count": 1
+    },
+    "SoftBank": {
+      "associations_status": "unverified",
+      "source_count": 0,
+      "claim_count": 2
+    },
+    "Thrive Capital": {
+      "associations_status": "unverified",
+      "source_count": 0,
+      "claim_count": 1
+    },
+    "Khosla Ventures": {
+      "associations_status": "unverified",
+      "source_count": 0,
+      "claim_count": 1
+    },
+    "Founders Fund": {
+      "associations_status": "unverified",
+      "source_count": 0,
+      "claim_count": 3
+    },
+    "Tencent": {
+      "associations_status": "unverified",
+      "source_count": 0,
+      "claim_count": 1
+    },
+    "Saudi PIF / Humain": {
+      "associations_status": "unverified",
+      "source_count": 0,
+      "claim_count": 2
+    },
+    "ASML": {
+      "associations_status": "unverified",
+      "source_count": 0,
+      "claim_count": 1
+    },
+    "High-Flyer": {
+      "associations_status": "unverified",
+      "source_count": 0,
+      "claim_count": 1
+    },
+    "Alibaba": {
+      "associations_status": "unverified",
+      "source_count": 0,
+      "claim_count": 1
+    },
+    "HongShan (ex-Sequoia China)": {
+      "associations_status": "unverified",
+      "source_count": 0,
+      "claim_count": 1
+    },
+    "Index managers (Vanguard / BlackRock / State Street)": {
+      "associations_status": "unverified",
+      "source_count": 0,
+      "claim_count": 2
+    }
+  },
+  "relationships": {
+    "Alphabet / Google→Google DeepMind": {
+      "funder": "Alphabet / Google",
+      "maker": "Google DeepMind",
+      "type": "outright_ownership",
+      "status": "completed",
+      "as_of": null,
+      "quote": "Alphabet (wholly owned)",
+      "quoted_from": "makers.json → Google DeepMind.lead_backers"
+    },
+    "Alphabet / Google→Anthropic": {
+      "funder": "Alphabet / Google",
+      "maker": "Anthropic",
+      "type": "equity_investment",
+      "status": "completed",
+      "voting": "none_stated",
+      "as_of": null,
+      "quote": "Anthropic ~14%, capped 15%, no votes/board",
+      "quoted_from": "funders.json → Alphabet / Google.flag"
+    },
+    "Amazon→Anthropic": {
+      "funder": "Amazon",
+      "maker": "Anthropic",
+      "type": "equity_investment",
+      "status": "completed",
+      "as_of": null,
+      "quote": "Largest Anthropic investor (~$8B in, ~$74B paper)",
+      "quoted_from": "funders.json → Amazon.also_funds"
+    },
+    "Amazon→OpenAI": {
+      "funder": "Amazon",
+      "maker": "OpenAI",
+      "type": "funding_commitment",
+      "status": "contingent",
+      "as_of": "2026-02",
+      "quote": "committed up to $50B to OpenAI in Feb 2026 ($15B initial + $35B contingent on an OpenAI IPO/listing), bundled with AWS Trainium compute",
+      "quoted_from": "funders.json → Amazon.also_funds"
+    },
+    "Microsoft→OpenAI": {
+      "funder": "Microsoft",
+      "maker": "OpenAI",
+      "type": "equity_investment",
+      "status": "completed",
+      "as_of": null,
+      "quote": "~$13B+ into OpenAI (~27%)",
+      "quoted_from": "funders.json → Microsoft.also_funds"
+    },
+    "Microsoft→Anthropic": {
+      "funder": "Microsoft",
+      "maker": "Anthropic",
+      "type": "unspecified",
+      "status": "unspecified",
+      "as_of": null,
+      "quote": "a committed Anthropic backer",
+      "quoted_from": "funders.json → Microsoft.also_funds"
+    },
+    "Microsoft→Mistral": {
+      "funder": "Microsoft",
+      "maker": "Mistral",
+      "type": "equity_investment",
+      "status": "completed",
+      "as_of": "2024",
+      "quote": "a minor ~$16M strategic stake in Mistral (2024, Azure partnership)",
+      "quoted_from": "funders.json → Microsoft.also_funds"
+    },
+    "ASML→Mistral": {
+      "funder": "ASML",
+      "maker": "Mistral",
+      "type": "equity_investment",
+      "status": "completed",
+      "voting": "board_presence_stated",
+      "as_of": null,
+      "quote": "largest Mistral shareholder (~11%, €1.3B); CFO on strategic committee",
+      "quoted_from": "funders.json → ASML.flag"
+    },
+    "High-Flyer→DeepSeek": {
+      "funder": "High-Flyer",
+      "maker": "DeepSeek",
+      "type": "controlling_stake",
+      "status": "completed",
+      "as_of": null,
+      "quote": "CONTROLLING parent of DeepSeek (founder Liang Wenfeng ~89.5%)",
+      "quoted_from": "funders.json → High-Flyer.flag"
+    },
+    "Tencent→DeepSeek": {
+      "funder": "Tencent",
+      "maker": "DeepSeek",
+      "type": "equity_investment",
+      "status": "pending",
+      "as_of": "2026-06",
+      "quote": "first-ever external round (~$7.4B led by Tencent & CATL, with the state-backed National AI Industry Fund) near closing as of June 2026",
+      "quoted_from": "makers.json → DeepSeek.structure"
+    },
+    "Nvidia→Anthropic": {
+      "funder": "Nvidia",
+      "maker": "Anthropic",
+      "type": "commercial_dependency",
+      "status": "completed",
+      "as_of": null,
+      "quote": "its Anthropic check was tied to $30B Azure spend + Nvidia hardware purchases",
+      "quoted_from": "funders.json → Nvidia.flag"
+    },
+    "Saudi PIF / Humain→xAI": {
+      "funder": "Saudi PIF / Humain",
+      "maker": "xAI",
+      "type": "equity_investment",
+      "status": "completed",
+      "as_of": null,
+      "quote": "$3B into xAI Series E (now SpaceX shares)",
+      "quoted_from": "funders.json → Saudi PIF / Humain.flag"
+    },
+    "Thrive Capital→OpenAI": {
+      "funder": "Thrive Capital",
+      "maker": "OpenAI",
+      "type": "equity_investment",
+      "status": "completed",
+      "as_of": "2025-12",
+      "quote": "OpenAI: $29B → $285B; OpenAI took a reciprocal stake in Thrive Holdings (Dec 2025)",
+      "quoted_from": "funders.json → Thrive Capital.flag"
+    },
+    "NFDG (Nat Friedman & Daniel Gross)→Perplexity": {
+      "funder": "NFDG (Nat Friedman & Daniel Gross)",
+      "maker": "Perplexity",
+      "type": "equity_investment",
+      "status": "completed",
+      "as_of": "2025",
+      "quote": "In mid-2025 Meta hired both partners to co-lead Meta Superintelligence Labs and bought a stake (up to ~49%) in NFDG’s holdings; the fund stopped making new investments.",
+      "quoted_from": "funders.json → NFDG.also_funds"
+    },
+    "NFDG (Nat Friedman & Daniel Gross)→ElevenLabs": {
+      "funder": "NFDG (Nat Friedman & Daniel Gross)",
+      "maker": "ElevenLabs",
+      "type": "equity_investment",
+      "status": "completed",
+      "as_of": "2025",
+      "quote": "In mid-2025 Meta hired both partners to co-lead Meta Superintelligence Labs and bought a stake (up to ~49%) in NFDG’s holdings; the fund stopped making new investments.",
+      "quoted_from": "funders.json → NFDG.also_funds"
+    },
+    "Index managers (Vanguard / BlackRock / State Street)→Microsoft": {
+      "funder": "Index managers (Vanguard / BlackRock / State Street)",
+      "maker": "Microsoft",
+      "type": "passive_economic",
+      "status": "completed",
+      "as_of": null,
+      "quote": "they passively own ~5-10% each of every public anchor (Microsoft, Alphabet, Amazon, Nvidia, Meta)",
+      "quoted_from": "funders.json → Index managers.also_funds"
+    },
+    "Index managers (Vanguard / BlackRock / State Street)→Alphabet/Google": {
+      "funder": "Index managers (Vanguard / BlackRock / State Street)",
+      "maker": "Alphabet/Google",
+      "type": "passive_economic",
+      "status": "completed",
+      "as_of": null,
+      "quote": "they passively own ~5-10% each of every public anchor (Microsoft, Alphabet, Amazon, Nvidia, Meta)",
+      "quoted_from": "funders.json → Index managers.also_funds"
+    },
+    "Index managers (Vanguard / BlackRock / State Street)→Amazon": {
+      "funder": "Index managers (Vanguard / BlackRock / State Street)",
+      "maker": "Amazon",
+      "type": "passive_economic",
+      "status": "completed",
+      "as_of": null,
+      "quote": "they passively own ~5-10% each of every public anchor (Microsoft, Alphabet, Amazon, Nvidia, Meta)",
+      "quoted_from": "funders.json → Index managers.also_funds"
+    },
+    "Index managers (Vanguard / BlackRock / State Street)→Nvidia": {
+      "funder": "Index managers (Vanguard / BlackRock / State Street)",
+      "maker": "Nvidia",
+      "type": "passive_economic",
+      "status": "completed",
+      "as_of": null,
+      "quote": "they passively own ~5-10% each of every public anchor (Microsoft, Alphabet, Amazon, Nvidia, Meta)",
+      "quoted_from": "funders.json → Index managers.also_funds"
+    },
+    "Index managers (Vanguard / BlackRock / State Street)→Meta": {
+      "funder": "Index managers (Vanguard / BlackRock / State Street)",
+      "maker": "Meta",
+      "type": "passive_economic",
+      "status": "completed",
+      "as_of": null,
+      "quote": "they passively own ~5-10% each of every public anchor (Microsoft, Alphabet, Amazon, Nvidia, Meta)",
+      "quoted_from": "funders.json → Index managers.also_funds"
+    }
+  }
+}

@@ -94,6 +94,11 @@ export function GraphLegend() {
             dual-role ring
           </span>
         </div>
+        <p className="mt-2 leading-snug text-slate-500">
+          A “backs” line means this dataset records a stake. It does not say how large, whether it
+          carries votes, or whether the money has been paid — open a node to see what kind of stake
+          each one is, where the record states it. A line is not evidence of control.
+        </p>
       </div>
     </div>
   )

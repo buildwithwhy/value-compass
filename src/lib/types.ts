@@ -79,6 +79,81 @@ export interface Funder {
   reputation_sources?: string[]
 }
 
+// ---- Evidence layer --------------------------------------------------------
+// Derived (src/data/evidence.json, built by scripts/build-evidence.mjs). It
+// adds no facts — it records what each assessment already rests on, so the app
+// can keep four things apart: sourced facts, ValueCompass assessments, unknown
+// or unverified information, and the visitor's own priorities.
+
+export type EvidenceBasis = 'sourced' | 'unsourced' | 'contextual' | 'non_disclosure'
+
+export interface BackgroundSource {
+  url: string
+  why: string
+}
+
+export interface AxisEvidence {
+  basis: EvidenceBasis
+  rule: string
+  /** True when the rationale establishes only that nothing has been published. */
+  withheld: boolean
+  /** True when this assessment may take part in a best/worst claim. */
+  comparable: boolean
+  entity_sources: string[]
+  background_sources: BackgroundSource[]
+  context_used: string[]
+}
+
+export type RelationshipType =
+  | 'outright_ownership'
+  | 'controlling_stake'
+  | 'equity_investment'
+  | 'funding_commitment'
+  | 'commercial_dependency'
+  | 'passive_economic'
+  | 'unspecified'
+
+export type RelationshipStatus =
+  | 'completed'
+  | 'announced'
+  | 'pending'
+  | 'contingent'
+  | 'unspecified'
+
+export interface Relationship {
+  funder: string
+  maker: string
+  type: RelationshipType
+  status: RelationshipStatus
+  /** The date the underlying record states, or null. Never inferred. */
+  as_of: string | null
+  quote: string | null
+  quoted_from: string
+  /** Only present where the record itself speaks to voting rights. */
+  voting?: 'none_stated' | 'board_presence_stated'
+}
+
+export interface FunderAssociationStatus {
+  associations_status: 'partially_sourced' | 'unverified'
+  source_count: number
+  claim_count: number
+}
+
+export interface EvidenceSummary {
+  axis_records: number
+  by_basis: Record<EvidenceBasis, number>
+  withheld: number
+  comparable: number
+  no_sources_at_all: number
+  background_only: number
+  confidence_c: number
+  recorded_na: number
+  funders_with_unverified_associations: number
+  funders_with_associations: number
+  funder_maker_edges: number
+  edges_with_transcribed_detail: number
+}
+
 export interface ScaleMeta {
   [k: string]: string
 }

@@ -5,16 +5,17 @@ import {
   allProducts,
   backersFor,
   makers,
-  numericScore,
 } from '../lib/data'
 import { TIER_LABELS } from '../lib/colors'
+import { associationsAreUnverified, comparableExtremes, displayScore } from '../lib/evidence'
 import type { Maker, Tier } from '../lib/types'
 import { ConfidenceBadge } from '../components/ConfidenceBadge'
+import { EvidenceBadge, EvidenceLegend } from '../components/EvidenceBadge'
 import { PolarityLegend } from '../components/PolarityLegend'
 import { ValueRadar, type RadarSeries } from '../components/ValueRadar'
 import { Chip, SectionTitle } from '../components/ui'
-import { isDeepPocket } from '../components/FunderCard'
-import { CapitalLensPanel } from '../components/CapitalLensPanel'
+import { isDeepPocket, RelationshipChips } from '../components/FunderCard'
+import { CapitalLensPanel, LensNotChosen } from '../components/CapitalLensPanel'
 import { CONCERN_LEGEND, evaluateMaker, reputationReasons } from '../lib/lens'
 import { useCapitalLens } from '../lib/lensContext'
 
@@ -60,9 +61,10 @@ export function CompareView() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-5">
       <h1 className="text-xl font-extrabold text-slate-900">Compare</h1>
-      <p className="mb-4 text-sm text-slate-500">
-        Select {MIN}–{MAX} makers to overlay their Value Compass, compare axes side-by-side, and see
-        shared backers.
+      <p className="mb-4 max-w-3xl text-sm leading-snug text-slate-500">
+        Pick {MIN}–{MAX} makers to see their scores side by side, the reasoning and sources behind
+        each one, and who holds a stake in them. Where the evidence is too thin to separate two
+        makers, we say so rather than picking a winner.
       </p>
 
       {/* Selector */}
@@ -158,19 +160,19 @@ export function CompareView() {
           {/* Side-by-side table */}
           <section>
             <SectionTitle>Side-by-side</SectionTitle>
+            <EvidenceLegend className="mb-2" />
             <CompareTable makers={selected} colors={series.map((s) => s.color)} />
           </section>
 
           {/* Merged funder picture */}
           <section>
-            <SectionTitle>Merged funder picture — shared backers highlighted</SectionTitle>
+            <SectionTitle>Who holds a stake — shared backers highlighted</SectionTitle>
             <SharedBackers makers={selected} />
           </section>
 
-          {/* Capital fit under the user's lens — kept last: it's a personal
-              filter, shown after the objective conduct & funder factors. */}
+          {/* Capital fit — a personal filter, shown after the shared facts. */}
           <section>
-            <SectionTitle>Capital fit — under your lens</SectionTitle>
+            <SectionTitle>Capital fit — against a lens you choose</SectionTitle>
             <div className="grid grid-cols-1 gap-3 lg:grid-cols-[320px_1fr]">
               <CapitalLensPanel compact />
               <CapitalFitRanking makers={selected} />
@@ -183,17 +185,23 @@ export function CompareView() {
 }
 
 function CapitalFitRanking({ makers: sel }: { makers: Maker[] }) {
-  const { lens } = useCapitalLens()
+  const { lens, mode, chosen } = useCapitalLens()
+  if (!chosen) return <LensNotChosen />
+
   const ranked = sel
     .map((m) => ({ maker: m, result: evaluateMaker(m, lens) }))
     .sort((a, b) => b.result.fit - a.result.fit)
+  const lensLabel = mode === 'example' ? 'the example lens' : 'your lens'
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-3">
-      <p className="mb-2 text-xs text-slate-500">
-        Ranked by “capital fit” — higher = fewer of <em>your</em> selected concerns present.
-        Lens-dependent, not an objective rating. The amber tags are the concerns you enabled that{' '}
-        <em>are</em> present in each maker; the grey text says exactly what triggered it.
+      <p className="mb-2 text-xs leading-snug text-slate-500">
+        Ordered by how many attributes in <strong>{lensLabel}</strong> are absent from each maker's
+        record. This orders the makers against that lens — it does not rate them. The amber tags are
+        the attributes that <em>are</em> present; the grey text says exactly what matched.
+        {mode === 'example' && (
+          <> The example lens is ValueCompass's starting point, not a statement of your priorities.</>
+        )}
       </p>
       <ol className="space-y-2.5">
         {ranked.map(({ maker, result }, i) => {
@@ -238,6 +246,9 @@ function CapitalFitRanking({ makers: sel }: { makers: Maker[] }) {
                               {repBackers.map((f) => (
                                 <li key={f.name} className="text-slate-500">
                                   <span className="font-medium text-slate-700">{f.name}</span>
+                                  {associationsAreUnverified(f) && (
+                                    <span className="ml-1 text-slate-400">(unverified)</span>
+                                  )}
                                   {' — '}
                                   {reputationReasons(f).join('; ')}
                                 </li>
@@ -274,9 +285,10 @@ function CapitalFitRanking({ makers: sel }: { makers: Maker[] }) {
             </div>
           ))}
         </dl>
-        <p className="mt-1.5 text-[11px] italic text-slate-400">
-          You choose which of these count as concerns in the Capital Lens panel on the left. Backer
-          reputation tags are factual associations (v1), not judgments.
+        <p className="mt-1.5 text-[11px] leading-snug text-slate-400">
+          Each tag reports an attribute from the maker's record. You choose which of them count as
+          concerns, in the Capital Lens panel on the left. Backer associations marked unverified
+          carry no source yet.
         </p>
       </details>
     </div>
@@ -292,7 +304,7 @@ function compareHost(url: string): string {
 }
 
 function CompareTable({ makers: sel, colors }: { makers: Maker[]; colors: string[] }) {
-  const { lens } = useCapitalLens()
+  const { lens, mode, chosen } = useCapitalLens()
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const toggleRow = (key: string) =>
     setExpanded((prev) => {
@@ -301,11 +313,13 @@ function CompareTable({ makers: sel, colors }: { makers: Maker[]; colors: string
       return next
     })
   const allExpanded = expanded.size === AXIS_KEYS.length
-  // best/worst per axis (higher = better). n/a excluded from extremes.
+  // The capital-fit row only exists once a lens has been chosen, and it is
+  // never described as a ranking of the companies.
   const fits = sel.map((m) => evaluateMaker(m, lens).fit)
   const bestFit = Math.max(...fits)
   const worstFit = Math.min(...fits)
   const fitDistinct = bestFit !== worstFit
+  const lensLabel = mode === 'example' ? 'the example lens' : 'your lens'
   return (
     <div className="overflow-x-auto rounded-xl border border-slate-200">
       <table className="w-full border-collapse bg-white text-sm">
@@ -337,11 +351,10 @@ function CompareTable({ makers: sel, colors }: { makers: Maker[]; colors: string
         </thead>
         <tbody>
           {AXIS_KEYS.map((key) => {
-            const scores = sel.map((m) => numericScore(m.axes[key]?.score))
-            const present = scores.filter((s): s is number => s != null)
-            const best = present.length ? Math.max(...present) : null
-            const worst = present.length ? Math.min(...present) : null
-            const distinct = best !== worst
+            // Only assessments that rest on evidence about the maker and carry
+            // confidence A or B can win or lose a comparison. Everything else
+            // is shown, and explicitly left out of the ranking.
+            const { best, worst, ranked, skipped } = comparableExtremes(sel, key)
             const isOpen = expanded.has(key)
             return (
               <Fragment key={key}>
@@ -362,32 +375,63 @@ function CompareTable({ makers: sel, colors }: { makers: Maker[]; colors: string
                       </span>
                       {AXIS_LABELS[key]}
                     </button>
+                    {best == null && (
+                      <p className="mt-0.5 text-[11px] font-normal leading-snug text-slate-400">
+                        {ranked < 2
+                          ? 'Too little evidence here to compare these makers.'
+                          : 'These assessments are level, or too uncertain to separate.'}
+                      </p>
+                    )}
+                    {best != null && skipped > 0 && (
+                      <p className="mt-0.5 text-[11px] font-normal leading-snug text-slate-400">
+                        {skipped} of {sel.length} left out of the ranking — too uncertain.
+                      </p>
+                    )}
                   </td>
                   {sel.map((m) => {
                     const axis = m.axes[key]
-                    const s = numericScore(axis?.score)
-                    const isBest = distinct && s != null && s === best
-                    const isWorst = distinct && s != null && s === worst
+                    const d = displayScore(m, key)
+                    const s = d.value
+                    const isBest = best != null && d.comparable && s === best
+                    const isWorst = worst != null && d.comparable && s === worst
                     return (
                       <td
                         key={m.id}
                         className={`px-3 py-2 ${isBest ? 'bg-emerald-50' : isWorst ? 'bg-rose-50' : ''}`}
                       >
-                        <span className="inline-flex items-center gap-1.5">
+                        <span className="inline-flex flex-wrap items-center gap-1.5">
                           {s == null ? (
-                            <span className="text-slate-400">n/a</span>
+                            <span
+                              className="text-slate-400"
+                              title="Nothing has been published on this axis, so no score is shown."
+                            >
+                              —
+                            </span>
                           ) : (
                             <span className="font-bold text-slate-800">{s}/4</span>
                           )}
-                          {axis && <ConfidenceBadge c={axis.confidence} />}
+                          <EvidenceBadge basis={d.basis} />
+                          {s != null && axis && <ConfidenceBadge c={axis.confidence} />}
                           {isBest && (
-                            <span title="best of selection" aria-label="best">
+                            <span title="Highest of the assessments firm enough to rank" aria-label="highest">
                               ▲
                             </span>
                           )}
                           {isWorst && (
-                            <span title="worst of selection" aria-label="worst" className="text-rose-500">
+                            <span
+                              title="Lowest of the assessments firm enough to rank"
+                              aria-label="lowest"
+                              className="text-rose-500"
+                            >
                               ▼
+                            </span>
+                          )}
+                          {s != null && !d.comparable && (
+                            <span
+                              className="text-[10px] font-medium text-slate-400"
+                              title="Left out of the ranking: this assessment is either thin (confidence C) or reasons from context rather than evidence about this maker."
+                            >
+                              not ranked
                             </span>
                           )}
                         </span>
@@ -402,18 +446,24 @@ function CompareTable({ makers: sel, colors }: { makers: Maker[]; colors: string
                     </td>
                     {sel.map((m) => {
                       const axis = m.axes[key]
+                      const d = displayScore(m, key)
                       return (
                         <td key={m.id} className="px-3 py-2 align-top">
-                          {axis?.note ? (
+                          {d.withheld ? (
+                            <p className="text-xs leading-snug text-slate-500">
+                              Nothing published. The record reads: “{axis?.note}” — which establishes
+                              only that it is undisclosed, so no score is shown.
+                            </p>
+                          ) : axis?.note ? (
                             <p className="text-xs leading-snug text-slate-600">{axis.note}</p>
                           ) : (
                             <p className="text-xs italic text-slate-400">No note.</p>
                           )}
-                          {axis?.sources && axis.sources.length > 0 && (
+                          {d.evidence.entity_sources.length > 0 ? (
                             <div className="mt-1.5 flex flex-wrap gap-x-2 gap-y-1">
-                              {axis.sources.map((src, i) => (
+                              {d.evidence.entity_sources.map((src) => (
                                 <a
-                                  key={i}
+                                  key={src}
                                   href={src}
                                   target="_blank"
                                   rel="noopener noreferrer"
@@ -423,6 +473,13 @@ function CompareTable({ makers: sel, colors }: { makers: Maker[]; colors: string
                                 </a>
                               ))}
                             </div>
+                          ) : (
+                            <p className="mt-1.5 text-[11px] text-slate-400">
+                              No source about {m.name} attached
+                              {d.evidence.background_sources.length > 0 &&
+                                ` (${d.evidence.background_sources.length} background reading)`}
+                              .
+                            </p>
                           )}
                         </td>
                       )
@@ -470,39 +527,60 @@ function CompareTable({ makers: sel, colors }: { makers: Maker[]; colors: string
               </td>
             ))}
           </tr>
-          <tr className="border-t-2 border-teal-200 bg-teal-50/40">
-            <td className="sticky left-0 bg-teal-50/40 px-3 py-2 font-medium text-teal-800">
-              Capital fit (your lens)
-            </td>
-            {sel.map((m) => {
-              const fit = evaluateMaker(m, lens).fit
-              const isBest = fitDistinct && fit === bestFit
-              const isWorst = fitDistinct && fit === worstFit
-              return (
-                <td
-                  key={m.id}
-                  className={`px-3 py-2 ${isBest ? 'bg-emerald-50' : isWorst ? 'bg-rose-50' : ''}`}
-                >
-                  <span className="inline-flex items-center gap-1.5">
-                    <span className="font-bold text-slate-800">{fit}</span>
-                    {isBest && <span title="best fit" aria-label="best">▲</span>}
-                    {isWorst && (
-                      <span title="worst fit" aria-label="worst" className="text-rose-500">
-                        ▼
-                      </span>
-                    )}
-                  </span>
-                </td>
-              )
-            })}
-          </tr>
+          {chosen && (
+            <tr className="border-t-2 border-teal-200 bg-teal-50/40">
+              <td className="sticky left-0 bg-teal-50/40 px-3 py-2 font-medium text-teal-800">
+                Capital fit
+                <span className="block text-[11px] font-normal text-teal-600">under {lensLabel}</span>
+              </td>
+              {sel.map((m) => {
+                const fit = evaluateMaker(m, lens).fit
+                const isBest = fitDistinct && fit === bestFit
+                const isWorst = fitDistinct && fit === worstFit
+                return (
+                  <td
+                    key={m.id}
+                    className={`px-3 py-2 ${isBest ? 'bg-emerald-50' : isWorst ? 'bg-rose-50' : ''}`}
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      <span className="font-bold text-slate-800">{fit}</span>
+                      {isBest && <span title={`fewest attributes from ${lensLabel} present`} aria-label="fewest">▲</span>}
+                      {isWorst && (
+                        <span
+                          title={`most attributes from ${lensLabel} present`}
+                          aria-label="most"
+                          className="text-rose-500"
+                        >
+                          ▼
+                        </span>
+                      )}
+                    </span>
+                  </td>
+                )
+              })}
+            </tr>
+          )}
         </tbody>
       </table>
-      <p className="border-t border-slate-100 bg-slate-50 px-3 py-1.5 text-xs text-slate-500">
-        <span className="rounded bg-emerald-50 px-1">▲ best</span> /{' '}
-        <span className="rounded bg-rose-50 px-1">▼ worst</span> per axis — higher score = more
-        pro-social. n/a = insufficient evidence (excluded from best/worst).
-      </p>
+      <div className="space-y-1 border-t border-slate-100 bg-slate-50 px-3 py-2 text-xs leading-snug text-slate-500">
+        <p>
+          <span className="rounded bg-emerald-50 px-1">▲ highest</span> /{' '}
+          <span className="rounded bg-rose-50 px-1">▼ lowest</span> marks the ends of the range on
+          that axis — among the assessments firm enough to rank. A difference is only called when
+          both sides rest on evidence about the maker and carry confidence A or B, so a thin guess
+          never beats a documented finding.
+        </p>
+        <p>
+          A dash (—) means nothing has been published on that axis. It is missing, not zero, and it
+          counts neither for nor against the maker.
+        </p>
+        {chosen && (
+          <p>
+            Capital fit counts how many attributes in {lensLabel} are absent from each maker's
+            record. It moves when the lens changes and is not a rating of the company.
+          </p>
+        )}
+      </div>
     </div>
   )
 }
@@ -539,23 +617,33 @@ function SharedBackers({ makers: sel }: { makers: Maker[] }) {
     <div className="space-y-4">
       {shared.length > 0 && (
         <div className="rounded-xl border border-amber-300 bg-amber-50 p-3">
-          <p className="mb-2 text-sm font-semibold text-amber-900">
-            Shared backers — the key comparative insight:
+          <p className="mb-1 text-sm font-semibold text-amber-900">
+            Backers these makers have in common
           </p>
-          <ul className="space-y-1.5 text-sm text-amber-900">
+          <p className="mb-2 text-xs leading-snug text-amber-800">
+            Holding a stake in several of these is a fact about the cap table. It is not by itself
+            evidence of control, coordination or harm — and the chips say what kind of stake each one
+            is, where the record states it.
+          </p>
+          <ul className="space-y-2 text-sm text-amber-900">
             {shared.map((r) => (
-              <li key={r.name} className="flex flex-wrap items-center gap-1.5">
+              <li key={r.name}>
                 <span className="font-bold">{r.name}</span>
-                <span>backs {r.count} of these:</span>
-                {[...r.backed].map((id) => (
-                  <span
-                    key={id}
-                    className="rounded-full bg-white px-2 py-0.5 text-xs font-medium text-amber-800 ring-1 ring-amber-300"
-                  >
-                    {makerName(id)}
-                    {r.ownsOf.has(id) && ' (owns)'}
-                  </span>
-                ))}
+                <span> — a stake in {r.count} of these:</span>
+                <ul className="mt-1 space-y-1">
+                  {[...r.backed].map((id) => (
+                    <li key={id} className="flex flex-wrap items-center gap-1.5">
+                      <span className="rounded-full bg-white px-2 py-0.5 text-xs font-medium text-amber-800 ring-1 ring-amber-300">
+                        {makerName(id)}
+                      </span>
+                      <RelationshipChips
+                        funderName={r.name}
+                        makerId={id}
+                        ownsOutright={r.ownsOf.has(id)}
+                      />
+                    </li>
+                  ))}
+                </ul>
               </li>
             ))}
           </ul>
