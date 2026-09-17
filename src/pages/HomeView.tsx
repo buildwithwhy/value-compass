@@ -139,6 +139,30 @@ export function HomeView() {
         />
       </section>
 
+      {/* Priorities + switching — the personalised path */}
+      <section className="mt-4 rounded-xl border border-teal-200 bg-teal-50/60 p-4 sm:p-5">
+        <h2 className="text-lg font-bold text-teal-900">Or start from what you care about</h2>
+        <p className="mt-1 max-w-3xl text-sm leading-relaxed text-slate-700">
+          Say which of the five axes matter to you and where the money comes from. Browse and the
+          comparisons reorder around that, and you can ask what switching from one tool to another
+          would actually change. Nothing is switched on for you, and none of it is a recommendation.
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Link
+            to="/priorities"
+            className="rounded-md bg-teal-700 px-3.5 py-2 text-sm font-semibold text-white hover:bg-teal-800"
+          >
+            Set your priorities
+          </Link>
+          <Link
+            to="/switch"
+            className="rounded-md border border-teal-300 bg-white px-3.5 py-2 text-sm font-semibold text-teal-800 hover:bg-teal-50"
+          >
+            What would switching change?
+          </Link>
+        </div>
+      </section>
+
       {/* What you are reading */}
       <section className="mt-10">
         <h2 className="text-lg font-bold text-slate-900">What you are reading</h2>

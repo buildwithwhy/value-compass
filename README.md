@@ -4,6 +4,8 @@
 
 The project's intent is to ask **open questions, not deliver verdicts**: every maker carries a "worth probing" tension hook, every score carries a visible confidence flag and evidence basis, and funders are shown as *context, never scored*.
 
+It also lets you say **what matters to you** — across the five axes and the capital attributes — and then orders and annotates itself around that, including a "what would switching change?" view. Nothing is ever switched on for you.
+
 Above all it keeps four things apart — **sourced facts**, **ValueCompass assessments**, **what is not established**, and **the visitor's own priorities**. A score whose rationale establishes only that something is undisclosed is not shown: undisclosed is not evidence of bad practice. See [`docs/EVIDENCE_AUDIT.md`](docs/EVIDENCE_AUDIT.md) for what that changed and what still needs research.
 
 ## Run it
@@ -96,7 +98,11 @@ Funder→maker edges are built **by matching `funders[].makers_backed` / `owns_o
 
 ## Features
 
-0. **Landing page** (`/`) — a short introduction and three routes in: find a tool or maker (with a typeahead), compare alternatives, or follow the ownership. Plus the four-kinds-of-statement explainer and live evidence-coverage counts generated from the dataset.
+0. **Landing page** (`/`) — a short introduction and three routes in: find a tool or maker (with a typeahead), compare alternatives, or follow the ownership. Plus a path through stated priorities, the four-kinds-of-statement explainer, and live evidence-coverage counts generated from the dataset.
+
+0b. **Priorities** (`/priorities`) — weight each of the five axes (*not a priority* / *matters* / *matters a lot*) and pick capital attributes, in one model. Three levels rather than a slider, for the same reason the scores are 0–4: a continuous weight would imply precision the assessments cannot carry. Each axis states how many of the 18 makers it can actually separate, so a dead-end priority is visible **before** it is chosen. Nothing is pre-selected; an example set is offered by name and labelled wherever it is in use.
+
+0c. **Switching** (`/switch/:from/:to`) — what changes if you move from one maker to another: the axes you prioritised, the backers you leave, the backers you take on, and the **backers you cannot escape** (a stake in both). A difference is only called when both sides are firm enough to compare; otherwise it is listed as something you cannot know, never rounded to "no change". Ends with every axis where at least one side has published nothing.
 
 1. **Ownership & funding graph** (`/graph`) — force-directed graph of all 18 makers + 34 funders.
    - **Size by** Connections (degree, default), **Funder reach** (funders sized by how many of the 18 they back — Nvidia/a16z/Fidelity dominate, makers shrink to uniform dots), or **Uniform**. **Emphasize** Makers / Funders / Both dims the other class for a clean money-flow read. Labels follow the current sizing (largest ~15; rest on hover/zoom).
@@ -126,9 +132,11 @@ src/
     data.ts          loading, id-join, reverse lookup, graph builder, sanity check
     colors.ts        tier / parent-type palettes + confidence styling
     evidence.ts      evidence bases, withheld scores, comparability, relationships
+    priorities.ts    axis weights + capital in one model; placement, ordering, switching
   components/        Header, ValueRadar, AxisDetail, ConfidenceBadge, MakerDetail,
                      FunderCard/FunderDetail, GraphLegend, PolarityLegend, Drawer, ui
-  pages/             HomeView, GraphView, BrowseView, MakerPage, CompareView, AboutView
+  pages/             HomeView, GraphView, BrowseView, MakerPage, CompareView,
+                     PrioritiesView, SwitchView, AboutView
   App.tsx            routes + layout
   main.tsx           entry; runs the data sanity check
 ```
@@ -137,4 +145,5 @@ src/
 
 - Clean, neutral, accessible: good contrast, keyboard-navigable (focus rings, Esc closes panels), readable typography, mobile-responsive (the graph degrades to a list/filter view).
 - Nothing is fabricated: absent fields hide gracefully; funders are never assigned value scores; tension hooks are framed as questions, not conclusions.
-- Nothing is switched on for the visitor: the Capital Lens starts empty, and an editorial preset is offered by name rather than presented as their priorities.
+- Nothing is switched on for the visitor: priorities and the Capital Lens both start empty, and an editorial preset is offered by name rather than presented as their priorities.
+- Priorities cannot manufacture confidence. Only comparable assessments count toward an ordering; a maker is placed only when at least half the weight assigned has evidence behind it, and the rest are held in a separate group rather than sorted to the bottom, because an unknown is not a bad result. Conduct and capital are reported side by side and never summed.

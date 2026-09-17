@@ -17,7 +17,9 @@ import { Chip, SectionTitle } from '../components/ui'
 import { isDeepPocket, RelationshipChips } from '../components/FunderCard'
 import { CapitalLensPanel, LensNotChosen } from '../components/CapitalLensPanel'
 import { CONCERN_LEGEND, evaluateMaker, reputationReasons } from '../lib/lens'
-import { useCapitalLens } from '../lib/lensContext'
+import { orderByPriorities } from '../lib/priorities'
+import { useCapitalLens, usePriorities } from '../lib/prioritiesContext'
+import { Link } from 'react-router-dom'
 
 // Distinct overlay palette (independent of tier color so series stay readable).
 const COMPARE_COLORS = ['#7c3aed', '#0ea5e9', '#f59e0b', '#16a34a']
@@ -155,6 +157,12 @@ export function CompareView() {
                 ))}
               </div>
             </div>
+          </section>
+
+          {/* Against the visitor's priorities, before the full table */}
+          <section>
+            <SectionTitle>Against your priorities</SectionTitle>
+            <PrioritySummary makers={selected} />
           </section>
 
           {/* Side-by-side table */}
@@ -295,6 +303,110 @@ function CapitalFitRanking({ makers: sel }: { makers: Maker[] }) {
   )
 }
 
+/**
+ * How the selection lines up against what the visitor said matters. Placement
+ * reuses the same rule as Browse, so a maker the evidence cannot speak to is
+ * held apart here too rather than appearing last as though it had lost.
+ */
+function PrioritySummary({ makers: sel }: { makers: Maker[] }) {
+  const { priorities, chosen } = usePriorities()
+
+  if (!chosen) {
+    return (
+      <div className="rounded-xl border border-dashed border-teal-300 bg-teal-50/50 p-4">
+        <p className="text-sm font-semibold text-teal-900">You have not set any priorities yet</p>
+        <p className="mt-1 max-w-2xl text-xs leading-snug text-slate-600">
+          We are not going to choose some for you and then tell you which of these is the better
+          option. Set them and this section will order the selection against them — and say which of
+          your priorities the evidence cannot answer.
+        </p>
+        <Link
+          to="/priorities"
+          className="mt-2 inline-block rounded-md bg-teal-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-teal-800"
+        >
+          Set your priorities
+        </Link>
+      </div>
+    )
+  }
+
+  const { placed, unplaced } = orderByPriorities(sel, priorities)
+  const label = priorities.mode === 'example' ? 'the example priorities' : 'your priorities'
+
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
+      <p className="mb-3 text-xs leading-snug text-slate-500">
+        Ordered against <strong className="text-slate-700">{label}</strong>. Only assessments firm
+        enough to compare count, so this ordering rests on less than the full table below — the
+        per-maker line says how much.
+      </p>
+
+      {placed.length === 0 ? (
+        <p className="text-sm text-slate-600">
+          None of these can be placed against what you asked for — see below.
+        </p>
+      ) : (
+        <ol className="space-y-2.5">
+          {placed.map(({ maker, result }, i) => (
+            <li key={maker.id} className="flex items-start gap-3 border-t border-slate-100 pt-2.5 first:border-0 first:pt-0">
+              <span className="mt-0.5 w-4 text-sm font-bold text-slate-400">{i + 1}</span>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-baseline gap-x-2">
+                  <span className="font-semibold text-slate-800">{maker.name}</span>
+                  {result.strength != null && (
+                    <span className="text-sm text-slate-600">
+                      {result.strength.toFixed(1)}/4 on the axes you prioritised
+                    </span>
+                  )}
+                </div>
+                <p className="mt-0.5 text-xs leading-snug text-slate-500">
+                  Based on {result.evidenced.length} of {result.axes.length} of your priorities
+                  {result.missing.length > 0 && (
+                    <>
+                      {' '}
+                      — no comparable assessment for{' '}
+                      {result.missing.map((m) => AXIS_LABELS[m.axis]).join(', ')}
+                    </>
+                  )}
+                  .
+                </p>
+                {result.capital && (
+                  <p className="mt-0.5 text-xs text-slate-500">
+                    Capital, counted separately: {result.capital.clearCount} of{' '}
+                    {result.capital.activeCount} attributes clear.
+                  </p>
+                )}
+              </div>
+            </li>
+          ))}
+        </ol>
+      )}
+
+      {unplaced.length > 0 && (
+        <div className="mt-3 rounded-lg border border-slate-300 bg-slate-50 p-3">
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+            Not enough published to place
+          </p>
+          <ul className="mt-1 space-y-0.5 text-sm text-slate-700">
+            {unplaced.map(({ maker, result }) => (
+              <li key={maker.id}>
+                {maker.name}
+                <span className="ml-1.5 text-xs text-slate-500">
+                  — {result.evidenced.length} of {result.axes.length} of your priorities have a
+                  comparable assessment
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-1.5 text-xs leading-snug text-slate-500">
+            These are not ranked below the others. Too little is published to say where they belong.
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function compareHost(url: string): string {
   try {
     return new URL(url).hostname.replace(/^www\./, '')
@@ -305,6 +417,8 @@ function compareHost(url: string): string {
 
 function CompareTable({ makers: sel, colors }: { makers: Maker[]; colors: string[] }) {
   const { lens, mode, chosen } = useCapitalLens()
+  const { priorities } = usePriorities()
+  const weights = priorities.weights
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
   const toggleRow = (key: string) =>
     setExpanded((prev) => {
@@ -320,6 +434,11 @@ function CompareTable({ makers: sel, colors }: { makers: Maker[]; colors: string
   const worstFit = Math.min(...fits)
   const fitDistinct = bestFit !== worstFit
   const lensLabel = mode === 'example' ? 'the example lens' : 'your lens'
+  // Rows you said matter come first. Nothing is hidden — the ordering just
+  // stops you having to hunt for the axis you actually care about.
+  const orderedAxes = [...AXIS_KEYS].sort(
+    (a, b) => (weights[b] ?? 0) - (weights[a] ?? 0),
+  )
   return (
     <div className="overflow-x-auto rounded-xl border border-slate-200">
       <table className="w-full border-collapse bg-white text-sm">
@@ -350,7 +469,7 @@ function CompareTable({ makers: sel, colors }: { makers: Maker[]; colors: string
           </tr>
         </thead>
         <tbody>
-          {AXIS_KEYS.map((key) => {
+          {orderedAxes.map((key) => {
             // Only assessments that rest on evidence about the maker and carry
             // confidence A or B can win or lose a comparison. Everything else
             // is shown, and explicitly left out of the ranking.
@@ -364,7 +483,7 @@ function CompareTable({ makers: sel, colors }: { makers: Maker[]; colors: string
                       type="button"
                       onClick={() => toggleRow(key)}
                       aria-expanded={isOpen}
-                      className="flex items-center gap-1.5 text-left hover:text-teal-700"
+                      className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-left hover:text-teal-700"
                       title="Show the reason & sources behind these scores"
                     >
                       <span
@@ -374,6 +493,18 @@ function CompareTable({ makers: sel, colors }: { makers: Maker[]; colors: string
                         ▶
                       </span>
                       {AXIS_LABELS[key]}
+                      {weights[key] > 0 && (
+                        <span
+                          className="rounded-full bg-teal-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-teal-800"
+                          title={
+                            weights[key] === 2
+                              ? 'You said this matters a lot'
+                              : 'You said this matters'
+                          }
+                        >
+                          {weights[key] === 2 ? 'priority ++' : 'priority'}
+                        </span>
+                      )}
                     </button>
                     {best == null && (
                       <p className="mt-0.5 text-[11px] font-normal leading-snug text-slate-400">

@@ -12,7 +12,8 @@ import { TIER_COLORS, TIER_LABELS, fitColor, scoreColor } from '../lib/colors'
 import { coverageFor, displayScore } from '../lib/evidence'
 import type { AxisKey, Confidence, Maker, Tier } from '../lib/types'
 import { evaluateMaker } from '../lib/lens'
-import { useCapitalLens } from '../lib/lensContext'
+import { orderByPriorities, PLACEMENT_THRESHOLD } from '../lib/priorities'
+import { useCapitalLens, usePriorities } from '../lib/prioritiesContext'
 import { ConfidenceBadge, ConfidenceLegend } from '../components/ConfidenceBadge'
 import { EvidenceLegend } from '../components/EvidenceBadge'
 import { CapitalLensPanel } from '../components/CapitalLensPanel'
@@ -20,11 +21,12 @@ import { Chip, Tag } from '../components/ui'
 
 const TIERS: Tier[] = ['frontier', 'tool', 'frontier_and_funder']
 
-type SortKey = AxisKey | 'name' | 'tier' | 'fit'
+type SortKey = AxisKey | 'name' | 'tier' | 'fit' | 'priorities'
 type ViewMode = 'matrix' | 'cards'
 
 export function BrowseView() {
   const { lens, mode, chosen } = useCapitalLens()
+  const { priorities, chosen: hasPrio } = usePriorities()
   const fitById = useMemo(() => {
     const m = new Map<string, number>()
     for (const mk of makers) m.set(mk.id, evaluateMaker(mk, lens).fit)
@@ -34,7 +36,8 @@ export function BrowseView() {
   const [tierFilter, setTierFilter] = useState<Set<Tier>>(new Set())
   const [productFilter, setProductFilter] = useState<Set<string>>(new Set())
   const [q, setQ] = useState('')
-  const [sortKey, setSortKey] = useState<SortKey>('name')
+  // Priorities, once stated, are what the visitor asked to see the list by.
+  const [sortKey, setSortKey] = useState<SortKey>(hasPrio ? 'priorities' : 'name')
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
 
   const filtered = useMemo(() => {
@@ -48,11 +51,20 @@ export function BrowseView() {
     })
   }, [tierFilter, productFilter, q])
 
+  // Priority ordering keeps two groups. Makers we cannot place are held apart
+  // rather than sorted to the bottom — an unknown is not a bad result, and a
+  // single list would read as though it were.
+  const priorityGroups = useMemo(() => {
+    if (sortKey !== 'priorities' || !hasPrio) return null
+    return orderByPriorities(filtered, priorities)
+  }, [sortKey, hasPrio, filtered, priorities])
+
   const sorted = useMemo(() => {
+    if (priorityGroups) return priorityGroups.placed.map((r) => r.maker)
     const arr = [...filtered]
     const dir = sortDir === 'asc' ? 1 : -1
     arr.sort((a, b) => {
-      if (sortKey === 'name') return a.name.localeCompare(b.name) * dir
+      if (sortKey === 'name' || sortKey === 'priorities') return a.name.localeCompare(b.name) * dir
       if (sortKey === 'tier') return (a.tier.localeCompare(b.tier) || a.name.localeCompare(b.name)) * dir
       if (sortKey === 'fit')
         return ((fitById.get(a.id) ?? 0) - (fitById.get(b.id) ?? 0)) * dir || a.name.localeCompare(b.name)
@@ -65,7 +77,13 @@ export function BrowseView() {
       return (sa - sb) * dir || a.name.localeCompare(b.name)
     })
     return arr
-  }, [filtered, sortKey, sortDir, fitById])
+  }, [filtered, sortKey, sortDir, fitById, priorityGroups])
+
+  const unplaced = priorityGroups?.unplaced ?? []
+  const prioritisedAxes = useMemo(
+    () => new Set(AXIS_KEYS.filter((k) => priorities.weights[k] > 0)),
+    [priorities],
+  )
 
   const coverage = useMemo(() => coverageFor(), [])
 
@@ -167,6 +185,55 @@ export function BrowseView() {
         </p>
       </div>
 
+      {/* Priorities banner — says whose ordering this is, and what it cost */}
+      <div className="mb-3 rounded-xl border border-teal-200 bg-teal-50/60 p-3">
+        {!hasPrio ? (
+          <p className="text-sm leading-snug text-slate-700">
+            <strong className="text-teal-900">Order this list by what matters to you.</strong>{' '}
+            Nothing is applied by default.{' '}
+            <Link to="/priorities" className="font-semibold text-teal-700 underline underline-offset-2">
+              Set your priorities
+            </Link>
+            .
+          </p>
+        ) : (
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm leading-snug text-slate-700">
+              {sortKey === 'priorities' ? (
+                <>
+                  Ordered by{' '}
+                  <strong className="text-teal-900">
+                    {priorities.mode === 'example' ? 'the example priorities' : 'your priorities'}
+                  </strong>
+                  {unplaced.length > 0 && (
+                    <>
+                      {' '}
+                      — {unplaced.length} maker{unplaced.length === 1 ? '' : 's'} could not be
+                      placed and {unplaced.length === 1 ? 'is' : 'are'} listed separately below.
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  Sorted by column.{' '}
+                  <button
+                    type="button"
+                    onClick={() => setSort('priorities')}
+                    className="font-semibold text-teal-700 underline underline-offset-2"
+                  >
+                    Order by{' '}
+                    {priorities.mode === 'example' ? 'the example priorities' : 'your priorities'}
+                  </button>
+                </>
+              )}
+            </p>
+            <Link to="/priorities" className="text-xs font-medium text-teal-700 hover:underline">
+              Change
+            </Link>
+          </div>
+        )}
+      </div>
+
       {/* Capital Lens — drives the "Capital fit" column; collapsible to keep focus on scores */}
       {view === 'matrix' && (
         <details className="mb-3 rounded-xl border border-teal-200 bg-teal-50/40">
@@ -182,24 +249,83 @@ export function BrowseView() {
         </details>
       )}
 
-      {sorted.length === 0 ? (
+      {sorted.length === 0 && unplaced.length === 0 ? (
         <div className="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
           No makers match your search and filters.
         </div>
       ) : view === 'matrix' ? (
-        <MatrixView
-          makers={sorted}
-          fitById={fitById}
-          showFit={chosen}
-          lensLabel={mode === 'example' ? 'the example lens' : 'your lens'}
-          sortKey={sortKey}
-          sortDir={sortDir}
-          onSort={setSort}
-        />
+        <>
+          {sorted.length > 0 && (
+            <MatrixView
+              makers={sorted}
+              fitById={fitById}
+              showFit={chosen}
+              lensLabel={mode === 'example' ? 'the example lens' : 'your lens'}
+              prioritisedAxes={prioritisedAxes}
+              sortKey={sortKey}
+              sortDir={sortDir}
+              onSort={setSort}
+            />
+          )}
+          {unplaced.length > 0 && (
+            <UnplacedGroup rows={unplaced} className="mt-4" />
+          )}
+        </>
       ) : (
-        <CardsView makers={sorted} />
+        <>
+          <CardsView makers={sorted} />
+          {unplaced.length > 0 && (
+            <UnplacedGroup rows={unplaced} className="mt-5" />
+          )}
+        </>
       )}
     </div>
+  )
+}
+
+/**
+ * Makers the evidence cannot place against the stated priorities. Presented as
+ * a distinct state with its own explanation — not as the tail of a ranking.
+ */
+function UnplacedGroup({
+  rows,
+  className = '',
+}: {
+  rows: ReturnType<typeof orderByPriorities>['unplaced']
+  className?: string
+}) {
+  return (
+    <section className={`rounded-xl border border-slate-300 bg-slate-50 p-4 ${className}`}>
+      <h2 className="text-sm font-bold text-slate-700">
+        Not enough published to place ({rows.length})
+      </h2>
+      <p className="mt-1 max-w-3xl text-xs leading-snug text-slate-600">
+        Fewer than {Math.round(PLACEMENT_THRESHOLD * 100)}% of the priorities you set have evidence
+        behind them for these makers, so we will not rank them. They are not at the bottom of the
+        list — they are off it. Nothing published is not a bad result.
+      </p>
+      <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        {rows.map(({ maker, result }) => (
+          <li key={maker.id}>
+            <Link
+              to={`/maker/${encodeURIComponent(maker.id)}`}
+              className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 hover:border-teal-300"
+            >
+              <span
+                className="h-2.5 w-2.5 shrink-0 rounded-full"
+                style={{ background: TIER_COLORS[maker.tier] }}
+              />
+              <span className="min-w-0 flex-1 truncate font-medium text-slate-800">
+                {maker.name}
+              </span>
+              <span className="shrink-0 text-xs text-slate-500">
+                {result.evidenced.length}/{result.axes.length} known
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
   )
 }
 
@@ -331,6 +457,7 @@ function MatrixView({
   fitById,
   showFit,
   lensLabel,
+  prioritisedAxes,
   sortKey,
   sortDir,
   onSort,
@@ -339,6 +466,7 @@ function MatrixView({
   fitById: Map<string, number>
   showFit: boolean
   lensLabel: string
+  prioritisedAxes: Set<AxisKey>
   sortKey: SortKey
   sortDir: 'asc' | 'desc'
   onSort: (k: SortKey) => void
@@ -357,17 +485,28 @@ function MatrixView({
                 onClick={() => onSort('name')}
               />
             </th>
-            {AXIS_KEYS.map((k) => (
-              <th key={k} className="px-2 py-2 text-center">
-                <SortHeader
-                  label={AXIS_SHORT[k]}
-                  title={AXIS_LABELS[k]}
-                  active={sortKey === k}
-                  dir={sortDir}
-                  onClick={() => onSort(k)}
-                />
-              </th>
-            ))}
+            {AXIS_KEYS.map((k) => {
+              const prioritised = prioritisedAxes.has(k)
+              return (
+                <th
+                  key={k}
+                  className={`px-2 py-2 text-center ${prioritised ? 'bg-teal-50/70' : ''}`}
+                >
+                  <SortHeader
+                    label={AXIS_SHORT[k]}
+                    title={prioritised ? `${AXIS_LABELS[k]} — one of your priorities` : AXIS_LABELS[k]}
+                    active={sortKey === k}
+                    dir={sortDir}
+                    onClick={() => onSort(k)}
+                  />
+                  {prioritised && (
+                    <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-wide text-teal-700">
+                      your priority
+                    </span>
+                  )}
+                </th>
+              )
+            })}
             {showFit && (
               <th className="border-l border-teal-200 bg-teal-50/40 px-2 py-2 text-center">
                 <SortHeader
@@ -412,8 +551,14 @@ function MatrixView({
               {AXIS_KEYS.map((k) => {
                 const ax = m.axes[k]
                 const d = displayScore(m, k)
+                const prioritised = prioritisedAxes.has(k)
                 return (
-                  <td key={k} className="px-2 py-1.5 text-center">
+                  <td
+                    key={k}
+                    className={`px-2 py-1.5 text-center ${
+                      prioritised ? 'bg-teal-50/40' : prioritisedAxes.size > 0 ? 'opacity-60' : ''
+                    }`}
+                  >
                     <ScoreCell
                       score={d.value}
                       confidence={ax?.confidence}

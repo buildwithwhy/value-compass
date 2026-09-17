@@ -6,7 +6,7 @@ import type { CapitalProfile, Funder, Maker } from './types'
 // Each concern maps to a factual capital_profile field (or, for backer
 // associations, to the notable_for tags of a maker's funders). We state the
 // facts; the visitor decides which of them count as concerns. Nothing is
-// switched on for them — see EMPTY_LENS and lensContext.
+// switched on for them — see EMPTY_LENS and prioritiesContext.
 // ---------------------------------------------------------------------------
 
 export interface LensConfig {

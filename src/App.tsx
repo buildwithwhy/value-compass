@@ -1,6 +1,6 @@
 import { Suspense, lazy } from 'react'
 import { Link, Route, Routes } from 'react-router-dom'
-import { CapitalLensProvider } from './lib/lensContext'
+import { PrioritiesProvider } from './lib/prioritiesContext'
 import { Header } from './components/Header'
 
 // Route-level code splitting: the force-graph (Graph) and Recharts (Browse,
@@ -11,6 +11,10 @@ const GraphView = lazy(() => import('./pages/GraphView').then((m) => ({ default:
 const BrowseView = lazy(() => import('./pages/BrowseView').then((m) => ({ default: m.BrowseView })))
 const MakerPage = lazy(() => import('./pages/MakerPage').then((m) => ({ default: m.MakerPage })))
 const CompareView = lazy(() => import('./pages/CompareView').then((m) => ({ default: m.CompareView })))
+const PrioritiesView = lazy(() =>
+  import('./pages/PrioritiesView').then((m) => ({ default: m.PrioritiesView })),
+)
+const SwitchView = lazy(() => import('./pages/SwitchView').then((m) => ({ default: m.SwitchView })))
 const AboutView = lazy(() => import('./pages/AboutView').then((m) => ({ default: m.AboutView })))
 
 function RouteFallback() {
@@ -24,7 +28,7 @@ function RouteFallback() {
 
 export default function App() {
   return (
-    <CapitalLensProvider>
+    <PrioritiesProvider>
       <div className="flex min-h-full flex-col">
         <Header />
         <main className="flex-1">
@@ -35,6 +39,10 @@ export default function App() {
               <Route path="/browse" element={<BrowseView />} />
               <Route path="/maker/:id" element={<MakerPage />} />
               <Route path="/compare" element={<CompareView />} />
+              <Route path="/priorities" element={<PrioritiesView />} />
+              <Route path="/switch" element={<SwitchView />} />
+              <Route path="/switch/:from" element={<SwitchView />} />
+              <Route path="/switch/:from/:to" element={<SwitchView />} />
               <Route path="/about" element={<AboutView />} />
               <Route path="/about/working-draft" element={<AboutView draft />} />
               <Route path="*" element={<HomeView />} />
@@ -50,6 +58,6 @@ export default function App() {
           ; funders are context and are never scored; an undisclosed practice earns no score at all.
         </footer>
       </div>
-    </CapitalLensProvider>
+    </PrioritiesProvider>
   )
 }

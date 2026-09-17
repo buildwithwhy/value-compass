@@ -1,4 +1,4 @@
-import { useCapitalLens } from '../lib/lensContext'
+import { useCapitalLens } from '../lib/prioritiesContext'
 import type { LensConfig } from '../lib/lens'
 
 function Toggle({

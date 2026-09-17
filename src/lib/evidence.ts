@@ -191,6 +191,39 @@ export function makerCoverage(maker: Maker): Coverage {
   return coverageFor([maker])
 }
 
+export interface AxisCoverage {
+  total: number
+  /** Makers whose assessment on this axis is firm enough to compare. */
+  comparable: number
+  /** Makers with nothing published on this axis. */
+  withheld: number
+  sourced: number
+}
+
+// Computed once over the static dataset — the panel asks for this on every
+// render, and it cannot change without a rebuild.
+const axisCoverage = new Map<AxisKey, AxisCoverage>()
+
+/**
+ * How much the dataset can actually say on one axis. Shown where a visitor
+ * chooses priorities, so an axis the evidence cannot answer is visible as a
+ * dead end before it is picked rather than after.
+ */
+export function coverageByAxis(axis: AxisKey): AxisCoverage {
+  const cached = axisCoverage.get(axis)
+  if (cached) return cached
+  const c: AxisCoverage = { total: 0, comparable: 0, withheld: 0, sourced: 0 }
+  for (const m of makers) {
+    const ev = axisEvidenceFor(m.id, axis)
+    c.total++
+    if (ev.comparable) c.comparable++
+    if (ev.withheld) c.withheld++
+    if (ev.basis === 'sourced') c.sourced++
+  }
+  axisCoverage.set(axis, c)
+  return c
+}
+
 // ---- Backer associations ---------------------------------------------------
 
 /**

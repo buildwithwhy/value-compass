@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { backersFor } from '../lib/data'
 import { TIER_COLORS, TIER_LABELS } from '../lib/colors'
 import { makerCoverage } from '../lib/evidence'
@@ -62,6 +63,22 @@ export function MakerDetail({
           </p>
         )}
       </div>
+
+      {/* Switching — the counterfactual entry point */}
+      <Link
+        to={`/switch/${encodeURIComponent(maker.id)}`}
+        className="flex items-center justify-between gap-3 rounded-lg border border-teal-200 bg-teal-50/60 px-3 py-2.5 hover:bg-teal-50"
+      >
+        <span className="text-sm leading-snug text-teal-900">
+          <span className="font-semibold">What would switching away from {maker.name} change?</span>{' '}
+          <span className="text-teal-700">
+            See what moves on your priorities, and who you would stop and start funding.
+          </span>
+        </span>
+        <span aria-hidden className="shrink-0 text-teal-700">
+          →
+        </span>
+      </Link>
 
       {/* Tension hook — open question, not a verdict */}
       {maker.tension_hook && (

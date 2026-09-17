@@ -15,7 +15,7 @@ Everything on this site is one of four things, and the interface says which:
 | **Sourced fact** | Who owns what, who invested, what a company has committed to — with a link to where it came from. |
 | **ValueCompass assessment** | Our reading of those facts against the rubric below. A judgement, labelled as one. |
 | **Not established** | Nobody has published it. We say so, and show no score. |
-| **Your priorities** | What you tell us matters to you, in the Capital Lens. Nothing is switched on for you by default. |
+| **Your priorities** | What you tell us matters to you — across the five axes and the capital attributes. Nothing is switched on for you by default. |
 
 The distinction that matters most is the third. **"We looked and it is bad" and "nobody
 will say" are different findings.** Treating them the same is the easiest way for a tool
@@ -153,6 +153,51 @@ has no source, it is marked unverified and should be read as a lead for research
 established fact.
 
 ---
+
+## Priorities, and what they are allowed to do
+
+You can tell the site which of the five axes matter to you, and how much — **not a
+priority**, **matters**, or **matters a lot**. Three levels, not a slider, for the same
+reason the scores are 0–4 and not 0–100: a continuous weight would imply precision the
+underlying assessments cannot carry.
+
+Nothing is selected for you. An example set is offered by name, and wherever it is in use
+the interface says so rather than calling it yours.
+
+Three rules govern what stated priorities are allowed to do:
+
+**Only comparable assessments count.** An axis we withheld, or one resting on a single thin
+source, contributes nothing to an ordering — in either direction. A priority you set that
+the evidence cannot answer moves nobody up and nobody down.
+
+**A maker is only placed when enough is known.** We order a maker against your priorities
+only when at least **half the weight you assigned** has evidence behind it. The rest are
+shown in a separate group, with how much is known about each. They are not at the bottom
+of a ranking; they are off it. Sorting an unknown to last place would read as a bad result,
+and it is not one.
+
+**Conduct and capital are never added together.** A weighted score across the axes and a
+count of capital attributes measure different things. A single blended number would hide
+which one was driving the answer, so they are always reported side by side.
+
+When you choose priorities, each axis states how many of the makers it can actually
+separate — so an axis the evidence cannot speak to is visible as a dead end before you pick
+it, not after.
+
+## What would switching change
+
+From any maker you can pick an alternative and see what moves: the axes you prioritised,
+who holds a stake in one but not the other, and who holds a stake in **both** — the
+backers a switch does not get you away from.
+
+A difference is only called a difference when both sides are firm enough to compare.
+Otherwise it is listed as something you cannot know, never quietly rounded down to "no
+change". The page ends with every axis where at least one side has published nothing, so
+it is clear what you would be choosing blind.
+
+Suggested alternatives are simply the other makers in the same tier. This dataset does not
+model which products actually substitute for each other, and we are not going to invent
+that — you can pick any maker.
 
 ## What this does not cover
 

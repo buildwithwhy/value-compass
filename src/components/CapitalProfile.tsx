@@ -8,7 +8,7 @@ import {
   reputationReasons,
   type LensResult,
 } from '../lib/lens'
-import { useCapitalLens } from '../lib/lensContext'
+import { useCapitalLens } from '../lib/prioritiesContext'
 import type { Funder, Maker } from '../lib/types'
 import { LensNotChosen } from './CapitalLensPanel'
 import { SectionTitle } from './ui'
