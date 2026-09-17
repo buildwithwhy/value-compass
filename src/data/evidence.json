@@ -28,11 +28,11 @@
         "contextual": 5
       },
       "withheld": 21,
-      "decision_eligible": 4,
+      "decision_eligible": 5,
       "establishes_fact": 14,
       "claim_support_partial": 5,
       "claim_support_unreviewed": 0,
-      "facts_preserved_without_eligible_score": 15,
+      "facts_preserved_without_eligible_score": 14,
       "human_reviewed": 0,
       "no_sources_at_all": 40,
       "background_only": 27,
@@ -89,7 +89,7 @@
         ],
         "scoring_rule": "rubric.md §1 — \"External anchor: Stanford FMTI 2025 (use directly where it exists) … Map FMTI/100 → 0–4\", with bands in makers.json _meta.key_anchors.transparency.",
         "justifies_whole": false,
-        "justification_note": "The rule maps a numeric FMTI score to a band. Our record states a rank, not the score, so the mapping cannot be checked. Transcribing the number from the cited source would resolve this.",
+        "justification_note": "Attempted 2026-09-17 across the index page, the arXiv HTML, the Stanford HAI article and the 49-page paper PDF. None states Anthropic’s numeric score; the paper reports only the middle-group average of 36 and a rank. The rule maps a number to a band, so it cannot be applied. Not resolvable from the cited sources.",
         "provenance": "automated_provisional",
         "decision_eligible": false,
         "entity_sources": [
@@ -210,7 +210,7 @@
         ],
         "scoring_rule": "rubric.md §1 — \"External anchor: Stanford FMTI 2025 (use directly where it exists) … Map FMTI/100 → 0–4\", with bands in makers.json _meta.key_anchors.transparency.",
         "justifies_whole": false,
-        "justification_note": "A movement of ~14 points is recorded but not the resulting score, so the band mapping cannot be checked.",
+        "justification_note": "Attempted 2026-09-17 across all four cited sources. The paper and index report OpenAI’s decline of 14 points and its rank, never the 2025 score. Not resolvable from the cited sources.",
         "provenance": "automated_provisional",
         "decision_eligible": false,
         "entity_sources": [
@@ -335,7 +335,7 @@
         ],
         "scoring_rule": "rubric.md §1 — \"External anchor: Stanford FMTI 2025 (use directly where it exists) … Map FMTI/100 → 0–4\", with bands in makers.json _meta.key_anchors.transparency.",
         "justifies_whole": false,
-        "justification_note": "\"Middle group\" is not a value the band mapping accepts.",
+        "justification_note": "Attempted 2026-09-17 across all four cited sources. Google appears only in the middle-group list (average 36); no numeric score is stated. Not resolvable from the cited sources.",
         "provenance": "automated_provisional",
         "decision_eligible": false,
         "entity_sources": [
@@ -767,16 +767,16 @@
         "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
         "claim_support": "establishes_fact",
-        "supported_fact": "DeepSeek was scored in FMTI 2025 for the first time and placed in the middle group.",
+        "supported_fact": "DeepSeek scored 32/100 in the 2025 FMTI, its first year in the index. The score is attached to its flagship DeepSeek-R1.",
         "source_date": "December 2025 (FMTI 2025 edition)",
         "unsupported_clauses": [
-          "\"opaque on data and training\""
+          "\"opaque on data and training\" — a broader claim than the index value"
         ],
         "scoring_rule": "rubric.md §1 — \"External anchor: Stanford FMTI 2025 (use directly where it exists) … Map FMTI/100 → 0–4\", with bands in makers.json _meta.key_anchors.transparency.",
-        "justifies_whole": false,
-        "justification_note": "\"Middle group\" is not a value the band mapping accepts.",
+        "justifies_whole": true,
+        "justification_note": "Verified 2026-09-17 from crfm.stanford.edu/fmti/December-2025/index.html, which states DeepSeek 32. Band 30–49 → 2. Recorded score is 2.",
         "provenance": "automated_provisional",
-        "decision_eligible": false,
+        "decision_eligible": true,
         "entity_sources": [
           "https://crfm.stanford.edu/fmti/December-2025/index.html",
           "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
@@ -1388,16 +1388,16 @@
         "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
         "claim_support": "establishes_fact",
-        "supported_fact": "Canva’s founders pledged roughly 30% of their equity to charity through Pledge 1%.",
-        "source_date": "not stated in record",
+        "supported_fact": "In September 2021 Melanie Perkins and Cliff Obrecht committed to give 30% of Canva to the Canva Foundation, a charitable entity. The source describes a pledge, not a binding legal structure.",
+        "source_date": "2021-09-20, updated 2021-10-05 (stated on the page)",
         "unsupported_clauses": [
-          "\"free education/nonprofit tiers\" — not covered by the cited source",
+          "\"free education/nonprofit tiers\" — the page does not mention them. It says Canva works with 60,000 schools and 130,000 non-profits, which is a customer count, not a free-tier commitment.",
           "Sub-indicator 1 — structural commitments",
           "Sub-indicator 4 — public-interest outputs"
         ],
-        "scoring_rule": "None. The rubric lists sub-indicators for this axis but states no rule for combining them into a 0–4 score.",
+        "scoring_rule": "rubric.md §5 — \"Critical scoring rule — binding vs soft. Weight legally binding structures (trust/PBC/charter) far above PR pledges.\" §5 also defines 4 as \"binding structures … + broad affordable or free access + public-interest releases\".",
         "justifies_whole": false,
-        "justification_note": "A further tension to resolve editorially: §5 defines 4 as \"binding structures … + broad affordable or free access\", and its own rule weights binding structures far above pledges. An equity pledge is the softer category, so the recorded 4 looks high against the rubric even setting the aggregation question aside.",
+        "justification_note": "Reviewed 2026-09-17 against the cited source. Three problems, and the aggregation question is the least of them. (1) The source calls this a pledge; §5 explicitly weights pledges below binding structures, and 4 is defined as the binding tier. (2) The access clause that a 4 also requires is not in the source at all. (3) The commitment is five years old with no evidence of execution on the page beyond a $10M pilot donation. The supported fact is preserved and dated. No replacement score is proposed — the correct next step is a human re-score against §5, not an automated one.",
         "provenance": "automated_provisional",
         "decision_eligible": false,
         "entity_sources": [

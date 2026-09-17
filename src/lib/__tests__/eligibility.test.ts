@@ -347,7 +347,34 @@ describe('unequal coverage is not presented as a definitive ordering', () => {
       mode: 'custom',
     }
     const { placed } = orderByPriorities(makers, transparencyOnly)
-    expect(placed.map((p) => p.maker.id).sort()).toEqual(['Meta', 'Midjourney', 'Mistral', 'xAI'])
+    // DeepSeek joined this set once its FMTI value (32) was verified and
+    // transcribed on 2026-09-17 — the band mapping can now be checked.
+    expect(placed.map((p) => p.maker.id).sort()).toEqual([
+      'DeepSeek',
+      'Meta',
+      'Midjourney',
+      'Mistral',
+      'xAI',
+    ])
+  })
+
+  it('admits a score once the value its rule consumes is transcribed', () => {
+    const ev = axisEvidenceFor('DeepSeek', 'transparency')
+    expect(ev.supported_fact).toMatch(/32\/100/)
+    expect(ev.justifies_whole).toBe(true)
+    expect(ev.decision_eligible).toBe(true)
+    // Verification is dated, and the scope names the model the score attaches to.
+    expect(ev.justification_note).toMatch(/2026-09-17/)
+    expect(ev.supported_fact).toMatch(/DeepSeek-R1/)
+  })
+
+  it('keeps the three unobtainable FMTI scores ineligible rather than guessing', () => {
+    for (const id of ['Anthropic', 'OpenAI', 'Google DeepMind']) {
+      const ev = axisEvidenceFor(id, 'transparency')
+      expect(ev.claim_support).toBe('establishes_fact')
+      expect(ev.justifies_whole).toBe(false)
+      expect(ev.justification_note).toMatch(/not resolvable from the cited sources/i)
+    }
   })
 
   it('reports a uniform ordering as uniform', () => {

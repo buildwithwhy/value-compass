@@ -189,7 +189,7 @@ const CLAIM_REVIEW = {
     scoring_rule: FMTI_RULE,
     justifies_whole: false,
     justification_note:
-      'The rule maps a numeric FMTI score to a band. Our record states a rank, not the score, so the mapping cannot be checked. Transcribing the number from the cited source would resolve this.',
+      'Attempted 2026-09-17 across the index page, the arXiv HTML, the Stanford HAI article and the 49-page paper PDF. None states Anthropic’s numeric score; the paper reports only the middle-group average of 36 and a rank. The rule maps a number to a band, so it cannot be applied. Not resolvable from the cited sources.',
   }),
   'OpenAI/transparency': R({
     claim_support: 'establishes_fact',
@@ -200,7 +200,7 @@ const CLAIM_REVIEW = {
     scoring_rule: FMTI_RULE,
     justifies_whole: false,
     justification_note:
-      'A movement of ~14 points is recorded but not the resulting score, so the band mapping cannot be checked.',
+      'Attempted 2026-09-17 across all four cited sources. The paper and index report OpenAI’s decline of 14 points and its rank, never the 2025 score. Not resolvable from the cited sources.',
   }),
   'Google DeepMind/transparency': R({
     claim_support: 'establishes_fact',
@@ -209,16 +209,21 @@ const CLAIM_REVIEW = {
     unsupported_clauses: ['"criticized for delayed Gemini model cards/technical reports"'],
     scoring_rule: FMTI_RULE,
     justifies_whole: false,
-    justification_note: '"Middle group" is not a value the band mapping accepts.',
+    justification_note:
+      'Attempted 2026-09-17 across all four cited sources. Google appears only in the middle-group list (average 36); no numeric score is stated. Not resolvable from the cited sources.',
   }),
+  // Verified 2026-09-17 against the cited index page, which states DeepSeek's
+  // score numerically. The band mapping can now be checked.
   'DeepSeek/transparency': R({
     claim_support: 'establishes_fact',
-    supported_fact: 'DeepSeek was scored in FMTI 2025 for the first time and placed in the middle group.',
+    supported_fact:
+      'DeepSeek scored 32/100 in the 2025 FMTI, its first year in the index. The score is attached to its flagship DeepSeek-R1.',
     source_date: FMTI_DATE,
-    unsupported_clauses: ['"opaque on data and training"'],
+    unsupported_clauses: ['"opaque on data and training" — a broader claim than the index value'],
     scoring_rule: FMTI_RULE,
-    justifies_whole: false,
-    justification_note: '"Middle group" is not a value the band mapping accepts.',
+    justifies_whole: true,
+    justification_note:
+      'Verified 2026-09-17 from crfm.stanford.edu/fmti/December-2025/index.html, which states DeepSeek 32. Band 30–49 → 2. Recorded score is 2.',
   }),
 
   // ---- Axes with no aggregation rule -------------------------------------
@@ -298,20 +303,22 @@ const CLAIM_REVIEW = {
     justification_note:
       'The closest call outside transparency. The rubric does say this sub-indicator weighs most heavily for image makers and names litigation as the signal — but "most heavily" is not "determines the axis", and three sub-indicators have no evidence. Worth a human decision on whether §3 should be tightened into a rule.',
   }),
+  // Source read 2026-09-17. It narrows the claim in three ways at once.
   'Canva/public_sharing': R({
     claim_support: 'establishes_fact',
     supported_fact:
-      'Canva’s founders pledged roughly 30% of their equity to charity through Pledge 1%.',
-    source_date: NOT_STATED,
+      'In September 2021 Melanie Perkins and Cliff Obrecht committed to give 30% of Canva to the Canva Foundation, a charitable entity. The source describes a pledge, not a binding legal structure.',
+    source_date: '2021-09-20, updated 2021-10-05 (stated on the page)',
     unsupported_clauses: [
-      '"free education/nonprofit tiers" — not covered by the cited source',
+      '"free education/nonprofit tiers" — the page does not mention them. It says Canva works with 60,000 schools and 130,000 non-profits, which is a customer count, not a free-tier commitment.',
       'Sub-indicator 1 — structural commitments',
       'Sub-indicator 4 — public-interest outputs',
     ],
-    scoring_rule: NO_RULE,
+    scoring_rule:
+      'rubric.md §5 — "Critical scoring rule — binding vs soft. Weight legally binding structures (trust/PBC/charter) far above PR pledges." §5 also defines 4 as "binding structures … + broad affordable or free access + public-interest releases".',
     justifies_whole: false,
     justification_note:
-      'A further tension to resolve editorially: §5 defines 4 as "binding structures … + broad affordable or free access", and its own rule weights binding structures far above pledges. An equity pledge is the softer category, so the recorded 4 looks high against the rubric even setting the aggregation question aside.',
+      'Reviewed 2026-09-17 against the cited source. Three problems, and the aggregation question is the least of them. (1) The source calls this a pledge; §5 explicitly weights pledges below binding structures, and 4 is defined as the binding tier. (2) The access clause that a 4 also requires is not in the source at all. (3) The commitment is five years old with no evidence of execution on the page beyond a $10M pilot donation. The supported fact is preserved and dated. No replacement score is proposed — the correct next step is a human re-score against §5, not an automated one.',
   }),
 
   // ---- Partial claim support ---------------------------------------------
