@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { AXIS_LABELS, makers } from '../lib/data'
-import { orderByPriorities, PLACEMENT_THRESHOLD } from '../lib/priorities'
+import { orderByPriorities, PLACEMENT_THRESHOLD, prioritiesLabel } from '../lib/priorities'
 import { usePriorities } from '../lib/prioritiesContext'
 import { PrioritiesPanel } from '../components/PrioritiesPanel'
 
@@ -53,7 +53,7 @@ export function PrioritiesView() {
                 {stated.length > 0 && (
                   <div className="mt-2">
                     <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                      You asked about
+                      {priorities.mode === 'example' ? 'The example sets' : 'You asked about'}
                     </p>
                     <ul className="mt-1 space-y-0.5 text-sm text-slate-700">
                       {stated.map((k) => (
@@ -74,7 +74,7 @@ export function PrioritiesView() {
                       <div>
                         <dt className="text-2xl font-extrabold text-slate-800">{placed.length}</dt>
                         <dd className="mt-0.5 text-xs leading-snug text-slate-600">
-                          can be placed against your priorities
+                          can be placed against {prioritiesLabel(priorities.mode)}
                         </dd>
                       </div>
                       <div>
@@ -88,9 +88,9 @@ export function PrioritiesView() {
                     <p className="mt-3 border-t border-slate-100 pt-2 text-xs leading-snug text-slate-500">
                       We place a maker when at least{' '}
                       {Math.round(PLACEMENT_THRESHOLD * 100)}% of the weight you assigned has
-                      evidence behind it. The rest are held apart rather than sorted to the bottom —
-                      nothing published is not a bad result, and a list that buried them would read
-                      as though it were.
+                      eligible evidence behind it. The rest are held apart rather than sorted to
+                      the bottom — an unestablished record is not a bad result, and a list that
+                      buried them would read as though it were.
                     </p>
                   </>
                 )}
@@ -116,7 +116,7 @@ export function PrioritiesView() {
           {chosen && unplaced.length > 0 && (
             <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
               <h2 className="text-sm font-bold text-slate-700">
-                Too little published to place ({unplaced.length})
+                Too little established to place ({unplaced.length})
               </h2>
               <ul className="mt-2 space-y-1.5">
                 {unplaced.map(({ maker, result }) => (
@@ -128,8 +128,8 @@ export function PrioritiesView() {
                       {maker.name}
                     </Link>
                     <span className="ml-1.5 text-xs text-slate-500">
-                      {result.evidenced.length} of {result.axes.length} of your priorities have
-                      evidence
+                      {result.evidenced.length} of {result.axes.length} of{' '}
+                      {prioritiesLabel(priorities.mode)} have eligible evidence
                     </span>
                   </li>
                 ))}

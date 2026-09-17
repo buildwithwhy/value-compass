@@ -1,7 +1,14 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AXIS_KEYS, AXIS_LABELS } from '../lib/data'
 import { coverageByAxis } from '../lib/evidence'
-import { anyAxisPrioritised, AXIS_WEIGHT_LABELS, type AxisWeight } from '../lib/priorities'
+import {
+  anyAxisPrioritised,
+  AXIS_WEIGHT_LABELS,
+  EXAMPLE_WEIGHTS,
+  type AxisWeight,
+} from '../lib/priorities'
+import { CONCERN_LEGEND, EXAMPLE_LENS } from '../lib/lens'
 import { usePriorities } from '../lib/prioritiesContext'
 import { CapitalLensPanel } from './CapitalLensPanel'
 
@@ -54,18 +61,19 @@ function AxisRow({ axis }: { axis: (typeof AXIS_KEYS)[number] }) {
       </div>
       {current > 0 && (
         <p className="mt-1.5 text-xs leading-snug text-slate-500">
-          {cov.comparable === 0 ? (
+          {cov.eligible === 0 ? (
             <span className="text-amber-700">
-              No maker has an assessment firm enough to compare on this axis, so prioritising it
-              will not separate anyone.
+              No maker has an assessment that passes our evidence rule on this axis, so
+              prioritising it cannot separate anyone.
             </span>
           ) : (
             <>
-              <strong className="text-slate-700">{cov.comparable}</strong> of {cov.total} makers have
-              an assessment firm enough to compare here
+              <strong className="text-slate-700">{cov.eligible}</strong> of {cov.total} makers have
+              an assessment that passes our evidence rule here
               {cov.withheld > 0 && (
                 <>
-                  ; <strong className="text-slate-700">{cov.withheld}</strong> have published nothing
+                  ; for <strong className="text-slate-700">{cov.withheld}</strong> we have
+                  established nothing
                 </>
               )}
               .
@@ -84,7 +92,7 @@ function AxisRow({ axis }: { axis: (typeof AXIS_KEYS)[number] }) {
  * after.
  */
 export function PrioritiesPanel({ compact = false }: { compact?: boolean }) {
-  const { priorities, chosen, useExample, clear } = usePriorities()
+  const { priorities, chosen, clear } = usePriorities()
   const { mode } = priorities
   // The banner describes the AXES specifically. A visitor arriving with only a
   // capital lens set has chosen nothing here yet, whatever the overall mode is.
@@ -106,21 +114,7 @@ export function PrioritiesPanel({ compact = false }: { compact?: boolean }) {
           )}
         </div>
 
-        {!axesSet && (
-          <div className="mb-3 rounded-lg border border-teal-200 bg-teal-50/60 p-3">
-            <p className="text-xs leading-snug text-slate-600">
-              No axis is selected. Say which of these you care about and the site will order and
-              annotate itself around them — or start from our example and change it.
-            </p>
-            <button
-              type="button"
-              onClick={useExample}
-              className="mt-2 rounded-md bg-teal-700 px-2.5 py-1 text-xs font-semibold text-white hover:bg-teal-800"
-            >
-              Use the example priorities
-            </button>
-          </div>
-        )}
+        {!axesSet && <ExamplePreview />}
 
         {axesSet && mode === 'example' && (
           <p className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-xs leading-snug text-amber-900">
@@ -137,8 +131,9 @@ export function PrioritiesPanel({ compact = false }: { compact?: boolean }) {
         </div>
 
         <p className="mt-3 border-t border-slate-100 pt-2 text-xs leading-snug text-slate-500">
-          Only assessments firm enough to compare count toward an ordering. An axis we withheld, or
-          one resting on a single thin source, contributes nothing — in either direction.{' '}
+          Only assessments that pass our evidence rule count toward an ordering: there has to be a
+          source that covers the claim the score rests on. A confidence flag on its own is not
+          enough, and an unsourced assessment contributes nothing — in either direction.{' '}
           <Link to="/about" className="text-teal-700 underline underline-offset-2">
             How this works
           </Link>
@@ -154,6 +149,108 @@ export function PrioritiesPanel({ compact = false }: { compact?: boolean }) {
           one was driving the answer.
         </p>
       </div>
+    </div>
+  )
+}
+
+/**
+ * The example is opt-in and never applied sight-unseen: this shows exactly
+ * which weights it would set, and makes the capital half a separate decision.
+ * Asking for example axis weights must not silently switch on a capital lens
+ * the visitor never looked at.
+ */
+function ExamplePreview() {
+  const { applyExample } = usePriorities()
+  const [open, setOpen] = useState(false)
+  const [withCapital, setWithCapital] = useState(false)
+
+  const capitalLabels = CONCERN_LEGEND.filter((_, i) => {
+    const keys = Object.keys(EXAMPLE_LENS) as (keyof typeof EXAMPLE_LENS)[]
+    // CONCERN_LEGEND order mirrors the six top-level attributes.
+    const topLevel = [
+      'founder_autocracy',
+      'sovereign',
+      'big_tech',
+      'circular_vendor',
+      'backer_reputation',
+      'index_concentration',
+    ] as const
+    return keys.includes(topLevel[i]) && EXAMPLE_LENS[topLevel[i]]
+  }).map((c) => c.label)
+
+  return (
+    <div className="mb-3 rounded-lg border border-teal-200 bg-teal-50/60 p-3">
+      <p className="text-xs leading-snug text-slate-600">
+        No axis is selected. Say which of these you care about below — or preview our example set
+        and apply it if you agree with it.
+      </p>
+
+      {!open ? (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="mt-2 rounded-md border border-teal-300 bg-white px-2.5 py-1 text-xs font-semibold text-teal-800 hover:bg-teal-50"
+        >
+          Preview the example priorities
+        </button>
+      ) : (
+        <div className="mt-2 rounded-md border border-teal-200 bg-white p-2.5">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            The example would set
+          </p>
+          <ul className="mt-1 space-y-0.5 text-xs text-slate-700">
+            {AXIS_KEYS.map((axis) => (
+              <li key={axis} className="flex justify-between gap-3">
+                <span>{AXIS_LABELS[axis]}</span>
+                <span
+                  className={
+                    EXAMPLE_WEIGHTS[axis] === 0 ? 'text-slate-400' : 'font-medium text-teal-800'
+                  }
+                >
+                  {AXIS_WEIGHT_LABELS[EXAMPLE_WEIGHTS[axis]]}
+                </span>
+              </li>
+            ))}
+          </ul>
+
+          <label className="mt-2.5 flex cursor-pointer items-start gap-2 border-t border-slate-100 pt-2.5 text-xs text-slate-700">
+            <input
+              type="checkbox"
+              checked={withCapital}
+              onChange={(e) => setWithCapital(e.target.checked)}
+              className="mt-0.5"
+            />
+            <span>
+              Also switch on the example <strong>capital attributes</strong>
+              <span className="mt-0.5 block text-[11px] leading-snug text-slate-500">
+                {capitalLabels.join(', ')}. Separate from the axes above, and off unless you ask
+                for it.
+              </span>
+            </span>
+          </label>
+
+          <div className="mt-2.5 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => applyExample({ axes: true, capital: withCapital })}
+              className="rounded-md bg-teal-700 px-2.5 py-1 text-xs font-semibold text-white hover:bg-teal-800"
+            >
+              Apply the example
+            </button>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="rounded-md border border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
+            >
+              Cancel
+            </button>
+          </div>
+          <p className="mt-2 text-[11px] leading-snug text-slate-500">
+            Applied settings stay labelled as the example until you change one. They are
+            ValueCompass&apos;s starting point, not a statement of your priorities.
+          </p>
+        </div>
+      )}
     </div>
   )
 }

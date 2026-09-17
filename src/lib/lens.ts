@@ -1,12 +1,24 @@
 import { backersFor } from './data'
+import { associationsAreUnverified, relationshipsFor } from './evidence'
 import type { CapitalProfile, Funder, Maker } from './types'
 
 // ---------------------------------------------------------------------------
 // Capital Lens — a visitor-configured filter, never a fixed sixth score.
-// Each concern maps to a factual capital_profile field (or, for backer
-// associations, to the notable_for tags of a maker's funders). We state the
-// facts; the visitor decides which of them count as concerns. Nothing is
-// switched on for them — see EMPTY_LENS and prioritiesContext.
+//
+// The correction that shapes this file: a field being empty in our record is
+// NOT the same as the attribute being absent from the company. The old model
+// treated `sovereign_state: []` as "clear" and credited the maker for it, which
+// turned gaps in our research into positive findings.
+//
+// Every attribute now resolves to one of three states:
+//
+//   documented_present — the record names something
+//   documented_absent  — the record carries an explicit authored value, within
+//                        a stated scope (and the scope is always shown)
+//   unknown            — no record. Counts neither for nor against.
+//
+// Pending and historical status is preserved separately and never folded into
+// a present-tense finding.
 // ---------------------------------------------------------------------------
 
 export interface LensConfig {
@@ -21,8 +33,7 @@ export interface LensConfig {
   index_concentration: boolean
 }
 
-// Nothing is a concern until a visitor says it is. A new visitor starts here,
-// and the interface asks rather than assuming.
+// Nothing is a concern until a visitor says it is.
 export const EMPTY_LENS: LensConfig = {
   founder_autocracy: false,
   sovereign: false,
@@ -35,8 +46,8 @@ export const EMPTY_LENS: LensConfig = {
   index_concentration: false,
 }
 
-// An editorial starting point, offered by name. It is ValueCompass's example of
-// one way to look at capital — it is never described as the visitor's own.
+// An editorial example, offered by name and never applied without being asked
+// for. Capital is activated separately — see prioritiesContext.
 export const EXAMPLE_LENS: LensConfig = {
   founder_autocracy: true,
   sovereign: true,
@@ -49,7 +60,6 @@ export const EXAMPLE_LENS: LensConfig = {
   index_concentration: false,
 }
 
-/** 'unset' until the visitor either adopts the example lens or picks their own. */
 export type LensMode = 'unset' | 'example' | 'custom'
 
 export const LENS_MODE_LABELS: Record<LensMode, string> = {
@@ -76,6 +86,45 @@ export const INDEPENDENCE_LABELS: Record<CapitalProfile['independence_type'], st
   hedge_fund_parented: 'Hedge-fund parented',
 }
 
+// ---- Attribute states ------------------------------------------------------
+
+export type AttributeState = 'documented_present' | 'documented_absent' | 'unknown'
+
+export interface AttributeFinding {
+  key: string
+  label: string
+  state: AttributeState
+  /** What the record says, when it says anything. */
+  detail: string | null
+  /** For documented_absent and unknown: the scope, or why we cannot claim one. */
+  scope: string | null
+}
+
+export interface LensResult {
+  /** Attributes the visitor switched on, in a stable order. */
+  findings: AttributeFinding[]
+  present: AttributeFinding[]
+  absent: AttributeFinding[]
+  unknown: AttributeFinding[]
+  activeCount: number
+  /**
+   * Share of switched-on attributes our record can speak to, 0–1. Shown beside
+   * any finding, so an answer resting on one documented attribute out of six is
+   * never read as a full picture.
+   */
+  coverage: number
+  /**
+   * Announced, contingent, reported-but-not-closed, or historical items.
+   * Preserved verbatim and never counted as a present-tense finding.
+   */
+  pending: { label: string; detail: string }[]
+  /**
+   * Backer associations with no source on record. Surfaced so they are visible,
+   * counted nowhere.
+   */
+  unverifiedAssociations: string[]
+}
+
 export interface ConcernHit {
   key: string
   label: string
@@ -83,11 +132,8 @@ export interface ConcernHit {
 }
 
 /**
- * The substantive reputation reasons a funder is flagged — its notable public
- * associations, skipping a pure "Co-founded by X" identification lead-in (so
- * a16z surfaces its Trump-administration alignment, Founders Fund surfaces
- * Thiel's political donations, etc.). Returned as readable sentences; full
- * list + sources also live on the funder popup.
+ * The substantive reputation reasons a funder carries — skipping a pure
+ * "Co-founded by X" identification lead-in.
  */
 export function reputationReasons(f: Funder): string[] {
   const items = f.notable_for ?? []
@@ -98,7 +144,6 @@ export function reputationReasons(f: Funder): string[] {
   return pureIdentification && items.length > 1 ? items.slice(1) : items
 }
 
-// Plain-English meaning of each concern tag, for an explanatory key.
 export const CONCERN_LEGEND: { label: string; meaning: string }[] = [
   { label: 'Founder control', meaning: 'A founder holds outright or super-voting control.' },
   {
@@ -115,7 +160,7 @@ export const CONCERN_LEGEND: { label: string; meaning: string }[] = [
   },
   {
     label: 'Backer associations',
-    meaning: 'One or more backers carry notable public associations (see each maker’s detail).',
+    meaning: 'A backer carries notable public associations that we have a source for.',
   },
   {
     label: 'Index concentration',
@@ -123,106 +168,187 @@ export const CONCERN_LEGEND: { label: string; meaning: string }[] = [
   },
 ]
 
-export interface LensResult {
-  hits: ConcernHit[]
-  activeCount: number // how many concerns the user has enabled
-  clearCount: number // enabled concerns NOT present in this maker
-  fit: number // 0-100, higher = fewer of the user's concerns present
+// A list field that is empty tells us nothing: this dataset never recorded a
+// scope for these, so "[]" cannot be read as "we checked and found none".
+const LIST_EMPTY_IS_UNKNOWN =
+  'This dataset records named entries only. An empty list means we have no record — not that we checked and found none.'
+
+// An explicit boolean was authored as a value, so absence is a finding — but
+// only within the scope this dataset actually covers.
+const BOOLEAN_SCOPE =
+  'Recorded as false in this dataset’s capital profile. Scope is limited to the entities modelled here.'
+
+function finding(
+  key: string,
+  label: string,
+  state: AttributeState,
+  detail: string | null,
+  scope: string | null,
+): AttributeFinding {
+  return { key, label, state, detail, scope }
 }
 
 /**
- * Evaluate a maker against the user's lens. Higher fit = cleaner capital under
- * the chosen concerns. Returns which concerns triggered, for transparency.
+ * Evaluate a maker against the lens. Reports what is documented present, what
+ * is documented absent within a stated scope, and what is unknown — with no
+ * single number standing in for the three.
  */
 export function evaluateMaker(maker: Maker, lens: LensConfig): LensResult {
   const cp = maker.capital_profile
-  const hits: ConcernHit[] = []
-  let active = 0
+  const findings: AttributeFinding[] = []
 
-  // Founder autocracy → founder_control
+  // Founder control — `false` is an authored value, so absence is documented.
   if (lens.founder_autocracy) {
-    active++
-    if (cp && cp.founder_control) {
-      hits.push({
-        key: 'founder_autocracy',
-        label: 'Founder control',
-        detail: typeof cp.founder_control === 'string' ? cp.founder_control : 'founder voting control',
-      })
+    if (!cp) {
+      findings.push(
+        finding('founder_autocracy', 'Founder control', 'unknown', null, 'No capital profile on record.'),
+      )
+    } else if (cp.founder_control) {
+      findings.push(
+        finding(
+          'founder_autocracy',
+          'Founder control',
+          'documented_present',
+          typeof cp.founder_control === 'string' ? cp.founder_control : 'founder voting control',
+          null,
+        ),
+      )
+    } else {
+      findings.push(
+        finding('founder_autocracy', 'Founder control', 'documented_absent', null, BOOLEAN_SCOPE),
+      )
     }
   }
 
-  // Sovereign / state capital → sovereign_state, gated by sub-bucket toggles
+  // Sovereign / state capital. A record naming Gulf capital does not establish
+  // that Singapore capital is absent, so a non-match is unknown, not absent.
   const subsOn: SovBucket[] = [
     lens.sovereign_gulf ? 'gulf' : null,
     lens.sovereign_singapore ? 'singapore' : null,
     lens.sovereign_china ? 'china' : null,
   ].filter(Boolean) as SovBucket[]
   if (lens.sovereign && subsOn.length) {
-    active++
     const matched = (cp?.sovereign_state ?? []).filter((s) => subsOn.includes(sovBucket(s)))
-    if (matched.length) {
-      hits.push({
-        key: 'sovereign',
-        label: 'Sovereign / state capital',
-        detail: matched.join('; '),
-      })
-    }
+    findings.push(
+      matched.length
+        ? finding(
+            'sovereign',
+            'Sovereign / state capital',
+            'documented_present',
+            matched.join('; '),
+            null,
+          )
+        : finding('sovereign', 'Sovereign / state capital', 'unknown', null, LIST_EMPTY_IS_UNKNOWN),
+    )
   }
 
-  // Big Tech / competitor capital → big_tech_capital + competitor_entanglement
+  // Big Tech / competitor capital. Two signals: a named-list half that is
+  // unknown when empty, and an authored boolean. Unknown wins, because half the
+  // question has no record behind it.
   if (lens.big_tech) {
-    active++
     const bt = cp?.big_tech_capital ?? []
     const comp = cp?.competitor_entanglement
     if (bt.length || comp) {
       const parts: string[] = []
       if (bt.length) parts.push(`Big Tech capital: ${bt.join(', ')}`)
-      if (comp) parts.push('competitor entanglement')
-      hits.push({ key: 'big_tech', label: 'Big Tech / competitor capital', detail: parts.join('; ') })
+      if (comp) parts.push('competitor on the cap table')
+      findings.push(
+        finding('big_tech', 'Big Tech / competitor capital', 'documented_present', parts.join('; '), null),
+      )
+    } else {
+      findings.push(
+        finding('big_tech', 'Big Tech / competitor capital', 'unknown', null, LIST_EMPTY_IS_UNKNOWN),
+      )
     }
   }
 
-  // Circular vendor ties → circular_vendor
   if (lens.circular_vendor) {
-    active++
     const cv = cp?.circular_vendor ?? []
-    if (cv.length) {
-      hits.push({
-        key: 'circular_vendor',
-        label: 'Circular vendor ties',
-        detail: `invests via / buys from ${cv.join(', ')}`,
-      })
-    }
+    findings.push(
+      cv.length
+        ? finding(
+            'circular_vendor',
+            'Circular vendor ties',
+            'documented_present',
+            `invests via / buys from ${cv.join(', ')}`,
+            null,
+          )
+        : finding('circular_vendor', 'Circular vendor ties', 'unknown', null, LIST_EMPTY_IS_UNKNOWN),
+    )
   }
 
-  // Backer reputation → presence of notable_for on this maker's funders
+  // Backer associations. An unverified association cannot become an established
+  // concern — it is surfaced separately and counted nowhere.
+  const unverifiedAssociations: string[] = []
   if (lens.backer_reputation) {
-    active++
-    const repBackers = backersFor(maker.id)
+    const withAssociations = backersFor(maker.id)
       .map((b) => b.funder)
       .filter((f) => (f.notable_for ?? []).length > 0)
-    if (repBackers.length) {
-      hits.push({
-        key: 'backer_reputation',
-        label: 'Backer associations',
-        detail: repBackers.map((f) => f.name).join(', '),
-      })
+    const sourced = withAssociations.filter((f) => !associationsAreUnverified(f))
+    for (const f of withAssociations) {
+      if (associationsAreUnverified(f)) unverifiedAssociations.push(f.name)
     }
+    findings.push(
+      sourced.length
+        ? finding(
+            'backer_reputation',
+            'Backer associations',
+            'documented_present',
+            sourced.map((f) => f.name).join(', '),
+            null,
+          )
+        : finding(
+            'backer_reputation',
+            'Backer associations',
+            'unknown',
+            null,
+            'Backer associations are a thin first pass in this dataset. No sourced association on record is not a finding that none exists.',
+          ),
+    )
   }
 
-  // Index concentration → index_held
   if (lens.index_concentration) {
-    active++
-    if (cp?.index_held) {
-      hits.push({
-        key: 'index_concentration',
-        label: 'Index concentration',
-        detail: 'held by passive index funds (universal-owner concern)',
-      })
+    findings.push(
+      cp?.index_held
+        ? finding(
+            'index_concentration',
+            'Index concentration',
+            'documented_present',
+            'a public parent is held by passive index funds',
+            null,
+          )
+        : finding('index_concentration', 'Index concentration', 'documented_absent', null, BOOLEAN_SCOPE),
+    )
+  }
+
+  // Pending / reported / historical, preserved apart from present-tense facts.
+  const pending: { label: string; detail: string }[] = []
+  for (const rel of relationshipsFor(maker.id)) {
+    if (rel.status === 'completed' || rel.status === 'unspecified') continue
+    pending.push({
+      label: `${rel.funder} — ${rel.status}`,
+      detail: rel.quote ?? 'Recorded as not completed.',
+    })
+  }
+  for (const s of cp?.sovereign_state ?? []) {
+    if (/reported|announced|pending/i.test(s)) {
+      pending.push({ label: 'Sovereign / state capital', detail: s })
     }
   }
 
-  const clear = active - hits.length
-  const fit = active === 0 ? 100 : Math.round((clear / active) * 100)
-  return { hits, activeCount: active, clearCount: clear, fit }
+  const present = findings.filter((f) => f.state === 'documented_present')
+  const absent = findings.filter((f) => f.state === 'documented_absent')
+  const unknown = findings.filter((f) => f.state === 'unknown')
+  const activeCount = findings.length
+
+  return {
+    findings,
+    present,
+    absent,
+    unknown,
+    activeCount,
+    coverage: activeCount === 0 ? 0 : (present.length + absent.length) / activeCount,
+    pending,
+    unverifiedAssociations,
+  }
 }

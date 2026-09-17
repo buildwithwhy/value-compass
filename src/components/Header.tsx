@@ -30,7 +30,7 @@ function PrioritiesChip() {
   }
 
   const parts = [
-    axisCount > 0 ? `${axisCount} axis${axisCount === 1 ? '' : 'es'}` : null,
+    axisCount > 0 ? `${axisCount} ${axisCount === 1 ? 'axis' : 'axes'}` : null,
     capital ? 'capital' : null,
   ].filter(Boolean)
 

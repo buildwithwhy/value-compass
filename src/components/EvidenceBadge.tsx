@@ -9,7 +9,7 @@ const TONE: Record<EvidenceBasis, string> = {
   sourced: 'border-emerald-300 bg-emerald-50 text-emerald-800',
   unsourced: 'border-slate-300 bg-slate-50 text-slate-600',
   contextual: 'border-amber-300 bg-amber-50 text-amber-800',
-  non_disclosure: 'border-dashed border-slate-400 bg-white text-slate-500',
+  not_established: 'border-dashed border-slate-400 bg-white text-slate-500',
 }
 
 export function EvidenceBadge({
@@ -64,7 +64,7 @@ export const STATEMENT_KINDS = [
   {
     key: 'unknown',
     label: 'Not established',
-    body: 'Nobody has published it. We say so and show no score — undisclosed is not evidence of bad practice.',
+    body: 'Our research has not established it. We say so and show no score — a gap in our record is not a finding about the company.',
     className: 'border-slate-300 bg-slate-50 text-slate-700',
   },
   {

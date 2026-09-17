@@ -50,14 +50,16 @@ function Toggle({
  * interface never presents an editorial default as someone's own priorities.
  */
 export function CapitalLensPanel({ compact = false }: { compact?: boolean }) {
-  const { lens, mode, useExampleLens, clear } = useCapitalLens()
+  const { lens, mode, chosen, useExampleLens, clear } = useCapitalLens()
+  // `chosen` is capital-specific: example AXIS weights must not make this panel
+  // claim a capital lens the visitor never switched on.
   return (
     <div className="rounded-xl border border-teal-200 bg-teal-50/60 p-3">
       <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
         <h3 className="flex items-center gap-1.5 text-sm font-bold text-teal-900">
           🔍 Capital Lens
         </h3>
-        {mode !== 'unset' && (
+        {chosen && (
           <button
             type="button"
             onClick={clear}
@@ -68,7 +70,7 @@ export function CapitalLensPanel({ compact = false }: { compact?: boolean }) {
         )}
       </div>
 
-      {mode === 'unset' && (
+      {!chosen && (
         <div className="mb-2 rounded-lg border border-teal-200 bg-white p-2.5">
           <p className="text-xs leading-snug text-slate-600">
             Nothing is switched on. Pick the capital attributes you want flagged — or start from our
@@ -84,14 +86,14 @@ export function CapitalLensPanel({ compact = false }: { compact?: boolean }) {
         </div>
       )}
 
-      {mode === 'example' && (
+      {chosen && mode === 'example' && (
         <p className="mb-2 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-xs leading-snug text-amber-900">
           You are using the <strong>ValueCompass example lens</strong> — an editorial starting point,
           not a statement of your priorities. Change any switch to make it yours.
         </p>
       )}
 
-      {mode === 'custom' && (
+      {chosen && mode === 'custom' && (
         <p className="mb-2 text-xs leading-snug text-teal-800">
           <strong>Your lens.</strong> These are the attributes you asked to have flagged.
         </p>
@@ -142,9 +144,9 @@ export function LensNotChosen({ className = '' }: { className?: string }) {
     <div className={`rounded-lg border border-dashed border-teal-300 bg-teal-50/50 p-3 ${className}`}>
       <p className="text-sm font-semibold text-teal-900">No lens chosen yet</p>
       <p className="mt-1 text-xs leading-snug text-slate-600">
-        Capital fit compares makers against the attributes <em>you</em> say matter. We have not
-        chosen any for you, so there is nothing to score yet. The factual capital profile below is
-        shown either way.
+        Capital findings report which attributes <em>you</em> say matter are documented present,
+        documented clear, or simply absent from our record. We have not chosen any for you, so
+        there is nothing to report yet. The factual capital profile below is shown either way.
       </p>
       <button
         type="button"

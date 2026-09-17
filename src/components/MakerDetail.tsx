@@ -11,7 +11,7 @@ import { PolarityLegend } from './PolarityLegend'
 import { Chip, SectionTitle, Tag } from './ui'
 import { ValueRadar } from './ValueRadar'
 import { CapitalLensPanel } from './CapitalLensPanel'
-import { BackerReputation, CapitalFitBadge, CapitalProfileCard } from './CapitalProfile'
+import { BackerReputation, CapitalFindings, CapitalProfileCard } from './CapitalProfile'
 
 export function MakerDetail({
   maker,
@@ -72,7 +72,8 @@ export function MakerDetail({
         <span className="text-sm leading-snug text-teal-900">
           <span className="font-semibold">What would switching away from {maker.name} change?</span>{' '}
           <span className="text-teal-700">
-            See what moves on your priorities, and who you would stop and start funding.
+            See what moves on the priorities you set, and which funding relationships are
+            recorded for each.
           </span>
         </span>
         <span aria-hidden className="shrink-0 text-teal-700">
@@ -120,8 +121,8 @@ export function MakerDetail({
           {maker.name}, <span className="font-semibold text-slate-700">{cov.unsourced}</span> have no
           source attached yet,{' '}
           <span className="font-semibold text-slate-700">{cov.contextual}</span> reason from context,
-          and <span className="font-semibold text-slate-700">{cov.notEstablished}</span> rest only on
-          what has not been published — so no score is shown for those.
+          and for <span className="font-semibold text-slate-700">{cov.notEstablished}</span> our
+          research has established nothing — so no score is shown for those.
         </p>
         <AxisDetail maker={maker} />
       </div>
@@ -160,7 +161,7 @@ export function MakerDetail({
               Capital character
             </h3>
             <span className="rounded-full bg-teal-100 px-2 py-0.5 text-[10px] font-bold uppercase text-teal-700">
-              your priorities · not a 6th score
+              a filter you set · not a 6th score
             </span>
           </div>
           <p className="mb-3 text-xs leading-snug text-teal-700">
@@ -169,7 +170,7 @@ export function MakerDetail({
           </p>
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
             <CapitalLensPanel compact />
-            <CapitalFitBadge maker={maker} onOpenFunder={onOpenFunder} />
+            <CapitalFindings maker={maker} onOpenFunder={onOpenFunder} />
           </div>
           <div className="mt-3">
             <SectionTitle>Factual capital profile</SectionTitle>

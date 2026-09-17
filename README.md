@@ -36,6 +36,7 @@ After editing `makers.json` or `funders.json`, rebuild the derived evidence laye
 
 ```bash
 node scripts/build-evidence.mjs   # rewrites src/data/evidence.json + prints a summary
+npm test                          # regression checks for the evidence rules
 ```
 
 ## Tech stack
@@ -67,12 +68,21 @@ re-run the evidence build.
 what the written rationale rests on, which of its cited sources are actually about that
 maker, and whether the score may be displayed or compared:
 
-| Basis | Meaning | Displayed? | Can win a comparison? |
+| Basis | Meaning | Displayed? | Can decide anything? |
 |---|---|---|---|
-| `sourced` | On record, with a source about this maker | yes | if confidence A/B |
-| `unsourced` | On record, but no source about this maker attached | yes, badged | if confidence A/B |
+| `sourced` + claim support `direct` | A source about this maker covers the claim the score rests on | yes | **yes** |
+| `sourced` + claim support `partial` | The source covers one clause of a multi-clause rationale | yes, badged | no |
+| `unsourced` | On record, but no source about this maker attached | yes, badged | no |
 | `contextual` | Reasoned from jurisdiction, size, or what it is built on | yes, badged | no |
-| `non_disclosure` | Establishes only that the information is undisclosed | **no — gap** | no |
+| `not_established` | Our research has not established a finding here | **no — gap** | no |
+
+**One rule decides.** `isDecisionEligible()` gates ordering, comparison markers, switching
+differences and any recommendation, so the four cannot drift apart. It asks for relevant,
+traceable support for the *claim* and an assessment justified by it. **A confidence flag is
+not evidence** and never qualifies an assessment on its own; **source count does not
+determine quality** — one authoritative source can carry a narrow factual claim. Ineligible
+records are preserved, displayed, and carry the reason they cannot decide anything. See
+[`docs/EVIDENCE_CORRECTION.md`](docs/EVIDENCE_CORRECTION.md).
 
 It also transcribes funding relationships verbatim from the records that state them, so
 the graph can tell an equity stake from an announced commitment from outright ownership.
@@ -146,4 +156,5 @@ src/
 - Clean, neutral, accessible: good contrast, keyboard-navigable (focus rings, Esc closes panels), readable typography, mobile-responsive (the graph degrades to a list/filter view).
 - Nothing is fabricated: absent fields hide gracefully; funders are never assigned value scores; tension hooks are framed as questions, not conclusions.
 - Nothing is switched on for the visitor: priorities and the Capital Lens both start empty, and an editorial preset is offered by name rather than presented as their priorities.
-- Priorities cannot manufacture confidence. Only comparable assessments count toward an ordering; a maker is placed only when at least half the weight assigned has evidence behind it, and the rest are held in a separate group rather than sorted to the bottom, because an unknown is not a bad result. Conduct and capital are reported side by side and never summed.
+- Priorities cannot manufacture confidence. Only decision-eligible assessments count toward an ordering; a maker is placed only when at least half the weight assigned has eligible evidence, and the rest are held in a separate group rather than sorted to the bottom, because an unknown is not a bad result. Where placed makers were scored on different criteria, the interface says so rather than presenting the averages as a ranking. Conduct and capital are reported side by side and never summed.
+- Capital attributes are tri-state — documented present, documented absent within a stated scope, or **no record**. An empty field is never read as a clean result, there is no combined capital score, and pending or contingent items never become present-tense findings.

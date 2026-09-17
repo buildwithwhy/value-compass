@@ -9,9 +9,10 @@ import type { AxisKey, Maker } from './types'
 //
 // Two commitments shape everything here:
 //
-//   1. Only assessments firm enough to compare are allowed to move a maker up
-//      or down. An axis we withheld, or one resting on a thin single source,
-//      contributes nothing — in either direction.
+//   1. Only DECISION-ELIGIBLE assessments are allowed to move a maker up or
+//      down — the same single rule the comparison markers and the switching
+//      view use (see isDecisionEligible). An axis with no source for its claim
+//      contributes nothing, in either direction, whatever its confidence flag.
 //
 //   2. Conduct and capital are never added together. A weighted conduct score
 //      and a count of capital attributes measure different things, and a single
@@ -51,8 +52,15 @@ export const EXAMPLE_WEIGHTS: AxisWeights = {
   public_sharing: 1,
 }
 
-/** At least half the weight you assigned must have evidence behind it before we
- *  will place a maker in a priority ordering. Stated in the methodology. */
+/**
+ * Provisional. At least half the weight assigned must have eligible evidence
+ * before a maker is placed in an exploratory ordering.
+ *
+ * This is a threshold for EXPLORING the dataset, not a guarantee of anything.
+ * It is not a recommendation bar: a maker clearing it can still have been
+ * scored on a different half of the criteria than the maker above it, which is
+ * why orderingIntegrity() exists and why the interface says so.
+ */
 export const PLACEMENT_THRESHOLD = 0.5
 
 // ---- Evaluation ------------------------------------------------------------
@@ -60,10 +68,12 @@ export const PLACEMENT_THRESHOLD = 0.5
 export interface PriorityAxisResult {
   axis: AxisKey
   weight: AxisWeight
-  /** Present only when the assessment is firm enough to compare. */
+  /** Present only when the assessment passes the eligibility rule. */
   score: number | null
   /** Why it could not count, when it could not. */
-  missingReason: 'not_established' | 'too_uncertain' | null
+  missingReason: 'not_established' | 'ineligible' | null
+  /** The specific reason, in words fit for the interface. */
+  missingDetail?: string | null
 }
 
 export interface PriorityResult {
@@ -71,7 +81,7 @@ export interface PriorityResult {
   axes: PriorityAxisResult[]
   evidenced: PriorityAxisResult[]
   missing: PriorityAxisResult[]
-  /** Share of your assigned weight that has evidence behind it, 0–1. */
+  /** Share of your assigned weight with eligible evidence behind it, 0–1. */
   coverage: number
   /** Weighted mean of the evidenced scores, 0–4. Null when nothing counts. */
   strength: number | null
@@ -97,6 +107,15 @@ export interface Priorities {
   mode: 'unset' | 'example' | 'custom'
 }
 
+/**
+ * Whose settings these are. Example-derived settings are never called the
+ * visitor's — they did not choose them, they accepted a preview of ours.
+ */
+export function prioritiesLabel(mode: Priorities['mode'], possessive = false): string {
+  if (mode === 'example') return possessive ? 'the example priorities’' : 'the example priorities'
+  return possessive ? 'your priorities’' : 'your priorities'
+}
+
 export function anyAxisPrioritised(w: AxisWeights): boolean {
   return AXIS_KEYS.some((k) => w[k] > 0)
 }
@@ -117,14 +136,15 @@ export function evaluatePriorities(maker: Maker, p: Priorities): PriorityResult 
     const weight = p.weights[axis]
     if (weight === 0) continue
     const d = displayScore(maker, axis)
-    if (d.comparable && d.value != null) {
+    if (d.eligible && d.value != null) {
       axes.push({ axis, weight, score: d.value, missingReason: null })
     } else {
       axes.push({
         axis,
         weight,
         score: null,
-        missingReason: d.withheld ? 'not_established' : 'too_uncertain',
+        missingReason: d.withheld ? 'not_established' : 'ineligible',
+        missingDetail: d.ineligibleBecause,
       })
     }
   }
@@ -190,10 +210,12 @@ export function orderByPriorities(
       const d = (b.result.strength ?? 0) - (a.result.strength ?? 0)
       if (Math.abs(d) > 1e-9) return d
     }
-    // Capital only breaks ties, or decides outright when no axis is prioritised.
-    const ca = a.result.capital?.fit ?? 0
-    const cb = b.result.capital?.fit ?? 0
-    if (cb !== ca) return cb - ca
+    // Capital only breaks ties, or decides outright when no axis is
+    // prioritised — and only DOCUMENTED matches count. Unknown attributes move
+    // nobody, which is the whole point of the tri-state model.
+    const ca = a.result.capital?.present.length ?? 0
+    const cb = b.result.capital?.present.length ?? 0
+    if (ca !== cb) return ca - cb
     return a.maker.name.localeCompare(b.maker.name)
   })
   unplaced.sort((a, b) => {
@@ -204,6 +226,69 @@ export function orderByPriorities(
   })
 
   return { placed, unplaced }
+}
+
+// ---- Is an ordering safe to present as an ordering? ------------------------
+
+export interface OrderingIntegrity {
+  /** True when every placed maker was scored on the same set of criteria. */
+  uniform: boolean
+  /** Criteria evidenced for every placed maker — the only fair basis. */
+  sharedAxes: AxisKey[]
+  /** Criteria evidenced for some but not all — why the average is not comparable. */
+  unevenAxes: AxisKey[]
+}
+
+/**
+ * A weighted average over criteria A and B is not comparable with one over
+ * criteria B and C, however similar the two numbers look. This reports whether
+ * the placed makers were actually measured on the same things, so the interface
+ * can present a genuine ordering as an ordering and an uneven one as a prompt
+ * to read the criterion-level detail instead.
+ */
+export function orderingIntegrity(placed: PlacedMaker[]): OrderingIntegrity {
+  if (placed.length < 2) return { uniform: true, sharedAxes: [], unevenAxes: [] }
+  const counts = new Map<AxisKey, number>()
+  for (const row of placed) {
+    for (const a of row.result.evidenced) counts.set(a.axis, (counts.get(a.axis) ?? 0) + 1)
+  }
+  const sharedAxes: AxisKey[] = []
+  const unevenAxes: AxisKey[] = []
+  for (const [axis, n] of counts) {
+    if (n === placed.length) sharedAxes.push(axis)
+    else unevenAxes.push(axis)
+  }
+  return { uniform: unevenAxes.length === 0, sharedAxes, unevenAxes }
+}
+
+/**
+ * Criterion-level comparison — kept whatever the ordering does, because it is
+ * the part that stays honest when coverage is uneven. One row per prioritised
+ * criterion, with the makers that have eligible evidence for it.
+ */
+export interface CriterionRow {
+  axis: AxisKey
+  weight: AxisWeight
+  scored: { maker: Maker; score: number }[]
+  missing: { maker: Maker; reason: string }[]
+}
+
+export function criterionComparison(selection: Maker[], p: Priorities): CriterionRow[] {
+  const rows: CriterionRow[] = []
+  for (const axis of AXIS_KEYS) {
+    const weight = p.weights[axis]
+    if (weight === 0) continue
+    const scored: { maker: Maker; score: number }[] = []
+    const missing: { maker: Maker; reason: string }[] = []
+    for (const maker of selection) {
+      const d = displayScore(maker, axis)
+      if (d.eligible && d.value != null) scored.push({ maker, score: d.value })
+      else missing.push({ maker, reason: d.ineligibleBecause ?? 'no eligible assessment' })
+    }
+    scored.sort((a, b) => b.score - a.score || a.maker.name.localeCompare(b.maker.name))
+    rows.push({ axis, weight, scored, missing })
+  }
+  return rows.sort((a, b) => b.weight - a.weight)
 }
 
 // ---- Comparing two makers on the stated priorities -------------------------
@@ -233,7 +318,7 @@ export function priorityChanges(from: Maker, to: Maker, p: Priorities): Priority
     const a = displayScore(from, axis)
     const b = displayScore(to, axis)
     const rankable = comparableExtremes([from, to], axis)
-    const bothCount = a.comparable && a.value != null && b.comparable && b.value != null
+    const bothCount = a.eligible && a.value != null && b.eligible && b.value != null
 
     let direction: ChangeDirection = 'unknown'
     let unknownBecause: string | null = null
@@ -242,13 +327,10 @@ export function priorityChanges(from: Maker, to: Maker, p: Priorities): Priority
       if (rankable.best == null) direction = 'same'
       else direction = (b.value as number) > (a.value as number) ? 'better' : 'worse'
     } else {
-      const sides: string[] = []
-      if (!a.comparable || a.value == null) sides.push(from.name)
-      if (!b.comparable || b.value == null) sides.push(to.name)
-      const why = [a, b].some((d) => d.withheld)
-        ? 'nothing has been published'
-        : 'the assessment is too thin to compare'
-      unknownBecause = `${sides.join(' and ')}: ${why}`
+      const parts: string[] = []
+      if (!a.eligible || a.value == null) parts.push(`${from.name}: ${a.ineligibleBecause}`)
+      if (!b.eligible || b.value == null) parts.push(`${to.name}: ${b.ineligibleBecause}`)
+      unknownBecause = parts.join('; ')
     }
 
     out.push({ axis, weight, from: a.value, to: b.value, direction, unknownBecause })

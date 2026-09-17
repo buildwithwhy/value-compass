@@ -21,7 +21,8 @@ export function PolarityLegend({ className = '' }: { className?: string }) {
         overall verdict on the company, and it says nothing about product quality.
       </p>
       <p className="mt-1 leading-snug text-slate-500">
-        Gaps in the shape are axes where nothing has been published. They are missing, not zero.
+        Gaps in the shape are axes our research has not established. They are missing, not zero —
+        and not a finding about the company.
       </p>
     </div>
   )

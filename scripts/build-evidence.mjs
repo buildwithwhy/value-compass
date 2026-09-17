@@ -97,6 +97,81 @@ const CONTEXTUAL = [
   { re: /no major culture scandals|no notable workplace scandal|no major documented abuses/i, what: 'absence of reported incidents' },
 ]
 
+// ---------------------------------------------------------------------------
+// Claim support — hand-reviewed, one line per sourced assessment.
+//
+// Having a source about the maker is not the same as having a source for the
+// CLAIM. This table records whether the cited material actually covers the
+// thing the score rests on. Only `direct` is allowed to drive a decision.
+//
+// Source COUNT is deliberately irrelevant here: one authoritative source can
+// carry a narrow factual claim (Anthropic's cap-table percentages), while four
+// sources that each cover one clause of a five-clause rationale cannot.
+// ---------------------------------------------------------------------------
+
+const CLAIM_SUPPORT = {
+  // --- direct: the cited material covers what the score rests on -----------
+  'Anthropic/transparency': ['direct', 'Score is the FMTI 2025 band; FMTI scored Anthropic.'],
+  'Anthropic/wealth_dispersion': [
+    'direct',
+    'Narrow factual claim (Amazon and Google stake sizes) carried by the cited report.',
+  ],
+  'OpenAI/transparency': ['direct', 'Score is the FMTI 2025 band; FMTI scored OpenAI.'],
+  'OpenAI/wealth_dispersion': [
+    'direct',
+    'Post-recapitalisation ownership split, covered by the cited reporting and OpenAI’s own structure page.',
+  ],
+  'OpenAI/public_sharing': [
+    'direct',
+    'The capped-profit removal and the Foundation stake are the subject of both cited sources.',
+  ],
+  'Google DeepMind/transparency': ['direct', 'Score is the FMTI 2025 band; FMTI scored DeepMind.'],
+  'xAI/transparency': ['direct', 'Score is the FMTI 2025 score (14/100) for xAI.'],
+  'xAI/culture_esg': [
+    'direct',
+    'The Memphis turbine siting and the Clean Air Act suit are the subject of both cited sources.',
+  ],
+  'Meta/transparency': ['direct', 'Score is the FMTI 2025 movement (60→31) for Meta.'],
+  'Mistral/transparency': ['direct', 'Score is the FMTI 2025 score (18/100) for Mistral.'],
+  'DeepSeek/transparency': ['direct', 'Score is the FMTI 2025 band; FMTI scored DeepSeek.'],
+  'Midjourney/transparency': ['direct', 'Score is the FMTI 2025 score (14/100) for Midjourney.'],
+  'Midjourney/labour_integrity': [
+    'direct',
+    'Score rests on the creator-consent litigation, which is the subject of both cited sources.',
+  ],
+  'Canva/public_sharing': [
+    'direct',
+    'Score rests on the founders’ equity pledge, which is the subject of the cited source.',
+  ],
+
+  // --- partial: the source covers part of a multi-part rationale -----------
+  // Preserved and displayed, excluded from decisions.
+  'Anthropic/culture_esg': [
+    'partial',
+    'FMTI supports the environmental-disclosure clause. It does not measure culture or governance quality, which is what most of the score rests on.',
+  ],
+  'OpenAI/culture_esg': [
+    'partial',
+    'The cited reporting covers the for-profit conversion. The 2023 board crisis, the safety-team departures and the environmental clause are unsourced here.',
+  ],
+  'Meta/culture_esg': [
+    'partial',
+    'The cited article covers the LeCun departure. The benchmark-integrity allegations, founder voting control and sustainability reporting are unsourced here.',
+  ],
+  'Meta/public_sharing': [
+    'partial',
+    'The cited source covers the Muse Spark pivot. The open-weight Llama releases and the absence of a profit-sharing commitment are unsourced here.',
+  ],
+  'Canva/culture_esg': [
+    'partial',
+    'The cited source covers Pledge 1%. The workplace-reputation and emissions clauses are unsourced here.',
+  ],
+  'Canva/wealth_dispersion': [
+    'partial',
+    'The cited source is the equity pledge, not the cap table. It does not speak to employee ownership breadth or investor concentration.',
+  ],
+}
+
 // Hand-checked exceptions: the cited source is about this maker, but not about
 // the claim it is attached to. Read each source before adding a line here.
 const SOURCE_MISMATCH = {
@@ -134,8 +209,9 @@ function classifyAxis(maker, axisKey, axis) {
   let basis
   let rule
   if (nonDisclosure && !affirmative) {
-    basis = 'non_disclosure'
-    rule = 'The rationale reports only that information is not published, and points to nothing observed about this maker.'
+    basis = 'not_established'
+    rule =
+      'Our research record contains no finding for this maker on this axis — only an observation that we did not locate disclosure. It does not establish the scope or date of any non-disclosure.'
   } else if (!affirmative && contextual.length) {
     basis = 'contextual'
     rule = `The rationale reasons from ${contextual.map((c) => c.what).join(' and ')} rather than from evidence about this maker.`
@@ -147,14 +223,30 @@ function classifyAxis(maker, axisKey, axis) {
     rule = 'The rationale points at something on record, but no source about this maker is attached.'
   }
 
-  // Display rule — stated publicly in the methodology.
-  // A score whose only basis is "nobody published this" is withheld from the
-  // compass, the matrix and every comparison. The recorded value is kept.
-  const withheld = basis === 'non_disclosure'
+  // Display rule. A score we cannot establish is withheld from the compass and
+  // the matrix. The recorded value is kept and shown on request.
+  const withheld = basis === 'not_established'
 
-  // Comparison rule — a difference is only called when both sides rest on
-  // evidence about the maker AND carry confidence A or B.
-  const comparable = (basis === 'sourced' || basis === 'unsourced') && axis.confidence !== 'C'
+  // ---- The single eligibility rule -------------------------------------
+  // One gate for ordering, comparison markers, switching differences and any
+  // future recommendation. Two conditions, both required:
+  //
+  //   1. relevant, traceable support for the actual claim  (basis 'sourced'
+  //      means at least one source about this maker survived the background
+  //      and mismatch filters);
+  //   2. an assessment justified by that support           (claim support
+  //      reviewed as 'direct', not one clause of a five-clause rationale).
+  //
+  // Confidence is NOT part of the gate. An A/B flag records how sure the
+  // author felt; it is not evidence, and on its own it cannot qualify a score
+  // to move another company up or down.
+  const [claimSupport, supportNote] =
+    CLAIM_SUPPORT[`${maker.id}/${axisKey}`] ??
+    (basis === 'sourced'
+      ? ['unreviewed', 'Cited a source about this maker, but the fit between source and claim has not been reviewed.']
+      : ['none', 'No source about this maker to review.'])
+
+  const decisionEligible = basis === 'sourced' && claimSupport === 'direct'
 
   return {
     maker: maker.id,
@@ -164,7 +256,9 @@ function classifyAxis(maker, axisKey, axis) {
     basis,
     rule,
     withheld,
-    comparable,
+    claim_support: claimSupport,
+    support_note: supportNote,
+    decision_eligible: decisionEligible,
     entity_sources: entity,
     background_sources: background,
     context_used: contextual.map((c) => c.what),
@@ -182,7 +276,9 @@ for (const m of makers) {
       basis: e.basis,
       rule: e.rule,
       withheld: e.withheld,
-      comparable: e.comparable,
+      claim_support: e.claim_support,
+      support_note: e.support_note,
+      decision_eligible: e.decision_eligible,
       entity_sources: e.entity_sources,
       background_sources: e.background_sources,
       context_used: e.context_used,
@@ -389,7 +485,10 @@ const summary = {
   axis_records: rows.length,
   by_basis: byBasis,
   withheld: count((r) => r.withheld),
-  comparable: count((r) => r.comparable),
+  decision_eligible: count((r) => r.decision_eligible),
+  claim_support_direct: count((r) => r.claim_support === 'direct'),
+  claim_support_partial: count((r) => r.claim_support === 'partial'),
+  claim_support_unreviewed: count((r) => r.claim_support === 'unreviewed'),
   no_sources_at_all: count((r) => r.entity_sources.length === 0 && r.background_sources.length === 0),
   background_only: count((r) => r.entity_sources.length === 0 && r.background_sources.length > 0),
   confidence_c: count((r) => r.confidence === 'C'),
@@ -409,14 +508,20 @@ const out = {
     what_this_is:
       'A derived layer. It adds no facts. For every recorded axis assessment it records what the written rationale rests on, which of its sources are about that maker, and whether the score may be shown or compared.',
     display_rule:
-      'A score whose rationale establishes only that information is undisclosed is withheld from the compass, the matrix and all comparisons. The recorded value is preserved and shown on request.',
-    comparison_rule:
-      'A difference between two makers is only called when both assessments rest on evidence about that maker and carry confidence A or B.',
+      'Where our research record contains no finding for a maker on an axis, no score is shown. The recorded value is preserved and shown on request. We do not state that the maker published nothing — only that we have not established it.',
+    eligibility_rule:
+      'One rule governs ordering, comparison markers, switching differences and any recommendation: the assessment must carry relevant, traceable support for the actual claim (a source about this maker that covers what the score rests on), and the assessment must be justified by that support. Confidence A or B alone is not sufficient. A single authoritative source can carry a narrow factual claim; the number of sources does not determine quality.',
     bases: {
       sourced: 'Rationale points at something on record and cites a source about this maker.',
       unsourced: 'Rationale points at something on record, but no source about this maker is attached.',
       contextual: 'Rationale reasons from jurisdiction, company size or position in the stack, not from evidence about this maker.',
-      non_disclosure: 'Rationale establishes only that the information is not published.',
+      not_established: 'Our research has not established a finding for this maker on this axis.',
+    },
+    claim_support: {
+      direct: 'The cited material covers what the score rests on.',
+      partial: 'The cited material covers part of a multi-part rationale. Preserved and displayed; excluded from decisions.',
+      unreviewed: 'A source about this maker is cited, but the fit between source and claim has not been reviewed.',
+      none: 'No source about this maker to review.',
     },
     summary,
   },
@@ -445,12 +550,18 @@ const out = {
 writeFileSync(join(root, 'src/data/evidence.json'), JSON.stringify(out, null, 2) + '\n')
 
 console.log('summary', summary)
-console.log('\n--- withheld (rationale = non-disclosure only) ---')
+console.log('\n--- withheld (no finding established) ---')
 for (const r of rows.filter((r) => r.withheld))
   console.log(`  ${r.maker.padEnd(16)} ${r.axis.padEnd(18)} recorded ${r.recorded_score}/${r.confidence}`)
 console.log('\n--- contextual ---')
 for (const r of rows.filter((r) => r.basis === 'contextual'))
   console.log(`  ${r.maker.padEnd(16)} ${r.axis.padEnd(18)} recorded ${r.recorded_score}/${r.confidence}  [${r.context_used.join(', ')}]`)
+console.log('\n--- decision-eligible (the only records allowed to move an ordering) ---')
+for (const r of rows.filter((r) => r.decision_eligible))
+  console.log(`  ${r.maker.padEnd(16)} ${r.axis.padEnd(18)} ${r.recorded_score}/${r.confidence}`)
+console.log('\n--- sourced but claim support only partial (preserved, not decisive) ---')
+for (const r of rows.filter((r) => r.claim_support === 'partial'))
+  console.log(`  ${r.maker.padEnd(16)} ${r.axis.padEnd(18)} ${r.recorded_score}/${r.confidence}`)
 console.log('\n--- unsourced ---')
 for (const r of rows.filter((r) => r.basis === 'unsourced'))
   console.log(`  ${r.maker.padEnd(16)} ${r.axis.padEnd(18)} recorded ${r.recorded_score}/${r.confidence}`)

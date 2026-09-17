@@ -55,7 +55,8 @@ export default function App() {
           <Link to="/about" className="underline underline-offset-2 hover:text-slate-700">
             published rubric
           </Link>
-          ; funders are context and are never scored; an undisclosed practice earns no score at all.
+          ; funders are context and are never scored; where our research has established nothing, no
+          score is shown.
         </footer>
       </div>
     </PrioritiesProvider>

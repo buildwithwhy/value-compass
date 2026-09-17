@@ -3,24 +3,33 @@
     "title": "Value Compass — evidence classification",
     "generated_by": "scripts/build-evidence.mjs (re-run after editing makers.json / funders.json)",
     "what_this_is": "A derived layer. It adds no facts. For every recorded axis assessment it records what the written rationale rests on, which of its sources are about that maker, and whether the score may be shown or compared.",
-    "display_rule": "A score whose rationale establishes only that information is undisclosed is withheld from the compass, the matrix and all comparisons. The recorded value is preserved and shown on request.",
-    "comparison_rule": "A difference between two makers is only called when both assessments rest on evidence about that maker and carry confidence A or B.",
+    "display_rule": "Where our research record contains no finding for a maker on an axis, no score is shown. The recorded value is preserved and shown on request. We do not state that the maker published nothing — only that we have not established it.",
+    "eligibility_rule": "One rule governs ordering, comparison markers, switching differences and any recommendation: the assessment must carry relevant, traceable support for the actual claim (a source about this maker that covers what the score rests on), and the assessment must be justified by that support. Confidence A or B alone is not sufficient. A single authoritative source can carry a narrow factual claim; the number of sources does not determine quality.",
     "bases": {
       "sourced": "Rationale points at something on record and cites a source about this maker.",
       "unsourced": "Rationale points at something on record, but no source about this maker is attached.",
       "contextual": "Rationale reasons from jurisdiction, company size or position in the stack, not from evidence about this maker.",
-      "non_disclosure": "Rationale establishes only that the information is not published."
+      "not_established": "Our research has not established a finding for this maker on this axis."
+    },
+    "claim_support": {
+      "direct": "The cited material covers what the score rests on.",
+      "partial": "The cited material covers part of a multi-part rationale. Preserved and displayed; excluded from decisions.",
+      "unreviewed": "A source about this maker is cited, but the fit between source and claim has not been reviewed.",
+      "none": "No source about this maker to review."
     },
     "summary": {
       "axis_records": 90,
       "by_basis": {
         "sourced": 20,
         "unsourced": 44,
-        "non_disclosure": 21,
+        "not_established": 21,
         "contextual": 5
       },
       "withheld": 21,
-      "comparable": 35,
+      "decision_eligible": 14,
+      "claim_support_direct": 14,
+      "claim_support_partial": 6,
+      "claim_support_unreviewed": 0,
       "no_sources_at_all": 40,
       "background_only": 27,
       "confidence_c": 55,
@@ -58,7 +67,9 @@
         "basis": "sourced",
         "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "direct",
+        "support_note": "Score is the FMTI 2025 band; FMTI scored Anthropic.",
+        "decision_eligible": true,
         "entity_sources": [
           "https://crfm.stanford.edu/fmti/December-2025/index.html",
           "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
@@ -71,7 +82,9 @@
         "basis": "sourced",
         "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "partial",
+        "support_note": "FMTI supports the environmental-disclosure clause. It does not measure culture or governance quality, which is what most of the score rests on.",
+        "decision_eligible": false,
         "entity_sources": [
           "https://crfm.stanford.edu/fmti/December-2025/index.html",
           "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
@@ -83,7 +96,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -103,7 +118,9 @@
         "basis": "sourced",
         "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "direct",
+        "support_note": "Narrow factual claim (Amazon and Google stake sizes) carried by the cited report.",
+        "decision_eligible": true,
         "entity_sources": [
           "https://fortune.com/2026/06/04/amazon-google-billions-anthropic-ipo/"
         ],
@@ -114,7 +131,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -130,7 +149,9 @@
         "basis": "sourced",
         "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "direct",
+        "support_note": "Score is the FMTI 2025 band; FMTI scored OpenAI.",
+        "decision_eligible": true,
         "entity_sources": [
           "https://crfm.stanford.edu/fmti/December-2025/index.html",
           "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
@@ -143,7 +164,9 @@
         "basis": "sourced",
         "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "partial",
+        "support_note": "The cited reporting covers the for-profit conversion. The 2023 board crisis, the safety-team departures and the environmental clause are unsourced here.",
+        "decision_eligible": false,
         "entity_sources": [
           "https://www.cnbc.com/2025/10/28/open-ai-for-profit-microsoft.html"
         ],
@@ -154,7 +177,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -172,7 +197,9 @@
         "basis": "sourced",
         "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "direct",
+        "support_note": "Post-recapitalisation ownership split, covered by the cited reporting and OpenAI’s own structure page.",
+        "decision_eligible": true,
         "entity_sources": [
           "https://www.cnbc.com/2025/10/28/open-ai-for-profit-microsoft.html",
           "https://openai.com/our-structure/"
@@ -184,7 +211,9 @@
         "basis": "sourced",
         "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "direct",
+        "support_note": "The capped-profit removal and the Foundation stake are the subject of both cited sources.",
+        "decision_eligible": true,
         "entity_sources": [
           "https://www.cnbc.com/2025/10/28/open-ai-for-profit-microsoft.html",
           "https://openai.com/index/evolving-our-structure/"
@@ -203,7 +232,9 @@
         "basis": "sourced",
         "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "direct",
+        "support_note": "Score is the FMTI 2025 band; FMTI scored DeepMind.",
+        "decision_eligible": true,
         "entity_sources": [
           "https://crfm.stanford.edu/fmti/December-2025/index.html",
           "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
@@ -216,7 +247,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -234,7 +267,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -252,7 +287,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -261,7 +298,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -272,7 +311,9 @@
         "basis": "sourced",
         "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "direct",
+        "support_note": "Score is the FMTI 2025 score (14/100) for xAI.",
+        "decision_eligible": true,
         "entity_sources": [
           "https://crfm.stanford.edu/fmti/December-2025/index.html",
           "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
@@ -285,7 +326,9 @@
         "basis": "sourced",
         "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "direct",
+        "support_note": "The Memphis turbine siting and the Clean Air Act suit are the subject of both cited sources.",
+        "decision_eligible": true,
         "entity_sources": [
           "https://time.com/7308925/elon-musk-memphis-ai-data-center/",
           "https://earthjustice.org/case/xai-illegal-gas-power-plant-data-center-colossus"
@@ -294,10 +337,12 @@
         "context_used": []
       },
       "labour_integrity": {
-        "basis": "non_disclosure",
-        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "basis": "not_established",
+        "rule": "Our research record contains no finding for this maker on this axis — only an observation that we did not locate disclosure. It does not establish the scope or date of any non-disclosure.",
         "withheld": true,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -315,7 +360,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -324,7 +371,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -335,7 +384,9 @@
         "basis": "sourced",
         "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "direct",
+        "support_note": "Score is the FMTI 2025 movement (60→31) for Meta.",
+        "decision_eligible": true,
         "entity_sources": [
           "https://crfm.stanford.edu/fmti/December-2025/index.html",
           "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
@@ -349,7 +400,9 @@
         "basis": "sourced",
         "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "partial",
+        "support_note": "The cited article covers the LeCun departure. The benchmark-integrity allegations, founder voting control and sustainability reporting are unsourced here.",
+        "decision_eligible": false,
         "entity_sources": [
           "https://www.entrepreneur.com/business-news/ex-meta-ai-chief-slams-new-boss-as-young-and/501611"
         ],
@@ -360,7 +413,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -378,7 +433,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -387,7 +444,9 @@
         "basis": "sourced",
         "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "partial",
+        "support_note": "The cited source covers the Muse Spark pivot. The open-weight Llama releases and the absence of a profit-sharing commitment are unsourced here.",
+        "decision_eligible": false,
         "entity_sources": [
           "https://www.cnbc.com/2026/04/08/meta-debuts-first-major-ai-model-since-14-billion-deal-to-bring-in-alexandr-wang.html"
         ],
@@ -400,7 +459,9 @@
         "basis": "sourced",
         "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "direct",
+        "support_note": "Score is the FMTI 2025 score (18/100) for Mistral.",
+        "decision_eligible": true,
         "entity_sources": [
           "https://crfm.stanford.edu/fmti/December-2025/index.html",
           "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
@@ -410,10 +471,12 @@
         "context_used": []
       },
       "culture_esg": {
-        "basis": "non_disclosure",
-        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "basis": "not_established",
+        "rule": "Our research record contains no finding for this maker on this axis — only an observation that we did not locate disclosure. It does not establish the scope or date of any non-disclosure.",
         "withheld": true,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": [
@@ -421,10 +484,12 @@
         ]
       },
       "labour_integrity": {
-        "basis": "non_disclosure",
-        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "basis": "not_established",
+        "rule": "Our research record contains no finding for this maker on this axis — only an observation that we did not locate disclosure. It does not establish the scope or date of any non-disclosure.",
         "withheld": true,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -445,7 +510,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -454,7 +521,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -465,7 +534,9 @@
         "basis": "sourced",
         "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "direct",
+        "support_note": "Score is the FMTI 2025 band; FMTI scored DeepSeek.",
+        "decision_eligible": true,
         "entity_sources": [
           "https://crfm.stanford.edu/fmti/December-2025/index.html",
           "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
@@ -475,10 +546,12 @@
         "context_used": []
       },
       "culture_esg": {
-        "basis": "non_disclosure",
-        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "basis": "not_established",
+        "rule": "Our research record contains no finding for this maker on this axis — only an observation that we did not locate disclosure. It does not establish the scope or date of any non-disclosure.",
         "withheld": true,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": [
@@ -486,10 +559,12 @@
         ]
       },
       "labour_integrity": {
-        "basis": "non_disclosure",
-        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "basis": "not_established",
+        "rule": "Our research record contains no finding for this maker on this axis — only an observation that we did not locate disclosure. It does not establish the scope or date of any non-disclosure.",
         "withheld": true,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -509,7 +584,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -518,7 +595,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -534,7 +613,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -552,7 +633,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -561,7 +644,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -579,7 +664,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -588,7 +675,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -596,10 +685,12 @@
     },
     "Perplexity": {
       "transparency": {
-        "basis": "non_disclosure",
-        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "basis": "not_established",
+        "rule": "Our research record contains no finding for this maker on this axis — only an observation that we did not locate disclosure. It does not establish the scope or date of any non-disclosure.",
         "withheld": true,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -614,10 +705,12 @@
         "context_used": []
       },
       "culture_esg": {
-        "basis": "non_disclosure",
-        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "basis": "not_established",
+        "rule": "Our research record contains no finding for this maker on this axis — only an observation that we did not locate disclosure. It does not establish the scope or date of any non-disclosure.",
         "withheld": true,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": [
@@ -628,7 +721,9 @@
         "basis": "contextual",
         "rule": "The rationale reasons from sits on top of another maker’s models rather than from evidence about this maker.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -648,7 +743,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -657,7 +754,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -668,7 +767,9 @@
         "basis": "sourced",
         "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "direct",
+        "support_note": "Score is the FMTI 2025 score (14/100) for Midjourney.",
+        "decision_eligible": true,
         "entity_sources": [
           "https://crfm.stanford.edu/fmti/December-2025/index.html",
           "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline",
@@ -678,10 +779,12 @@
         "context_used": []
       },
       "culture_esg": {
-        "basis": "non_disclosure",
-        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "basis": "not_established",
+        "rule": "Our research record contains no finding for this maker on this axis — only an observation that we did not locate disclosure. It does not establish the scope or date of any non-disclosure.",
         "withheld": true,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": [
@@ -693,7 +796,9 @@
         "basis": "sourced",
         "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "direct",
+        "support_note": "Score rests on the creator-consent litigation, which is the subject of both cited sources.",
+        "decision_eligible": true,
         "entity_sources": [
           "https://www.cnn.com/2025/06/11/tech/disney-universal-midjourney-ai-copyright-lawsuit",
           "https://www.cnbc.com/2025/06/11/disney-universal-midjourney-ai-copyright.html"
@@ -705,7 +810,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -714,7 +821,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -725,7 +834,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -740,10 +851,12 @@
         "context_used": []
       },
       "culture_esg": {
-        "basis": "non_disclosure",
-        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "basis": "not_established",
+        "rule": "Our research record contains no finding for this maker on this axis — only an observation that we did not locate disclosure. It does not establish the scope or date of any non-disclosure.",
         "withheld": true,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -752,7 +865,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -770,7 +885,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -779,7 +896,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -790,7 +909,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -808,7 +929,9 @@
         "basis": "sourced",
         "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "partial",
+        "support_note": "The cited source covers Pledge 1%. The workplace-reputation and emissions clauses are unsourced here.",
+        "decision_eligible": false,
         "entity_sources": [
           "https://www.pledge1percent.org/canva-raises-at-40-billion-valuation-its-founders-are-pledging/"
         ],
@@ -819,7 +942,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -828,7 +953,9 @@
         "basis": "sourced",
         "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "partial",
+        "support_note": "The cited source is the equity pledge, not the cap table. It does not speak to employee ownership breadth or investor concentration.",
+        "decision_eligible": false,
         "entity_sources": [
           "https://www.pledge1percent.org/canva-raises-at-40-billion-valuation-its-founders-are-pledging/"
         ],
@@ -839,7 +966,9 @@
         "basis": "sourced",
         "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "direct",
+        "support_note": "Score rests on the founders’ equity pledge, which is the subject of the cited source.",
+        "decision_eligible": true,
         "entity_sources": [
           "https://www.pledge1percent.org/canva-raises-at-40-billion-valuation-its-founders-are-pledging/"
         ],
@@ -849,10 +978,12 @@
     },
     "Lovable": {
       "transparency": {
-        "basis": "non_disclosure",
-        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "basis": "not_established",
+        "rule": "Our research record contains no finding for this maker on this axis — only an observation that we did not locate disclosure. It does not establish the scope or date of any non-disclosure.",
         "withheld": true,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [
           "https://crfm.stanford.edu/fmti/December-2025/index.html",
           "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
@@ -861,10 +992,12 @@
         "context_used": []
       },
       "culture_esg": {
-        "basis": "non_disclosure",
-        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "basis": "not_established",
+        "rule": "Our research record contains no finding for this maker on this axis — only an observation that we did not locate disclosure. It does not establish the scope or date of any non-disclosure.",
         "withheld": true,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": [
@@ -875,7 +1008,9 @@
         "basis": "contextual",
         "rule": "The rationale reasons from sits on top of another maker’s models rather than from evidence about this maker.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -895,7 +1030,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -904,7 +1041,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -912,10 +1051,12 @@
     },
     "Replit": {
       "transparency": {
-        "basis": "non_disclosure",
-        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "basis": "not_established",
+        "rule": "Our research record contains no finding for this maker on this axis — only an observation that we did not locate disclosure. It does not establish the scope or date of any non-disclosure.",
         "withheld": true,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -930,19 +1071,23 @@
         "context_used": []
       },
       "culture_esg": {
-        "basis": "non_disclosure",
-        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "basis": "not_established",
+        "rule": "Our research record contains no finding for this maker on this axis — only an observation that we did not locate disclosure. It does not establish the scope or date of any non-disclosure.",
         "withheld": true,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
       },
       "labour_integrity": {
-        "basis": "non_disclosure",
-        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "basis": "not_established",
+        "rule": "Our research record contains no finding for this maker on this axis — only an observation that we did not locate disclosure. It does not establish the scope or date of any non-disclosure.",
         "withheld": true,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -962,7 +1107,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -971,7 +1118,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -979,10 +1128,12 @@
     },
     "Gamma": {
       "transparency": {
-        "basis": "non_disclosure",
-        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "basis": "not_established",
+        "rule": "Our research record contains no finding for this maker on this axis — only an observation that we did not locate disclosure. It does not establish the scope or date of any non-disclosure.",
         "withheld": true,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [
           "https://crfm.stanford.edu/fmti/December-2025/index.html",
           "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
@@ -994,7 +1145,9 @@
         "basis": "contextual",
         "rule": "The rationale reasons from company size / age rather than from evidence about this maker.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": [
@@ -1005,7 +1158,9 @@
         "basis": "contextual",
         "rule": "The rationale reasons from sits on top of another maker’s models rather than from evidence about this maker.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -1025,7 +1180,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -1034,7 +1191,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -1042,10 +1201,12 @@
     },
     "Cursor": {
       "transparency": {
-        "basis": "non_disclosure",
-        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "basis": "not_established",
+        "rule": "Our research record contains no finding for this maker on this axis — only an observation that we did not locate disclosure. It does not establish the scope or date of any non-disclosure.",
         "withheld": true,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [
           "https://crfm.stanford.edu/fmti/December-2025/index.html",
           "https://hai.stanford.edu/news/transparency-in-ai-is-on-the-decline"
@@ -1054,10 +1215,12 @@
         "context_used": []
       },
       "culture_esg": {
-        "basis": "non_disclosure",
-        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "basis": "not_established",
+        "rule": "Our research record contains no finding for this maker on this axis — only an observation that we did not locate disclosure. It does not establish the scope or date of any non-disclosure.",
         "withheld": true,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": [
@@ -1068,7 +1231,9 @@
         "basis": "contextual",
         "rule": "The rationale reasons from sits on top of another maker’s models rather than from evidence about this maker.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -1088,7 +1253,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -1097,7 +1264,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -1108,7 +1277,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": true,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -1123,10 +1294,12 @@
         "context_used": []
       },
       "culture_esg": {
-        "basis": "non_disclosure",
-        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "basis": "not_established",
+        "rule": "Our research record contains no finding for this maker on this axis — only an observation that we did not locate disclosure. It does not establish the scope or date of any non-disclosure.",
         "withheld": true,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -1135,7 +1308,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -1153,7 +1328,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -1162,7 +1339,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -1175,10 +1354,12 @@
     },
     "Moonshot": {
       "transparency": {
-        "basis": "non_disclosure",
-        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "basis": "not_established",
+        "rule": "Our research record contains no finding for this maker on this axis — only an observation that we did not locate disclosure. It does not establish the scope or date of any non-disclosure.",
         "withheld": true,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -1195,19 +1376,23 @@
         ]
       },
       "culture_esg": {
-        "basis": "non_disclosure",
-        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "basis": "not_established",
+        "rule": "Our research record contains no finding for this maker on this axis — only an observation that we did not locate disclosure. It does not establish the scope or date of any non-disclosure.",
         "withheld": true,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
       },
       "labour_integrity": {
-        "basis": "non_disclosure",
-        "rule": "The rationale reports only that information is not published, and points to nothing observed about this maker.",
+        "basis": "not_established",
+        "rule": "Our research record contains no finding for this maker on this axis — only an observation that we did not locate disclosure. It does not establish the scope or date of any non-disclosure.",
         "withheld": true,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [
           {
@@ -1227,7 +1412,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []
@@ -1236,7 +1423,9 @@
         "basis": "unsourced",
         "rule": "The rationale points at something on record, but no source about this maker is attached.",
         "withheld": false,
-        "comparable": false,
+        "claim_support": "none",
+        "support_note": "No source about this maker to review.",
+        "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
         "context_used": []

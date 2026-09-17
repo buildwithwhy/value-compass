@@ -27,8 +27,9 @@ export const evidenceMeta = raw._meta as {
   title: string
   what_this_is: string
   display_rule: string
-  comparison_rule: string
+  eligibility_rule: string
   bases: Record<EvidenceBasis, string>
+  claim_support: Record<string, string>
   summary: EvidenceSummary
 }
 
@@ -49,10 +50,51 @@ const FALLBACK: AxisEvidence = {
   basis: 'unsourced',
   rule: 'No evidence classification on record for this assessment.',
   withheld: false,
-  comparable: false,
+  claim_support: 'none',
+  support_note: 'No classification on record.',
+  decision_eligible: false,
   entity_sources: [],
   background_sources: [],
   context_used: [],
+}
+
+// ---------------------------------------------------------------------------
+// THE eligibility rule.
+//
+// Every path that lets one maker outrank, beat or be recommended over another
+// goes through this function — ordering, comparison markers, switching
+// differences, and any recommendation built later. It is deliberately the only
+// place the question is answered, so the four cannot drift apart.
+//
+// It asks two things, and confidence is not one of them:
+//   1. is there relevant, traceable support for the actual claim?
+//   2. is the assessment justified by that support?
+//
+// An A or B confidence flag records how sure an author felt. That is not
+// evidence, and on its own it has never been enough to move another company
+// up or down a list.
+// ---------------------------------------------------------------------------
+
+export function isDecisionEligible(makerId: string, axis: AxisKey): boolean {
+  return axisEvidenceFor(makerId, axis).decision_eligible
+}
+
+/** Why an assessment cannot drive a decision, in words fit for the interface. */
+export function ineligibilityReason(makerId: string, axis: AxisKey): string | null {
+  const ev = axisEvidenceFor(makerId, axis)
+  if (ev.decision_eligible) return null
+  switch (ev.basis) {
+    case 'not_established':
+      return 'not established in our current research'
+    case 'unsourced':
+      return 'no source on record for this claim'
+    case 'contextual':
+      return 'inferred from context, not from evidence about this maker'
+    default:
+      return ev.claim_support === 'partial'
+        ? 'the cited source covers only part of this claim'
+        : 'the fit between source and claim has not been reviewed'
+  }
 }
 
 export function axisEvidenceFor(makerId: string, axis: AxisKey): AxisEvidence {
@@ -65,6 +107,22 @@ export function funderAssociationStatus(name: string): FunderAssociationStatus |
 
 export function relationshipFor(funderName: string, makerId: string): Relationship | undefined {
   return relationships[`${funderName}→${makerId}`]
+}
+
+/** Every transcribed relationship touching a maker, whatever its status. */
+export function relationshipsFor(makerId: string): Relationship[] {
+  return Object.values(relationships).filter((r) => r.maker === makerId)
+}
+
+/**
+ * Relationships the record does not describe as done. Kept apart from
+ * present-tense findings: an announced or contingent commitment is not
+ * current ownership.
+ */
+export function pendingRelationshipsFor(makerId: string): Relationship[] {
+  return relationshipsFor(makerId).filter(
+    (r) => r.status !== 'completed' && r.status !== 'unspecified',
+  )
 }
 
 // ---- How each basis reads in the interface --------------------------------
@@ -96,10 +154,11 @@ export const BASIS: Record<EvidenceBasis, BasisPresentation> = {
     meaning: 'Reasons from where the company is or what it is built on, not from evidence about the company itself.',
     tone: 'assessment',
   },
-  non_disclosure: {
+  not_established: {
     label: 'Not established',
     short: 'Not established',
-    meaning: 'Nothing has been published on this. Undisclosed is not the same as bad — so no score is shown.',
+    meaning:
+      'Not established in our current research. We have not found a finding for this maker here — that is a gap in our record, not a statement about the company.',
     tone: 'unknown',
   },
 }
@@ -107,12 +166,15 @@ export const BASIS: Record<EvidenceBasis, BasisPresentation> = {
 // ---- Score display ---------------------------------------------------------
 
 export interface DisplayScore {
-  /** What the compass, matrix and comparisons use. Null means "we are not showing a number". */
+  /** What the compass and matrix show. Null means "we are not showing a number". */
   value: number | null
-  /** What the dataset recorded, kept whatever we display. */
+  /** What the dataset recorded, kept whatever we display. Preserved for review. */
   recorded: number | null
   withheld: boolean
-  comparable: boolean
+  /** The single gate — see isDecisionEligible. */
+  eligible: boolean
+  /** Why not, when not. */
+  ineligibleBecause: string | null
   basis: EvidenceBasis
   evidence: AxisEvidence
 }
@@ -124,16 +186,17 @@ export function displayScore(maker: Maker, axis: AxisKey): DisplayScore {
     value: ev.withheld ? null : recorded,
     recorded,
     withheld: ev.withheld,
-    comparable: ev.comparable,
+    eligible: ev.decision_eligible,
+    ineligibleBecause: ineligibilityReason(maker.id, axis),
     basis: ev.basis,
     evidence: ev,
   }
 }
 
 /**
- * Best and worst across a selection, counting only assessments that may take
- * part in a comparison. Returns nulls when there is nothing safe to rank, so a
- * caller can say "too uncertain to rank" instead of inventing a winner.
+ * Highest and lowest across a selection, counting only decision-eligible
+ * assessments. Returns nulls when there is nothing safe to mark, so a caller
+ * says "not enough support to rank" rather than inventing a winner.
  */
 export function comparableExtremes(
   selection: Maker[],
@@ -143,7 +206,7 @@ export function comparableExtremes(
   let skipped = 0
   for (const m of selection) {
     const d = displayScore(m, axis)
-    if (d.comparable && d.value != null) values.push(d.value)
+    if (d.eligible && d.value != null) values.push(d.value)
     else skipped++
   }
   if (values.length < 2) return { best: null, worst: null, ranked: values.length, skipped }
@@ -161,7 +224,8 @@ export interface Coverage {
   unsourced: number
   contextual: number
   notEstablished: number
-  comparable: number
+  /** Records that pass the eligibility rule. */
+  eligible: number
 }
 
 export function coverageFor(selection: Maker[] = makers): Coverage {
@@ -171,13 +235,13 @@ export function coverageFor(selection: Maker[] = makers): Coverage {
     unsourced: 0,
     contextual: 0,
     notEstablished: 0,
-    comparable: 0,
+    eligible: 0,
   }
   for (const m of selection) {
     for (const axis of Object.keys(m.axes) as AxisKey[]) {
       const ev = axisEvidenceFor(m.id, axis)
       c.total++
-      if (ev.comparable) c.comparable++
+      if (ev.decision_eligible) c.eligible++
       if (ev.basis === 'sourced') c.sourced++
       else if (ev.basis === 'unsourced') c.unsourced++
       else if (ev.basis === 'contextual') c.contextual++
@@ -193,9 +257,9 @@ export function makerCoverage(maker: Maker): Coverage {
 
 export interface AxisCoverage {
   total: number
-  /** Makers whose assessment on this axis is firm enough to compare. */
-  comparable: number
-  /** Makers with nothing published on this axis. */
+  /** Makers whose assessment on this axis passes the eligibility rule. */
+  eligible: number
+  /** Makers where our research has not established a finding on this axis. */
   withheld: number
   sourced: number
 }
@@ -212,11 +276,11 @@ const axisCoverage = new Map<AxisKey, AxisCoverage>()
 export function coverageByAxis(axis: AxisKey): AxisCoverage {
   const cached = axisCoverage.get(axis)
   if (cached) return cached
-  const c: AxisCoverage = { total: 0, comparable: 0, withheld: 0, sourced: 0 }
+  const c: AxisCoverage = { total: 0, eligible: 0, withheld: 0, sourced: 0 }
   for (const m of makers) {
     const ev = axisEvidenceFor(m.id, axis)
     c.total++
-    if (ev.comparable) c.comparable++
+    if (ev.decision_eligible) c.eligible++
     if (ev.withheld) c.withheld++
     if (ev.basis === 'sourced') c.sourced++
   }

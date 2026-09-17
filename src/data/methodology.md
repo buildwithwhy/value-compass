@@ -14,13 +14,18 @@ Everything on this site is one of four things, and the interface says which:
 |---|---|
 | **Sourced fact** | Who owns what, who invested, what a company has committed to — with a link to where it came from. |
 | **ValueCompass assessment** | Our reading of those facts against the rubric below. A judgement, labelled as one. |
-| **Not established** | Nobody has published it. We say so, and show no score. |
+| **Not established** | Our research has not established it. We say so, and show no score — a gap in our record, not a finding about the company. |
 | **Your priorities** | What you tell us matters to you — across the five axes and the capital attributes. Nothing is switched on for you by default. |
 
-The distinction that matters most is the third. **"We looked and it is bad" and "nobody
-will say" are different findings.** Treating them the same is the easiest way for a tool
-like this to mislead, so an undisclosed practice earns no score at all — neither a good
-one nor a bad one.
+The distinction that matters most is the third. **"We looked and it is bad" and "we have
+not established it" are different findings.** Treating them the same is the easiest way
+for a tool like this to mislead, so where our research has established nothing, no score
+is shown at all — neither a good one nor a bad one.
+
+We are careful about which of those two we are claiming. Saying a company disclosed
+nothing is itself a finding, and it needs a scope and a date: *what* was checked, and
+*when*. Where we do not have that, we say **"not established in our current research"**,
+because the gap is in our record, not necessarily in the company's conduct.
 
 ---
 
@@ -78,19 +83,35 @@ Two separate flags travel with every score, because they answer different questi
 A claim can be confidently thin, or uncertain but well sourced. Collapsing the two hides
 exactly the problems a reader needs to see.
 
-### Two rules that follow from this
+### One rule decides everything
 
-**We withhold a score whose only basis is non-disclosure.** Where the written rationale
-establishes nothing except that a company has not published something, no number is shown
-on the compass, in the matrix, or in any comparison. The value we originally recorded is
-kept in the dataset, marked for editorial review, and readable on the maker's page — it
-simply does not get to act like a finding. Opacity is a real problem, but it is a
-transparency problem; it is not evidence of underpaying data workers.
+Ordering a list, marking a winner in a comparison, calling a difference in the switching
+view, and any recommendation we build later all ask the same question, so they all go
+through the same gate. An assessment may drive a decision only when **both** of these
+hold:
 
-**We only call a difference when both sides can carry it.** In a comparison, one maker is
-marked higher or lower than another only when both assessments rest on evidence about that
-maker *and* carry confidence A or B. Otherwise the row says the assessments are too
-uncertain to separate. A thin guess never beats a documented finding.
+1. **There is relevant, traceable support for the actual claim.** Not a source about the
+   company somewhere — a source that covers the thing the score rests on. Sector
+   background and reasoning from jurisdiction or company size never qualify.
+2. **The assessment is justified by that support.** A source covering one clause of a
+   five-clause rationale does not carry the other four.
+
+**A confidence flag is not evidence.** An A or B records how sure the author felt. On its
+own it has never been enough, and the most visible bug this rule fixes came from treating
+it as though it were: two makers were marked highest and lowest against each other on
+ownership dispersion while both cells were labelled "No source".
+
+**The number of sources does not determine quality.** One authoritative source can carry a
+narrow factual claim — a cap-table percentage, a court filing, a published index score.
+Four sources that each cover a different fragment of a broad claim cannot.
+
+Assessments that fail the gate are **kept, not deleted**. They stay visible with their
+reasoning, their sources and the reason they were excluded, because they are the record of
+what we thought and the starting point for the research that would make them usable.
+
+**We withhold a score where nothing is established.** No number on the compass, in the
+matrix or in any comparison. The recorded value stays in the dataset, marked for editorial
+review, and is readable on the maker's page.
 
 ### Sources that are about the maker, and sources that are not
 
@@ -139,18 +160,34 @@ value judgement, and not one we are willing to make on a reader's behalf. So it 
 out of the scores entirely.
 
 Each maker carries a factual capital profile — independence, founder control,
-state-linked capital, hyperscaler backers, circular vendor ties, index holding. Those are
-facts, the same for everyone.
+state-linked capital, hyperscaler backers, circular vendor ties, index holding. Every
+attribute resolves to one of three states, never two:
+
+- **Documented present** — our record names something.
+- **Documented clear** — our record carries an explicit value, and we show the scope that
+  absence holds within.
+- **No record** — we have no entry. It counts neither for nor against.
+
+That third state is the correction. An empty field is not a clean bill of health, and the
+earlier version of this tool credited makers for gaps in our own research. There is now no
+overall capital score at all: any single number would have to decide what an unknown is
+worth, and the honest answer is nothing.
+
+Pending, announced, contingent and reported-but-unclosed items are recorded **separately**
+and never fold into a present-tense finding. A commitment that has not closed is not
+ownership.
 
 The Capital Lens lets you switch on the ones you want flagged. **Everything starts
-switched off.** We offer an example lens as a starting point, and where you are using it,
-the interface says so by name — it is never described as your priorities. "Capital fit"
-counts how many attributes in the chosen lens are absent from a maker's record. It moves
-when the lens moves, and it is not a rating of the company.
+switched off.** We offer an example as a starting point, shown to you in full before it is
+applied, with the capital half as a separate decision from the axis weights — asking for
+example priorities must not quietly switch on a lens you never looked at. Where example
+settings are in effect the interface names them as ours; they are never described as
+yours.
 
 **Backer associations** record public associations of funders' key figures. Where an entry
-has no source, it is marked unverified and should be read as a lead for research, not as
-established fact.
+has no source it is marked unverified, and it is excluded from every finding, count and
+ordering on this site. An unverified association cannot become an established concern, and
+it will never count against a maker in a recommendation.
 
 ---
 
@@ -166,15 +203,21 @@ the interface says so rather than calling it yours.
 
 Three rules govern what stated priorities are allowed to do:
 
-**Only comparable assessments count.** An axis we withheld, or one resting on a single thin
-source, contributes nothing to an ordering — in either direction. A priority you set that
-the evidence cannot answer moves nobody up and nobody down.
+**Only eligible assessments count.** The gate above applies unchanged. A priority you set
+that the evidence cannot answer moves nobody up and nobody down.
 
-**A maker is only placed when enough is known.** We order a maker against your priorities
-only when at least **half the weight you assigned** has evidence behind it. The rest are
-shown in a separate group, with how much is known about each. They are not at the bottom
-of a ranking; they are off it. Sorting an unknown to last place would read as a bad result,
-and it is not one.
+**A maker is only placed when enough is known.** We place a maker only when at least
+**half the weight you assigned** has eligible evidence behind it. This threshold is
+**provisional and made for exploring the dataset** — it is not a guarantee, and it is not a
+bar that qualifies anything for a recommendation. The rest are shown in a separate group
+with how much is known about each. They are not at the bottom of a ranking; they are off
+it.
+
+**An average is only an ordering when it is taken over the same things.** A maker scored
+on transparency and ownership is not comparable with one scored on ownership and public
+sharing, however close the two averages look. Where the placed makers were not measured on
+the same criteria, we say so and point you at the criterion-by-criterion breakdown instead
+of the positions.
 
 **Conduct and capital are never added together.** A weighted score across the axes and a
 count of capital attributes measure different things. A single blended number would hide
@@ -187,8 +230,13 @@ it, not after.
 ## What would switching change
 
 From any maker you can pick an alternative and see what moves: the axes you prioritised,
-who holds a stake in one but not the other, and who holds a stake in **both** — the
-backers a switch does not get you away from.
+and the funding relationships recorded for each — those associated with your current
+provider, those associated with the alternative, and those **recorded for both**.
+
+Two things that view does not claim. It does not trace customer spending: nothing here
+follows what you pay to anyone, so no switch is described as redirecting your money. And a
+funder appearing under one maker and not the other means our record has no entry for the
+second — not that no relationship exists.
 
 A difference is only called a difference when both sides are firm enough to compare.
 Otherwise it is listed as something you cannot know, never quietly rounded down to "no

@@ -5,6 +5,7 @@ import { displayScore } from '../lib/evidence'
 import { INDEPENDENCE_LABELS } from '../lib/lens'
 import {
   hasPriorities,
+  prioritiesLabel,
   priorityChanges,
   suggestedAlternatives,
   type ChangeDirection,
@@ -245,7 +246,7 @@ export function SwitchView() {
         <div className="mt-8 space-y-8">
           {/* 1. Your priorities */}
           <section>
-            <SectionTitle>What changes on your priorities</SectionTitle>
+            <SectionTitle>What changes on {prioritiesLabel(priorities.mode)}</SectionTitle>
             {!chosen ? (
               <div className="rounded-xl border border-dashed border-teal-300 bg-teal-50/50 p-4">
                 <p className="text-sm font-semibold text-teal-900">
@@ -279,7 +280,7 @@ export function SwitchView() {
                   if (unknown === 0) return null
                   return (
                     <p className="mt-2 text-xs leading-snug text-slate-500">
-                      {unknown} of {changes.length} of your priorities cannot be compared between
+                      {unknown} of {changes.length} of {prioritiesLabel(priorities.mode)} cannot be compared between
                       these two. That is the honest state of the evidence, not a neutral result —
                       switching would mean accepting that you do not know.
                     </p>
@@ -292,34 +293,43 @@ export function SwitchView() {
           {/* 2. Money */}
           {funders && (
             <section>
-              <SectionTitle>Who you would stop and start funding</SectionTitle>
+              <SectionTitle>Recorded funding relationships</SectionTitle>
               <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
                 <FunderList
-                  title={`Backers you leave behind`}
-                  intro={`Hold a stake in ${from.name} but not ${to.name}.`}
+                  title={`Associated with ${from.name}`}
+                  intro={`Recorded as holding a stake in ${from.name}, with no entry for ${to.name} in our records.`}
                   entries={funders.leave}
                   makerId={from.id}
                   tone="leave"
                 />
                 <FunderList
-                  title={`Backers you take on`}
-                  intro={`Hold a stake in ${to.name} but not ${from.name}.`}
+                  title={`Associated with ${to.name}`}
+                  intro={`Recorded as holding a stake in ${to.name}, with no entry for ${from.name} in our records.`}
                   entries={funders.gain}
                   makerId={to.id}
                   tone="gain"
                 />
                 <FunderList
-                  title={`Backers you cannot escape`}
-                  intro={`Hold a stake in both. Switching does not change your relationship to these.`}
+                  title="Recorded for both"
+                  intro="Our records show a stake in each of them."
                   entries={funders.keep}
                   makerId={to.id}
                   tone="keep"
                 />
               </div>
-              <p className="mt-2 text-xs leading-snug text-slate-500">
-                Holding a stake is not control, and none of this traces where your subscription
-                money goes. It records who stands to gain from each company's success.
-              </p>
+              <div className="mt-2 space-y-1 text-xs leading-snug text-slate-500">
+                <p>
+                  These are <strong>recorded relationships</strong>, not a trace of money. This site
+                  does not track customer spending, so nothing here shows where what you pay ends
+                  up, or who gains from your switching.
+                </p>
+                <p>
+                  A funder appearing in only one column means our records have no entry for the
+                  other — <strong>not</strong> that no relationship exists. Check each chip for what
+                  kind of stake is recorded; entries marked pending, announced or contingent are not
+                  current ownership.
+                </p>
+              </div>
             </section>
           )}
 
@@ -385,8 +395,9 @@ export function SwitchView() {
   )
 }
 
-/** Every axis where at least one side has nothing published — listed whether or
- *  not the visitor prioritised it, because it is what the switch hides. */
+/** Every axis where our research has established nothing for at least one side —
+ *  listed whether or not the visitor prioritised it, because it is what the
+ *  switch hides. */
 function UnknownAxes({ from, to }: { from: Maker; to: Maker }) {
   const rows = AXIS_KEYS.map((axis) => {
     const a = displayScore(from, axis)
@@ -400,7 +411,8 @@ function UnknownAxes({ from, to }: { from: Maker; to: Maker }) {
   if (rows.length === 0) {
     return (
       <p className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-600">
-        Both makers have a published position on all five axes. That is unusual in this dataset.
+        Our research has established a position for both makers on all five axes. That is unusual
+        in this dataset.
       </p>
     )
   }
@@ -412,14 +424,15 @@ function UnknownAxes({ from, to }: { from: Maker; to: Maker }) {
           <li key={r.axis} className="flex flex-wrap items-baseline gap-2">
             <span className="font-medium text-slate-800">{AXIS_LABELS[r.axis]}</span>
             <span className="text-slate-500">
-              nothing published by {r.blind.join(' or ')}
+              not established for {r.blind.join(' or ')}
             </span>
           </li>
         ))}
       </ul>
       <p className="mt-2 border-t border-slate-100 pt-2 text-xs leading-snug text-slate-500">
-        On {rows.length} of five axes you would be switching without information about at least one
-        side. Undisclosed is not evidence of bad practice — but it is also not reassurance.
+        On {rows.length} of five axes our research has established nothing for at least one side,
+        so you would be switching without that information. A gap in our record is not evidence of
+        bad practice — but it is also not reassurance.
       </p>
     </div>
   )

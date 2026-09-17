@@ -195,7 +195,7 @@ export function HomeView() {
             { n: cov.sourced, label: 'carry a source about the maker', tone: 'text-emerald-700' },
             { n: cov.unsourced, label: 'have no source attached yet', tone: 'text-slate-700' },
             { n: cov.contextual, label: 'reason from context', tone: 'text-amber-700' },
-            { n: cov.notEstablished, label: 'show no score — nothing published', tone: 'text-slate-500' },
+            { n: cov.notEstablished, label: 'show no score — not established in our research', tone: 'text-slate-500' },
           ].map((s) => (
             <div key={s.label}>
               <dt className={`text-2xl font-extrabold ${s.tone}`}>{s.n}</dt>

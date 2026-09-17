@@ -14,7 +14,7 @@ function CoverageTable() {
     { label: 'Carry a source about the maker they describe', n: cov.sourced },
     { label: 'Rest on something on record, but no source is attached yet', n: cov.unsourced },
     { label: 'Reason from jurisdiction, size or what the product is built on', n: cov.contextual },
-    { label: 'Establish only that the information is undisclosed — no score shown', n: cov.notEstablished },
+    { label: 'Not established in our current research — no score shown', n: cov.notEstablished },
   ]
   return (
     <div>
@@ -35,8 +35,8 @@ function CoverageTable() {
         </tbody>
       </table>
       <p className="mt-2 text-xs leading-snug text-slate-500">
-        Of these, <strong className="text-slate-700">{cov.comparable}</strong> are firm enough to
-        take part in a best/lowest comparison. {evidenceSummary.background_only} cite only background
+        Of these, <strong className="text-slate-700">{cov.eligible}</strong> pass the evidence rule
+        and may take part in an ordering, a comparison marker or a switching difference. {evidenceSummary.background_only} cite only background
         reading that is not about the maker in question.
       </p>
     </div>
@@ -122,7 +122,7 @@ export function AboutView({ draft = false }: { draft?: boolean }) {
           <strong>Withholding.</strong> {evidenceMeta.display_rule}
         </p>
         <p className="text-sm leading-snug text-slate-700">
-          <strong>Comparing.</strong> {evidenceMeta.comparison_rule}
+          <strong>Deciding.</strong> {evidenceMeta.eligibility_rule}
         </p>
       </div>
 

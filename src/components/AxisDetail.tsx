@@ -70,9 +70,10 @@ export function AxisDetail({ maker }: { maker: Maker }) {
             {d.withheld ? (
               <div className="rounded-md border border-slate-200 bg-slate-50 p-2.5">
                 <p className="text-sm leading-snug text-slate-700">
-                  Nothing has been published about {maker.name} on this axis. We are not showing a
-                  score, because the only thing established is that the information is undisclosed —
-                  which is not the same as evidence of poor practice.
+                  Not established in our current research. We have no finding for {maker.name} on
+                  this axis, so no score is shown. This is a gap in our record — we have not
+                  established the scope or date of any non-disclosure, and it is not evidence of
+                  poor practice.
                 </p>
                 <p className="mt-1.5 text-xs leading-snug text-slate-500">
                   What the record says: “{axis.note}”

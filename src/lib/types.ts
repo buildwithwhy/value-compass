@@ -85,7 +85,10 @@ export interface Funder {
 // can keep four things apart: sourced facts, ValueCompass assessments, unknown
 // or unverified information, and the visitor's own priorities.
 
-export type EvidenceBasis = 'sourced' | 'unsourced' | 'contextual' | 'non_disclosure'
+export type EvidenceBasis = 'sourced' | 'unsourced' | 'contextual' | 'not_established'
+
+/** Whether the cited material covers what the score actually rests on. */
+export type ClaimSupport = 'direct' | 'partial' | 'unreviewed' | 'none'
 
 export interface BackgroundSource {
   url: string
@@ -95,10 +98,16 @@ export interface BackgroundSource {
 export interface AxisEvidence {
   basis: EvidenceBasis
   rule: string
-  /** True when the rationale establishes only that nothing has been published. */
+  /** True when our research has not established a finding — no score is shown. */
   withheld: boolean
-  /** True when this assessment may take part in a best/worst claim. */
-  comparable: boolean
+  claim_support: ClaimSupport
+  support_note: string
+  /**
+   * The single gate. True only when there is relevant, traceable support for
+   * the actual claim AND the assessment is justified by it. Governs ordering,
+   * comparison markers, switching differences and any recommendation.
+   */
+  decision_eligible: boolean
   entity_sources: string[]
   background_sources: BackgroundSource[]
   context_used: string[]
@@ -143,7 +152,10 @@ export interface EvidenceSummary {
   axis_records: number
   by_basis: Record<EvidenceBasis, number>
   withheld: number
-  comparable: number
+  decision_eligible: number
+  claim_support_direct: number
+  claim_support_partial: number
+  claim_support_unreviewed: number
   no_sources_at_all: number
   background_only: number
   confidence_c: number

@@ -32,7 +32,11 @@ interface PrioritiesContextValue {
   chosen: boolean
   setAxisWeight: (axis: AxisKey, weight: AxisWeight) => void
   setCapitalKey: (key: keyof LensConfig, value: boolean) => void
-  useExample: () => void
+  /**
+   * Apply the editorial example. Each half is opted into separately — asking
+   * for example axis weights must not silently switch on the capital lens too.
+   */
+  applyExample: (opts: { axes?: boolean; capital?: boolean }) => void
   clear: () => void
 }
 
@@ -103,10 +107,13 @@ export function PrioritiesProvider({ children }: { children: ReactNode }) {
     }))
   }, [])
 
-  const useExample = useCallback(
-    () => setPriorities({ mode: 'example', weights: EXAMPLE_WEIGHTS, capital: EXAMPLE_LENS }),
-    [],
-  )
+  const applyExample = useCallback((opts: { axes?: boolean; capital?: boolean }) => {
+    setPriorities((prev) => ({
+      mode: 'example',
+      weights: opts.axes ? EXAMPLE_WEIGHTS : prev.weights,
+      capital: opts.capital ? EXAMPLE_LENS : prev.capital,
+    }))
+  }, [])
   const clear = useCallback(() => setPriorities(EMPTY), [])
 
   const value = useMemo(
@@ -115,10 +122,10 @@ export function PrioritiesProvider({ children }: { children: ReactNode }) {
       chosen: hasPriorities(priorities),
       setAxisWeight,
       setCapitalKey,
-      useExample,
+      applyExample,
       clear,
     }),
-    [priorities, setAxisWeight, setCapitalKey, useExample, clear],
+    [priorities, setAxisWeight, setCapitalKey, applyExample, clear],
   )
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }
@@ -135,13 +142,14 @@ export function usePriorities(): PrioritiesContextValue {
  * priority does not switch on a capital-fit number the visitor never asked for.
  */
 export function useCapitalLens() {
-  const { priorities, setCapitalKey, useExample, clear } = usePriorities()
+  const { priorities, setCapitalKey, applyExample, clear } = usePriorities()
   return {
     lens: priorities.capital,
     mode: priorities.mode,
     chosen: priorities.mode !== 'unset' && anyCapitalPrioritised(priorities.capital),
     setKey: setCapitalKey,
-    useExampleLens: useExample,
+    // Capital only — this button must never reach across and set axis weights.
+    useExampleLens: () => applyExample({ capital: true }),
     clear,
   }
 }

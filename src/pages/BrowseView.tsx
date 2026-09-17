@@ -8,11 +8,11 @@ import {
   allProducts,
   makers,
 } from '../lib/data'
-import { TIER_COLORS, TIER_LABELS, fitColor, scoreColor } from '../lib/colors'
+import { TIER_COLORS, TIER_LABELS, scoreColor } from '../lib/colors'
 import { coverageFor, displayScore } from '../lib/evidence'
 import type { AxisKey, Confidence, Maker, Tier } from '../lib/types'
 import { evaluateMaker } from '../lib/lens'
-import { orderByPriorities, PLACEMENT_THRESHOLD } from '../lib/priorities'
+import { orderByPriorities, orderingIntegrity, PLACEMENT_THRESHOLD } from '../lib/priorities'
 import { useCapitalLens, usePriorities } from '../lib/prioritiesContext'
 import { ConfidenceBadge, ConfidenceLegend } from '../components/ConfidenceBadge'
 import { EvidenceLegend } from '../components/EvidenceBadge'
@@ -27,9 +27,15 @@ type ViewMode = 'matrix' | 'cards'
 export function BrowseView() {
   const { lens, mode, chosen } = useCapitalLens()
   const { priorities, chosen: hasPrio } = usePriorities()
-  const fitById = useMemo(() => {
-    const m = new Map<string, number>()
-    for (const mk of makers) m.set(mk.id, evaluateMaker(mk, lens).fit)
+  // Documented matches and unknowns per maker. Deliberately not a single
+  // number: the old 0–100 could only be produced by counting an absent record
+  // as a clean result.
+  const capitalById = useMemo(() => {
+    const m = new Map<string, { present: number; unknown: number; active: number }>()
+    for (const mk of makers) {
+      const r = evaluateMaker(mk, lens)
+      m.set(mk.id, { present: r.present.length, unknown: r.unknown.length, active: r.activeCount })
+    }
     return m
   }, [lens])
   const [view, setView] = useState<ViewMode>('matrix')
@@ -66,8 +72,12 @@ export function BrowseView() {
     arr.sort((a, b) => {
       if (sortKey === 'name' || sortKey === 'priorities') return a.name.localeCompare(b.name) * dir
       if (sortKey === 'tier') return (a.tier.localeCompare(b.tier) || a.name.localeCompare(b.name)) * dir
-      if (sortKey === 'fit')
-        return ((fitById.get(a.id) ?? 0) - (fitById.get(b.id) ?? 0)) * dir || a.name.localeCompare(b.name)
+      if (sortKey === 'fit') {
+        // Fewest documented matches first. Unknowns move nobody.
+        const ca = capitalById.get(a.id)?.present ?? 0
+        const cb = capitalById.get(b.id)?.present ?? 0
+        return (ca - cb) * dir || a.name.localeCompare(b.name)
+      }
       // axis: makers with no score shown always sort last, in either direction
       const sa = displayScore(a, sortKey).value
       const sb = displayScore(b, sortKey).value
@@ -77,9 +87,10 @@ export function BrowseView() {
       return (sa - sb) * dir || a.name.localeCompare(b.name)
     })
     return arr
-  }, [filtered, sortKey, sortDir, fitById, priorityGroups])
+  }, [filtered, sortKey, sortDir, capitalById, priorityGroups])
 
   const unplaced = priorityGroups?.unplaced ?? []
+  const integrity = priorityGroups ? orderingIntegrity(priorityGroups.placed) : null
   const prioritisedAxes = useMemo(
     () => new Set(AXIS_KEYS.filter((k) => priorities.weights[k] > 0)),
     [priorities],
@@ -180,8 +191,8 @@ export function BrowseView() {
           Across all {coverage.total} assessments in the dataset,{' '}
           <strong className="text-slate-700">{coverage.sourced}</strong> carry a source about the
           maker they describe and{' '}
-          <strong className="text-slate-700">{coverage.notEstablished}</strong> rest only on what has
-          not been published — those show no score.
+          for <strong className="text-slate-700">{coverage.notEstablished}</strong> our research has
+          established nothing — those show no score.
         </p>
       </div>
 
@@ -234,14 +245,32 @@ export function BrowseView() {
         )}
       </div>
 
-      {/* Capital Lens — drives the "Capital fit" column; collapsible to keep focus on scores */}
+      {integrity && !integrity.uniform && sorted.length > 1 && (
+        <div className="mb-3 rounded-xl border border-amber-300 bg-amber-50 p-3">
+          <p className="text-sm font-semibold text-amber-900">
+            An exploratory order, not a like-for-like ranking
+          </p>
+          <p className="mt-1 max-w-4xl text-xs leading-snug text-amber-800">
+            These makers were not all scored on the same criteria, so their averages are taken over
+            different evidence. {integrity.unevenAxes.map((a) => AXIS_LABELS[a]).join(', ')}{' '}
+            {integrity.unevenAxes.length === 1 ? 'is' : 'are'} missing for at least one of them. Use
+            this to explore, and read the individual cells rather than the position — the{' '}
+            <Link to="/compare" className="font-semibold underline underline-offset-2">
+              comparison view
+            </Link>{' '}
+            breaks it down criterion by criterion.
+          </p>
+        </div>
+      )}
+
+      {/* Capital Lens — drives the "Capital" column; collapsible to keep focus on scores */}
       {view === 'matrix' && (
         <details className="mb-3 rounded-xl border border-teal-200 bg-teal-50/40">
           <summary className="cursor-pointer px-3 py-2 text-sm font-bold text-teal-900">
             🔍 Capital Lens —{' '}
             {chosen
-              ? `tune the “Capital fit” column (${mode === 'example' ? 'example lens' : 'your lens'})`
-              : 'choose what matters to you to add a “Capital fit” column'}
+              ? `tune the “Capital” column (${mode === 'example' ? 'example lens' : 'your lens'})`
+              : 'choose what matters to you to add a “Capital” column'}
           </summary>
           <div className="px-3 pb-3">
             <CapitalLensPanel />
@@ -258,7 +287,7 @@ export function BrowseView() {
           {sorted.length > 0 && (
             <MatrixView
               makers={sorted}
-              fitById={fitById}
+              capitalById={capitalById}
               showFit={chosen}
               lensLabel={mode === 'example' ? 'the example lens' : 'your lens'}
               prioritisedAxes={prioritisedAxes}
@@ -297,12 +326,13 @@ function UnplacedGroup({
   return (
     <section className={`rounded-xl border border-slate-300 bg-slate-50 p-4 ${className}`}>
       <h2 className="text-sm font-bold text-slate-700">
-        Not enough published to place ({rows.length})
+        Not enough established to place ({rows.length})
       </h2>
       <p className="mt-1 max-w-3xl text-xs leading-snug text-slate-600">
-        Fewer than {Math.round(PLACEMENT_THRESHOLD * 100)}% of the priorities you set have evidence
-        behind them for these makers, so we will not rank them. They are not at the bottom of the
-        list — they are off it. Nothing published is not a bad result.
+        Fewer than {Math.round(PLACEMENT_THRESHOLD * 100)}% of the priorities in effect have
+        eligible evidence for these makers, so we will not rank them. They are not at the bottom of
+        the list — they are off it, and they remain in search. An unestablished record is not a bad
+        result.
       </p>
       <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {rows.map(({ maker, result }) => (
@@ -377,7 +407,7 @@ function ScoreCell({
       <span
         title={
           withheld
-            ? 'Not established — nothing has been published on this. No score is shown, because undisclosed is not evidence of bad practice.'
+            ? 'Not established in our current research — a gap in our record, not a finding about the company. No score is shown.'
             : note || 'No score recorded.'
         }
         className={`inline-flex ${dims} items-center justify-center rounded border border-dashed border-slate-300 bg-slate-50 text-[10px] font-medium text-slate-400`}
@@ -454,7 +484,7 @@ function SortHeader({
 
 function MatrixView({
   makers: rows,
-  fitById,
+  capitalById,
   showFit,
   lensLabel,
   prioritisedAxes,
@@ -463,7 +493,7 @@ function MatrixView({
   onSort,
 }: {
   makers: Maker[]
-  fitById: Map<string, number>
+  capitalById: Map<string, { present: number; unknown: number; active: number }>
   showFit: boolean
   lensLabel: string
   prioritisedAxes: Set<AxisKey>
@@ -494,14 +524,14 @@ function MatrixView({
                 >
                   <SortHeader
                     label={AXIS_SHORT[k]}
-                    title={prioritised ? `${AXIS_LABELS[k]} — one of your priorities` : AXIS_LABELS[k]}
+                    title={prioritised ? `${AXIS_LABELS[k]} — one of the priorities in effect` : AXIS_LABELS[k]}
                     active={sortKey === k}
                     dir={sortDir}
                     onClick={() => onSort(k)}
                   />
                   {prioritised && (
                     <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-wide text-teal-700">
-                      your priority
+                      priority
                     </span>
                   )}
                 </th>
@@ -510,8 +540,8 @@ function MatrixView({
             {showFit && (
               <th className="border-l border-teal-200 bg-teal-50/40 px-2 py-2 text-center">
                 <SortHeader
-                  label="Capital fit"
-                  title={`How many of the attributes in ${lensLabel} are absent from each maker's record. It moves when the lens changes — it is not a rating of the company.`}
+                  label="Capital"
+                  title={`Documented matches against ${lensLabel}, with how many attributes have no record. Not a rating of the company.`}
                   active={sortKey === 'fit'}
                   dir={sortDir}
                   onClick={() => onSort('fit')}
@@ -571,14 +601,20 @@ function MatrixView({
               {showFit && (
                 <td className="border-l border-teal-100 bg-teal-50/30 px-2 py-1.5 text-center">
                   {(() => {
-                    const fit = fitById.get(m.id) ?? 0
+                    const c = capitalById.get(m.id)
+                    if (!c) return null
                     return (
                       <span
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-full border-[3px] text-xs font-extrabold"
-                        style={{ borderColor: fitColor(fit), color: fitColor(fit) }}
-                        title={`Attributes in ${lensLabel} that are absent from this maker's record`}
+                        className="inline-flex flex-col items-center leading-tight"
+                        title={`${c.present} documented match(es) against ${lensLabel}; ${c.unknown} of ${c.active} attributes have no record.`}
                       >
-                        {fit}
+                        <span className="text-sm font-extrabold text-amber-700">{c.present}</span>
+                        <span className="text-[10px] text-slate-500">
+                          match{c.present === 1 ? '' : 'es'}
+                        </span>
+                        {c.unknown > 0 && (
+                          <span className="text-[10px] text-slate-400">{c.unknown} unknown</span>
+                        )}
                       </span>
                     )
                   })()}
@@ -592,13 +628,15 @@ function MatrixView({
       </table>
       <p className="border-t border-slate-100 bg-slate-50 px-3 py-1.5 text-xs leading-snug text-slate-500">
         Cell colour = the assessed score (red→green). Solid = confidence A · hatched = B · outlined =
-        C. A dash (<span className="font-semibold">—</span>) means nothing has been published on that
-        axis, so no score is shown.
+        C. A dash (<span className="font-semibold">—</span>) means our research has not established
+        a finding on that axis, so no score is shown.
         {showFit && (
           <>
             {' '}
-            The <strong>Capital fit</strong> column counts attributes in {lensLabel} that are absent
-            from each record; it changes with the lens and is not a rating of the company.
+            The <strong>Capital</strong> column counts attributes in {lensLabel} that are
+            <em> documented present</em> for each maker, and how many have no record at all.
+            Attributes with no record count neither for nor against. There is no overall capital
+            score, because producing one would mean scoring an absent record as a good result.
           </>
         )}{' '}
         Hover a cell for the reason; click a row for the sources.
@@ -638,7 +676,7 @@ function CardsView({ makers: rows }: { makers: Maker[] }) {
                   className="flex flex-1 flex-col items-center gap-1"
                   title={
                     d.withheld
-                      ? `${AXIS_LABELS[k]}: not established — nothing published, so no score is shown.`
+                      ? `${AXIS_LABELS[k]}: not established in our current research, so no score is shown.`
                       : `${AXIS_LABELS[k]}: ${s == null ? 'no score' : `${s}/4`} (confidence ${conf})${
                           ax?.note ? ` — ${ax.note}` : ''
                         }`

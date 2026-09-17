@@ -7,7 +7,7 @@ import {
   makers,
 } from '../lib/data'
 import { TIER_LABELS } from '../lib/colors'
-import { associationsAreUnverified, comparableExtremes, displayScore } from '../lib/evidence'
+import { comparableExtremes, displayScore } from '../lib/evidence'
 import type { Maker, Tier } from '../lib/types'
 import { ConfidenceBadge } from '../components/ConfidenceBadge'
 import { EvidenceBadge, EvidenceLegend } from '../components/EvidenceBadge'
@@ -16,8 +16,13 @@ import { ValueRadar, type RadarSeries } from '../components/ValueRadar'
 import { Chip, SectionTitle } from '../components/ui'
 import { isDeepPocket, RelationshipChips } from '../components/FunderCard'
 import { CapitalLensPanel, LensNotChosen } from '../components/CapitalLensPanel'
-import { CONCERN_LEGEND, evaluateMaker, reputationReasons } from '../lib/lens'
-import { orderByPriorities } from '../lib/priorities'
+import { CONCERN_LEGEND, evaluateMaker } from '../lib/lens'
+import {
+  criterionComparison,
+  orderByPriorities,
+  orderingIntegrity,
+  prioritiesLabel,
+} from '../lib/priorities'
 import { useCapitalLens, usePriorities } from '../lib/prioritiesContext'
 import { Link } from 'react-router-dom'
 
@@ -161,7 +166,7 @@ export function CompareView() {
 
           {/* Against the visitor's priorities, before the full table */}
           <section>
-            <SectionTitle>Against your priorities</SectionTitle>
+            <SectionTitle>Against the priorities you set</SectionTitle>
             <PrioritySummary makers={selected} />
           </section>
 
@@ -178,9 +183,9 @@ export function CompareView() {
             <SharedBackers makers={selected} />
           </section>
 
-          {/* Capital fit — a personal filter, shown after the shared facts. */}
+          {/* Capital findings — a personal filter, shown after the shared facts. */}
           <section>
-            <SectionTitle>Capital fit — against a lens you choose</SectionTitle>
+            <SectionTitle>Capital findings — against a lens you choose</SectionTitle>
             <div className="grid grid-cols-1 gap-3 lg:grid-cols-[320px_1fr]">
               <CapitalLensPanel compact />
               <CapitalFitRanking makers={selected} />
@@ -196,97 +201,92 @@ function CapitalFitRanking({ makers: sel }: { makers: Maker[] }) {
   const { lens, mode, chosen } = useCapitalLens()
   if (!chosen) return <LensNotChosen />
 
-  const ranked = sel
+  const rows = sel
     .map((m) => ({ maker: m, result: evaluateMaker(m, lens) }))
-    .sort((a, b) => b.result.fit - a.result.fit)
+    // Fewest DOCUMENTED matches first. Attributes with no record move nobody,
+    // so a maker is never credited for a gap in our research.
+    .sort(
+      (a, b) =>
+        a.result.present.length - b.result.present.length ||
+        a.maker.name.localeCompare(b.maker.name),
+    )
   const lensLabel = mode === 'example' ? 'the example lens' : 'your lens'
+  const anyUnknown = rows.some((r) => r.result.unknown.length > 0)
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-3">
       <p className="mb-2 text-xs leading-snug text-slate-500">
-        Ordered by how many attributes in <strong>{lensLabel}</strong> are absent from each maker's
-        record. This orders the makers against that lens — it does not rate them. The amber tags are
-        the attributes that <em>are</em> present; the grey text says exactly what matched.
+        Documented matches against <strong>{lensLabel}</strong>, fewest first. Only attributes our
+        record can speak to are counted — there is no overall capital score, because producing one
+        would mean counting an absent record as a clean result.
         {mode === 'example' && (
-          <> The example lens is ValueCompass's starting point, not a statement of your priorities.</>
+          <> The example lens is ValueCompass&apos;s starting point, not a statement of your priorities.</>
         )}
       </p>
+      {anyUnknown && (
+        <p className="mb-2 rounded-md border border-slate-300 bg-slate-50 px-2.5 py-1.5 text-[11px] leading-snug text-slate-600">
+          These makers do not all have the same attributes on record, so this order rests on
+          different amounts of evidence for each. Read the per-maker counts rather than the position.
+        </p>
+      )}
       <ol className="space-y-2.5">
-        {ranked.map(({ maker, result }, i) => {
-          const color =
-            result.fit >= 80
-              ? '#16a34a'
-              : result.fit >= 50
-                ? '#ca8a04'
-                : result.fit >= 25
-                  ? '#ea580c'
-                  : '#dc2626'
-          return (
-            <li key={maker.id} className="flex items-start gap-3 border-t border-slate-100 pt-2.5 first:border-0 first:pt-0">
-              <span className="mt-0.5 w-4 text-sm font-bold text-slate-400">{i + 1}</span>
-              <span
-                className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-[3px] text-xs font-extrabold"
-                style={{ borderColor: color, color }}
-              >
-                {result.fit}
-              </span>
-              <div className="min-w-0">
+        {rows.map(({ maker, result }, i) => (
+          <li
+            key={maker.id}
+            className="flex items-start gap-3 border-t border-slate-100 pt-2.5 first:border-0 first:pt-0"
+          >
+            <span className="mt-0.5 w-4 text-sm font-bold text-slate-400">{i + 1}</span>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-baseline gap-x-2">
                 <span className="font-semibold text-slate-800">{maker.name}</span>
-                <span className="ml-2 text-xs text-slate-400">
-                  {result.clearCount}/{result.activeCount} clear
+                <span className="text-xs text-slate-500">
+                  <strong className="text-amber-700">{result.present.length}</strong> documented
+                  match{result.present.length === 1 ? '' : 'es'} ·{' '}
+                  <strong className="text-emerald-700">{result.absent.length}</strong> clear ·{' '}
+                  <strong className="text-slate-500">{result.unknown.length}</strong> no record
                 </span>
-                {result.hits.length > 0 ? (
-                  <ul className="mt-1 space-y-0.5">
-                    {result.hits.map((h) => {
-                      const repBackers =
-                        h.key === 'backer_reputation'
-                          ? backersFor(maker.id)
-                              .map((b) => b.funder)
-                              .filter((f) => (f.notable_for ?? []).length > 0)
-                          : []
-                      return (
-                        <li key={h.key} className="text-[11px] leading-snug">
-                          <span className="rounded-full bg-amber-100 px-2 py-0.5 font-medium text-amber-800">
-                            {h.label}
-                          </span>
-                          {repBackers.length > 0 ? (
-                            <ul className="mt-1 space-y-0.5">
-                              {repBackers.map((f) => (
-                                <li key={f.name} className="text-slate-500">
-                                  <span className="font-medium text-slate-700">{f.name}</span>
-                                  {associationsAreUnverified(f) && (
-                                    <span className="ml-1 text-slate-400">(unverified)</span>
-                                  )}
-                                  {' — '}
-                                  {reputationReasons(f).join('; ')}
-                                </li>
-                              ))}
-                            </ul>
-                          ) : (
-                            <span className="ml-1 text-slate-500">{h.detail}</span>
-                          )}
-                        </li>
-                      )
-                    })}
-                  </ul>
-                ) : (
-                  <div className="mt-0.5 text-[11px] text-emerald-700">No concerns flagged.</div>
-                )}
               </div>
-            </li>
-          )
-        })}
+              {result.present.length > 0 && (
+                <ul className="mt-1 space-y-0.5">
+                  {result.present.map((f) => (
+                    <li key={f.key} className="text-[11px] leading-snug">
+                      <span className="rounded-full bg-amber-100 px-2 py-0.5 font-medium text-amber-800">
+                        {f.label}
+                      </span>
+                      {f.detail && <span className="ml-1 text-slate-500">{f.detail}</span>}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {result.unknown.length > 0 && (
+                <p className="mt-1 text-[11px] leading-snug text-slate-400">
+                  No record for {result.unknown.map((f) => f.label).join(', ')} — counted neither way.
+                </p>
+              )}
+              {result.unverifiedAssociations.length > 0 && (
+                <p className="mt-1 text-[11px] leading-snug text-slate-400">
+                  Unverified associations, not counted: {result.unverifiedAssociations.join(', ')}.
+                </p>
+              )}
+              {result.pending.length > 0 && (
+                <p className="mt-1 text-[11px] leading-snug text-slate-400">
+                  {result.pending.length} pending or reported item
+                  {result.pending.length === 1 ? '' : 's'} recorded separately, not counted.
+                </p>
+              )}
+            </div>
+          </li>
+        ))}
       </ol>
 
-      {/* What the tags mean */}
       <details className="mt-3 border-t border-slate-100 pt-2">
         <summary className="cursor-pointer text-xs font-semibold text-slate-600">
-          What do these tags mean?
+          What do these attributes mean?
         </summary>
         <dl className="mt-1.5 space-y-1">
           {CONCERN_LEGEND.map((c) => (
             <div key={c.label} className="text-[11px] leading-snug">
-              <dt className="inline rounded-full bg-amber-50 px-1.5 py-0.5 font-semibold text-amber-800">
+              <dt className="inline rounded-full bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700">
                 {c.label}
               </dt>
               <dd className="ml-1 inline text-slate-500">— {c.meaning}</dd>
@@ -294,9 +294,8 @@ function CapitalFitRanking({ makers: sel }: { makers: Maker[] }) {
           ))}
         </dl>
         <p className="mt-1.5 text-[11px] leading-snug text-slate-400">
-          Each tag reports an attribute from the maker's record. You choose which of them count as
-          concerns, in the Capital Lens panel on the left. Backer associations marked unverified
-          carry no source yet.
+          You choose which of these count as concerns, in the Capital Lens panel on the left.
+          Associations with no source are excluded from every count here.
         </p>
       </details>
     </div>
@@ -331,15 +330,43 @@ function PrioritySummary({ makers: sel }: { makers: Maker[] }) {
   }
 
   const { placed, unplaced } = orderByPriorities(sel, priorities)
-  const label = priorities.mode === 'example' ? 'the example priorities' : 'your priorities'
+  const label = prioritiesLabel(priorities.mode)
+  const integrity = orderingIntegrity(placed)
+  const criteria = criterionComparison(sel, priorities)
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4">
       <p className="mb-3 text-xs leading-snug text-slate-500">
-        Ordered against <strong className="text-slate-700">{label}</strong>. Only assessments firm
-        enough to compare count, so this ordering rests on less than the full table below — the
+        Measured against <strong className="text-slate-700">{label}</strong>. Only assessments that
+        pass our evidence rule count, so this rests on less than the full table below — the
         per-maker line says how much.
       </p>
+
+      {!integrity.uniform && placed.length > 1 && (
+        <div className="mb-3 rounded-lg border border-amber-300 bg-amber-50 p-3">
+          <p className="text-sm font-semibold text-amber-900">
+            Not a like-for-like ordering
+          </p>
+          <p className="mt-1 text-xs leading-snug text-amber-800">
+            These makers were not scored on the same criteria.{' '}
+            {integrity.sharedAxes.length > 0 ? (
+              <>
+                Only{' '}
+                <strong>{integrity.sharedAxes.map((a) => AXIS_LABELS[a]).join(', ')}</strong>{' '}
+                {integrity.sharedAxes.length === 1 ? 'has' : 'have'} eligible evidence for all of
+                them;{' '}
+              </>
+            ) : (
+              <>No criterion has eligible evidence for all of them; </>
+            )}
+            <strong>{integrity.unevenAxes.map((a) => AXIS_LABELS[a]).join(', ')}</strong>{' '}
+            {integrity.unevenAxes.length === 1 ? 'is' : 'are'} missing for at least one. An average
+            over one set of criteria is not comparable with an average over another, however close
+            the two numbers look — read the criterion-by-criterion list below instead of the
+            positions.
+          </p>
+        </div>
+      )}
 
       {placed.length === 0 ? (
         <p className="text-sm text-slate-600">
@@ -355,12 +382,13 @@ function PrioritySummary({ makers: sel }: { makers: Maker[] }) {
                   <span className="font-semibold text-slate-800">{maker.name}</span>
                   {result.strength != null && (
                     <span className="text-sm text-slate-600">
-                      {result.strength.toFixed(1)}/4 on the axes you prioritised
+                      {result.strength.toFixed(1)}/4 across{' '}
+                      {result.evidenced.map((a) => AXIS_LABELS[a.axis]).join(', ')}
                     </span>
                   )}
                 </div>
                 <p className="mt-0.5 text-xs leading-snug text-slate-500">
-                  Based on {result.evidenced.length} of {result.axes.length} of your priorities
+                  Based on {result.evidenced.length} of {result.axes.length} of {label}
                   {result.missing.length > 0 && (
                     <>
                       {' '}
@@ -372,8 +400,10 @@ function PrioritySummary({ makers: sel }: { makers: Maker[] }) {
                 </p>
                 {result.capital && (
                   <p className="mt-0.5 text-xs text-slate-500">
-                    Capital, counted separately: {result.capital.clearCount} of{' '}
-                    {result.capital.activeCount} attributes clear.
+                    Capital, counted separately:{' '}
+                    <strong className="text-amber-700">{result.capital.present.length}</strong>{' '}
+                    documented match{result.capital.present.length === 1 ? '' : 'es'},{' '}
+                    {result.capital.unknown.length} with no record.
                   </p>
                 )}
               </div>
@@ -382,18 +412,63 @@ function PrioritySummary({ makers: sel }: { makers: Maker[] }) {
         </ol>
       )}
 
+      {criteria.length > 0 && (
+        <div className="mt-3 border-t border-slate-100 pt-3">
+          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-400">
+            Criterion by criterion
+          </p>
+          <p className="mb-2 text-xs leading-snug text-slate-500">
+            The part that stays honest when coverage is uneven: one row per criterion you set, with
+            only the makers that have eligible evidence for it.
+          </p>
+          <ul className="space-y-2">
+            {criteria.map((row) => (
+              <li key={row.axis} className="rounded-lg border border-slate-200 p-2.5">
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <span className="text-sm font-semibold text-slate-800">
+                    {AXIS_LABELS[row.axis]}
+                  </span>
+                  <span className="text-[11px] text-slate-400">
+                    {row.weight === 2 ? 'matters a lot' : 'matters'}
+                  </span>
+                </div>
+                {row.scored.length === 0 ? (
+                  <p className="mt-1 text-xs text-slate-500">
+                    No eligible assessment for any of these makers.
+                  </p>
+                ) : (
+                  <ul className="mt-1 space-y-0.5 text-xs">
+                    {row.scored.map(({ maker, score }) => (
+                      <li key={maker.id} className="flex justify-between gap-3">
+                        <span className="text-slate-700">{maker.name}</span>
+                        <span className="font-semibold text-slate-800">{score}/4</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {row.missing.length > 0 && (
+                  <p className="mt-1 text-[11px] leading-snug text-slate-400">
+                    Not counted: {row.missing.map((m) => `${m.maker.name} (${m.reason})`).join('; ')}.
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {unplaced.length > 0 && (
         <div className="mt-3 rounded-lg border border-slate-300 bg-slate-50 p-3">
           <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
-            Not enough published to place
+            Not enough established to place
           </p>
           <ul className="mt-1 space-y-0.5 text-sm text-slate-700">
             {unplaced.map(({ maker, result }) => (
               <li key={maker.id}>
                 {maker.name}
                 <span className="ml-1.5 text-xs text-slate-500">
-                  — {result.evidenced.length} of {result.axes.length} of your priorities have a
-                  comparable assessment
+                  — {result.evidenced.length} of {result.axes.length} of {label} have an eligible
+                  assessment
                 </span>
               </li>
             ))}
@@ -427,12 +502,8 @@ function CompareTable({ makers: sel, colors }: { makers: Maker[]; colors: string
       return next
     })
   const allExpanded = expanded.size === AXIS_KEYS.length
-  // The capital-fit row only exists once a lens has been chosen, and it is
-  // never described as a ranking of the companies.
-  const fits = sel.map((m) => evaluateMaker(m, lens).fit)
-  const bestFit = Math.max(...fits)
-  const worstFit = Math.min(...fits)
-  const fitDistinct = bestFit !== worstFit
+  // The capital row only exists once a lens has been chosen. It reports
+  // documented matches and gaps — never a single score, and never a winner.
   const lensLabel = mode === 'example' ? 'the example lens' : 'your lens'
   // Rows you said matter come first. Nothing is hidden — the ordering just
   // stops you having to hunt for the axis you actually care about.
@@ -470,9 +541,10 @@ function CompareTable({ makers: sel, colors }: { makers: Maker[]; colors: string
         </thead>
         <tbody>
           {orderedAxes.map((key) => {
-            // Only assessments that rest on evidence about the maker and carry
-            // confidence A or B can win or lose a comparison. Everything else
-            // is shown, and explicitly left out of the ranking.
+            // One rule decides: an assessment may win or lose a comparison only
+            // when a source about this maker covers the claim the score rests on.
+            // A confidence flag is not evidence. Everything else is shown, and
+            // explicitly left out of the ranking.
             const { best, worst, ranked, skipped } = comparableExtremes(sel, key)
             const isOpen = expanded.has(key)
             return (
@@ -486,13 +558,15 @@ function CompareTable({ makers: sel, colors }: { makers: Maker[]; colors: string
                       className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-left hover:text-teal-700"
                       title="Show the reason & sources behind these scores"
                     >
-                      <span
-                        className={`text-[10px] text-slate-400 transition-transform ${isOpen ? 'rotate-90' : ''}`}
-                        aria-hidden
-                      >
-                        ▶
+                      <span className="inline-flex items-baseline gap-1.5">
+                        <span
+                          className={`text-[10px] text-slate-400 transition-transform ${isOpen ? 'rotate-90' : ''}`}
+                          aria-hidden
+                        >
+                          ▶
+                        </span>
+                        {AXIS_LABELS[key]}
                       </span>
-                      {AXIS_LABELS[key]}
                       {weights[key] > 0 && (
                         <span
                           className="rounded-full bg-teal-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-teal-800"
@@ -523,8 +597,8 @@ function CompareTable({ makers: sel, colors }: { makers: Maker[]; colors: string
                     const axis = m.axes[key]
                     const d = displayScore(m, key)
                     const s = d.value
-                    const isBest = best != null && d.comparable && s === best
-                    const isWorst = worst != null && d.comparable && s === worst
+                    const isBest = best != null && d.eligible && s === best
+                    const isWorst = worst != null && d.eligible && s === worst
                     return (
                       <td
                         key={m.id}
@@ -534,7 +608,7 @@ function CompareTable({ makers: sel, colors }: { makers: Maker[]; colors: string
                           {s == null ? (
                             <span
                               className="text-slate-400"
-                              title="Nothing has been published on this axis, so no score is shown."
+                              title="Not established in our current research, so no score is shown."
                             >
                               —
                             </span>
@@ -557,10 +631,10 @@ function CompareTable({ makers: sel, colors }: { makers: Maker[]; colors: string
                               ▼
                             </span>
                           )}
-                          {s != null && !d.comparable && (
+                          {s != null && !d.eligible && (
                             <span
                               className="text-[10px] font-medium text-slate-400"
-                              title="Left out of the ranking: this assessment is either thin (confidence C) or reasons from context rather than evidence about this maker."
+                              title={`Left out of the ranking — ${d.ineligibleBecause}.`}
                             >
                               not ranked
                             </span>
@@ -661,30 +735,21 @@ function CompareTable({ makers: sel, colors }: { makers: Maker[]; colors: string
           {chosen && (
             <tr className="border-t-2 border-teal-200 bg-teal-50/40">
               <td className="sticky left-0 bg-teal-50/40 px-3 py-2 font-medium text-teal-800">
-                Capital fit
-                <span className="block text-[11px] font-normal text-teal-600">under {lensLabel}</span>
+                Capital
+                <span className="block text-[11px] font-normal text-teal-600">
+                  documented against {lensLabel}
+                </span>
               </td>
               {sel.map((m) => {
-                const fit = evaluateMaker(m, lens).fit
-                const isBest = fitDistinct && fit === bestFit
-                const isWorst = fitDistinct && fit === worstFit
+                const r = evaluateMaker(m, lens)
                 return (
-                  <td
-                    key={m.id}
-                    className={`px-3 py-2 ${isBest ? 'bg-emerald-50' : isWorst ? 'bg-rose-50' : ''}`}
-                  >
-                    <span className="inline-flex items-center gap-1.5">
-                      <span className="font-bold text-slate-800">{fit}</span>
-                      {isBest && <span title={`fewest attributes from ${lensLabel} present`} aria-label="fewest">▲</span>}
-                      {isWorst && (
-                        <span
-                          title={`most attributes from ${lensLabel} present`}
-                          aria-label="most"
-                          className="text-rose-500"
-                        >
-                          ▼
-                        </span>
-                      )}
+                  <td key={m.id} className="px-3 py-2">
+                    <span className="text-sm text-slate-700">
+                      <strong className="text-amber-700">{r.present.length}</strong> match
+                      {r.present.length === 1 ? '' : 'es'}
+                    </span>
+                    <span className="block text-[11px] leading-snug text-slate-500">
+                      {r.absent.length} clear · {r.unknown.length} no record
                     </span>
                   </td>
                 )
@@ -697,18 +762,21 @@ function CompareTable({ makers: sel, colors }: { makers: Maker[]; colors: string
         <p>
           <span className="rounded bg-emerald-50 px-1">▲ highest</span> /{' '}
           <span className="rounded bg-rose-50 px-1">▼ lowest</span> marks the ends of the range on
-          that axis — among the assessments firm enough to rank. A difference is only called when
-          both sides rest on evidence about the maker and carry confidence A or B, so a thin guess
-          never beats a documented finding.
+          that axis, among the assessments eligible to be ranked. A difference is only called when
+          both sides carry a source that covers the claim being made. A confidence flag on its own
+          does not qualify an assessment — so an unsourced 4/4 never beats an unsourced 0/4.
         </p>
         <p>
-          A dash (—) means nothing has been published on that axis. It is missing, not zero, and it
-          counts neither for nor against the maker.
+          A dash (—) means our research has not established a finding on that axis. It is missing,
+          not zero, it counts neither for nor against the maker, and it is not a claim that the
+          company published nothing.
         </p>
         {chosen && (
           <p>
-            Capital fit counts how many attributes in {lensLabel} are absent from each maker's
-            record. It moves when the lens changes and is not a rating of the company.
+            The capital row counts attributes in {lensLabel} that are <em>documented present</em>,
+            alongside how many have no record. Attributes with no record count neither way, and
+            there is no combined capital score — one could only be produced by treating a gap in our
+            research as a clean result. No winner is marked on this row.
           </p>
         )}
       </div>
