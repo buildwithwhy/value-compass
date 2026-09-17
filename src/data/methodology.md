@@ -93,8 +93,20 @@ hold:
 1. **There is relevant, traceable support for the actual claim.** Not a source about the
    company somewhere — a source that covers the thing the score rests on. Sector
    background and reasoning from jurisdiction or company size never qualify.
-2. **The assessment is justified by that support.** A source covering one clause of a
-   five-clause rationale does not carry the other four.
+2. **The assessment is justified by that support, under a rule that exists.** A source
+   settling a narrow fact does not automatically license a broad 0–4 score. It does so only
+   where the rubric states how to get from one to the other.
+
+Those two are separate questions and we keep them separate. Transparency is the one axis
+with a whole-axis rule — the Stanford FMTI anchor and its band mapping — so a single index
+value licenses the score there. The other four axes each list sub-indicators and say
+nothing about combining them, so evidence for one sub-indicator cannot settle the axis.
+**We do not write a rule after the fact to keep a score eligible.**
+
+**Established facts survive ineligible scores.** Where a source settles something narrow
+and the surrounding score fails, the fact is kept, shown and labelled. These are the most
+solid things on the site, and they are the material a narrower, conditional recommendation
+could later rest on.
 
 **A confidence flag is not evidence.** An A or B records how sure the author felt. On its
 own it has never been enough, and the most visible bug this rule fixes came from treating
@@ -164,14 +176,20 @@ state-linked capital, hyperscaler backers, circular vendor ties, index holding. 
 attribute resolves to one of three states, never two:
 
 - **Documented present** — our record names something.
-- **Documented clear** — our record carries an explicit value, and we show the scope that
-  absence holds within.
-- **No record** — we have no entry. It counts neither for nor against.
+- **Documented absent** — something examined the question and reported nothing, with an
+  explicit scope and a date that coverage runs to. We also say whether the company reported
+  it or a third party checked.
+- **Unknown** — no such evidence. It counts neither for nor against.
 
-That third state is the correction. An empty field is not a clean bill of health, and the
-earlier version of this tool credited makers for gaps in our own research. There is now no
-overall capital score at all: any single number would have to decide what an unknown is
-worth, and the honest answer is nothing.
+Two things are deliberately *not* absence evidence. An empty field is not a clean bill of
+health. And **a value typed into our dataset is not a finding either** — a `false` with no
+source, scope or date behind it resolves to unknown. The recorded value is preserved and
+shown, marked as unsupported, and it decides nothing. Absence also decays, which is why a
+date is required: "no state-linked holder" is a claim about a moment, not a permanent
+property.
+
+There is no overall capital score at all: any single number would have to decide what an
+unknown is worth, and the honest answer is nothing.
 
 Pending, announced, contingent and reported-but-unclosed items are recorded **separately**
 and never fold into a present-tense finding. A commitment that has not closed is not

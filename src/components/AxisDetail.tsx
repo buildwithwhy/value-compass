@@ -97,6 +97,50 @@ export function AxisDetail({ maker }: { maker: Maker }) {
               <>
                 {axis.note && <p className="text-sm leading-snug text-slate-600">{axis.note}</p>}
                 <p className="mt-1.5 text-xs leading-snug text-slate-500">{BASIS[d.basis].meaning}</p>
+                {ev.supported_fact && (
+                  <div className="mt-2 rounded-md border border-emerald-200 bg-emerald-50 p-2.5">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-700">
+                      {d.eligible ? 'Established fact behind this score' : 'Established fact, narrower than this score'}
+                    </p>
+                    <p className="mt-0.5 text-xs leading-snug text-emerald-900">
+                      {ev.supported_fact}
+                    </p>
+                    <p className="mt-1 text-[11px] leading-snug text-emerald-800">
+                      Source date: {ev.source_date}.
+                    </p>
+                  </div>
+                )}
+                {!d.eligible && (
+                  <details className="mt-1.5">
+                    <summary className="cursor-pointer text-xs font-medium text-slate-500 hover:text-slate-700">
+                      Why this score cannot decide anything
+                    </summary>
+                    <div className="mt-1 space-y-1 text-xs leading-snug text-slate-600">
+                      <p>{ev.justification_note}</p>
+                      <p>
+                        <span className="font-semibold text-slate-700">Applicable rule:</span>{' '}
+                        {ev.scoring_rule}
+                      </p>
+                      {ev.unsupported_clauses.length > 0 && (
+                        <div>
+                          <p className="font-semibold text-slate-700">Not carried by the source:</p>
+                          <ul className="ml-4 list-disc">
+                            {ev.unsupported_clauses.map((c, i) => (
+                              <li key={i}>{c}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      <p className="text-slate-400">
+                        Review provenance:{' '}
+                        {ev.provenance === 'human_reviewed'
+                          ? 'human-reviewed'
+                          : 'automated, provisional — not human-reviewed'}
+                        .
+                      </p>
+                    </div>
+                  </details>
+                )}
                 {ev.context_used.length > 0 && (
                   <p className="mt-1 text-xs leading-snug text-amber-700">
                     Reasoned from {ev.context_used.join(' and ')} — not from evidence about{' '}

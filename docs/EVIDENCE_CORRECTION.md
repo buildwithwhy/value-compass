@@ -26,7 +26,8 @@ the maker that covers **the claim**, plus a review that the assessment is justif
 Confidence was removed from the gate entirely. Both cells now read "not ranked", and the
 row says the makers cannot be compared. Regression-tested.
 
-**Effect on the dataset:** 14 of 90 assessments are decision-eligible, down from 35.
+**Effect on the dataset:** 14 of 90 assessments were decision-eligible after this change,
+down from 35 — and 4 after the follow-up pass below tightened it further.
 
 ### 2. Capital fit rewarded absent records as "clear"
 
@@ -36,11 +37,13 @@ positive finding about the company. Separately, the backer-reputation concern fi
 **presence of any `notable_for` entry**, so 12 funders whose associations carry no source
 were driving results.
 
-**Change.** Every attribute now resolves to `documented_present`, `documented_absent`
-(with the scope shown) or `unknown`. Empty lists are `unknown`; only an authored boolean
-`false` is a documented absence. A record naming Gulf capital no longer establishes that
-Singapore capital is absent. Unverified associations are listed separately, labelled "not
-counted", and excluded from every count and ordering.
+**Change.** Every attribute now resolves to `documented_present`, `documented_absent` or
+`unknown`. Empty lists are `unknown`. A record naming Gulf capital no longer establishes
+that Singapore capital is absent. Unverified associations are listed separately, labelled
+"not counted", and excluded from every count and ordering.
+
+This pass initially accepted an authored boolean `false` as a documented absence; the
+follow-up below removed that, because a typed value is not evidence either.
 
 ### 3. Missing evidence described as "nothing has been published"
 
@@ -112,18 +115,96 @@ actually set.
 
 ---
 
+## Follow-up pass — what changed again
+
+Three bounded corrections after review. Details below; the per-record table is generated
+into [`CLAIM_REVIEW.md`](CLAIM_REVIEW.md) so it cannot drift from what the app uses.
+
+### Absence now requires evidence, not an authored value
+
+**Previously:** an authored `false` in `capital_profile` became `documented_absent`, carried
+by a scope *sentence we wrote*. That sentence described the claim; it did not support it.
+
+**Now:** a documented absence requires a **source** that examined the question, an explicit
+**scope**, and an **as-of date** — because an absence decays; "no state-linked holder" is a
+claim about a moment. It also carries an **attribution**: `self_report` (the company says
+so) or `independent` (a third party checked). These are different claims and are no longer
+collapsed.
+
+The dataset contains **no absence evidence meeting that bar**, and none was invented. Every
+authored `false` now resolves to **unknown** for decision purposes, with the recorded value
+preserved and shown as "recorded as no, unsupported". `ABSENCE_EVIDENCE` in the build script
+is the (currently empty) place a real entry goes; the build throws if an entry is missing any
+of the four fields.
+
+### Claim support and score justification are now separate questions
+
+**Previously:** one field, `claim_support: direct | partial`, answered both "does the source
+establish this?" and "does that justify the score?". Collapsing them let a narrow fact carry
+a broad axis score.
+
+**Now:** `claim_support` asks only whether the source directly establishes a **narrow fact**.
+`justifies_whole` asks separately whether that fact licenses the **0–4 axis score under a
+rule that exists in the rubric**. Eligibility requires both.
+
+Checking the rubric for such rules found exactly one. §1 states an external anchor for
+transparency — *"use directly where it exists … Map FMTI/100 → 0–4"* — with bands recorded in
+`makers.json`. The other four axes list four or five sub-indicators each and state no
+combining rule, so evidence for one sub-indicator cannot settle the axis.
+
+**Supported facts are preserved regardless.** 15 assessments now carry an established fact
+while their surrounding score is ineligible. Those facts are displayed on the maker page
+under "Established fact, narrower than this score", with the source date.
+
+### xAI culture/ESG, specifically
+
+The question asked was whether the rubric explicitly permits the documented environmental
+finding to determine the whole-axis score.
+
+**It does not.** §2 lists four sub-indicators — employee treatment, environmental footprint,
+governance quality, mission integrity — and states no rule for combining them. Its only
+related instruction concerns *confidence* on the environmental sub-indicator, not axis
+aggregation.
+
+So: the **narrow finding is retained** — xAI operated unpermitted gas turbines at its Memphis
+site and was sued under the Clean Air Act by the NAACP, SELC and Earthjustice. It is real,
+sourced and displayed. The **0/4 is marked unresolved**: "worst-in-class" across four
+sub-indicators is not licensed by evidence covering one. No replacement score is proposed and
+no retrospective rule was written to preserve eligibility. The recorded 0 is untouched in
+`makers.json`. Regression-tested.
+
+The same test applied to the other 19 reviewed records changed several: four FMTI-anchored
+transparency scores remain eligible because the index value the rule consumes is transcribed
+(xAI 14, Midjourney 14, Mistral 18, Meta 60→31). Four others cite FMTI but record only a
+qualitative position — "middle group", "2nd of the six longitudinal firms" — and the rule
+maps a *number* to a band, so those are unresolved pending a transcription.
+
+**Decision-eligible falls from 14 to 4.** All four are transparency.
+
+---
+
 ## The eligibility rule, in full
 
 ```
-decision_eligible = basis === 'sourced' && claim_support === 'direct'
+decision_eligible =
+     basis === 'sourced'                        // a source about this maker, for this claim
+  && claim_support === 'establishes_fact'       // it settles a narrow fact
+  && justifies_whole === true                   // and a rubric rule gets from that to the score
 ```
 
 - **`basis === 'sourced'`** — at least one cited source is about this maker and survived
   the background filter (sector reading on Global-South data labour, the Windfall Clause
   proposal, FMTI for makers it did not score) and the hand-checked mismatch filter.
-- **`claim_support === 'direct'`** — a reviewed judgement that the cited material covers
-  what the score rests on. Recorded per assessment in `scripts/build-evidence.mjs` with a
-  one-line reason each, so every call is inspectable and arguable.
+- **`claim_support === 'establishes_fact'`** — the cited material directly settles a narrow
+  fact about this maker.
+- **`justifies_whole`** — a rubric rule licenses the move from that fact to a 0–4 score.
+  Only transparency has one.
+
+Each is recorded per assessment in `scripts/build-evidence.mjs` with its reasoning, and
+rendered into [`CLAIM_REVIEW.md`](CLAIM_REVIEW.md). Every classification is
+**`automated_provisional`** — produced by reading the recorded rationale against the rubric,
+not by a human re-reading the sources. Nothing is labelled human-reviewed, and the build
+counts how many are (currently zero).
 
 Source **count** is deliberately not part of this. Anthropic's ownership-dispersion score
 rests on one report and is eligible; Meta's culture score cites a piece covering one clause
@@ -153,21 +234,37 @@ modules and the real dataset:
 
 The stricter rule makes the evidence gap visible rather than creating it.
 
-**Under the example priorities, 2 of 18 makers can now be placed** (previously 8). Per-axis
-eligibility across all 18 makers:
+Per-axis eligibility across all 18 makers, after the follow-up pass:
 
-| Axis | Eligible | Not established |
-|---|---|---|
-| Transparency | 8 | 6 |
-| Culture / ESG | 1 | 10 |
-| Labour & supply-chain integrity | 1 | 5 |
-| Wealth dispersion | 2 | 0 |
-| Public wealth-sharing | 2 | 0 |
+| Axis | Eligible | Establishes a narrower fact | Not established |
+|---|---|---|---|
+| Transparency | **4** | 4 | 6 |
+| Culture / ESG | 0 | 5 | 10 |
+| Labour & supply-chain integrity | 0 | 1 | 5 |
+| Wealth dispersion | 0 | 2 | 0 |
+| Public wealth-sharing | 0 | 3 | 0 |
 
-**This dataset cannot yet support conditional recommendations.** One eligible assessment on
-labour and one on culture is not a basis for telling someone which product to use. The
-research in [`EVIDENCE_AUDIT.md`](EVIDENCE_AUDIT.md) is the prerequisite, and its order of
-priority is unchanged:
+**Under the example priorities — all five axes — no maker is placeable.** Ask only about
+transparency and four are: xAI, Meta, Mistral, Midjourney. That is the shape of the current
+evidence, and the interface states it rather than working around it.
+
+### What this does and does not rule out
+
+**It rules out broad recommendations across the existing five axes.** A recommendation of
+the form "given what you care about across transparency, culture, labour, ownership and
+public sharing, use X" is not supportable: four of those five axes have no eligible
+whole-axis score for any maker.
+
+**It does not rule out narrower conditional recommendations.** Nineteen records now carry an
+established, sourced, dated fact. Several are precise and directly decision-relevant — the
+post-recapitalisation ownership split at OpenAI, the removal of the capped-profit mechanism,
+Anthropic's backer concentration, Midjourney's creator-consent litigation, xAI's Clean Air
+Act suit, Meta's closed-weight pivot. A recommendation conditioned on *one* of those, scoped
+to what the fact actually covers and dated, is a different and much smaller claim than a
+whole-axis ordering — and the facts to support that class of claim exist today.
+
+The gap is between **facts we can stand behind** and **axis scores we can stand behind**.
+Closing it is a research problem, and the research below is the prerequisite:
 
 1. **40 assessments cite no source at all.** Every culture score outside the frontier labs,
    most public-sharing scores, Microsoft's 4/4 on ownership dispersion.
@@ -181,13 +278,35 @@ priority is unchanged:
 5. **69 of 89 funder→maker edges record no stake type**, so most relationship chips read
    "stake type not recorded".
 
-**Two judgements in this change are mine and should be reviewed:**
+## Editorial decisions still unresolved
 
-- The 14 `direct` / 6 `partial` classifications in `scripts/build-evidence.mjs`. Each
-  carries its reasoning; several are arguable, particularly xAI's culture score (one
-  documented environmental case carrying a 0/4) and Google DeepMind's transparency score
-  (FMTI band, with an unsourced model-card clause attached).
-- Treating an empty list as `unknown` while treating an authored `false` as
-  `documented_absent`. The dataset never recorded a scope for either, so the boolean is
-  given more weight than it may deserve. A scope statement in the source data would settle
-  it properly.
+Five, and none of them needs code.
+
+1. **Transcribe four FMTI scores.** Anthropic, OpenAI, Google DeepMind and DeepSeek cite
+   FMTI 2025 but record only a qualitative position. The rule maps a number to a band; the
+   number is in a source already cited. Transcribing it takes eligible transparency scores
+   from 4 to 8 — the single highest-value action available.
+
+2. **Decide whether §3 is a rule.** The rubric says image and voice makers "carry the
+   creator-consent sub-indicator most heavily (active litigation is the signal)". If that is
+   meant as an aggregation rule it should say so, and Midjourney's labour score becomes
+   eligible. If it is guidance, it should stay guidance. This is the closest call in the set.
+
+3. **Canva's public-sharing 4/4.** §5's own rule weights binding structures far above
+   pledges, and an equity pledge is the softer category. The score looks high against the
+   rubric independently of the aggregation question.
+
+4. **Whether to write aggregation rules at all.** Four axes have none. Writing them would
+   make scores eligible — which is exactly why it should be a deliberate methodological
+   decision taken on its merits, not a fix applied to raise a coverage number. It was
+   deliberately not done here.
+
+5. **Whether any absence evidence exists to record.** The tri-state model is built and
+   tested; the table is empty because nothing in the dataset meets the bar. If a company's
+   filings or a third-party review can establish, say, "no state-linked holder as of
+   2026-03, scope: disclosed holders above 1%", that is one entry and the attribute becomes
+   a real finding.
+
+The two judgement calls flagged in the previous pass are resolved: absence no longer rests
+on an authored boolean, and the claim-support classification is now split in two with the
+rubric-rule question answered explicitly per record.

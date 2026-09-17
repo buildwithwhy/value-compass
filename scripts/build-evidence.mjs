@@ -98,78 +98,307 @@ const CONTEXTUAL = [
 ]
 
 // ---------------------------------------------------------------------------
-// Claim support — hand-reviewed, one line per sourced assessment.
+// Claim review — two separate questions, deliberately not collapsed.
 //
-// Having a source about the maker is not the same as having a source for the
-// CLAIM. This table records whether the cited material actually covers the
-// thing the score rests on. Only `direct` is allowed to drive a decision.
+//   claim_support       Does the cited material directly establish a narrow
+//                       FACT about this maker?
+//   justifies_whole     Does that fact, under a scoring rule that actually
+//                       exists in the rubric, justify the whole 0–4 axis score?
 //
-// Source COUNT is deliberately irrelevant here: one authoritative source can
-// carry a narrow factual claim (Anthropic's cap-table percentages), while four
-// sources that each cover one clause of a five-clause rationale cannot.
+// A source can settle a narrow fact without licensing a broad score. Those
+// facts are preserved and displayed either way — they are the material a
+// narrower, conditional recommendation could later rest on.
+//
+// Only ONE axis carries an explicit whole-axis rule. rubric.md §1:
+//   "External anchor — Stanford FMTI 2025 (use directly where it exists) …
+//    Map FMTI/100 → 0–4"
+// with the bands recorded in makers.json _meta.key_anchors.transparency
+// (0=<=12, 1=13-29, 2=30-49, 3=50-74, 4=>=75).
+//
+// No other axis has an aggregation rule. Culture/ESG, labour, wealth
+// dispersion and public sharing each list four or five sub-indicators and say
+// nothing about how one combines into a score. Evidence for one sub-indicator
+// therefore cannot settle the axis, and we do not invent a rule to let it.
+//
+// provenance is 'automated_provisional' throughout: these classifications were
+// produced by reading the recorded rationale against the rubric, not by a human
+// re-reading the sources. Nothing here is labelled human-reviewed.
 // ---------------------------------------------------------------------------
 
-const CLAIM_SUPPORT = {
-  // --- direct: the cited material covers what the score rests on -----------
-  'Anthropic/transparency': ['direct', 'Score is the FMTI 2025 band; FMTI scored Anthropic.'],
-  'Anthropic/wealth_dispersion': [
-    'direct',
-    'Narrow factual claim (Amazon and Google stake sizes) carried by the cited report.',
-  ],
-  'OpenAI/transparency': ['direct', 'Score is the FMTI 2025 band; FMTI scored OpenAI.'],
-  'OpenAI/wealth_dispersion': [
-    'direct',
-    'Post-recapitalisation ownership split, covered by the cited reporting and OpenAI’s own structure page.',
-  ],
-  'OpenAI/public_sharing': [
-    'direct',
-    'The capped-profit removal and the Foundation stake are the subject of both cited sources.',
-  ],
-  'Google DeepMind/transparency': ['direct', 'Score is the FMTI 2025 band; FMTI scored DeepMind.'],
-  'xAI/transparency': ['direct', 'Score is the FMTI 2025 score (14/100) for xAI.'],
-  'xAI/culture_esg': [
-    'direct',
-    'The Memphis turbine siting and the Clean Air Act suit are the subject of both cited sources.',
-  ],
-  'Meta/transparency': ['direct', 'Score is the FMTI 2025 movement (60→31) for Meta.'],
-  'Mistral/transparency': ['direct', 'Score is the FMTI 2025 score (18/100) for Mistral.'],
-  'DeepSeek/transparency': ['direct', 'Score is the FMTI 2025 band; FMTI scored DeepSeek.'],
-  'Midjourney/transparency': ['direct', 'Score is the FMTI 2025 score (14/100) for Midjourney.'],
-  'Midjourney/labour_integrity': [
-    'direct',
-    'Score rests on the creator-consent litigation, which is the subject of both cited sources.',
-  ],
-  'Canva/public_sharing': [
-    'direct',
-    'Score rests on the founders’ equity pledge, which is the subject of the cited source.',
-  ],
+const NO_RULE =
+  'None. The rubric lists sub-indicators for this axis but states no rule for combining them into a 0–4 score.'
+const FMTI_RULE =
+  'rubric.md §1 — "External anchor: Stanford FMTI 2025 (use directly where it exists) … Map FMTI/100 → 0–4", with bands in makers.json _meta.key_anchors.transparency.'
+const FMTI_DATE = 'December 2025 (FMTI 2025 edition)'
+const NOT_STATED = 'not stated in record'
 
-  // --- partial: the source covers part of a multi-part rationale -----------
-  // Preserved and displayed, excluded from decisions.
-  'Anthropic/culture_esg': [
-    'partial',
-    'FMTI supports the environmental-disclosure clause. It does not measure culture or governance quality, which is what most of the score rests on.',
-  ],
-  'OpenAI/culture_esg': [
-    'partial',
-    'The cited reporting covers the for-profit conversion. The 2023 board crisis, the safety-team departures and the environmental clause are unsourced here.',
-  ],
-  'Meta/culture_esg': [
-    'partial',
-    'The cited article covers the LeCun departure. The benchmark-integrity allegations, founder voting control and sustainability reporting are unsourced here.',
-  ],
-  'Meta/public_sharing': [
-    'partial',
-    'The cited source covers the Muse Spark pivot. The open-weight Llama releases and the absence of a profit-sharing commitment are unsourced here.',
-  ],
-  'Canva/culture_esg': [
-    'partial',
-    'The cited source covers Pledge 1%. The workplace-reputation and emissions clauses are unsourced here.',
-  ],
-  'Canva/wealth_dispersion': [
-    'partial',
-    'The cited source is the equity pledge, not the cap table. It does not speak to employee ownership breadth or investor concentration.',
-  ],
+const R = (o) => ({ provenance: 'automated_provisional', ...o })
+
+const CLAIM_REVIEW = {
+  // ---- Transparency: the one axis with a whole-axis rule -----------------
+  // Justified where the FMTI value the rule consumes is actually transcribed.
+  'xAI/transparency': R({
+    claim_support: 'establishes_fact',
+    supported_fact: 'xAI scored 14/100 in FMTI 2025, tied lowest of the firms scored.',
+    source_date: FMTI_DATE,
+    unsupported_clauses: [],
+    scoring_rule: FMTI_RULE,
+    justifies_whole: true,
+    justification_note: 'Recorded value 14 falls in band 13–29 → 1. Recorded score is 1.',
+  }),
+  'Midjourney/transparency': R({
+    claim_support: 'establishes_fact',
+    supported_fact: 'Midjourney scored 14/100 in FMTI 2025, tied lowest of the firms scored.',
+    source_date: FMTI_DATE,
+    unsupported_clauses: ['"no model or data disclosure" — a broader claim than the index value'],
+    scoring_rule: FMTI_RULE,
+    justifies_whole: true,
+    justification_note: 'Recorded value 14 falls in band 13–29 → 1. Recorded score is 1.',
+  }),
+  'Mistral/transparency': R({
+    claim_support: 'establishes_fact',
+    supported_fact: 'Mistral scored 18/100 in FMTI 2025, down more than two-thirds.',
+    source_date: FMTI_DATE,
+    unsupported_clauses: [],
+    scoring_rule: FMTI_RULE,
+    justifies_whole: true,
+    justification_note: 'Recorded value 18 falls in band 13–29 → 1. Recorded score is 1.',
+  }),
+  'Meta/transparency': R({
+    claim_support: 'establishes_fact',
+    supported_fact: 'Meta’s FMTI score fell from 60 to 31 between the 2024 and 2025 editions.',
+    source_date: FMTI_DATE,
+    unsupported_clauses: [
+      '"released no technical report for Llama 4"',
+      '"now also shipping the closed-weight Muse Spark"',
+    ],
+    scoring_rule: FMTI_RULE,
+    justifies_whole: true,
+    justification_note: 'Recorded value 31 falls in band 30–49 → 2. Recorded score is 2.',
+  }),
+
+  // Same rule, but the value it consumes is not transcribed — only a
+  // qualitative position. Mapping "middle group" to a band is a judgement the
+  // rule does not make, so the score is unresolved until the number is recorded.
+  'Anthropic/transparency': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      'Anthropic was the highest-scoring frontier lab in FMTI 2025, rising to 2nd of the six longitudinal firms.',
+    source_date: FMTI_DATE,
+    unsupported_clauses: ['"opaque on data/compute/environment" — not carried by the index position'],
+    scoring_rule: FMTI_RULE,
+    justifies_whole: false,
+    justification_note:
+      'The rule maps a numeric FMTI score to a band. Our record states a rank, not the score, so the mapping cannot be checked. Transcribing the number from the cited source would resolve this.',
+  }),
+  'OpenAI/transparency': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      'OpenAI placed in the FMTI 2025 middle group, down roughly 14 points year on year.',
+    source_date: FMTI_DATE,
+    unsupported_clauses: ['"limited o3 disclosure"'],
+    scoring_rule: FMTI_RULE,
+    justifies_whole: false,
+    justification_note:
+      'A movement of ~14 points is recorded but not the resulting score, so the band mapping cannot be checked.',
+  }),
+  'Google DeepMind/transparency': R({
+    claim_support: 'establishes_fact',
+    supported_fact: 'Google DeepMind placed in the FMTI 2025 middle group.',
+    source_date: FMTI_DATE,
+    unsupported_clauses: ['"criticized for delayed Gemini model cards/technical reports"'],
+    scoring_rule: FMTI_RULE,
+    justifies_whole: false,
+    justification_note: '"Middle group" is not a value the band mapping accepts.',
+  }),
+  'DeepSeek/transparency': R({
+    claim_support: 'establishes_fact',
+    supported_fact: 'DeepSeek was scored in FMTI 2025 for the first time and placed in the middle group.',
+    source_date: FMTI_DATE,
+    unsupported_clauses: ['"opaque on data and training"'],
+    scoring_rule: FMTI_RULE,
+    justifies_whole: false,
+    justification_note: '"Middle group" is not a value the band mapping accepts.',
+  }),
+
+  // ---- Axes with no aggregation rule -------------------------------------
+  // Narrow facts established and preserved; whole-axis scores unresolved.
+  'xAI/culture_esg': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      'xAI operated unpermitted gas turbines at its Memphis site and was sued under the Clean Air Act by the NAACP, SELC and Earthjustice.',
+    source_date: NOT_STATED,
+    unsupported_clauses: [
+      'Sub-indicator 1 — employee treatment and retention: no evidence on record',
+      'Sub-indicator 3 — governance quality: no evidence on record',
+      'Sub-indicator 4 — mission integrity: no evidence on record',
+    ],
+    scoring_rule: NO_RULE,
+    justifies_whole: false,
+    justification_note:
+      'The finding is serious, documented and sourced, and it sits squarely in sub-indicator 2 (environmental footprint and disclosure). The rubric lists four sub-indicators for this axis and gives no rule permitting one of them to set the axis score, so a 0/4 — "worst-in-class" across all four — is not licensed by this evidence. The narrow finding stands; the whole-axis score is unresolved. No replacement score is proposed.',
+  }),
+  'Anthropic/wealth_dispersion': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      'Amazon holds roughly 15–19% and Google roughly 14% of Anthropic’s economics.',
+    source_date: '2026-06-04 (from the cited URL path)',
+    unsupported_clauses: [
+      'Sub-indicator 1 — founder/insider voting control',
+      'Sub-indicator 3 — employee equity breadth',
+      'Sub-indicator 4 — pay dispersion',
+    ],
+    scoring_rule: NO_RULE,
+    justifies_whole: false,
+    justification_note:
+      'Backer concentration (sub-indicator 2) is directly evidenced. Three of four sub-indicators are not, and no rule combines them.',
+  }),
+  'OpenAI/wealth_dispersion': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      'After the October 2025 recapitalisation the OpenAI Foundation holds ~26% and controls the board, Microsoft ~27%, and ~47% sits with employees and investors.',
+    source_date: '2025-10-28 (from the cited URL path)',
+    unsupported_clauses: [
+      'Sub-indicator 3 — employee equity breadth',
+      'Sub-indicator 4 — pay dispersion',
+    ],
+    scoring_rule: NO_RULE,
+    justifies_whole: false,
+    justification_note:
+      'The strongest non-FMTI case in the set: sub-indicators 1 and 2 are both directly evidenced by a primary source and contemporaneous reporting. Two sub-indicators remain unevidenced and no rule combines them, so the score is unresolved rather than justified.',
+  }),
+  'OpenAI/public_sharing': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      'OpenAI removed the capped-profit mechanism in the October 2025 restructuring; the nonprofit Foundation retains ~26% and board control.',
+    source_date: '2025-10-28 (from the cited URL path)',
+    unsupported_clauses: [
+      'Sub-indicator 3 — affordable / free access',
+      'Sub-indicator 4 — public-interest outputs',
+    ],
+    scoring_rule:
+      'rubric.md §5 states a weighting instruction ("weight legally binding structures far above PR pledges") but no rule producing a 0–4 from it.',
+    justifies_whole: false,
+    justification_note:
+      'Structural commitments (sub-indicator 1) are directly evidenced. The weighting instruction ranks kinds of evidence; it does not map them to a score.',
+  }),
+  'Midjourney/labour_integrity': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      'Midjourney was sued by Disney and Universal in June 2025, and by an artists’ class action in 2023, over training on creators’ work without compensation.',
+    source_date: '2025-06-11 (from the cited URL paths)',
+    unsupported_clauses: [
+      'Sub-indicator 1 — data-worker wages and conditions',
+      'Sub-indicator 2 — content-moderation mental-health support',
+      'Sub-indicator 3 — supply-chain visibility',
+    ],
+    scoring_rule:
+      'rubric.md §3 caveat: "Image/music/voice makers carry the creator-consent sub-indicator most heavily (active litigation is the signal)." A weighting statement, not an aggregation rule.',
+    justifies_whole: false,
+    justification_note:
+      'The closest call outside transparency. The rubric does say this sub-indicator weighs most heavily for image makers and names litigation as the signal — but "most heavily" is not "determines the axis", and three sub-indicators have no evidence. Worth a human decision on whether §3 should be tightened into a rule.',
+  }),
+  'Canva/public_sharing': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      'Canva’s founders pledged roughly 30% of their equity to charity through Pledge 1%.',
+    source_date: NOT_STATED,
+    unsupported_clauses: [
+      '"free education/nonprofit tiers" — not covered by the cited source',
+      'Sub-indicator 1 — structural commitments',
+      'Sub-indicator 4 — public-interest outputs',
+    ],
+    scoring_rule: NO_RULE,
+    justifies_whole: false,
+    justification_note:
+      'A further tension to resolve editorially: §5 defines 4 as "binding structures … + broad affordable or free access", and its own rule weights binding structures far above pledges. An equity pledge is the softer category, so the recorded 4 looks high against the rubric even setting the aggregation question aside.',
+  }),
+
+  // ---- Partial claim support ---------------------------------------------
+  // The source covers one clause of a multi-clause rationale. Where a narrow
+  // fact is nonetheless established, it is preserved.
+  'Anthropic/culture_esg': R({
+    claim_support: 'partial',
+    supported_fact:
+      'FMTI 2025 records no environmental disclosure from Anthropic, in line with its peers.',
+    source_date: FMTI_DATE,
+    unsupported_clauses: [
+      '"strong mission-aligned culture"',
+      '"unusually robust governance (PBC + Long-Term Benefit Trust)"',
+    ],
+    scoring_rule: NO_RULE,
+    justifies_whole: false,
+    justification_note:
+      'FMTI measures disclosure, not culture or governance quality, which is what most of a 3/4 rests on.',
+  }),
+  'OpenAI/culture_esg': R({
+    claim_support: 'partial',
+    supported_fact:
+      'OpenAI completed its contested for-profit restructuring in October 2025.',
+    source_date: '2025-10-28 (from the cited URL path)',
+    unsupported_clauses: [
+      '"2023 board crisis"',
+      '"safety-team departures"',
+      '"environmental non-disclosure"',
+    ],
+    scoring_rule: NO_RULE,
+    justifies_whole: false,
+    justification_note: 'One clause of four is sourced.',
+  }),
+  'Meta/culture_esg': R({
+    claim_support: 'partial',
+    supported_fact: 'Yann LeCun departed Meta’s AI organisation in 2025.',
+    source_date: NOT_STATED,
+    unsupported_clauses: [
+      '"Llama 4 benchmark-integrity allegations"',
+      '"$100M poaching"',
+      '"founder voting control"',
+      '"corporate sustainability reporting exists"',
+    ],
+    scoring_rule: NO_RULE,
+    justifies_whole: false,
+    justification_note: 'One clause of five is sourced.',
+  }),
+  'Meta/public_sharing': R({
+    claim_support: 'partial',
+    supported_fact:
+      'Meta released Muse Spark, a closed-weight frontier model, in April 2026.',
+    source_date: '2026-04-08 (from the cited URL path)',
+    unsupported_clauses: [
+      '"still releases Llama as open weights"',
+      '"no profit-sharing commitment"',
+    ],
+    scoring_rule: NO_RULE,
+    justifies_whole: false,
+    justification_note:
+      'The pivot is sourced; the open-weight releases the score balances it against are not.',
+  }),
+  'Canva/culture_esg': R({
+    claim_support: 'partial',
+    supported_fact: 'Canva participates in Pledge 1%.',
+    source_date: NOT_STATED,
+    unsupported_clauses: [
+      '"strong workplace and social reputation"',
+      '"comparatively light emitter"',
+    ],
+    scoring_rule: NO_RULE,
+    justifies_whole: false,
+    justification_note: 'The pledge is sourced; the workplace and emissions clauses are not.',
+  }),
+  'Canva/wealth_dispersion': R({
+    claim_support: 'none',
+    supported_fact: null,
+    source_date: NOT_STATED,
+    unsupported_clauses: [
+      '"founder stakes significant"',
+      '"broad employee ownership"',
+      '"a wide investor base"',
+    ],
+    scoring_rule: NO_RULE,
+    justifies_whole: false,
+    justification_note:
+      'The cited source is the equity pledge page. It speaks to neither the cap table nor employee ownership, so it establishes no fact on this axis.',
+  }),
 }
 
 // Hand-checked exceptions: the cited source is about this maker, but not about
@@ -240,13 +469,35 @@ function classifyAxis(maker, axisKey, axis) {
   // Confidence is NOT part of the gate. An A/B flag records how sure the
   // author felt; it is not evidence, and on its own it cannot qualify a score
   // to move another company up or down.
-  const [claimSupport, supportNote] =
-    CLAIM_SUPPORT[`${maker.id}/${axisKey}`] ??
+  const review =
+    CLAIM_REVIEW[`${maker.id}/${axisKey}`] ??
     (basis === 'sourced'
-      ? ['unreviewed', 'Cited a source about this maker, but the fit between source and claim has not been reviewed.']
-      : ['none', 'No source about this maker to review.'])
+      ? {
+          claim_support: 'unreviewed',
+          supported_fact: null,
+          source_date: NOT_STATED,
+          unsupported_clauses: [],
+          scoring_rule: NO_RULE,
+          justifies_whole: false,
+          justification_note:
+            'A source about this maker is cited, but the fit between source and claim has not been reviewed.',
+          provenance: 'automated_provisional',
+        }
+      : {
+          claim_support: 'none',
+          supported_fact: null,
+          source_date: NOT_STATED,
+          unsupported_clauses: [],
+          scoring_rule: NO_RULE,
+          justifies_whole: false,
+          justification_note: 'No source about this maker to review.',
+          provenance: 'automated_provisional',
+        })
 
-  const decisionEligible = basis === 'sourced' && claimSupport === 'direct'
+  // Two conditions, kept separate on purpose. A source can settle a narrow
+  // fact (claim_support) without licensing a 0–4 axis score (justifies_whole).
+  const decisionEligible =
+    basis === 'sourced' && review.claim_support === 'establishes_fact' && review.justifies_whole
 
   return {
     maker: maker.id,
@@ -256,8 +507,14 @@ function classifyAxis(maker, axisKey, axis) {
     basis,
     rule,
     withheld,
-    claim_support: claimSupport,
-    support_note: supportNote,
+    claim_support: review.claim_support,
+    supported_fact: review.supported_fact,
+    source_date: review.source_date,
+    unsupported_clauses: review.unsupported_clauses,
+    scoring_rule: review.scoring_rule,
+    justifies_whole: review.justifies_whole,
+    justification_note: review.justification_note,
+    provenance: review.provenance,
     decision_eligible: decisionEligible,
     entity_sources: entity,
     background_sources: background,
@@ -277,7 +534,13 @@ for (const m of makers) {
       rule: e.rule,
       withheld: e.withheld,
       claim_support: e.claim_support,
-      support_note: e.support_note,
+      supported_fact: e.supported_fact,
+      source_date: e.source_date,
+      unsupported_clauses: e.unsupported_clauses,
+      scoring_rule: e.scoring_rule,
+      justifies_whole: e.justifies_whole,
+      justification_note: e.justification_note,
+      provenance: e.provenance,
       decision_eligible: e.decision_eligible,
       entity_sources: e.entity_sources,
       background_sources: e.background_sources,
@@ -300,6 +563,60 @@ for (const f of fundersFile.funders) {
     associations_status: sourced ? 'partially_sourced' : 'unverified',
     source_count: (f.reputation_sources ?? []).length,
     claim_count: notable.length,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 3b. Absence evidence.
+//
+// An authored `false` in capital_profile is a value someone typed. It is not
+// evidence that the attribute is absent, and a scope sentence written by us is
+// not evidence either — it describes the claim, it does not support it.
+//
+// To record a documented absence, an entry needs all three:
+//
+//   source        something that examined the question and reported nothing
+//   scope         what was actually covered (which entities, which filings)
+//   as_of         the date that coverage runs to — an absence is always
+//                 "as of" a date; it decays
+//
+// plus `attribution`, because these are different claims:
+//   'self_report'  the company says it has no such holder
+//   'independent'  a third party checked and found none
+//
+// This table is EMPTY. The dataset contains no absence evidence meeting the
+// bar, and none is invented to fill it. Every authored `false` therefore
+// resolves to unknown for decision purposes, with the recorded value preserved
+// and shown for review. Adding a real entry here is a one-line editorial act.
+//
+//   'xAI/founder_control': {
+//     source: 'https://…', scope: '…', as_of: 'YYYY-MM-DD',
+//     attribution: 'independent', note: '…',
+//   },
+// ---------------------------------------------------------------------------
+
+const ABSENCE_EVIDENCE = {}
+
+const ABSENCE_ATTRIBUTES = [
+  'founder_control',
+  'competitor_entanglement',
+  'index_held',
+  'sovereign_state',
+  'big_tech_capital',
+  'circular_vendor',
+]
+
+const absenceEvidence = {}
+for (const m of makers) {
+  for (const attr of ABSENCE_ATTRIBUTES) {
+    const entry = ABSENCE_EVIDENCE[`${m.id}/${attr}`]
+    if (!entry) continue
+    if (!entry.source || !entry.scope || !entry.as_of || !entry.attribution) {
+      throw new Error(
+        `absence evidence for ${m.id}/${attr} is missing source, scope, as_of or attribution`,
+      )
+    }
+    absenceEvidence[`${m.id}/${attr}`] = entry
   }
 }
 
@@ -486,9 +803,13 @@ const summary = {
   by_basis: byBasis,
   withheld: count((r) => r.withheld),
   decision_eligible: count((r) => r.decision_eligible),
-  claim_support_direct: count((r) => r.claim_support === 'direct'),
+  establishes_fact: count((r) => r.claim_support === 'establishes_fact'),
   claim_support_partial: count((r) => r.claim_support === 'partial'),
   claim_support_unreviewed: count((r) => r.claim_support === 'unreviewed'),
+  facts_preserved_without_eligible_score: count(
+    (r) => r.supported_fact != null && !r.decision_eligible,
+  ),
+  human_reviewed: count((r) => r.provenance === 'human_reviewed'),
   no_sources_at_all: count((r) => r.entity_sources.length === 0 && r.background_sources.length === 0),
   background_only: count((r) => r.entity_sources.length === 0 && r.background_sources.length > 0),
   confidence_c: count((r) => r.confidence === 'C'),
@@ -497,6 +818,7 @@ const summary = {
     (f) => f.associations_status === 'unverified',
   ).length,
   funders_with_associations: Object.keys(funderEvidence).length,
+  absence_evidence_records: Object.keys(absenceEvidence).length,
   funder_maker_edges: edgesTotal,
   edges_with_transcribed_detail: Object.keys(relationshipIndex).length,
 }
@@ -518,11 +840,15 @@ const out = {
       not_established: 'Our research has not established a finding for this maker on this axis.',
     },
     claim_support: {
-      direct: 'The cited material covers what the score rests on.',
-      partial: 'The cited material covers part of a multi-part rationale. Preserved and displayed; excluded from decisions.',
+      establishes_fact: 'The cited material directly establishes a narrow fact about this maker. The fact is preserved and displayed whether or not the axis score is eligible.',
+      partial: 'The cited material covers part of a multi-part rationale. Any narrow fact it does establish is preserved.',
       unreviewed: 'A source about this maker is cited, but the fit between source and claim has not been reviewed.',
       none: 'No source about this maker to review.',
     },
+    score_justification_rule:
+      'A narrow fact justifies a whole 0–4 axis score only under a scoring rule that exists in the rubric. Transparency has one (the FMTI anchor and its band mapping). No other axis does: each lists sub-indicators and states no rule for combining them, so evidence for one sub-indicator cannot settle the axis. We do not write a rule after the fact to keep a score eligible.',
+    provenance_note:
+      'Every classification here is automated_provisional: produced by reading the recorded rationale against the rubric, not by a human re-reading the sources. None is marked human-reviewed.',
     summary,
   },
   relationship_types: {
@@ -541,6 +867,16 @@ const out = {
     contingent: 'Part or all of it depends on a future event.',
     unspecified: 'The record does not say.',
   },
+  absence_evidence_requirements: {
+    what_counts:
+      'A documented absence needs a source that examined the question, an explicit scope, and a date the coverage runs to. An authored false value is not evidence, and a scope sentence written by us describes a claim rather than supporting it.',
+    attribution: {
+      self_report: 'The company states there is no such holder.',
+      independent: 'A third party checked and found none.',
+    },
+    current_count: Object.keys(absenceEvidence).length,
+  },
+  absence_evidence: absenceEvidence,
   background_sources: BACKGROUND,
   axis_evidence: axisEvidence,
   funder_association_status: funderEvidence,
@@ -548,6 +884,53 @@ const out = {
 }
 
 writeFileSync(join(root, 'src/data/evidence.json'), JSON.stringify(out, null, 2) + '\n')
+
+// ---------------------------------------------------------------------------
+// 6. Emit the claim-review table as markdown, so the report cannot drift from
+//    the classifications the app actually uses.
+// ---------------------------------------------------------------------------
+
+const esc = (v) => String(v ?? '—').replace(/\|/g, '\\|').replace(/\n/g, ' ')
+const reviewed = rows
+  .filter((r) => r.claim_support === 'establishes_fact' || r.claim_support === 'partial')
+  .sort((a, b) =>
+    Number(b.decision_eligible) - Number(a.decision_eligible) ||
+    a.maker.localeCompare(b.maker) ||
+    a.axis.localeCompare(b.axis),
+  )
+
+const md = [
+  '# Claim review',
+  '',
+  '<!-- Generated by scripts/build-evidence.mjs. Do not edit by hand. -->',
+  '',
+  'Two questions, kept apart. **Claim support** asks whether the cited material',
+  'directly establishes a narrow fact. **Justifies whole score** asks whether that',
+  'fact licenses the 0–4 axis score under a scoring rule that exists in the rubric.',
+  'A record can pass the first and fail the second; the fact is preserved either way.',
+  '',
+  `**Provenance: every row is automated and provisional** — produced by reading the recorded rationale against the rubric, not by a human re-reading the sources. ${summary.human_reviewed} rows are human-reviewed.`,
+  '',
+  `${summary.decision_eligible} of ${summary.axis_records} assessments are decision-eligible. ${summary.facts_preserved_without_eligible_score} establish a fact that is preserved while the surrounding score is not.`,
+  '',
+  '| Maker / axis | Score | Fact the source establishes | Source date | Clauses not carried | Applicable rule | Justifies whole score? | Provenance |',
+  '|---|---|---|---|---|---|---|---|',
+  ...reviewed.map((r) =>
+    [
+      `**${r.maker}** / ${r.axis}`,
+      `${r.recorded_score}/4 (${r.confidence})`,
+      esc(r.supported_fact),
+      esc(r.source_date),
+      r.unsupported_clauses.length ? esc(r.unsupported_clauses.join('; ')) : '—',
+      esc(r.scoring_rule),
+      r.justifies_whole ? '**yes**' : `no — ${esc(r.justification_note)}`,
+      r.provenance === 'human_reviewed' ? 'human-reviewed' : 'automated, provisional',
+    ].join(' | '),
+  ).map((line) => `| ${line} |`),
+  '',
+].join('\n')
+
+writeFileSync(join(root, 'docs/CLAIM_REVIEW.md'), md)
 
 console.log('summary', summary)
 console.log('\n--- withheld (no finding established) ---')
@@ -559,9 +942,9 @@ for (const r of rows.filter((r) => r.basis === 'contextual'))
 console.log('\n--- decision-eligible (the only records allowed to move an ordering) ---')
 for (const r of rows.filter((r) => r.decision_eligible))
   console.log(`  ${r.maker.padEnd(16)} ${r.axis.padEnd(18)} ${r.recorded_score}/${r.confidence}`)
-console.log('\n--- sourced but claim support only partial (preserved, not decisive) ---')
-for (const r of rows.filter((r) => r.claim_support === 'partial'))
-  console.log(`  ${r.maker.padEnd(16)} ${r.axis.padEnd(18)} ${r.recorded_score}/${r.confidence}`)
+console.log('\n--- narrow fact established, whole-axis score NOT justified ---')
+for (const r of rows.filter((r) => r.supported_fact && !r.decision_eligible))
+  console.log(`  ${r.maker.padEnd(16)} ${r.axis.padEnd(18)} ${r.recorded_score}/${r.confidence}  ${r.supported_fact.slice(0, 70)}…`)
 console.log('\n--- unsourced ---')
 for (const r of rows.filter((r) => r.basis === 'unsourced'))
   console.log(`  ${r.maker.padEnd(16)} ${r.axis.padEnd(18)} recorded ${r.recorded_score}/${r.confidence}`)

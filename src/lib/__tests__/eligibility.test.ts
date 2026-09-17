@@ -10,10 +10,12 @@ import {
   relationshipFor,
 } from '../evidence'
 import { EMPTY_LENS, EXAMPLE_LENS, evaluateMaker } from '../lens'
+import { absenceEvidenceFor, absenceRequirements } from '../evidence'
 import {
   EMPTY_WEIGHTS,
   EXAMPLE_WEIGHTS,
   criterionComparison,
+  evaluatePriorities,
   orderByPriorities,
   orderingIntegrity,
   prioritiesLabel,
@@ -79,15 +81,73 @@ describe('comparison markers require support for the claim', () => {
   })
 
   it('accepts a single authoritative source for a narrow claim', () => {
-    // One source, and it is enough — count is not the test, fit is.
-    expect(axisEvidenceFor('Anthropic', 'wealth_dispersion').entity_sources).toHaveLength(1)
-    expect(isDecisionEligible('Anthropic', 'wealth_dispersion')).toBe(true)
+    // One source, and it settles the fact — count is not the test.
+    const ev = axisEvidenceFor('Anthropic', 'wealth_dispersion')
+    expect(ev.entity_sources).toHaveLength(1)
+    expect(ev.claim_support).toBe('establishes_fact')
+    expect(ev.supported_fact).toBeTruthy()
   })
 
   it('rejects a sourced assessment whose source covers only part of the claim', () => {
     expect(axisEvidenceFor('Meta', 'culture_esg').basis).toBe('sourced')
     expect(axisEvidenceFor('Meta', 'culture_esg').claim_support).toBe('partial')
     expect(isDecisionEligible('Meta', 'culture_esg')).toBe(false)
+  })
+
+  it('separates establishing a fact from justifying a whole-axis score', () => {
+    // Anthropic's ownership stakes are established; the 1/4 across four
+    // sub-indicators is not, and no rule in the rubric combines them.
+    const ev = axisEvidenceFor('Anthropic', 'wealth_dispersion')
+    expect(ev.claim_support).toBe('establishes_fact')
+    expect(ev.justifies_whole).toBe(false)
+    expect(ev.decision_eligible).toBe(false)
+    expect(ev.scoring_rule).toMatch(/no rule|None\./i)
+  })
+
+  it('preserves the supported fact wherever the score is ineligible', () => {
+    const preserved = makers.flatMap((m) =>
+      (Object.keys(m.axes) as AxisKey[])
+        .map((axis) => axisEvidenceFor(m.id, axis))
+        .filter((ev) => ev.supported_fact && !ev.decision_eligible),
+    )
+    expect(preserved.length).toBeGreaterThan(0)
+    for (const ev of preserved) {
+      expect(ev.supported_fact).toBeTruthy()
+      expect(ev.justification_note).toBeTruthy()
+    }
+  })
+
+  it('only justifies a whole score under a rule that exists in the rubric', () => {
+    for (const m of makers) {
+      for (const axis of Object.keys(m.axes) as AxisKey[]) {
+        const ev = axisEvidenceFor(m.id, axis)
+        if (!ev.justifies_whole) continue
+        // The FMTI anchor is the only whole-axis rule in the rubric.
+        expect(axis).toBe('transparency')
+        expect(ev.scoring_rule).toMatch(/FMTI/)
+      }
+    }
+  })
+
+  it('leaves xAI culture/ESG unresolved: no rule lets one sub-indicator set the axis', () => {
+    const ev = axisEvidenceFor('xAI', 'culture_esg')
+    // The environmental finding is real, sourced and kept.
+    expect(ev.claim_support).toBe('establishes_fact')
+    expect(ev.supported_fact).toMatch(/Clean Air Act/)
+    // The 0/4 across four sub-indicators is not licensed by it.
+    expect(ev.justifies_whole).toBe(false)
+    expect(ev.decision_eligible).toBe(false)
+    expect(ev.scoring_rule).toMatch(/states no rule for combining/i)
+    // And the recorded score is untouched — no replacement invented.
+    expect(displayScore(maker('xAI'), 'culture_esg').recorded).toBe(0)
+  })
+
+  it('never labels an automated classification as human-reviewed', () => {
+    for (const m of makers) {
+      for (const axis of Object.keys(m.axes) as AxisKey[]) {
+        expect(axisEvidenceFor(m.id, axis).provenance).toBe('automated_provisional')
+      }
+    }
   })
 
   it('keeps background reading and contextual inference out of eligibility', () => {
@@ -123,11 +183,44 @@ describe('capital attributes are tri-state', () => {
     expect(r.absent.map((f) => f.key)).not.toContain('sovereign')
   })
 
-  it('counts an explicit false as documented absent, with a stated scope', () => {
+  it('does not accept an authored false as a documented absence', () => {
+    // Anthropic records index_held: false. That is a typed value, not a finding.
     const r = evaluateMaker(maker('Anthropic'), { ...EMPTY_LENS, index_concentration: true })
     const idx = r.findings.find((f) => f.key === 'index_concentration')
-    expect(idx?.state).toBe('documented_absent')
-    expect(idx?.scope).toBeTruthy()
+    expect(idx?.state).toBe('unknown')
+    expect(idx?.recordedValue).toBe('no')
+    expect(idx?.unknownBecause).toMatch(/not evidence of absence/i)
+    expect(r.absent).toHaveLength(0)
+  })
+
+  it('accepts a documented absence only with source, scope and date', () => {
+    // The dataset holds no absence evidence meeting the bar, so nothing is
+    // currently absent-documented anywhere. None is invented to fill the gap.
+    expect(absenceRequirements.current_count).toBe(0)
+    for (const m of makers) {
+      const r = evaluateMaker(m, EXAMPLE_LENS)
+      expect(r.absent).toHaveLength(0)
+    }
+    // Every absence record that does exist must carry all four fields.
+    for (const m of makers) {
+      for (const attr of ['founder_control', 'index_held', 'competitor_entanglement']) {
+        const ev = absenceEvidenceFor(m.id, attr)
+        if (!ev) continue
+        expect(ev.source).toBeTruthy()
+        expect(ev.scope).toBeTruthy()
+        expect(ev.as_of).toBeTruthy()
+        expect(['self_report', 'independent']).toContain(ev.attribution)
+      }
+    }
+  })
+
+  it('preserves the unsupported recorded value for review', () => {
+    const r = evaluateMaker(maker('Microsoft'), { ...EMPTY_LENS, founder_autocracy: true })
+    const f = r.findings.find((f) => f.key === 'founder_autocracy')
+    expect(f?.state).toBe('unknown')
+    expect(f?.recordedValue).toBe('no')
+    // The source record itself is untouched.
+    expect(maker('Microsoft').capital_profile?.founder_control).toBe(false)
   })
 
   it('does not let a non-matching sovereign entry establish absence', () => {
@@ -175,6 +268,14 @@ describe('capital attributes are tri-state', () => {
     expect(r.coverage).toBeLessThan(1)
     expect(r.unknown.length).toBeGreaterThan(0)
   })
+
+  it('distinguishes self-report from an independently established absence', () => {
+    // Nothing qualifies yet, but the distinction is carried, not collapsed.
+    const attributions = makers
+      .flatMap((m) => evaluateMaker(m, EXAMPLE_LENS).absent)
+      .map((f) => f.attribution)
+    for (const a of attributions) expect(['self_report', 'independent']).toContain(a)
+  })
 })
 
 // ---------------------------------------------------------------------------
@@ -215,11 +316,38 @@ describe('unequal coverage is not presented as a definitive ordering', () => {
   }
 
   it('flags an ordering built on different criteria per maker', () => {
-    const { placed } = orderByPriorities(makers, withExample)
-    const integrity = orderingIntegrity(placed)
-    expect(placed.length).toBeGreaterThan(1)
-    expect(integrity.uniform).toBe(false)
-    expect(integrity.unevenAxes.length).toBeGreaterThan(0)
+    // Unit-level, so the guard is tested independently of how much evidence the
+    // dataset happens to hold on a given day.
+    const a = evaluatePriorities(maker('Midjourney'), withExample)
+    const b = evaluatePriorities(maker('Anthropic'), withExample)
+    const uneven = orderingIntegrity([
+      { maker: maker('Midjourney'), result: a },
+      {
+        maker: maker('Anthropic'),
+        result: { ...b, evidenced: [{ axis: 'public_sharing', weight: 1, score: 3, missingReason: null }] },
+      },
+    ])
+    expect(uneven.uniform).toBe(false)
+    expect(uneven.unevenAxes.length).toBeGreaterThan(0)
+  })
+
+  it('places nobody under the example priorities on the current evidence', () => {
+    // A consequence of the tightened rule, recorded so it cannot regress
+    // silently: with only the four FMTI-anchored transparency scores eligible,
+    // no maker reaches half the assigned weight across five criteria.
+    const { placed, unplaced } = orderByPriorities(makers, withExample)
+    expect(placed).toHaveLength(0)
+    expect(unplaced).toHaveLength(makers.length)
+  })
+
+  it('places the makers whose one eligible criterion is the one asked for', () => {
+    const transparencyOnly: Priorities = {
+      weights: { ...EMPTY_WEIGHTS, transparency: 2 },
+      capital: EMPTY_LENS,
+      mode: 'custom',
+    }
+    const { placed } = orderByPriorities(makers, transparencyOnly)
+    expect(placed.map((p) => p.maker.id).sort()).toEqual(['Meta', 'Midjourney', 'Mistral', 'xAI'])
   })
 
   it('reports a uniform ordering as uniform', () => {
@@ -229,6 +357,7 @@ describe('unequal coverage is not presented as a definitive ordering', () => {
       mode: 'custom',
     }
     const { placed } = orderByPriorities(makers, transparencyOnly)
+    expect(placed.length).toBeGreaterThan(1)
     expect(orderingIntegrity(placed).uniform).toBe(true)
   })
 
@@ -236,7 +365,10 @@ describe('unequal coverage is not presented as a definitive ordering', () => {
     const rows = criterionComparison([maker('Anthropic'), maker('Midjourney')], withExample)
     expect(rows.length).toBe(5)
     const transparency = rows.find((r) => r.axis === 'transparency')
-    expect(transparency?.scored.map((s) => s.maker.id).sort()).toEqual(['Anthropic', 'Midjourney'])
+    // Midjourney's FMTI value is transcribed; Anthropic's is not, so only one
+    // side is eligible — and the row still shows both, with a reason.
+    expect(transparency?.scored.map((s) => s.maker.id)).toEqual(['Midjourney'])
+    expect(transparency?.missing.map((m) => m.maker.id)).toEqual(['Anthropic'])
     const labour = rows.find((r) => r.axis === 'labour_integrity')
     expect(labour?.missing.map((m) => m.maker.id)).toContain('Anthropic')
     expect(labour?.missing[0].reason).toBeTruthy()

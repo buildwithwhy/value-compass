@@ -1,5 +1,5 @@
 import { backersFor } from './data'
-import { associationsAreUnverified, relationshipsFor } from './evidence'
+import { absenceEvidenceFor, associationsAreUnverified, relationshipsFor } from './evidence'
 import type { CapitalProfile, Funder, Maker } from './types'
 
 // ---------------------------------------------------------------------------
@@ -13,9 +13,13 @@ import type { CapitalProfile, Funder, Maker } from './types'
 // Every attribute now resolves to one of three states:
 //
 //   documented_present — the record names something
-//   documented_absent  — the record carries an explicit authored value, within
-//                        a stated scope (and the scope is always shown)
-//   unknown            — no record. Counts neither for nor against.
+//   documented_absent  — a source examined the question and found nothing, with
+//                        an explicit scope and a date that coverage runs to
+//   unknown            — no such evidence. Counts neither for nor against.
+//
+// An authored `false` does NOT reach documented_absent. It is a value someone
+// typed, and a scope sentence we wrote describes the claim rather than
+// supporting it. Those values are preserved and shown, and they decide nothing.
 //
 // Pending and historical status is preserved separately and never folded into
 // a present-tense finding.
@@ -96,8 +100,17 @@ export interface AttributeFinding {
   state: AttributeState
   /** What the record says, when it says anything. */
   detail: string | null
-  /** For documented_absent and unknown: the scope, or why we cannot claim one. */
+  /** For documented_absent: the scope the absence holds within. */
   scope: string | null
+  /** For unknown: why we cannot claim an absence here. */
+  unknownBecause?: string | null
+  /** An authored value we are not treating as a finding, preserved for review. */
+  recordedValue?: string | null
+  /** Who established the absence — the company, or a third party. */
+  attribution?: 'self_report' | 'independent'
+  /** The date the absence coverage runs to. An absence decays. */
+  asOf?: string
+  source?: string
 }
 
 export interface LensResult {
@@ -173,10 +186,11 @@ export const CONCERN_LEGEND: { label: string; meaning: string }[] = [
 const LIST_EMPTY_IS_UNKNOWN =
   'This dataset records named entries only. An empty list means we have no record — not that we checked and found none.'
 
-// An explicit boolean was authored as a value, so absence is a finding — but
-// only within the scope this dataset actually covers.
-const BOOLEAN_SCOPE =
-  'Recorded as false in this dataset’s capital profile. Scope is limited to the entities modelled here.'
+// An authored `false` is a value someone typed, not a finding. Treating it as a
+// documented absence credited makers for a field we had never checked. It is
+// preserved and shown, and it counts nowhere.
+const AUTHORED_FALSE =
+  'Recorded as “no” in this dataset, but with no source, scope or date behind it. An authored value is not evidence of absence, so this counts neither for nor against.'
 
 function finding(
   key: string,
@@ -184,8 +198,35 @@ function finding(
   state: AttributeState,
   detail: string | null,
   scope: string | null,
+  extra: Partial<AttributeFinding> = {},
 ): AttributeFinding {
-  return { key, label, state, detail, scope }
+  return { key, label, state, detail, scope, ...extra }
+}
+
+/**
+ * Resolve an authored `false`. It becomes a documented absence only where real
+ * absence evidence exists — a source, an explicit scope and a date it runs to.
+ * Otherwise it is unknown, with the recorded value kept for review.
+ */
+function resolveAuthoredFalse(
+  makerId: string,
+  attribute: string,
+  key: string,
+  label: string,
+): AttributeFinding {
+  const ev = absenceEvidenceFor(makerId, attribute)
+  if (!ev) {
+    return finding(key, label, 'unknown', null, null, {
+      unknownBecause: AUTHORED_FALSE,
+      recordedValue: 'no',
+    })
+  }
+  return finding(key, label, 'documented_absent', null, ev.scope, {
+    attribution: ev.attribution,
+    asOf: ev.as_of,
+    source: ev.source,
+    recordedValue: 'no',
+  })
 }
 
 /**
@@ -201,7 +242,9 @@ export function evaluateMaker(maker: Maker, lens: LensConfig): LensResult {
   if (lens.founder_autocracy) {
     if (!cp) {
       findings.push(
-        finding('founder_autocracy', 'Founder control', 'unknown', null, 'No capital profile on record.'),
+        finding('founder_autocracy', 'Founder control', 'unknown', null, null, {
+          unknownBecause: 'No capital profile on record.',
+        }),
       )
     } else if (cp.founder_control) {
       findings.push(
@@ -215,7 +258,7 @@ export function evaluateMaker(maker: Maker, lens: LensConfig): LensResult {
       )
     } else {
       findings.push(
-        finding('founder_autocracy', 'Founder control', 'documented_absent', null, BOOLEAN_SCOPE),
+        resolveAuthoredFalse(maker.id, 'founder_control', 'founder_autocracy', 'Founder control'),
       )
     }
   }
@@ -238,7 +281,9 @@ export function evaluateMaker(maker: Maker, lens: LensConfig): LensResult {
             matched.join('; '),
             null,
           )
-        : finding('sovereign', 'Sovereign / state capital', 'unknown', null, LIST_EMPTY_IS_UNKNOWN),
+        : finding('sovereign', 'Sovereign / state capital', 'unknown', null, null, {
+            unknownBecause: LIST_EMPTY_IS_UNKNOWN,
+          }),
     )
   }
 
@@ -257,7 +302,9 @@ export function evaluateMaker(maker: Maker, lens: LensConfig): LensResult {
       )
     } else {
       findings.push(
-        finding('big_tech', 'Big Tech / competitor capital', 'unknown', null, LIST_EMPTY_IS_UNKNOWN),
+        finding('big_tech', 'Big Tech / competitor capital', 'unknown', null, null, {
+          unknownBecause: LIST_EMPTY_IS_UNKNOWN,
+        }),
       )
     }
   }
@@ -273,7 +320,9 @@ export function evaluateMaker(maker: Maker, lens: LensConfig): LensResult {
             `invests via / buys from ${cv.join(', ')}`,
             null,
           )
-        : finding('circular_vendor', 'Circular vendor ties', 'unknown', null, LIST_EMPTY_IS_UNKNOWN),
+        : finding('circular_vendor', 'Circular vendor ties', 'unknown', null, null, {
+            unknownBecause: LIST_EMPTY_IS_UNKNOWN,
+          }),
     )
   }
 
@@ -297,13 +346,10 @@ export function evaluateMaker(maker: Maker, lens: LensConfig): LensResult {
             sourced.map((f) => f.name).join(', '),
             null,
           )
-        : finding(
-            'backer_reputation',
-            'Backer associations',
-            'unknown',
-            null,
-            'Backer associations are a thin first pass in this dataset. No sourced association on record is not a finding that none exists.',
-          ),
+        : finding('backer_reputation', 'Backer associations', 'unknown', null, null, {
+            unknownBecause:
+              'Backer associations are a thin first pass in this dataset. No sourced association on record is not a finding that none exists.',
+          }),
     )
   }
 
@@ -317,7 +363,12 @@ export function evaluateMaker(maker: Maker, lens: LensConfig): LensResult {
             'a public parent is held by passive index funds',
             null,
           )
-        : finding('index_concentration', 'Index concentration', 'documented_absent', null, BOOLEAN_SCOPE),
+        : resolveAuthoredFalse(
+            maker.id,
+            'index_held',
+            'index_concentration',
+            'Index concentration',
+          ),
     )
   }
 

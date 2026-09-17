@@ -87,8 +87,24 @@ export interface Funder {
 
 export type EvidenceBasis = 'sourced' | 'unsourced' | 'contextual' | 'not_established'
 
-/** Whether the cited material covers what the score actually rests on. */
-export type ClaimSupport = 'direct' | 'partial' | 'unreviewed' | 'none'
+/** Whether the cited material directly establishes a narrow fact. */
+export type ClaimSupport = 'establishes_fact' | 'partial' | 'unreviewed' | 'none'
+
+/** How a classification was produced. Never 'human_reviewed' unless a human did. */
+export type ReviewProvenance = 'automated_provisional' | 'human_reviewed'
+
+/**
+ * Evidence that an attribute is absent. Needs all four: an authored `false` is
+ * a typed value, and a scope sentence describes a claim rather than supporting
+ * it. `as_of` matters because an absence decays.
+ */
+export interface AbsenceEvidence {
+  source: string
+  scope: string
+  as_of: string
+  attribution: 'self_report' | 'independent'
+  note?: string
+}
 
 export interface BackgroundSource {
   url: string
@@ -101,7 +117,16 @@ export interface AxisEvidence {
   /** True when our research has not established a finding — no score is shown. */
   withheld: boolean
   claim_support: ClaimSupport
-  support_note: string
+  /** The narrow fact the source settles. Preserved even when the score is not. */
+  supported_fact: string | null
+  source_date: string
+  unsupported_clauses: string[]
+  /** The rubric rule that would license a whole-axis score, or that none does. */
+  scoring_rule: string
+  /** Whether the supported fact justifies the whole 0–4 score under that rule. */
+  justifies_whole: boolean
+  justification_note: string
+  provenance: ReviewProvenance
   /**
    * The single gate. True only when there is relevant, traceable support for
    * the actual claim AND the assessment is justified by it. Governs ordering,
@@ -153,9 +178,12 @@ export interface EvidenceSummary {
   by_basis: Record<EvidenceBasis, number>
   withheld: number
   decision_eligible: number
-  claim_support_direct: number
+  establishes_fact: number
   claim_support_partial: number
   claim_support_unreviewed: number
+  facts_preserved_without_eligible_score: number
+  human_reviewed: number
+  absence_evidence_records: number
   no_sources_at_all: number
   background_only: number
   confidence_c: number

@@ -40,8 +40,15 @@ amount of honest presentation substitutes for the research in
 [`EVIDENCE_AUDIT.md`](EVIDENCE_AUDIT.md).
 
 **Milestone 3 should be evidence, not features.** Closing the 40 unsourced assessments and
-the 24 background-only labour scores would roughly double what this milestone can do,
+the 24 background-only labour scores would substantially widen what this milestone can do,
 without another line of product code.
+
+**Scope note (after the evidence correction).** The limitation is *insufficient evidence
+for broad recommendations across the five existing axes* — not that conditional
+recommendations are impossible. Nineteen assessments now carry an established, sourced fact
+that survives an ineligible axis score, and a recommendation conditioned on one of those,
+scoped to what the fact covers and dated, is a much smaller claim than a whole-axis
+ordering. See [`EVIDENCE_CORRECTION.md`](EVIDENCE_CORRECTION.md).
 
 ---
 

@@ -1,6 +1,7 @@
 import evidenceRaw from '../data/evidence.json'
 import { makers, numericScore } from './data'
 import type {
+  AbsenceEvidence,
   AxisEvidence,
   AxisKey,
   EvidenceBasis,
@@ -51,7 +52,13 @@ const FALLBACK: AxisEvidence = {
   rule: 'No evidence classification on record for this assessment.',
   withheld: false,
   claim_support: 'none',
-  support_note: 'No classification on record.',
+  supported_fact: null,
+  source_date: 'not stated in record',
+  unsupported_clauses: [],
+  scoring_rule: 'No classification on record.',
+  justifies_whole: false,
+  justification_note: 'No classification on record.',
+  provenance: 'automated_provisional',
   decision_eligible: false,
   entity_sources: [],
   background_sources: [],
@@ -91,10 +98,42 @@ export function ineligibilityReason(makerId: string, axis: AxisKey): string | nu
     case 'contextual':
       return 'inferred from context, not from evidence about this maker'
     default:
-      return ev.claim_support === 'partial'
-        ? 'the cited source covers only part of this claim'
-        : 'the fit between source and claim has not been reviewed'
+      if (ev.claim_support === 'partial') return 'the cited source covers only part of this claim'
+      if (ev.claim_support === 'unreviewed')
+        return 'the fit between source and claim has not been reviewed'
+      return 'the evidence settles a narrower fact than this score claims'
   }
+}
+
+/**
+ * The narrow fact a source settles, whatever happened to the axis score.
+ * Preserved deliberately: a broad score can fail while the fact under it holds,
+ * and these facts are what a narrower, conditional recommendation could rest on.
+ */
+export function supportedFactFor(makerId: string, axis: AxisKey): string | null {
+  return axisEvidenceFor(makerId, axis).supported_fact
+}
+
+// ---- Absence evidence ------------------------------------------------------
+
+const absenceEvidence = raw.absence_evidence as Record<string, AbsenceEvidence>
+
+export const absenceRequirements = raw.absence_evidence_requirements as {
+  what_counts: string
+  attribution: Record<'self_report' | 'independent', string>
+  current_count: number
+}
+
+/**
+ * Evidence that a capital attribute is absent, or undefined. An authored
+ * `false` in the source data does NOT reach here — it is a typed value, not a
+ * finding, and it resolves to unknown for decision purposes.
+ */
+export function absenceEvidenceFor(
+  makerId: string,
+  attribute: string,
+): AbsenceEvidence | undefined {
+  return absenceEvidence[`${makerId}/${attribute}`]
 }
 
 export function axisEvidenceFor(makerId: string, axis: AxisKey): AxisEvidence {

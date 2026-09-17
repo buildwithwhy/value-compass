@@ -95,7 +95,7 @@ const STATE_STYLE = {
     cls: 'border-amber-300 bg-amber-50 text-amber-900',
   },
   documented_absent: {
-    heading: 'Documented clear, within scope',
+    heading: 'Documented absent, within a checked scope',
     cls: 'border-emerald-200 bg-emerald-50 text-emerald-900',
   },
   unknown: {
@@ -133,7 +133,21 @@ function FindingList({
           <li key={f.key} className={`rounded-md border px-2.5 py-1.5 text-xs ${s.cls}`}>
             <span className="font-semibold">{f.label}</span>
             {f.detail && <span> — {f.detail}</span>}
+            {f.recordedValue && f.state === 'unknown' && (
+              <span className="ml-1.5 rounded border border-dashed border-slate-400 bg-white px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
+                recorded as “{f.recordedValue}”, unsupported
+              </span>
+            )}
+            {f.attribution && (
+              <span className="ml-1.5 rounded border border-emerald-300 bg-white px-1.5 py-0.5 text-[10px] font-medium text-emerald-800">
+                {f.attribution === 'self_report' ? 'company self-report' : 'independently checked'}
+                {f.asOf && ` · as of ${f.asOf}`}
+              </span>
+            )}
             {f.scope && <p className="mt-0.5 text-[11px] leading-snug opacity-80">{f.scope}</p>}
+            {f.unknownBecause && (
+              <p className="mt-0.5 text-[11px] leading-snug opacity-80">{f.unknownBecause}</p>
+            )}
             {f.key === 'backer_reputation' && repBackers.length > 0 && (
               <ul className="mt-1.5 space-y-1">
                 {repBackers.map((b) => (
@@ -207,8 +221,8 @@ export function CapitalFindings({
       <dl className="mt-2 grid grid-cols-3 gap-2 text-center">
         {[
           { n: r.present.length, label: 'documented matches', cls: 'text-amber-700' },
-          { n: r.absent.length, label: 'documented clear', cls: 'text-emerald-700' },
-          { n: r.unknown.length, label: 'no record', cls: 'text-slate-500' },
+          { n: r.absent.length, label: 'documented absent', cls: 'text-emerald-700' },
+          { n: r.unknown.length, label: 'unknown', cls: 'text-slate-500' },
         ].map((x) => (
           <div key={x.label} className="rounded-lg border border-slate-200 py-2">
             <dt className={`text-xl font-extrabold ${x.cls}`}>{x.n}</dt>
@@ -223,8 +237,9 @@ export function CapitalFindings({
         {r.unknown.length > 0 && (
           <> — the other {r.unknown.length} count neither for nor against {maker.name}</>
         )}
-        . There is no overall score: producing one would mean treating an absent record as a good
-        result.
+        . There is no overall score: producing one would mean treating an unchecked field as a good
+        result. An absence counts only where something examined the question and reported a date it
+        ran to.
       </p>
 
       <FindingList
