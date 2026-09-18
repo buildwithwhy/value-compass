@@ -39,12 +39,12 @@ describe('unknown hard requirements', () => {
   })
 
   it('keeps them visible, unshortlisted and unexcluded', () => {
-    // Migration is assessable (Claude is evidenced to fail), so the
-    // designation stands. The other five are unknown.
+    // Account transfer is assessable — Anthropic states it does not support
+    // moving between personal Claude accounts. The other five are unknown.
     const r = recommend({
       functional: F,
-      priorities: ['c_service_migration'],
-      requirements: ['c_service_migration'],
+      priorities: ['c_account_transfer'],
+      requirements: ['c_account_transfer'],
     })
     expect(r.confirmed).toHaveLength(0)
     expect(ids(r.excluded)).toEqual(['claude'])
@@ -109,8 +109,10 @@ describe('control criteria stay within what the evidence shows', () => {
   it('states voting power, not control of the company', () => {
     for (const id of ['c_individual_majority_voting', 'c_founder_bloc_majority_voting']) {
       const c = criteria.find((x) => x.id === id)!
-      expect(c.label).toMatch(/voting power/)
+      // The label has to stand on its own, without a caveat in front of it.
+      expect(c.label).toMatch(/votes/)
       expect(c.label).not.toMatch(/controls the company|override the board/)
+      expect(c.label).not.toMatch(/majority voting control/)
       expect(c.does_not_establish).toBeTruthy()
     }
     const individual = criteria.find((c) => c.id === 'c_individual_majority_voting')!
@@ -184,12 +186,47 @@ describe('the three portability questions are distinct', () => {
     expect(r.excluded).toHaveLength(0)
   })
 
-  it('does not let an export finding answer the migration question', () => {
+  it('does not let an export finding answer the transfer question', () => {
     const exportOk = assessmentFor('claude', 'c_content_export')
-    const migration = assessmentFor('claude', 'c_service_migration')
+    const transfer = assessmentFor('claude', 'c_account_transfer')
     expect(exportOk?.verdict).toBe('meets')
-    expect(migration?.verdict).toBe('fails')
-    expect(migration?.scope).toMatch(/does not address importing Claude data/i)
+    expect(transfer?.verdict).toBe('fails')
+    expect(transfer?.scope).toMatch(/two personal Claude accounts/i)
+  })
+
+  // ---- The correction: account-to-account is not cross-service -------------
+  it('does not let account-transfer evidence decide cross-service migration', () => {
+    const transfer = assessmentFor('claude', 'c_account_transfer')
+    const migration = assessmentFor('claude', 'c_service_migration')
+
+    // The evidence is real, and it is about one destination only.
+    expect(transfer?.verdict).toBe('fails')
+    expect(transfer?.scope).toMatch(/says nothing about moving content to a different company/i)
+
+    // The other destination stays unconfirmed — not inherited from the first.
+    expect(migration?.verdict).toBe('unconfirmed')
+    expect(migration?.uncertainty).toMatch(/does not answer this/i)
+  })
+
+  it('excludes nobody from cross-service migration on the strength of it', () => {
+    const r = recommend({
+      functional: F,
+      priorities: ['c_service_migration'],
+      requirements: ['c_service_migration'],
+    })
+    // Claude was wrongly excluded here before. Nothing is documented either
+    // way for any of the six, so nothing is ruled in or out.
+    expect(r.excluded).toHaveLength(0)
+    expect(r.confirmed).toHaveLength(0)
+    expect(r.notConfirmed).toHaveLength(alternatives.length)
+    expect(r.unassessableRequirements.map((c) => c.id)).toContain('c_service_migration')
+  })
+
+  it('states what cross-service evidence would have to address', () => {
+    const c = criteria.find((x) => x.id === 'c_service_migration')!
+    expect((c as { requires_evidence_about?: string }).requires_evidence_about).toMatch(
+      /destination/i,
+    )
   })
 
   it('does not let a model licence answer either of them', () => {
@@ -251,8 +288,8 @@ describe('exercise: a hard requirement with confirmed matches and unknown option
 describe('exercise: a requirement with no confirmed match', () => {
   const r = recommend({
     functional: F,
-    priorities: ['c_service_migration'],
-    requirements: ['c_service_migration'],
+    priorities: ['c_account_transfer'],
+    requirements: ['c_account_transfer'],
   })
 
   it('returns no match, one evidenced exclusion and five unconfirmed', () => {
@@ -265,23 +302,37 @@ describe('exercise: a requirement with no confirmed match', () => {
 
   it('does not invent a winner from the unconfirmed five', () => {
     for (const o of r.notConfirmed) {
-      expect(critIds(o.met)).not.toContain('c_service_migration')
-      expect(critIds(o.unresolved)).toContain('c_service_migration')
+      expect(critIds(o.met)).not.toContain('c_account_transfer')
+      expect(critIds(o.unresolved)).toContain('c_account_transfer')
+    }
+  })
+})
+
+describe('a requirement is preserved when nothing is documented', () => {
+  const r = recommend({
+    functional: F,
+    priorities: ['c_model_hosting'],
+    requirements: ['c_model_hosting'],
+  })
+
+  it('does not downgrade it to a preference', () => {
+    expect(criterionIsAssessable('c_model_hosting')).toBe(false)
+    // It stays a requirement, so nothing is shortlisted as though it were met.
+    expect(r.confirmed).toHaveLength(0)
+    expect(r.notConfirmed).toHaveLength(alternatives.length)
+    expect(r.hasRequirements).toBe(true)
+    for (const o of r.notConfirmed) {
+      const row = o.unresolved.find((u) => u.criterion.id === 'c_model_hosting')!
+      expect(row.weight).toBe('requirement')
     }
   })
 
-  it('an unassessable requirement is ignored rather than emptying the list', () => {
-    // Model hosting has no decided finding anywhere, so it cannot be a
-    // requirement. It degrades to a preference instead of excluding all six.
-    expect(criterionIsAssessable('c_model_hosting')).toBe(false)
-    const hosting = recommend({
-      functional: F,
-      priorities: ['c_model_hosting'],
-      requirements: ['c_model_hosting'],
-    })
-    expect(hosting.excluded).toHaveLength(0)
-    expect(hosting.confirmed).toHaveLength(alternatives.length)
-    expect(hosting.blindCriteria.map((c) => c.id)).toContain('c_model_hosting')
+  it('reports the limitation explicitly rather than substituting an intention', () => {
+    expect(r.unassessableRequirements.map((c) => c.id)).toEqual(['c_model_hosting'])
+  })
+
+  it('still excludes nobody on the basis of an unknown', () => {
+    expect(r.excluded).toHaveLength(0)
   })
 })
 
@@ -336,7 +387,7 @@ describe('light functional eligibility', () => {
     expect(gemini?.functionalGaps.map((g) => g.id)).toContain('fr_mobile')
   })
 
-  it('refuses to make an unassessable criterion a requirement', () => {
+  it('flags an undocumented criterion without discarding the user’s intent', () => {
     const unassessable = criteria.filter((c) => !criterionIsAssessable(c.id))
     expect(unassessable.map((c) => c.id)).toContain('c_model_hosting')
     const r = recommend({
@@ -346,5 +397,86 @@ describe('light functional eligibility', () => {
     })
     expect(r.excluded).toHaveLength(0)
     expect(r.blindCriteria.map((c) => c.id)).toContain('c_model_hosting')
+    expect(r.unassessableRequirements.map((c) => c.id)).toContain('c_model_hosting')
+  })
+})
+
+// ---------------------------------------------------------------------------
+// 8. Eligibility is not a recommendation
+// ---------------------------------------------------------------------------
+
+describe('eligibility and preference fit are reported separately', () => {
+  it('sets no requirements flag when the user only expressed preferences', () => {
+    const r = recommend({
+      functional: F,
+      priorities: ['c_founder_bloc_majority_voting'],
+      requirements: [],
+    })
+    // The heading depends on this: "Options to consider", not "confirmed matches".
+    expect(r.hasRequirements).toBe(false)
+    expect(r.confirmed).toHaveLength(alternatives.length)
+    for (const o of r.confirmed) expect(o.met).toHaveLength(0)
+  })
+
+  it('keeps met requirements apart from documented preference fit', () => {
+    const r = recommend({
+      functional: F,
+      priorities: ['c_content_export', 'c_founder_bloc_majority_voting'],
+      requirements: ['c_content_export'],
+    })
+    expect(r.hasRequirements).toBe(true)
+    const copilot = r.confirmed.find((o) => o.alternative.id === 'copilot')!
+    // Eligibility…
+    expect(critIds(copilot.met)).toEqual(['c_content_export'])
+    // …and fit, which is a different list.
+    expect(critIds(copilot.supportingPriorities)).toEqual(['c_founder_bloc_majority_voting'])
+  })
+
+  it('keeps an option with unknown preference fit discoverable, without claiming fit', () => {
+    const r = recommend({
+      functional: F,
+      priorities: ['c_content_export', 'c_founder_bloc_majority_voting'],
+      requirements: ['c_content_export'],
+    })
+    const claude = r.confirmed.find((o) => o.alternative.id === 'claude')!
+    // Eligible and listed…
+    expect(critIds(claude.met)).toContain('c_content_export')
+    // …but its fit on the preference is stated as unknown, not as a match.
+    expect(critIds(claude.supportingPriorities)).not.toContain('c_founder_bloc_majority_voting')
+    expect(critIds(claude.unresolved)).toContain('c_founder_bloc_majority_voting')
+  })
+
+  it('produces no overall score or ranking number anywhere', () => {
+    const r = recommend({
+      functional: F,
+      priorities: ['c_content_export', 'c_public_benefit'],
+      requirements: ['c_content_export'],
+    })
+    for (const o of [...r.confirmed, ...r.notConfirmed, ...r.excluded]) {
+      expect(o).not.toHaveProperty('score')
+      expect(o).not.toHaveProperty('rank')
+      expect(o).not.toHaveProperty('fit')
+    }
+  })
+})
+
+// ---------------------------------------------------------------------------
+// 9. Criterion labels stand on their own
+// ---------------------------------------------------------------------------
+
+describe('criterion labels are readable without a disclaimer', () => {
+  it('avoids jargon and internal vocabulary in the label', () => {
+    for (const c of criteria) {
+      expect(c.label).not.toMatch(/criterion|eligib|verdict|assess|predicate/i)
+      expect(c.label.length).toBeLessThan(80)
+      expect(c.plain).toBeTruthy()
+    }
+  })
+
+  it('distinguishes the two transfer destinations in the labels themselves', () => {
+    const acct = criteria.find((c) => c.id === 'c_account_transfer')!
+    const cross = criteria.find((c) => c.id === 'c_service_migration')!
+    expect(acct.label).toMatch(/same provider/i)
+    expect(cross.label).toMatch(/different company/i)
   })
 })

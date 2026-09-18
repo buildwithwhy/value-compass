@@ -52,26 +52,31 @@ function EvidenceRow({ row }: { row: CriterionOutcome }) {
       </div>
       {a ? (
         <>
-          <p className="mt-1 text-xs leading-snug text-slate-700">{a.claim}</p>
-          <p className="mt-1 text-[11px] leading-snug text-slate-500">
-            {a.claim_type.replace(/_/g, ' ')} · {a.source}
-            {a.source_date && ` · ${a.source_date}`}
-          </p>
-          {a.scope && (
-            <p className="mt-0.5 text-[11px] leading-snug text-slate-500">
-              <span className="font-semibold">Scope:</span> {a.scope}
-            </p>
-          )}
-          <p className="mt-0.5 text-[11px] leading-snug text-slate-500">
-            <span className="font-semibold">Uncertainty:</span> {a.uncertainty}
-          </p>
-          <p className="mt-0.5 text-[11px] text-slate-400">
-            Automated and provisional — not human-reviewed.
-          </p>
+          <p className="mt-1 text-sm leading-snug text-slate-800">{a.claim}</p>
+          <details className="mt-1.5">
+            <summary className="cursor-pointer text-[11px] font-medium text-slate-500 hover:text-slate-700">
+              Evidence, scope and date
+            </summary>
+            <div className="mt-1 space-y-0.5 text-[11px] leading-snug text-slate-500">
+              <p>
+                {a.claim_type.replace(/_/g, ' ')} · {a.source}
+                {a.source_date && ` · ${a.source_date}`}
+              </p>
+              {a.scope && (
+                <p>
+                  <span className="font-semibold">Scope:</span> {a.scope}
+                </p>
+              )}
+              <p>
+                <span className="font-semibold">Uncertainty:</span> {a.uncertainty}
+              </p>
+              <p className="text-slate-400">Automated and provisional — not human-reviewed.</p>
+            </div>
+          </details>
         </>
       ) : (
         <p className="mt-1 text-xs leading-snug text-slate-500">
-          No eligible finding either way. This counts neither for nor against.
+          Not documented either way. This counts neither for nor against.
         </p>
       )}
     </li>
@@ -96,38 +101,8 @@ function OutcomeCard({ o }: { o: AlternativeOutcome }) {
           {o.alternative.product_provider.maker_id} ↗
         </Link>
       </div>
-      <p className="mt-1 text-xs leading-snug text-slate-600">{o.alternative.identity_note}</p>
-
-      {/* Three identities, kept apart. An unknown model does not unsettle who
-          operates the product, or any governance finding about them. */}
-      <dl className="mt-2 grid grid-cols-1 gap-1 rounded-md border border-slate-200 bg-slate-50 p-2 text-[11px] sm:grid-cols-3">
-        <div>
-          <dt className="font-semibold uppercase tracking-wide text-slate-400">Operated by</dt>
-          <dd className="text-slate-700">{o.alternative.product_provider.maker_id}</dd>
-        </div>
-        <div>
-          <dt className="font-semibold uppercase tracking-wide text-slate-400">Model provider</dt>
-          <dd className={o.alternative.model_provider.maker_id === 'unknown' ? 'text-slate-400' : 'text-slate-700'}>
-            {o.alternative.model_provider.maker_id === 'unknown'
-              ? 'not established'
-              : o.alternative.model_provider.maker_id}
-          </dd>
-        </div>
-        <div>
-          <dt className="font-semibold uppercase tracking-wide text-slate-400">Model release</dt>
-          <dd className={o.alternative.model_release.status === 'unknown' ? 'text-slate-400' : 'text-slate-700'}>
-            {o.alternative.model_release.name}
-          </dd>
-        </div>
-      </dl>
-      <p className="mt-1 text-[11px] leading-snug text-slate-400">
-        Operator: {o.alternative.product_provider.status.replace(/_/g, ' ')} ·{' '}
-        {o.alternative.product_provider.source}
-        {o.alternative.product_provider.retrieval_status === 'blocked' && (
-          <span className="mt-0.5 block text-slate-500">
-            Retrieval note: {o.alternative.product_provider.retrieval_note}
-          </span>
-        )}
+      <p className="mt-0.5 text-xs text-slate-500">
+        Operated by {o.alternative.product_provider.maker_id}
       </p>
 
       {o.functionalGaps.length > 0 && (
@@ -154,7 +129,7 @@ function OutcomeCard({ o }: { o: AlternativeOutcome }) {
       {o.met.length > 0 && (
         <div className="mt-3">
           <p className="mb-1 text-xs font-bold uppercase tracking-wider text-emerald-700">
-            Meets your requirements
+            Meets your confirmed requirements
           </p>
           <ul className="space-y-1.5">
             {o.met.map((r) => (
@@ -167,7 +142,7 @@ function OutcomeCard({ o }: { o: AlternativeOutcome }) {
       {o.supportingPriorities.length > 0 && (
         <div className="mt-3">
           <p className="mb-1 text-xs font-bold uppercase tracking-wider text-slate-500">
-            Matches what you said matters
+            Documented reasons this may suit you
           </p>
           <ul className="space-y-1.5">
             {o.supportingPriorities.map((r) => (
@@ -180,7 +155,7 @@ function OutcomeCard({ o }: { o: AlternativeOutcome }) {
       {o.tradeoffs.length > 0 && (
         <div className="mt-3">
           <p className="mb-1 text-xs font-bold uppercase tracking-wider text-amber-700">
-            Trade-off — evidenced not to match a preference
+            Documented trade-off
           </p>
           <ul className="space-y-1.5">
             {o.tradeoffs.map((r) => (
@@ -193,7 +168,9 @@ function OutcomeCard({ o }: { o: AlternativeOutcome }) {
       {o.unresolved.length > 0 && (
         <div className="mt-3">
           <p className="mb-1 text-xs font-bold uppercase tracking-wider text-slate-500">
-            Unresolved — what we would need to find out
+            {o.unresolved.some((r) => r.weight === 'requirement')
+              ? 'Important unknowns — including something you required'
+              : 'Important unknowns'}
           </p>
           <ul className="space-y-1.5">
             {o.unresolved.map((r) => (
@@ -202,6 +179,56 @@ function OutcomeCard({ o }: { o: AlternativeOutcome }) {
           </ul>
         </div>
       )}
+
+      {/* Identity detail sits behind a disclosure: it matters, but it is not
+          the reason anyone would consider this option. */}
+      <details className="mt-3 border-t border-slate-100 pt-2">
+        <summary className="cursor-pointer text-[11px] font-medium text-slate-500 hover:text-slate-700">
+          What this product is, and how we identified it
+        </summary>
+        <p className="mt-1 text-xs leading-snug text-slate-600">{o.alternative.identity_note}</p>
+        <dl className="mt-2 grid grid-cols-1 gap-1 rounded-md border border-slate-200 bg-slate-50 p-2 text-[11px] sm:grid-cols-3">
+          <div>
+            <dt className="font-semibold uppercase tracking-wide text-slate-400">Operated by</dt>
+            <dd className="text-slate-700">{o.alternative.product_provider.maker_id}</dd>
+          </div>
+          <div>
+            <dt className="font-semibold uppercase tracking-wide text-slate-400">Model provider</dt>
+            <dd
+              className={
+                o.alternative.model_provider.maker_id === 'unknown'
+                  ? 'text-slate-400'
+                  : 'text-slate-700'
+              }
+            >
+              {o.alternative.model_provider.maker_id === 'unknown'
+                ? 'not established'
+                : o.alternative.model_provider.maker_id}
+            </dd>
+          </div>
+          <div>
+            <dt className="font-semibold uppercase tracking-wide text-slate-400">Model release</dt>
+            <dd
+              className={
+                o.alternative.model_release.status === 'unknown'
+                  ? 'text-slate-400'
+                  : 'text-slate-700'
+              }
+            >
+              {o.alternative.model_release.name}
+            </dd>
+          </div>
+        </dl>
+        <p className="mt-1 text-[11px] leading-snug text-slate-400">
+          Operator: {o.alternative.product_provider.status.replace(/_/g, ' ')} ·{' '}
+          {o.alternative.product_provider.source}
+        </p>
+        {o.alternative.product_provider.retrieval_note && (
+          <p className="mt-0.5 text-[11px] leading-snug text-slate-500">
+            Retrieval note: {o.alternative.product_provider.retrieval_note}
+          </p>
+        )}
+      </details>
     </div>
   )
 }
@@ -266,9 +293,10 @@ export function RecommendView() {
       <section className="mt-4 rounded-xl border border-slate-200 bg-white p-4">
         <SectionTitle>2 · What matters to you</SectionTitle>
         <p className="mb-3 text-xs leading-snug text-slate-500">
-          These are preferences. They explain and order — they never rule an option out. Tick
-          <em> requirement</em> only if you want an option ruled out when the evidence shows it does
-          not meet that criterion. That box is available only where the evidence can actually decide.
+          These are <strong>preferences</strong>: they explain why an option might suit you, and
+          they never rule anything out. Tick <em>requirement</em> to rule out options the evidence
+          shows do not meet it. Where nothing is documented yet, your requirement still stands —
+          every option is reported as <em>not confirmed</em> rather than treated as meeting it.
         </p>
         <ul className="space-y-2">
           {criteria.map((c) => {
@@ -290,46 +318,52 @@ export function RecommendView() {
                     <span className="min-w-0">
                       <span className="text-sm font-semibold text-slate-800">{c.label}</span>
                       <span className="mt-0.5 block text-xs leading-snug text-slate-600">
-                        {c.concept}
+                        {c.plain ?? c.concept}
                       </span>
-                      {c.distinct_from && (
-                        <span className="mt-0.5 block text-[11px] leading-snug text-slate-500">
-                          Not the same as: {c.distinct_from}
-                        </span>
-                      )}
-                      {c.does_not_establish && (
-                        <span className="mt-0.5 block text-[11px] leading-snug text-amber-700">
-                          Does not establish: {c.does_not_establish}
-                        </span>
-                      )}
-                      {!c.supported && c.unsupported_note && (
-                        <span className="mt-1 block rounded border border-amber-200 bg-amber-50 px-2 py-1 text-[11px] leading-snug text-amber-900">
-                          {c.unsupported_note}
-                        </span>
-                      )}
                     </span>
                   </label>
                   {on && (
                     <label
-                      className={`flex shrink-0 items-center gap-1.5 text-xs ${
-                        assessable ? 'cursor-pointer text-slate-700' : 'cursor-not-allowed text-slate-400'
-                      }`}
+                      className="flex shrink-0 cursor-pointer items-center gap-1.5 text-xs text-slate-700"
                       title={
                         assessable
                           ? 'Rule out options the evidence shows do not meet this.'
-                          : 'Not available: no alternative has an eligible finding on this criterion, so it cannot decide anything.'
+                          : 'Nothing is documented on this yet. Your requirement will still stand — every option will be reported as not confirmed rather than treated as meeting it.'
                       }
                     >
                       <input
                         type="checkbox"
-                        disabled={!assessable}
                         checked={requirements.includes(c.id)}
                         onChange={() => toggle(requirements, setRequirements, c.id)}
                       />
                       requirement
+                      {!assessable && (
+                        <span className="text-[10px] text-amber-700">· nothing documented yet</span>
+                      )}
                     </label>
                   )}
                 </div>
+                {(c.does_not_establish || c.distinct_from) && (
+                  <details className="mt-1.5">
+                    <summary className="cursor-pointer text-[11px] font-medium text-slate-500 hover:text-slate-700">
+                      What this does and does not show
+                    </summary>
+                    <div className="mt-1 space-y-0.5 text-[11px] leading-snug text-slate-500">
+                      <p>{c.concept}</p>
+                      {c.distinct_from && (
+                        <p>
+                          <span className="font-semibold">Not the same as:</span> {c.distinct_from}
+                        </p>
+                      )}
+                      {c.does_not_establish && (
+                        <p className="text-amber-700">
+                          <span className="font-semibold">Does not establish:</span>{' '}
+                          {c.does_not_establish}
+                        </p>
+                      )}
+                    </div>
+                  </details>
+                )}
               </li>
             )
           })}
@@ -339,24 +373,61 @@ export function RecommendView() {
       {/* Step 3 — results */}
       {started && (
         <section className="mt-6 space-y-6">
-          {result.blindCriteria.length > 0 && (
+          {result.blindCriteria.filter((c) => !result.unassessableRequirements.includes(c)).length >
+            0 && (
             <div className="rounded-xl border border-amber-300 bg-amber-50 p-4">
               <p className="text-sm font-semibold text-amber-900">
-                We cannot assess {result.blindCriteria.length} of the things you picked
+                Nothing is documented on some of your preferences
               </p>
               <p className="mt-1 text-xs leading-snug text-amber-800">
-                {result.blindCriteria.map((c) => c.label).join(', ')} — no alternative has an
-                eligible finding, so these cannot separate anyone. Leaving them ticked changes
-                nothing; we show them so it is clear they are unanswered rather than silently
-                ignored.
+                {result.blindCriteria
+                  .filter((c) => !result.unassessableRequirements.includes(c))
+                  .map((c) => c.label)
+                  .join('; ')}{' '}
+                — no option has a finding either way, so these cannot separate anyone. We show them
+                so it is clear they are unanswered rather than quietly ignored.
+              </p>
+            </div>
+          )}
+
+          {result.unassessableRequirements.length > 0 && (
+            <div className="rounded-xl border-2 border-amber-400 bg-amber-50 p-4">
+              <p className="text-sm font-semibold text-amber-900">
+                We cannot assess{' '}
+                {result.unassessableRequirements.length === 1 ? 'a requirement' : 'requirements'}{' '}
+                you set
+              </p>
+              <p className="mt-1 max-w-3xl text-xs leading-relaxed text-amber-800">
+                <strong>{result.unassessableRequirements.map((c) => c.label).join('; ')}</strong> —
+                no option has a documented finding on this, so we cannot confirm it for any of
+                them. Your requirement stands: we have not turned it into a preference, and nothing
+                is shortlisted as though it were met. Every option below is listed as
+                <em> not confirmed</em> on it.
               </p>
             </div>
           )}
 
           <div>
             <SectionTitle>
-              Confirmed matches ({result.confirmed.length})
+              {result.hasRequirements
+                ? `Meets your confirmed requirements (${result.confirmed.length})`
+                : `Options to consider (${result.confirmed.length})`}
             </SectionTitle>
+            <p className="mb-2 max-w-3xl text-xs leading-snug text-slate-500">
+              {result.hasRequirements ? (
+                <>
+                  Every requirement you set is documented as met for these. That is
+                  <strong> eligibility, not a recommendation</strong> — read the documented
+                  reasons and trade-offs on each card to judge fit.
+                </>
+              ) : (
+                <>
+                  You have set preferences but no requirements, so nothing here is ruled in or out.
+                  These are all {alternatives.length} options with what the evidence documents for
+                  and against each on what you said matters.
+                </>
+              )}
+            </p>
             {result.noConfirmedMatch ? (
               <div className="rounded-xl border-2 border-dashed border-slate-300 bg-white p-5">
                 <p className="text-sm font-semibold text-slate-800">

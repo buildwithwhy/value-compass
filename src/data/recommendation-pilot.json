@@ -34,7 +34,13 @@
       "hard_opt_in": "A criterion excludes only when the user explicitly designates it a requirement, and only where the evidence can decide.",
       "unknown_requirement": "An unknown hard requirement is never shown as satisfied. The option goes to a separate 'requirement not confirmed' group — visible, not shortlisted, not excluded.",
       "no_filling": "Shortlist slots are never filled to reach a number."
-    }
+    },
+    "corrections_applied": [
+      "Anthropic’s statement that exported data cannot be imported into another personal Claude account is account-to-account evidence. It no longer drives cross-service migration, which is a different question with a different destination.",
+      "Cross-service migration is unconfirmed for all six until evidence addresses the destination product and what must transfer.",
+      "A requirement is never downgraded to a preference because evidence is missing. It stays a requirement and returns an explicit unconfirmed state.",
+      "Criterion labels are written to be understood on their own; the scope caveats sit in an evidence section rather than in front of the label."
+    ]
   },
   "category": {
     "id": "everyday_assistant",
@@ -228,75 +234,94 @@
   "criteria": [
     {
       "id": "c_individual_majority_voting",
-      "label": "No individual holds majority voting power",
+      "label": "No single person holds more than half the votes",
       "applies_to": "product_provider",
       "supported": true,
       "concept": "Whether any single person holds more than 50% of the votes.",
       "does_not_establish": "That no individual controls the company, or that no one can override the board. Control can also run through board seats, class rights, supermajority provisions or contract. We only report the voting-power figure.",
-      "distinct_from": "Founder-bloc voting power. Two founders with 52.7% between them is not one founder with 52.7%."
+      "distinct_from": "Founder-bloc voting power. Two founders with 52.7% between them is not one founder with 52.7%.",
+      "plain": "Whether one person could outvote everyone else."
     },
     {
       "id": "c_founder_bloc_majority_voting",
-      "label": "No founder bloc holds majority voting power",
+      "label": "The founders together hold less than half the votes",
       "applies_to": "product_provider",
       "supported": true,
       "concept": "Whether founders acting together hold more than 50% of the votes.",
       "does_not_establish": "That the founders act together in practice, or that they control the company by other means. A bloc requires its members to agree.",
-      "distinct_from": "Any single individual's voting power."
+      "distinct_from": "Any single individual's voting power.",
+      "plain": "Whether the founders, voting as a group, could outvote everyone else."
     },
     {
       "id": "c_board_election_rights",
-      "label": "Who holds board-election rights",
+      "label": "Who can appoint and remove the board",
       "applies_to": "product_provider",
       "supported": true,
       "concept": "Which party can elect or remove directors, separately from economic ownership.",
       "does_not_establish": "Day-to-day operational control.",
-      "distinct_from": "Voting power over ordinary resolutions."
+      "distinct_from": "Voting power over ordinary resolutions.",
+      "plain": "Which party picks the directors, separately from who owns the shares."
     },
     {
       "id": "c_public_benefit",
-      "label": "Public-benefit mechanism in force",
+      "label": "A legal duty to weigh more than shareholder returns",
       "applies_to": "product_provider",
       "supported": true,
       "concept": "A legal structure currently obliging the company to weigh non-shareholder interests.",
       "does_not_establish": "That the obligation has changed any decision.",
-      "distinct_from": "Commitment continuity — whether earlier commitments were kept."
+      "distinct_from": "Commitment continuity — whether earlier commitments were kept.",
+      "plain": "A company structure that currently obliges directors to consider people other than shareholders."
     },
     {
       "id": "c_commitment_continuity",
-      "label": "Commitment continuity",
+      "label": "Past public-benefit promises have been kept",
       "applies_to": "product_provider",
       "supported": true,
       "concept": "Whether public-benefit mechanisms this provider adopted have been kept or withdrawn.",
       "does_not_establish": "What the provider will do next.",
-      "distinct_from": "What is in force now."
+      "distinct_from": "What is in force now.",
+      "plain": "Whether commitments of this kind, once adopted, were later withdrawn."
     },
     {
       "id": "c_content_export",
-      "label": "Export your own content",
+      "label": "You can download your own conversations",
       "applies_to": "product",
       "supported": true,
       "concept": "Whether you can download your conversations and account data from the product.",
       "does_not_establish": "That the export can be used anywhere else.",
-      "distinct_from": "Migrating to another service, which needs somewhere to import it."
+      "distinct_from": "Migrating to another service, which needs somewhere to import it.",
+      "plain": "A way to get your chat history and account data out of the product."
+    },
+    {
+      "id": "c_account_transfer",
+      "label": "You can move your content to another account with the same provider",
+      "plain": "Transferring your history from one account to another at the same company.",
+      "applies_to": "product",
+      "supported": true,
+      "concept": "Whether exported content can be loaded into a different account at the same provider.",
+      "does_not_establish": "Anything about moving to a different company’s product. A provider can refuse account-to-account transfer and still place no obstacle in front of taking your data elsewhere.",
+      "distinct_from": "Cross-service migration, which is about a different destination entirely."
     },
     {
       "id": "c_service_migration",
-      "label": "Migrate to another service",
+      "label": "You can move your content to a different company’s product",
       "applies_to": "product",
       "supported": true,
-      "concept": "Whether exported content can be imported and used elsewhere.",
-      "does_not_establish": "Anything about model portability.",
-      "distinct_from": "Export, which only gets the data out."
+      "concept": "Whether exported content can be imported into a competing product and used there.",
+      "does_not_establish": "Anything about model portability, and nothing about transfers within the same provider.",
+      "distinct_from": "Account-to-account transfer at the same provider, which has a different destination and different evidence.",
+      "plain": "Taking your history out of one product and using it in a competitor’s.",
+      "requires_evidence_about": "Both the destination product and what actually has to transfer for the move to be useful."
     },
     {
       "id": "c_model_hosting",
-      "label": "Independently host the model",
+      "label": "You could run the model yourself",
       "applies_to": "model_release",
       "supported": true,
       "concept": "Whether the specific model serving the product is published under a licence letting you run it yourself.",
       "does_not_establish": "That the hosted assistant is portable, or that your content comes with you.",
-      "distinct_from": "Export and migration, which are about your data, not the model."
+      "distinct_from": "Export and migration, which are about your data, not the model.",
+      "plain": "Whether the model serving this product is published under a licence letting you host it."
     }
   ],
   "assessments": [
@@ -380,14 +405,27 @@
     },
     {
       "alternative": "claude",
-      "criterion": "c_service_migration",
+      "criterion": "c_account_transfer",
       "verdict": "fails",
       "claim": "Anthropic states that exported data cannot be imported into another personal Claude account and that migrating data between personal accounts is not supported.",
       "claim_type": "company_statement",
       "source": "support.claude.com article 9450526, fetched directly",
       "source_date": "read 2026-09-17",
-      "scope": "Migration between personal Claude accounts, stated by the provider. It does not address importing Claude data into a different company's product.",
-      "uncertainty": "Low as to what Anthropic states. Note the scope limit: this is about Claude-to-Claude, which is narrower than the criterion asks.",
+      "scope": "Transfer between two personal Claude accounts, stated by the provider. It says nothing about moving content to a different company’s product.",
+      "uncertainty": "Low as to what Anthropic states, and correctly scoped: this is an account-transfer finding. An earlier pass wrongly used it to exclude Claude from cross-service migration, which it does not address.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "claude",
+      "criterion": "c_service_migration",
+      "verdict": "unconfirmed",
+      "claim": "Whether a Claude export can be imported into a different company’s product is not documented either way.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Anthropic’s statement about account-to-account transfer does not answer this. Establishing it needs evidence about the destination product and what would have to transfer. Counts neither way.",
       "provenance": "automated_provisional",
       "status": "in_force"
     },
@@ -923,6 +961,71 @@
       "uncertainty": "Likely closed, but unchecked. Recorded as unconfirmed so it cannot act as an evidenced exclusion.",
       "provenance": "automated_provisional",
       "status": "in_force"
+    },
+    {
+      "alternative": "chatgpt",
+      "criterion": "c_account_transfer",
+      "verdict": "unconfirmed",
+      "status": "in_force",
+      "claim": "Whether content can be moved between two accounts at this provider is not documented either way.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional"
+    },
+    {
+      "alternative": "gemini",
+      "criterion": "c_account_transfer",
+      "verdict": "unconfirmed",
+      "status": "in_force",
+      "claim": "Whether content can be moved between two accounts at this provider is not documented either way.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional"
+    },
+    {
+      "alternative": "copilot",
+      "criterion": "c_account_transfer",
+      "verdict": "unconfirmed",
+      "status": "in_force",
+      "claim": "Whether content can be moved between two accounts at this provider is not documented either way.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional"
+    },
+    {
+      "alternative": "le_chat",
+      "criterion": "c_account_transfer",
+      "verdict": "unconfirmed",
+      "status": "in_force",
+      "claim": "Whether content can be moved between two accounts at this provider is not documented either way.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional"
+    },
+    {
+      "alternative": "deepseek_app",
+      "criterion": "c_account_transfer",
+      "verdict": "unconfirmed",
+      "status": "in_force",
+      "claim": "Whether content can be moved between two accounts at this provider is not documented either way.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional"
     }
   ]
 }

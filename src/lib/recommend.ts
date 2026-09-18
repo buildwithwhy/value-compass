@@ -45,7 +45,10 @@ export interface PilotAlternative {
 
 export interface PilotCriterion {
   id: string
+  /** Written to be understood on its own, without reading a caveat first. */
   label: string
+  /** One plain line under the label. */
+  plain?: string
   concept: string
   /** Which of the three identities this criterion can speak to. */
   applies_to: 'product' | 'product_provider' | 'model_release'
@@ -90,8 +93,15 @@ export function assessmentFor(altId: string, critId: string): Assessment | undef
   return assessments.find((a) => a.alternative === altId && a.criterion === critId)
 }
 
-/** True where at least one alternative has a meets/fails verdict on this
- *  criterion. Only these may be designated a requirement. */
+/**
+ * True where at least one alternative has a meets/fails verdict on this
+ * criterion.
+ *
+ * This informs the interface; it does NOT gate what a user may require. A
+ * requirement we cannot assess stays a requirement and returns an explicit
+ * unconfirmed state — silently converting it to a preference would substitute
+ * a different intention for the user's.
+ */
 export function criterionIsAssessable(critId: string): boolean {
   const c = criterionById.get(critId)
   if (!c?.supported) return false
@@ -138,9 +148,12 @@ export interface AlternativeOutcome {
   unresolved: CriterionOutcome[]
   /** Evidence that it fails a stated requirement — the only basis for exclusion. */
   failed: CriterionOutcome[]
-  /** Soft priorities it is evidenced to meet, used to explain rather than rank. */
+  /**
+   * Documented alignment with a soft preference. This is FIT, not eligibility:
+   * a reason to consider an option, never a reason it qualifies.
+   */
   supportingPriorities: CriterionOutcome[]
-  /** Soft priorities it is evidenced to fail — a trade-off, not an exclusion. */
+  /** Documented misalignment with a soft preference — a trade-off, not an exclusion. */
   tradeoffs: CriterionOutcome[]
   /** Functional requirements the user asked for that we cannot confirm. */
   functionalGaps: { id: string; label: string }[]
@@ -162,6 +175,14 @@ export interface RecommendationResult {
   excluded: AlternativeOutcome[]
   /** Criteria the user picked that we cannot assess for anyone. */
   blindCriteria: PilotCriterion[]
+  /**
+   * Criteria the user made REQUIREMENTS that we cannot assess for any option.
+   * The requirement is preserved and the limitation is stated; it is not
+   * quietly turned into a preference.
+   */
+  unassessableRequirements: PilotCriterion[]
+  /** True when the user set at least one hard requirement. */
+  hasRequirements: boolean
   /** True when nothing could be confirmed — a state to explain, not to hide. */
   noConfirmedMatch: boolean
 }
@@ -179,7 +200,8 @@ export function recommend(input: RecommendationInput): RecommendationResult {
       if (!criterion) continue
       const assessment = assessmentFor(alt.id, critId)
       const verdict: Verdict = assessment?.verdict ?? 'unconfirmed'
-      const isRequirement = input.requirements.includes(critId) && criterionIsAssessable(critId)
+      // The user's designation stands whatever the evidence looks like.
+      const isRequirement = input.requirements.includes(critId)
       const row: CriterionOutcome = {
         criterion,
         weight: isRequirement ? 'requirement' : 'priority',
@@ -238,10 +260,13 @@ export function recommend(input: RecommendationInput): RecommendationResult {
   const blindCriteria = input.priorities
     .map((id) => criterionById.get(id))
     .filter((c): c is PilotCriterion => !!c)
-    .filter((c) => !assessments.some((a) => a.criterion === c.id && a.verdict !== 'unconfirmed'))
+    .filter((c) => !criterionIsAssessable(c.id))
 
-  // Within a bucket, order by how much is evidenced — never by a score, and
-  // ties are left as ties rather than broken arbitrarily.
+  const unassessableRequirements = blindCriteria.filter((c) => input.requirements.includes(c.id))
+
+  // Within a bucket, order by how much is documented — never by a score, and
+  // ties are left as ties rather than broken arbitrarily. Ordering is not a
+  // ranking: two options with the same documented reasons stay level.
   const byEvidence = (a: AlternativeOutcome, b: AlternativeOutcome) =>
     b.met.length + b.supportingPriorities.length - (a.met.length + a.supportingPriorities.length) ||
     a.unresolved.length - b.unresolved.length ||
@@ -258,6 +283,8 @@ export function recommend(input: RecommendationInput): RecommendationResult {
     notConfirmed,
     excluded,
     blindCriteria,
+    unassessableRequirements,
+    hasRequirements: input.requirements.length > 0,
     noConfirmedMatch: confirmed.length === 0,
   }
 }
