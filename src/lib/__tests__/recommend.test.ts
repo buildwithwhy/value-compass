@@ -480,3 +480,160 @@ describe('criterion labels are readable without a disclaimer', () => {
     expect(cross.label).toMatch(/different company/i)
   })
 })
+
+// ---------------------------------------------------------------------------
+// 10. Presentation guarantees
+// ---------------------------------------------------------------------------
+
+import { criterionCoverage, criterionGroup, findingLabel, summarisePreferences } from '../recommend'
+
+describe('a finding is never headed by the wish', () => {
+  it('names what the evidence says, not what was asked for', () => {
+    expect(findingLabel('meets')).toBe('Documented alignment')
+    expect(findingLabel('fails')).toBe('Documented conflict')
+    expect(findingLabel('unconfirmed')).toBe('Not established in our research')
+  })
+
+  it('gives Gemini a conflict label on the founder-bloc question', () => {
+    // The card must not headline "founders hold less than half the votes"
+    // above a finding that says they hold 52.7%.
+    const a = assessmentFor('gemini', 'c_founder_bloc_majority_voting')!
+    expect(findingLabel(a.verdict)).toBe('Documented conflict')
+    expect(a.claim).toMatch(/52\.7/)
+  })
+
+  it('keeps a proposed change distinct from a current arrangement', () => {
+    const proposed = assessmentFor('claude', 'c_founder_bloc_majority_voting')!
+    expect(proposed.status).toBe('proposed')
+    expect(proposed.verdict).toBe('unconfirmed')
+    // An unknown must not be presentable as "in force".
+    expect(findingLabel(proposed.verdict)).toBe('Not established in our research')
+  })
+})
+
+describe('inputs express preferences, not questions', () => {
+  it('marks a criterion with no direction to prefer as informational', () => {
+    const board = criteria.find((c) => c.id === 'c_board_election_rights')!
+    expect(board.informational).toBe(true)
+    expect(criterionGroup(board)).toBe('more')
+  })
+
+  it('never infers a preference from an informational criterion', () => {
+    const r = recommend({
+      functional: F,
+      priorities: ['c_board_election_rights'],
+      requirements: [],
+    })
+    // It contributes no direction to the summary.
+    expect(summarisePreferences(r, {
+      functional: F,
+      priorities: ['c_board_election_rights'],
+      requirements: [],
+    })).toHaveLength(0)
+  })
+
+  it('offers well-covered criteria first and keeps thin ones discoverable', () => {
+    const core = criteria.filter((c) => criterionGroup(c) === 'core').map((c) => c.id)
+    const more = criteria.filter((c) => criterionGroup(c) === 'more').map((c) => c.id)
+    expect(core).toContain('c_content_export')
+    expect(core).toContain('c_individual_majority_voting')
+    expect(more).toContain('c_model_hosting')
+    expect(more).toContain('c_service_migration')
+    // Nothing is dropped.
+    expect(core.length + more.length).toBe(criteria.length)
+  })
+
+  it('exposes coverage before a criterion is chosen', () => {
+    expect(criterionCoverage('c_content_export')).toEqual({ decided: 5, total: alternatives.length })
+    expect(criterionCoverage('c_model_hosting').decided).toBe(0)
+  })
+})
+
+describe('the result summary reports without nominating a winner', () => {
+  const input = {
+    functional: F,
+    priorities: ['c_founder_bloc_majority_voting'],
+    requirements: [],
+  }
+  const summaries = summarisePreferences(recommend(input), input)
+
+  it('counts alignment, conflict and unknown separately', () => {
+    const [s] = summaries
+    expect(s.aligned.map((a) => a.id)).toEqual(['copilot'])
+    expect(s.conflicting.map((a) => a.id)).toEqual(['gemini'])
+    expect(s.unresolved).toHaveLength(4)
+  })
+
+  it('offers direction only where one option holds the only finding in favour', () => {
+    expect(summaries[0].soleAligned?.id).toBe('copilot')
+  })
+
+  it('offers no direction when several options align', () => {
+    const many = {
+      functional: F,
+      priorities: ['c_content_export'],
+      requirements: [],
+    }
+    const [s] = summarisePreferences(recommend(many), many)
+    expect(s.aligned.length).toBeGreaterThan(1)
+    expect(s.soleAligned).toBeNull()
+  })
+
+  it('offers no direction when nothing is documented', () => {
+    const none = { functional: F, priorities: ['c_model_hosting'], requirements: [] }
+    const [s] = summarisePreferences(recommend(none), none)
+    expect(s.aligned).toHaveLength(0)
+    expect(s.conflicting).toHaveLength(0)
+    expect(s.soleAligned).toBeNull()
+  })
+
+  it('keeps every option discoverable whatever the summary says', () => {
+    const r = recommend(input)
+    expect(r.confirmed.length + r.notConfirmed.length + r.excluded.length).toBe(
+      alternatives.length,
+    )
+  })
+})
+
+describe('the summary reports every researched option', () => {
+  const input = {
+    functional: F,
+    priorities: ['c_founder_bloc_majority_voting'],
+    requirements: ['c_founder_bloc_majority_voting'],
+  }
+  const result = recommend(input)
+  const [s] = summarisePreferences(result, input)
+
+  it('still counts a finding whose option the requirement excluded', () => {
+    // Gemini is ruled out by this requirement. Its 52.7% finding is the reason,
+    // so dropping it from the counts would erase the evidence that did the work.
+    expect(result.excluded.map((o) => o.alternative.id)).toEqual(['gemini'])
+    expect(s.conflicting.map((a) => a.id)).toEqual(['gemini'])
+  })
+
+  it('accounts for all six options', () => {
+    expect(s.aligned.length + s.conflicting.length + s.unresolved.length).toBe(
+      alternatives.length,
+    )
+  })
+
+  it('points only at an option the user can still choose', () => {
+    expect(s.soleAligned?.id).toBe('copilot')
+    expect(result.confirmed.map((o) => o.alternative.id)).toContain('copilot')
+  })
+
+  it('offers no direction when the sole aligned option is itself excluded', () => {
+    // Require something Copilot fails, while preferring the criterion it alone meets.
+    const conflicted = {
+      functional: F,
+      priorities: ['c_founder_bloc_majority_voting'],
+      requirements: ['c_public_benefit_mechanism'],
+    }
+    const r = recommend(conflicted)
+    const [sm] = summarisePreferences(r, conflicted)
+    expect(sm.aligned.map((a) => a.id)).toEqual(['copilot'])
+    if (r.excluded.some((o) => o.alternative.id === 'copilot')) {
+      expect(sm.soleAligned).toBeNull()
+    }
+  })
+})

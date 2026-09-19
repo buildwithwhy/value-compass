@@ -10,7 +10,7 @@ is **automated and provisional** — a model read a source; no human re-read one
 ```bash
 npm install
 npm run dev          # → http://localhost:5173/#/recommend
-npm test             # 78 checks, 51 on the recommendation engine
+npm test             # 94 checks, 67 on the recommendation engine
 ```
 
 Nothing is deployed. `main` and the live site are untouched; this is all on
@@ -18,7 +18,126 @@ Nothing is deployed. `main` and the live site are untouched; this is all on
 
 ---
 
-## Corrections in this pass
+## Presentation pass (latest)
+
+Six changes to how `/recommend` reads. No new research, no scoring, nothing deployed.
+Screenshots `10`–`14` show the current state; `00`–`06` are the previous pass, kept for
+comparison.
+
+### 1. A preference is no longer dressed as a finding
+
+Every evidence block now separates what you asked for from what we found:
+
+> You asked for: "The founders together hold less than half the votes"
+> **DOCUMENTED CONFLICT**
+> Page and Brin together hold 52.7% of Alphabet's total voting power…
+
+Previously the criterion label sat as the heading, so Gemini's card read *"the founders
+together hold less than half the votes"* directly above a finding saying they hold 52.7%.
+The finding heading is now one of three, and always names the evidence, never the wish:
+**Documented alignment** · **Documented conflict** · **Not established in our research**.
+
+### 2. A result summary, without a nomination
+
+A **What we found** panel sits above the buckets and counts, per criterion, how many
+options are documented in favour, documented against, and unestablished.
+
+Where exactly one option holds the only finding in favour, it says so — stated as one
+attribute, not a verdict:
+
+> If this is what matters most to you, **Microsoft Copilot** is the only option here with a
+> documented finding in its favour. That is one documented attribute, not an overall
+> assessment of the product.
+
+Where several align, or nothing is documented, it offers no direction at all. Tests lock
+both.
+
+### 3. Colour follows evidence, not cards
+
+Card borders are neutral. Colour is confined to the evidence block, so a card is no longer
+tinted green or red as though the product itself had been graded.
+
+### 4. Inputs express preferences
+
+- **Board-election rights is marked informational.** We have findings for 2 of 6, but the
+  arrangements differ in kind, not degree — there is no direction to prefer. It is offered
+  as information and contributes nothing to the summary.
+- **Criteria are split** into four with usable coverage and five behind *More priorities —
+  thinner evidence, or no direction to prefer*.
+- **Each carries its coverage** before you pick it: `documented for 5 of 6`, `documented for
+  2 of 6`, `nothing documented yet`.
+
+### 5. Implementation commentary is out of the main flow
+
+The repeated explanations about eligibility, missing-data handling and preserving intention
+are replaced with short user-facing text. Where a rule has a consequence, it now comes with
+actions rather than a paragraph — the unassessable-requirement panel offers **Keep it, but
+not as a must-have** and **Remove it**. Methodology stays linked from `/about`.
+
+### 6. The header no longer implies unrelated defaults
+
+The chip read *"Example priorities · 5 axes + capital"* on `/recommend`. Checked: that page
+holds its own state and never reads the site-wide priorities, so the chip was describing
+settings that do not drive it. On `/recommend` it now reads *"Preferences for this page are
+set below"*; elsewhere it is unchanged.
+
+### A bug this pass surfaced
+
+The summary counted only surviving options. Make the founder-bloc criterion a requirement
+and Gemini is excluded — and its 52.7% finding disappeared from the counts, which read
+*1 in favour, 4 unestablished* for six products. The evidence that did the excluding was
+deleted from the report of what we found.
+
+Counts now span all six. Direction is still only offered for an option you can still choose,
+so an excluded option is counted but never pointed at.
+
+---
+
+## The examples
+
+### Input
+
+![Input](screenshots/10-input-priorities.jpg)
+
+Four criteria with usable coverage; five behind the disclosure. Coverage is visible before
+you choose.
+
+### A soft preference with mixed evidence
+
+*"The founders together hold less than half the votes" — preference only.*
+
+![Soft preference](screenshots/11-soft-preference-summary.jpg)
+
+Nothing is ruled in or out. The summary reports 1 / 1 / 4 and names Copilot as the sole
+documented alignment; Gemini shows the conflict as a trade-off.
+
+### A hard requirement with confirmed matches
+
+*"You can download your own conversations" — must-have.*
+
+![Hard requirement](screenshots/13-hard-requirement.jpg)
+
+Five confirmed, DeepSeek unconfirmed. Five align, so the summary offers no direction.
+
+### A must-have nothing is documented on
+
+*"You could run the model yourself" — must-have.*
+
+![No confirmed match](screenshots/12-no-confirmed-match.jpg)
+
+The requirement stands rather than quietly becoming a preference. The panel names it, keeps
+it, and offers the two ways out.
+
+### The same criterion as a hard requirement
+
+![Founder bloc](screenshots/14-founder-bloc-requirement.jpg)
+
+Copilot confirmed, Gemini ruled out on the 52.7% finding, four unconfirmed — and the
+summary still counts all six.
+
+---
+
+## Corrections in the previous pass
 
 ### 1. The migration exclusion was wrong
 
@@ -80,7 +199,9 @@ this does and does not show"** instead of sitting in front of the label.
 
 ---
 
-## The four examples
+## The four examples, as captured in the previous pass
+
+These screenshots predate the presentation pass above; the findings are unchanged.
 
 ### Input
 
@@ -160,14 +281,21 @@ question.
 5. **Model routing.** Only matters if someone requires self-hosting — but until each product
    maps to a model release, no licence finding can attach to a product.
 
-## For the next review
+## For the comprehension test
 
 These are the screens, not the rules. Worth watching someone use them:
 
-- Does "Options to consider" read as weaker than "Meets your confirmed requirements"? It
-  should — one is a list, the other is eligibility.
+- Does the **You asked for / finding** split land, or do people still read the criterion
+  label as the answer?
+- Does **What we found** get read before the cards, and does the sole-alignment line read as
+  a recommendation? It is meant to read as one attribute.
 - Does *Requirement not confirmed* read as a soft no? It is meant to read as "we don't know,
   and here is what we'd need".
+- Do people open **More priorities**, or does the split hide things they wanted?
+- Does `nothing documented yet` stop someone choosing a criterion, and is that the right
+  outcome?
+- When a must-have cannot be assessed, do people reach for **Keep it, but not as a must-have**
+  or **Remove it** — and does either feel like it did what they meant?
 - Do the collapsed evidence sections get opened, or does the plain claim suffice?
-- In case D, does the difference between the two voting questions land, or feel like
-  pedantry? The distinction changes the answer; if it reads as pedantry, the labels need work.
+- Does the difference between the two voting questions land, or feel like pedantry? The
+  distinction changes the answer; if it reads as pedantry, the labels need work.

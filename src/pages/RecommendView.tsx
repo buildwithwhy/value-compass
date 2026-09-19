@@ -3,11 +3,14 @@ import { Link } from 'react-router-dom'
 import {
   alternatives,
   criteria,
-  criterionIsAssessable,
+  criterionCoverage,
+  criterionGroup,
+  findingLabel,
   functionalRequirements,
   pilotCategory,
   pilotMeta,
   recommend,
+  summarisePreferences,
   type AlternativeOutcome,
   type CriterionOutcome,
 } from '../lib/recommend'
@@ -21,41 +24,65 @@ import { SectionTitle } from '../components/ui'
 // third state rather than as a soft rejection.
 // ---------------------------------------------------------------------------
 
-const STATUS_TONE: Record<string, string> = {
-  in_force: 'border-slate-300 bg-slate-100 text-slate-700',
-  proposed: 'border-amber-300 bg-amber-50 text-amber-800',
-  withdrawn: 'border-rose-300 bg-rose-50 text-rose-800',
-}
-
-function EvidenceRow({ row }: { row: CriterionOutcome }) {
+/**
+ * A finding, never the wish.
+ *
+ * The preference the visitor expressed is a quiet lead-in; the heading is what
+ * the evidence actually says. Earlier this showed the desired condition in bold
+ * above a finding that contradicted it — so a card could appear to assert that
+ * founders hold less than half the votes while the text underneath said 52.7%.
+ */
+function EvidenceRow({ row, showAsk = true }: { row: CriterionOutcome; showAsk?: boolean }) {
   const a = row.assessment
+  const label = findingLabel(row.verdict)
+  const tone =
+    row.verdict === 'meets'
+      ? 'border-l-emerald-500 bg-emerald-50/40'
+      : row.verdict === 'fails'
+        ? 'border-l-rose-500 bg-rose-50/40'
+        : 'border-l-slate-300 bg-slate-50'
+  const labelTone =
+    row.verdict === 'meets'
+      ? 'text-emerald-800'
+      : row.verdict === 'fails'
+        ? 'text-rose-800'
+        : 'text-slate-500'
+
   return (
-    <li className="rounded-md border border-slate-200 bg-white p-2.5">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <span className="text-sm font-semibold text-slate-800">{row.criterion.label}</span>
-        <span className="flex items-center gap-1.5">
+    <li className={`rounded-md border border-slate-200 border-l-4 p-2.5 ${tone}`}>
+      {showAsk && (
+        <p className="text-[11px] leading-snug text-slate-500">
+          {/* Labels are written as whole sentences ("You could run the model
+              yourself"), so quote rather than fold into one of ours. */}
+          You asked for: &ldquo;{row.criterion.label}&rdquo;
           {row.weight === 'requirement' && (
-            <span className="rounded-full border border-teal-300 bg-teal-50 px-1.5 py-0.5 text-[10px] font-bold uppercase text-teal-800">
-              requirement
+            <span className="ml-1.5 rounded-full border border-teal-300 bg-white px-1.5 py-0.5 text-[10px] font-semibold uppercase text-teal-800">
+              required
             </span>
           )}
-          {a && (
-            <span
-              className={`rounded-full border px-1.5 py-0.5 text-[10px] font-semibold ${
-                STATUS_TONE[a.status] ?? STATUS_TONE.in_force
-              }`}
-            >
-              {a.status.replace('_', ' ')}
-            </span>
-          )}
-        </span>
-      </div>
+        </p>
+      )}
+      <p className={`mt-0.5 text-xs font-bold uppercase tracking-wide ${labelTone}`}>
+        {label}
+        {/* A status badge only where it means something. An unknown finding
+            must never carry "in force", which reads as confirmation. */}
+        {a && row.verdict !== 'unconfirmed' && a.status !== 'in_force' && (
+          <span className="ml-1.5 rounded-full border border-amber-300 bg-white px-1.5 py-0.5 text-[10px] font-semibold normal-case tracking-normal text-amber-800">
+            {a.status}
+          </span>
+        )}
+        {a && row.verdict === 'unconfirmed' && a.status === 'proposed' && (
+          <span className="ml-1.5 rounded-full border border-amber-300 bg-white px-1.5 py-0.5 text-[10px] font-semibold normal-case tracking-normal text-amber-800">
+            proposed change, not in force
+          </span>
+        )}
+      </p>
       {a ? (
         <>
           <p className="mt-1 text-sm leading-snug text-slate-800">{a.claim}</p>
           <details className="mt-1.5">
             <summary className="cursor-pointer text-[11px] font-medium text-slate-500 hover:text-slate-700">
-              Evidence, scope and date
+              Source, scope and date
             </summary>
             <div className="mt-1 space-y-0.5 text-[11px] leading-snug text-slate-500">
               <p>
@@ -75,8 +102,8 @@ function EvidenceRow({ row }: { row: CriterionOutcome }) {
           </details>
         </>
       ) : (
-        <p className="mt-1 text-xs leading-snug text-slate-500">
-          Not documented either way. This counts neither for nor against.
+        <p className="mt-1 text-sm leading-snug text-slate-600">
+          We have no finding either way for this option.
         </p>
       )}
     </li>
@@ -84,14 +111,11 @@ function EvidenceRow({ row }: { row: CriterionOutcome }) {
 }
 
 function OutcomeCard({ o }: { o: AlternativeOutcome }) {
-  const border =
-    o.bucket === 'confirmed_match'
-      ? 'border-emerald-300'
-      : o.bucket === 'excluded'
-        ? 'border-rose-300'
-        : 'border-slate-300'
+  // Neutral by default. A green card made alignment, contradiction and unknown
+  // look alike; colour now lives on the finding, where it means something.
+  const border = o.bucket === 'excluded' ? 'border-rose-200' : 'border-slate-200'
   return (
-    <div className={`rounded-xl border-2 bg-white p-4 ${border}`}>
+    <div className={`rounded-xl border bg-white p-4 ${border}`}>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h3 className="text-base font-bold text-slate-900">{o.alternative.product}</h3>
         <Link
@@ -116,7 +140,7 @@ function OutcomeCard({ o }: { o: AlternativeOutcome }) {
       {o.failed.length > 0 && (
         <div className="mt-3">
           <p className="mb-1 text-xs font-bold uppercase tracking-wider text-rose-700">
-            Evidenced not to meet a requirement
+            Why this is ruled out
           </p>
           <ul className="space-y-1.5">
             {o.failed.map((r) => (
@@ -129,7 +153,7 @@ function OutcomeCard({ o }: { o: AlternativeOutcome }) {
       {o.met.length > 0 && (
         <div className="mt-3">
           <p className="mb-1 text-xs font-bold uppercase tracking-wider text-emerald-700">
-            Meets your confirmed requirements
+            Meets what you required
           </p>
           <ul className="space-y-1.5">
             {o.met.map((r) => (
@@ -142,7 +166,7 @@ function OutcomeCard({ o }: { o: AlternativeOutcome }) {
       {o.supportingPriorities.length > 0 && (
         <div className="mt-3">
           <p className="mb-1 text-xs font-bold uppercase tracking-wider text-slate-500">
-            Documented reasons this may suit you
+            Reasons to consider it
           </p>
           <ul className="space-y-1.5">
             {o.supportingPriorities.map((r) => (
@@ -155,7 +179,7 @@ function OutcomeCard({ o }: { o: AlternativeOutcome }) {
       {o.tradeoffs.length > 0 && (
         <div className="mt-3">
           <p className="mb-1 text-xs font-bold uppercase tracking-wider text-amber-700">
-            Documented trade-off
+            Trade-off
           </p>
           <ul className="space-y-1.5">
             {o.tradeoffs.map((r) => (
@@ -169,8 +193,8 @@ function OutcomeCard({ o }: { o: AlternativeOutcome }) {
         <div className="mt-3">
           <p className="mb-1 text-xs font-bold uppercase tracking-wider text-slate-500">
             {o.unresolved.some((r) => r.weight === 'requirement')
-              ? 'Important unknowns — including something you required'
-              : 'Important unknowns'}
+              ? 'We could not check something you required'
+              : 'What we could not check'}
           </p>
           <ul className="space-y-1.5">
             {o.unresolved.map((r) => (
@@ -233,14 +257,176 @@ function OutcomeCard({ o }: { o: AlternativeOutcome }) {
   )
 }
 
+/** One selectable preference. Coverage is shown before the visitor chooses, so
+ *  an empty answer afterwards is never a surprise. */
+function CriterionRow({
+  c,
+  priorities,
+  requirements,
+  onTogglePriority,
+  onToggleRequirement,
+}: {
+  c: (typeof criteria)[number]
+  priorities: string[]
+  requirements: string[]
+  onTogglePriority: () => void
+  onToggleRequirement: () => void
+}) {
+  const on = priorities.includes(c.id)
+  const cov = criterionCoverage(c.id)
+
+  if (c.informational) {
+    return (
+      <li className="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-3">
+        <p className="text-sm font-semibold text-slate-700">{c.label}</p>
+        <p className="mt-0.5 text-xs leading-snug text-slate-600">{c.plain ?? c.concept}</p>
+        <p className="mt-1 text-[11px] text-slate-500">
+          Information only — we have findings for {cov.decided} of {cov.total}, but no single
+          answer is better, so there is nothing here to prefer. See each maker's page.
+        </p>
+      </li>
+    )
+  }
+
+  return (
+    <li className={`rounded-lg border p-3 ${on ? 'border-teal-300 bg-teal-50/40' : 'border-slate-200'}`}>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <label className="flex min-w-0 flex-1 cursor-pointer items-start gap-2">
+          <input type="checkbox" checked={on} onChange={onTogglePriority} className="mt-1" />
+          <span className="min-w-0">
+            <span className="text-sm font-semibold text-slate-800">{c.label}</span>
+            <span className="mt-0.5 block text-xs leading-snug text-slate-600">
+              {c.plain ?? c.concept}
+            </span>
+            <span
+              className={`mt-1 inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                cov.decided === 0
+                  ? 'bg-amber-100 text-amber-800'
+                  : 'bg-slate-100 text-slate-600'
+              }`}
+            >
+              {cov.decided === 0
+                ? 'nothing documented yet'
+                : `documented for ${cov.decided} of ${cov.total}`}
+            </span>
+          </span>
+        </label>
+        {on && (
+          <label className="flex shrink-0 cursor-pointer items-center gap-1.5 text-xs text-slate-700">
+            <input
+              type="checkbox"
+              checked={requirements.includes(c.id)}
+              onChange={onToggleRequirement}
+            />
+            must have
+          </label>
+        )}
+      </div>
+      {(c.does_not_establish || c.distinct_from) && (
+        <details className="mt-1.5">
+          <summary className="cursor-pointer text-[11px] font-medium text-slate-500 hover:text-slate-700">
+            What this does and does not show
+          </summary>
+          <div className="mt-1 space-y-0.5 text-[11px] leading-snug text-slate-500">
+            <p>{c.concept}</p>
+            {c.distinct_from && (
+              <p>
+                <span className="font-semibold">Not the same as:</span> {c.distinct_from}
+              </p>
+            )}
+            {c.does_not_establish && (
+              <p>
+                <span className="font-semibold">Does not establish:</span> {c.does_not_establish}
+              </p>
+            )}
+          </div>
+        </details>
+      )}
+    </li>
+  )
+}
+
+/**
+ * What the selected preferences actually turned up. Counts and names, never a
+ * winner: direction is offered only where one option holds the only documented
+ * finding in favour, and it is stated as one attribute rather than a verdict.
+ */
+function ResultSummary({
+  summaries,
+}: {
+  summaries: ReturnType<typeof summarisePreferences>
+}) {
+  if (summaries.length === 0) return null
+  return (
+    <div className="rounded-xl border border-slate-300 bg-white p-4">
+      <h2 className="text-sm font-bold text-slate-900">What we found</h2>
+      <ul className="mt-2 space-y-3">
+        {summaries.map((sm) => (
+          <li key={sm.criterion.id} className="border-t border-slate-100 pt-3 first:border-0 first:pt-0">
+            <p className="text-sm font-semibold text-slate-800">{sm.criterion.label}</p>
+            <p className="mt-1 text-xs leading-relaxed text-slate-600">
+              {sm.aligned.length > 0 && (
+                <>
+                  <strong className="text-emerald-800">{sm.aligned.length} documented</strong> in
+                  favour — {sm.aligned.map((a) => a.product).join(', ')}.{' '}
+                </>
+              )}
+              {sm.conflicting.length > 0 && (
+                <>
+                  <strong className="text-rose-800">{sm.conflicting.length} documented</strong>{' '}
+                  against — {sm.conflicting.map((a) => a.product).join(', ')}.{' '}
+                </>
+              )}
+              {sm.unresolved.length > 0 && (
+                <>
+                  <strong className="text-slate-700">{sm.unresolved.length}</strong> we could not
+                  establish — {sm.unresolved.map((a) => a.product).join(', ')}.
+                </>
+              )}
+            </p>
+            {sm.soleAligned && (
+              <p className="mt-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-xs leading-snug text-emerald-900">
+                If this is what matters most to you, <strong>{sm.soleAligned.product}</strong> is
+                the only option here with a documented finding in its favour. That is one
+                documented attribute, not an overall assessment of the product.
+              </p>
+            )}
+            {sm.aligned.length === 0 && sm.conflicting.length === 0 && (
+              <p className="mt-1.5 text-xs leading-snug text-slate-500">
+                Nothing is documented either way, so this cannot separate the options. It is a gap
+                in our research, not a mark against any of them.
+              </p>
+            )}
+          </li>
+        ))}
+      </ul>
+      <p className="mt-3 border-t border-slate-100 pt-2 text-xs leading-snug text-slate-500">
+        Every option stays listed below, whatever we found.{' '}
+        <Link to="/about" className="text-teal-700 underline underline-offset-2">
+          How we decide what counts as evidence
+        </Link>
+      </p>
+    </div>
+  )
+}
+
 export function RecommendView() {
   const [functional, setFunctional] = useState<string[]>(['fr_general_chat'])
   const [priorities, setPriorities] = useState<string[]>([])
   const [requirements, setRequirements] = useState<string[]>([])
 
-  const result = useMemo(
-    () => recommend({ functional, priorities, requirements }),
+  const input = useMemo(
+    () => ({ functional, priorities, requirements }),
     [functional, priorities, requirements],
+  )
+  const result = useMemo(() => recommend(input), [input])
+  const summaries = useMemo(() => summarisePreferences(result, input), [result, input])
+
+  const core = criteria.filter((c) => criterionGroup(c) === 'core')
+  const more = criteria.filter((c) => criterionGroup(c) === 'more')
+  // A selection inside the collapsed group must never be hidden from the user.
+  const moreHasSelection = more.some(
+    (c) => priorities.includes(c.id) || requirements.includes(c.id),
   )
 
   const toggle = (list: string[], set: (v: string[]) => void, id: string) =>
@@ -283,9 +469,8 @@ export function RecommendView() {
           ))}
         </div>
         <p className="mt-2 text-xs leading-snug text-slate-500">
-          Functional checks are light and we are honest about it: where a product's capability was
-          taken from our older records rather than confirmed from the provider, it reads as unknown,
-          not as a pass.
+          Where we have not confirmed a capability with the provider, we say so rather than assume
+          it.
         </p>
       </section>
 
@@ -293,117 +478,91 @@ export function RecommendView() {
       <section className="mt-4 rounded-xl border border-slate-200 bg-white p-4">
         <SectionTitle>2 · What matters to you</SectionTitle>
         <p className="mb-3 text-xs leading-snug text-slate-500">
-          These are <strong>preferences</strong>: they explain why an option might suit you, and
-          they never rule anything out. Tick <em>requirement</em> to rule out options the evidence
-          shows do not meet it. Where nothing is documented yet, your requirement still stands —
-          every option is reported as <em>not confirmed</em> rather than treated as meeting it.
+          Tick what you care about. Add <strong>must have</strong> to rule out options we have
+          evidence against.
         </p>
         <ul className="space-y-2">
-          {criteria.map((c) => {
-            const on = priorities.includes(c.id)
-            const assessable = criterionIsAssessable(c.id)
-            return (
-              <li
-                key={c.id}
-                className={`rounded-lg border p-3 ${on ? 'border-teal-300 bg-teal-50/40' : 'border-slate-200'}`}
-              >
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <label className="flex min-w-0 flex-1 cursor-pointer items-start gap-2">
-                    <input
-                      type="checkbox"
-                      checked={on}
-                      onChange={() => toggle(priorities, setPriorities, c.id)}
-                      className="mt-1"
-                    />
-                    <span className="min-w-0">
-                      <span className="text-sm font-semibold text-slate-800">{c.label}</span>
-                      <span className="mt-0.5 block text-xs leading-snug text-slate-600">
-                        {c.plain ?? c.concept}
-                      </span>
-                    </span>
-                  </label>
-                  {on && (
-                    <label
-                      className="flex shrink-0 cursor-pointer items-center gap-1.5 text-xs text-slate-700"
-                      title={
-                        assessable
-                          ? 'Rule out options the evidence shows do not meet this.'
-                          : 'Nothing is documented on this yet. Your requirement will still stand — every option will be reported as not confirmed rather than treated as meeting it.'
-                      }
-                    >
-                      <input
-                        type="checkbox"
-                        checked={requirements.includes(c.id)}
-                        onChange={() => toggle(requirements, setRequirements, c.id)}
-                      />
-                      requirement
-                      {!assessable && (
-                        <span className="text-[10px] text-amber-700">· nothing documented yet</span>
-                      )}
-                    </label>
-                  )}
-                </div>
-                {(c.does_not_establish || c.distinct_from) && (
-                  <details className="mt-1.5">
-                    <summary className="cursor-pointer text-[11px] font-medium text-slate-500 hover:text-slate-700">
-                      What this does and does not show
-                    </summary>
-                    <div className="mt-1 space-y-0.5 text-[11px] leading-snug text-slate-500">
-                      <p>{c.concept}</p>
-                      {c.distinct_from && (
-                        <p>
-                          <span className="font-semibold">Not the same as:</span> {c.distinct_from}
-                        </p>
-                      )}
-                      {c.does_not_establish && (
-                        <p className="text-amber-700">
-                          <span className="font-semibold">Does not establish:</span>{' '}
-                          {c.does_not_establish}
-                        </p>
-                      )}
-                    </div>
-                  </details>
-                )}
-              </li>
-            )
-          })}
+          {core.map((c) => (
+            <CriterionRow
+              key={c.id}
+              c={c}
+              priorities={priorities}
+              requirements={requirements}
+              onTogglePriority={() => toggle(priorities, setPriorities, c.id)}
+              onToggleRequirement={() => toggle(requirements, setRequirements, c.id)}
+            />
+          ))}
         </ul>
+
+        <details className="mt-3" open={moreHasSelection}>
+          <summary className="cursor-pointer text-sm font-semibold text-teal-700 hover:underline">
+            More priorities ({more.length}) — thinner evidence, or no direction to prefer
+          </summary>
+          <ul className="mt-2 space-y-2">
+            {more.map((c) => (
+              <CriterionRow
+                key={c.id}
+                c={c}
+                priorities={priorities}
+                requirements={requirements}
+                onTogglePriority={() => toggle(priorities, setPriorities, c.id)}
+                onToggleRequirement={() => toggle(requirements, setRequirements, c.id)}
+              />
+            ))}
+          </ul>
+        </details>
       </section>
 
       {/* Step 3 — results */}
       {started && (
         <section className="mt-6 space-y-6">
-          {result.blindCriteria.filter((c) => !result.unassessableRequirements.includes(c)).length >
-            0 && (
-            <div className="rounded-xl border border-amber-300 bg-amber-50 p-4">
-              <p className="text-sm font-semibold text-amber-900">
-                Nothing is documented on some of your preferences
-              </p>
-              <p className="mt-1 text-xs leading-snug text-amber-800">
-                {result.blindCriteria
-                  .filter((c) => !result.unassessableRequirements.includes(c))
-                  .map((c) => c.label)
-                  .join('; ')}{' '}
-                — no option has a finding either way, so these cannot separate anyone. We show them
-                so it is clear they are unanswered rather than quietly ignored.
-              </p>
-            </div>
-          )}
+          <ResultSummary summaries={summaries} />
 
           {result.unassessableRequirements.length > 0 && (
             <div className="rounded-xl border-2 border-amber-400 bg-amber-50 p-4">
               <p className="text-sm font-semibold text-amber-900">
-                We cannot assess{' '}
-                {result.unassessableRequirements.length === 1 ? 'a requirement' : 'requirements'}{' '}
-                you set
+                We have no evidence on{' '}
+                {result.unassessableRequirements.length === 1
+                  ? 'one of your must-haves'
+                  : `${result.unassessableRequirements.length} of your must-haves`}
               </p>
-              <p className="mt-1 max-w-3xl text-xs leading-relaxed text-amber-800">
-                <strong>{result.unassessableRequirements.map((c) => c.label).join('; ')}</strong> —
-                no option has a documented finding on this, so we cannot confirm it for any of
-                them. Your requirement stands: we have not turned it into a preference, and nothing
-                is shortlisted as though it were met. Every option below is listed as
-                <em> not confirmed</em> on it.
+              <ul className="mt-1 list-disc space-y-0.5 pl-5 text-sm text-amber-900">
+                {result.unassessableRequirements.map((c) => (
+                  <li key={c.id}>{c.label}</li>
+                ))}
+              </ul>
+              <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-amber-800">
+                We have kept{' '}
+                {result.unassessableRequirements.length === 1 ? 'it' : 'them'} as must-haves, so
+                nothing is shown as meeting{' '}
+                {result.unassessableRequirements.length === 1 ? 'it' : 'them'}.
               </p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setRequirements(
+                      requirements.filter(
+                        (id) => !result.unassessableRequirements.some((c) => c.id === id),
+                      ),
+                    )
+                  }
+                  className="rounded-md border border-amber-400 bg-white px-2.5 py-1 text-xs font-semibold text-amber-900 hover:bg-amber-100"
+                >
+                  Keep it, but not as a must-have
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const ids = result.unassessableRequirements.map((c) => c.id)
+                    setRequirements(requirements.filter((id) => !ids.includes(id)))
+                    setPriorities(priorities.filter((id) => !ids.includes(id)))
+                  }}
+                  className="rounded-md border border-slate-300 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                >
+                  Remove it
+                </button>
+              </div>
             </div>
           )}
 
@@ -416,15 +575,13 @@ export function RecommendView() {
             <p className="mb-2 max-w-3xl text-xs leading-snug text-slate-500">
               {result.hasRequirements ? (
                 <>
-                  Every requirement you set is documented as met for these. That is
-                  <strong> eligibility, not a recommendation</strong> — read the documented
-                  reasons and trade-offs on each card to judge fit.
+                  These meet everything you marked must-have. That is a starting point, not a
+                  recommendation — the reasons and trade-offs on each card are what to judge.
                 </>
               ) : (
                 <>
-                  You have set preferences but no requirements, so nothing here is ruled in or out.
-                  These are all {alternatives.length} options with what the evidence documents for
-                  and against each on what you said matters.
+                  All {alternatives.length} options, with what we found for and against each on
+                  what you picked.
                 </>
               )}
             </p>
@@ -433,12 +590,10 @@ export function RecommendView() {
                 <p className="text-sm font-semibold text-slate-800">
                   No confirmed match among the researched options
                 </p>
-                <p className="mt-1 max-w-2xl text-xs leading-relaxed text-slate-600">
-                  None of the six can be confirmed against everything you asked for. That is a
-                  statement about our evidence, not about the products: it does not establish that
-                  no product meets your needs, and it is not a promise that more research would
-                  find one. The options below are still worth reading — each shows exactly which
-                  requirement is unresolved.
+                <p className="mt-1 max-w-2xl text-sm leading-relaxed text-slate-600">
+                  No option here can be confirmed against everything you asked for. That reflects
+                  what we have researched, not a judgement on the products. Each option below shows
+                  what is missing.
                 </p>
               </div>
             ) : (
@@ -456,9 +611,8 @@ export function RecommendView() {
                 Requirement not confirmed ({result.notConfirmed.length})
               </SectionTitle>
               <p className="mb-2 max-w-3xl text-xs leading-snug text-slate-500">
-                Something you made a requirement cannot be confirmed either way for these. They are
-                <strong> not</strong> shortlisted — an unknown requirement is never shown as
-                satisfied — and they are not ruled out either. Each says exactly what is missing.
+                We could not check something you marked must-have. Not ruled out, not confirmed —
+                each card says what is missing.
               </p>
               <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
                 {result.notConfirmed.map((o) => (
@@ -472,8 +626,7 @@ export function RecommendView() {
             <div>
               <SectionTitle>Ruled out on evidence ({result.excluded.length})</SectionTitle>
               <p className="mb-2 max-w-3xl text-xs leading-snug text-slate-500">
-                Excluded because a finding shows they do not meet something you made a requirement —
-                never because a finding is missing.
+                We have evidence these do not meet something you marked must-have.
               </p>
               <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
                 {result.excluded.map((o) => (
@@ -484,12 +637,10 @@ export function RecommendView() {
           )}
 
           <p className="text-xs leading-relaxed text-slate-500">
-            This preview covers {alternatives.length} products in one category and does not assess
-            capability. Every finding is automated and provisional. See the{' '}
+            {alternatives.length} products in one category. Product quality is not assessed here.{' '}
             <Link to="/about" className="text-teal-700 underline underline-offset-2">
-              methodology
-            </Link>{' '}
-            for how evidence qualifies to drive a decision.
+              How this works
+            </Link>
           </p>
         </section>
       )}

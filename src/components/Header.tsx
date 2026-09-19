@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { AXIS_KEYS } from '../lib/data'
 import { anyCapitalPrioritised } from '../lib/priorities'
 import { usePriorities } from '../lib/prioritiesContext'
@@ -16,6 +16,18 @@ const NAV = [
  *  on the visitor's behalf — or whose selection it is. */
 function PrioritiesChip() {
   const { priorities, chosen } = usePriorities()
+  const { pathname } = useLocation()
+
+  // The recommendation preview keeps its own selections and does not read
+  // these. Showing them there implied unrelated defaults were driving the
+  // results, so the chip stands down and points at where the settings live.
+  if (pathname.startsWith('/recommend')) {
+    return (
+      <span className="text-xs text-slate-500">
+        Preferences for this page are set below
+      </span>
+    )
+  }
   const axisCount = AXIS_KEYS.filter((k) => priorities.weights[k] > 0).length
   const capital = anyCapitalPrioritised(priorities.capital)
 

@@ -260,7 +260,8 @@
       "concept": "Which party can elect or remove directors, separately from economic ownership.",
       "does_not_establish": "Day-to-day operational control.",
       "distinct_from": "Voting power over ordinary resolutions.",
-      "plain": "Which party picks the directors, separately from who owns the shares."
+      "plain": "We have findings on this, but there is no single better answer to prefer — the arrangements differ in kind, not in degree.",
+      "informational": true
     },
     {
       "id": "c_public_benefit",

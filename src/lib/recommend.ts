@@ -49,6 +49,12 @@ export interface PilotCriterion {
   label: string
   /** One plain line under the label. */
   plain?: string
+  /**
+   * True where the criterion asks a question rather than expressing a desired
+   * outcome. We have findings, but there is no direction to prefer, so it is
+   * offered as information and never inferred into a preference.
+   */
+  informational?: boolean
   concept: string
   /** Which of the three identities this criterion can speak to. */
   applies_to: 'product' | 'product_provider' | 'model_release'
@@ -108,6 +114,39 @@ export function criterionIsAssessable(critId: string): boolean {
   return assessments.some(
     (a) => a.criterion === critId && (a.verdict === 'meets' || a.verdict === 'fails'),
   )
+}
+
+/** How many options have a documented finding either way. Shown before the
+ *  visitor chooses, so coverage is not a surprise afterwards. */
+export function criterionCoverage(critId: string): { decided: number; total: number } {
+  const rows = assessments.filter((a) => a.criterion === critId)
+  return {
+    decided: rows.filter((a) => a.verdict !== 'unconfirmed').length,
+    total: alternatives.length,
+  }
+}
+
+/**
+ * Criteria worth offering first: enough coverage to separate options, and an
+ * actual direction to prefer. The rest stay available under "More priorities"
+ * with their coverage on show.
+ */
+export function criterionGroup(c: PilotCriterion): 'core' | 'more' {
+  if (c.informational) return 'more'
+  return criterionCoverage(c.id).decided >= 2 ? 'core' : 'more'
+}
+
+// ---- How a finding reads --------------------------------------------------
+
+export type FindingLabel =
+  | 'Documented alignment'
+  | 'Documented conflict'
+  | 'Not established in our research'
+
+export function findingLabel(verdict: Verdict): FindingLabel {
+  if (verdict === 'meets') return 'Documented alignment'
+  if (verdict === 'fails') return 'Documented conflict'
+  return 'Not established in our research'
 }
 
 // ---- Functional eligibility (light) ---------------------------------------
@@ -287,4 +326,52 @@ export function recommend(input: RecommendationInput): RecommendationResult {
     hasRequirements: input.requirements.length > 0,
     noConfirmedMatch: confirmed.length === 0,
   }
+}
+
+// ---------------------------------------------------------------------------
+// Result summary — what the selected preferences actually turned up.
+//
+// It reports counts and names options. It never nominates a winner, and it
+// offers direction only where a single option holds the only documented
+// finding in favour — stated as one documented attribute, not a verdict.
+// ---------------------------------------------------------------------------
+
+export interface PreferenceSummary {
+  criterion: PilotCriterion
+  aligned: PilotAlternative[]
+  conflicting: PilotAlternative[]
+  unresolved: PilotAlternative[]
+  /** Set only where exactly one eligible option has a documented alignment
+   *  and no other does. Deliberately narrow. */
+  soleAligned: PilotAlternative | null
+}
+
+export function summarisePreferences(
+  result: RecommendationResult,
+  input: RecommendationInput,
+): PreferenceSummary[] {
+  // Counts describe the evidence across every researched option. Reporting only
+  // the survivors would delete a documented finding from "what we found" the
+  // moment some other requirement excluded the option carrying it.
+  const inPlay = new Set(
+    [...result.confirmed, ...result.notConfirmed].map((o) => o.alternative.id),
+  )
+
+  return input.priorities
+    .map((id) => criterionById.get(id))
+    .filter((c): c is PilotCriterion => !!c && !c.informational)
+    .map((criterion) => {
+      const aligned: PilotAlternative[] = []
+      const conflicting: PilotAlternative[] = []
+      const unresolved: PilotAlternative[] = []
+      for (const alt of alternatives) {
+        const v = assessmentFor(alt.id, criterion.id)?.verdict ?? 'unconfirmed'
+        if (v === 'meets') aligned.push(alt)
+        else if (v === 'fails') conflicting.push(alt)
+        else unresolved.push(alt)
+      }
+      // Direction is only worth offering for something the user can still pick.
+      const sole = aligned.length === 1 && inPlay.has(aligned[0].id) ? aligned[0] : null
+      return { criterion, aligned, conflicting, unresolved, soleAligned: sole }
+    })
 }
