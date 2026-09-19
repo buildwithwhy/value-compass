@@ -1,7 +1,7 @@
 {
   "_meta": {
     "title": "Recommendation pilot — everyday AI assistants",
-    "purpose": "One category, six alternatives, eight criteria. Feeds the preview at /recommend. Not a general scoring layer and no aggregate score.",
+    "purpose": "One category, thirteen alternatives, nine criteria. Feeds the preview at /recommend. Not a general scoring layer and no aggregate score.",
     "researched_on": "2026-09-17",
     "provenance": "automated_provisional",
     "provenance_note": "A model read each source; no human re-read them. Nothing is marked human-reviewed.",
@@ -37,10 +37,11 @@
     },
     "corrections_applied": [
       "Anthropic’s statement that exported data cannot be imported into another personal Claude account is account-to-account evidence. It no longer drives cross-service migration, which is a different question with a different destination.",
-      "Cross-service migration is unconfirmed for all six until evidence addresses the destination product and what must transfer.",
+      "Cross-service migration is unconfirmed for every option until evidence addresses the destination product and what must transfer.",
       "A requirement is never downgraded to a preference because evidence is missing. It stays a requirement and returns an explicit unconfirmed state.",
       "Criterion labels are written to be understood on their own; the scope caveats sit in an evidence section rather than in front of the label."
-    ]
+    ],
+    "alternatives_count": 13
   },
   "category": {
     "id": "everyday_assistant",
@@ -48,7 +49,7 @@
     "definition": "A general-purpose conversational assistant used for drafting, summarising, explaining and answering questions.",
     "why_this_category": {
       "user_relevance": "The highest-frequency personal AI choice most people make, and genuinely substitutable.",
-      "evidence_coverage": "Six providers are already makers in this dataset, and official help centres document the product behaviour users care about.",
+      "evidence_coverage": "Ten of the thirteen operators are already makers in this dataset, and official help centres document the product behaviour users care about. Proton, DuckDuckGo and Alibaba have no maker page yet.",
       "honest_caveat": "Capability differences are real and not assessed here."
     }
   },
@@ -96,7 +97,10 @@
         "fr_web": "verified_official_documentation",
         "fr_mobile": "verified_official_documentation",
         "fr_free_entry": "verified_secondary"
-      }
+      },
+      "uses_third_party_models": false,
+      "access_notes": [],
+      "maker_in_directory": true
     },
     {
       "id": "claude",
@@ -118,11 +122,14 @@
       },
       "identity_note": "Runs on web and mobile (iOS and Android) with desktop apps for macOS and Windows. Data export is available on Free, Pro and Max plans, which establishes a free plan exists.",
       "functional": {
-        "fr_general_chat": "verified_official",
-        "fr_web": "verified_official",
-        "fr_mobile": "verified_official",
-        "fr_free_entry": "verified_official"
-      }
+        "fr_general_chat": "verified_official_documentation",
+        "fr_web": "verified_official_documentation",
+        "fr_mobile": "verified_official_documentation",
+        "fr_free_entry": "verified_official_documentation"
+      },
+      "uses_third_party_models": false,
+      "access_notes": [],
+      "maker_in_directory": true
     },
     {
       "id": "gemini",
@@ -149,7 +156,10 @@
         "fr_web": "verified_official_documentation",
         "fr_mobile": "unknown",
         "fr_free_entry": "unknown"
-      }
+      },
+      "uses_third_party_models": false,
+      "access_notes": [],
+      "maker_in_directory": true
     },
     {
       "id": "copilot",
@@ -171,11 +181,20 @@
       },
       "identity_note": "Official page presents 'Microsoft Copilot: Your AI companion' with a chat entry point. Consumer activity history is documented and retained up to eighteen months by default.",
       "functional": {
-        "fr_general_chat": "verified_official",
-        "fr_web": "verified_official",
+        "fr_general_chat": "verified_official_documentation",
+        "fr_web": "verified_official_documentation",
         "fr_mobile": "unknown",
         "fr_free_entry": "unknown"
-      }
+      },
+      "uses_third_party_models": true,
+      "access_notes": [
+        {
+          "label": "Underlying model varies by surface",
+          "detail": "Which model backs Copilot differs between surfaces, so the provider a Copilot user is choosing is itself unresolved.",
+          "source": "Recorded in this pilot's earlier product-identity pass"
+        }
+      ],
+      "maker_in_directory": true
     },
     {
       "id": "le_chat",
@@ -197,11 +216,14 @@
       },
       "identity_note": "The rename is now officially confirmed: Mistral's help centre carries a section titled 'Le Chat is now Vibe'. App-store listings may still show the former name.",
       "functional": {
-        "fr_general_chat": "verified_official",
-        "fr_web": "verified_official",
-        "fr_mobile": "verified_official",
+        "fr_general_chat": "verified_official_documentation",
+        "fr_web": "verified_official_documentation",
+        "fr_mobile": "verified_official_documentation",
         "fr_free_entry": "verified_secondary"
-      }
+      },
+      "uses_third_party_models": false,
+      "access_notes": [],
+      "maker_in_directory": true
     },
     {
       "id": "deepseek_app",
@@ -224,11 +246,267 @@
       },
       "identity_note": "The official domain resolves to a consumer web chat interface.",
       "functional": {
-        "fr_general_chat": "verified_official",
-        "fr_web": "verified_official",
+        "fr_general_chat": "verified_official_documentation",
+        "fr_web": "verified_official_documentation",
         "fr_mobile": "unknown",
         "fr_free_entry": "unknown"
-      }
+      },
+      "uses_third_party_models": false,
+      "access_notes": [],
+      "maker_in_directory": true
+    },
+    {
+      "id": "meta_ai",
+      "product": "Meta AI",
+      "product_provider": {
+        "maker_id": "Meta",
+        "status": "verified_official_documentation",
+        "source": "Meta Help Center, artificial-intelligence articles 943942350800511 and 1314808549771571",
+        "retrieval_status": "ok",
+        "retrieval_note": "Help Center articles fetched directly. meta.ai itself dropped the connection, so identity rests on the Help Center rather than the product page."
+      },
+      "model_provider": {
+        "maker_id": "Meta",
+        "status": "stated_by_provider"
+      },
+      "model_release": {
+        "name": "not established",
+        "status": "unknown",
+        "note": "Meta's Help Center does not name the model serving Meta AI. Meta publishes Llama weights, but no document read here links a named Llama release to this product."
+      },
+      "identity_note": "Meta's assistant, as a standalone app and website and inside Meta's other apps. Meta states the apps and websites “are not yet available everywhere”.",
+      "uses_third_party_models": false,
+      "access_notes": [
+        {
+          "label": "Regional availability is limited",
+          "detail": "Meta states the Meta AI and Vibes apps and websites “are not yet available everywhere”.",
+          "source": "Meta Help Center article 943942350800511"
+        }
+      ],
+      "functional": {
+        "fr_general_chat": "verified_official_documentation",
+        "fr_web": "verified_official_documentation",
+        "fr_mobile": "verified_official_documentation",
+        "fr_free_entry": "verified_secondary"
+      },
+      "maker_in_directory": true
+    },
+    {
+      "id": "grok",
+      "product": "Grok",
+      "product_provider": {
+        "maker_id": "xAI",
+        "status": "verified_official_documentation",
+        "source": "docs.x.ai/grok/faq",
+        "retrieval_status": "partial",
+        "retrieval_note": "docs.x.ai was fetched directly and refers to the company as xAI. x.ai itself returned HTTP 403, and its pages currently carry the site title “SpaceXAI”, which could not be confirmed from the primary page."
+      },
+      "model_provider": {
+        "maker_id": "xAI",
+        "status": "stated_by_provider"
+      },
+      "model_release": {
+        "name": "not established",
+        "status": "unknown",
+        "note": "The consumer FAQ names platforms and plans but not the model release serving grok.com."
+      },
+      "identity_note": "Assistant on grok.com, iOS and Android. Since February 2026 xAI has been reported as a wholly owned subsidiary of SpaceX, with Grok and X moved under a unit branded SpaceXAI. SpaceX is private and files no proxy, so the ownership change is reported, not confirmed from a filing.",
+      "uses_third_party_models": false,
+      "access_notes": [
+        {
+          "label": "Account required",
+          "detail": "Access is via an X or email account.",
+          "source": "x.ai product pages, read through search indexing after a 403"
+        }
+      ],
+      "functional": {
+        "fr_general_chat": "verified_official_documentation",
+        "fr_web": "verified_official_documentation",
+        "fr_mobile": "verified_official_documentation",
+        "fr_free_entry": "verified_official_documentation"
+      },
+      "maker_in_directory": true
+    },
+    {
+      "id": "perplexity",
+      "product": "Perplexity",
+      "product_provider": {
+        "maker_id": "Perplexity",
+        "status": "verified_secondary",
+        "source": "Perplexity Help Center article 10354919 and perplexity.ai/hub/pricing",
+        "retrieval_status": "blocked",
+        "retrieval_note": "perplexity.ai help-center paths returned HTTP 403 to automated fetches. The articles are officially published and were read through search indexing of them, the same treatment given to OpenAI's help centre in this pilot."
+      },
+      "model_provider": {
+        "maker_id": "multiple",
+        "status": "verified_secondary",
+        "note": "Perplexity orchestrates third-party models — OpenAI, Google, Anthropic and NVIDIA are named — alongside its own Sonar model. Paid tiers let the user pick a model per query."
+      },
+      "model_release": {
+        "name": "user-selectable; third-party frontier models plus in-house Sonar",
+        "status": "verified_secondary",
+        "note": "Which release backs the free tier at a given moment is not documented."
+      },
+      "identity_note": "A search-first assistant that answers with citations. Choosing it is largely a choice of operator rather than of model maker.",
+      "uses_third_party_models": true,
+      "access_notes": [
+        {
+          "label": "Free tier has weekly limits",
+          "detail": "Perplexity describes the free tier as including top models with limited weekly usage.",
+          "source": "Perplexity Help Center article 10354919"
+        }
+      ],
+      "functional": {
+        "fr_general_chat": "verified_secondary",
+        "fr_web": "verified_secondary",
+        "fr_mobile": "verified_secondary",
+        "fr_free_entry": "verified_secondary"
+      },
+      "maker_in_directory": true
+    },
+    {
+      "id": "kimi",
+      "product": "Kimi",
+      "product_provider": {
+        "maker_id": "Moonshot",
+        "status": "verified_official_documentation",
+        "source": "kimi.com and Moonshot AI's Kimi K2 release post",
+        "retrieval_status": "partial",
+        "retrieval_note": "kimi.com was fetched but served a largely Chinese-language app shell; the model and platform facts come from Moonshot's own K2 release post and repositories."
+      },
+      "model_provider": {
+        "maker_id": "Moonshot",
+        "status": "verified_official_documentation"
+      },
+      "model_release": {
+        "name": "Kimi K2 (selectable); K3 currently headlined",
+        "status": "verified_official_documentation",
+        "note": "Moonshot states Kimi users on web and mobile can select the K2 model for free. K2-Instruct weights are published; the current headline K3 was not established as published."
+      },
+      "identity_note": "Assistant from Beijing-based Moonshot AI, on web and mobile. Moonshot is already a maker in this directory; its consumer product was missing from the pilot.",
+      "uses_third_party_models": false,
+      "access_notes": [],
+      "functional": {
+        "fr_general_chat": "verified_official_documentation",
+        "fr_web": "verified_official_documentation",
+        "fr_mobile": "verified_official_documentation",
+        "fr_free_entry": "verified_official_documentation"
+      },
+      "maker_in_directory": true
+    },
+    {
+      "id": "qwen_chat",
+      "product": "Qwen Chat",
+      "product_provider": {
+        "maker_id": "Alibaba",
+        "status": "verified_secondary",
+        "source": "chat.qwen.ai and the QwenLM/Qwen3 repository, which identifies the Qwen team as part of Alibaba Cloud",
+        "retrieval_status": "partial",
+        "retrieval_note": "chat.qwen.ai served a mobile app landing shell naming the product “Qwen Studio” rather than “Qwen Chat”. The rename could not be confirmed from an official announcement."
+      },
+      "model_provider": {
+        "maker_id": "Alibaba",
+        "status": "stated_by_provider"
+      },
+      "model_release": {
+        "name": "not established",
+        "status": "unknown",
+        "note": "Alibaba publishes Qwen3 weights under Apache-2.0, but which release serves the consumer chat is not documented."
+      },
+      "identity_note": "Alibaba Cloud's consumer assistant. Alibaba is not currently a maker in this directory, so no maker page backs this entry.",
+      "uses_third_party_models": false,
+      "access_notes": [],
+      "functional": {
+        "fr_general_chat": "verified_secondary",
+        "fr_web": "verified_secondary",
+        "fr_mobile": "verified_secondary",
+        "fr_free_entry": "verified_secondary"
+      },
+      "maker_in_directory": false
+    },
+    {
+      "id": "lumo",
+      "product": "Lumo",
+      "product_provider": {
+        "maker_id": "Proton",
+        "status": "verified_official_documentation",
+        "source": "proton.me/lumo and Proton Support articles “Lumo models and reasoning modes” and “Lumo privacy”",
+        "retrieval_status": "ok",
+        "retrieval_note": "All three pages fetched directly. lumo.proton.me/about 301-redirects to proton.me/lumo."
+      },
+      "model_provider": {
+        "maker_id": "multiple",
+        "status": "verified_official_documentation",
+        "note": "Proton documents three selectable models: Lumo 2.0 Lite, Lumo 2.0 Max and Apertus 1.5. It names a publisher only for Apertus — researchers at EPFL, ETH Zurich and the Swiss National Supercomputing Centre. The publisher and licence of the two Lumo-branded models are not documented."
+      },
+      "model_release": {
+        "name": "Apertus 1.5 (selectable); Lumo 2.0 Lite / Max (default)",
+        "status": "verified_official_documentation",
+        "note": "Apertus v1.5 weights are published by the Swiss AI Initiative on Hugging Face under Apache-2.0. The Lumo-branded defaults are not traced to a published release."
+      },
+      "identity_note": "Privacy-first assistant from Proton, launched 2025-07-23. Web, iOS and Android. Proton is not currently a maker in this directory, so no maker page backs this entry.",
+      "uses_third_party_models": true,
+      "access_notes": [
+        {
+          "label": "Usable without an account, but nothing is kept",
+          "detail": "Proton states that as a guest “your conversation is erased at the end of each session”.",
+          "source": "Proton Support, “Lumo privacy”"
+        },
+        {
+          "label": "Free plan limits messages and history",
+          "detail": "Proton describes the free plan as limited messages, chat history and Max model usage.",
+          "source": "proton.me/lumo"
+        }
+      ],
+      "functional": {
+        "fr_general_chat": "verified_official_documentation",
+        "fr_web": "verified_official_documentation",
+        "fr_mobile": "verified_official_documentation",
+        "fr_free_entry": "verified_official_documentation"
+      },
+      "maker_in_directory": false
+    },
+    {
+      "id": "duckai",
+      "product": "Duck.ai",
+      "product_provider": {
+        "maker_id": "DuckDuckGo",
+        "status": "verified_official_documentation",
+        "source": "duckduckgo.com/duckduckgo-help-pages/aichat/ and its “Recent chats” sub-page",
+        "retrieval_status": "ok",
+        "retrieval_note": "Both help pages fetched directly."
+      },
+      "model_provider": {
+        "maker_id": "multiple",
+        "status": "verified_official_documentation",
+        "note": "DuckDuckGo publishes none of the models. It describes Duck.ai as conversations with “3rd-party AI chat models, anonymized by us”, naming Anthropic, Mistral AI, OpenAI and Tinfoil.sh."
+      },
+      "model_release": {
+        "name": "user-selectable; free tier includes gpt-oss-120b and Gemma 4 31B alongside hosted Claude, GPT and Mistral models",
+        "status": "verified_official_documentation",
+        "note": "gpt-oss-120b is published by OpenAI under Apache-2.0. The hosted proprietary models are not self-hostable and the Gemma terms were not read."
+      },
+      "identity_note": "An anonymising layer in front of other companies' models rather than a model maker's own product. DuckDuckGo is not currently a maker in this directory, so no maker page backs this entry.",
+      "uses_third_party_models": true,
+      "access_notes": [
+        {
+          "label": "No account required",
+          "detail": "The free tier needs no account.",
+          "source": "DuckDuckGo help pages, Duck.ai"
+        },
+        {
+          "label": "History lives on your device",
+          "detail": "DuckDuckGo states chats are “stored locally on your device”, not on its servers; clearing browser data can remove them.",
+          "source": "DuckDuckGo help pages, Duck.ai “Recent chats”"
+        }
+      ],
+      "functional": {
+        "fr_general_chat": "verified_official_documentation",
+        "fr_web": "verified_official_documentation",
+        "fr_mobile": "verified_official_documentation",
+        "fr_free_entry": "verified_official_documentation"
+      },
+      "maker_in_directory": false
     }
   ],
   "criteria": [
@@ -888,13 +1166,13 @@
     {
       "alternative": "deepseek_app",
       "criterion": "c_model_hosting",
-      "verdict": "unconfirmed",
-      "claim": "DeepSeek-R1 weights are published under the MIT licence and downloadable, permitting commercial use, modification and derivatives.",
+      "verdict": "meets",
+      "claim": "DeepSeek's API changelog states “The GA release of DeepSeek-V4-Pro has been rolled out on the APP, Web, and API.” DeepSeek publishes DeepSeek-V4-Pro weights on Hugging Face under the MIT licence.",
       "claim_type": "established_outcome",
-      "source": "DeepSeek-R1 repository licence and model card",
-      "source_date": "licence current 2026-09-17",
-      "scope": "The R1 model release only. Which model the consumer app serves is not established, so this does not answer whether a user could host what they are actually using.",
-      "uncertainty": "The licence finding is solid. The link from model release to product is missing.",
+      "source": "api-docs.deepseek.com/updates; Hugging Face deepseek-ai/DeepSeek-V4-Pro (licence MIT)",
+      "source_date": "read 2026-09-19",
+      "scope": "Links the consumer app to a named release and that release to a published licence. Self-hosting a 1.7-trillion-parameter model is permitted, not practical for most people. Establishes only that the model weights can be run. It does not establish that the assistant service can be reproduced or self-hosted — the search layer, retrieval, tools, apps and moderation around the model are not in the weights.",
+      "uncertainty": "The changelog groups APP, Web and API in one sentence rather than stating the app's model separately. Corrected from the previous pass, which recorded the app's routing as unverified — that was a gap in our research, not a property of the product.",
       "provenance": "automated_provisional",
       "status": "in_force"
     },
@@ -1027,6 +1305,825 @@
       "scope": null,
       "uncertainty": "Counts neither way.",
       "provenance": "automated_provisional"
+    },
+    {
+      "alternative": "meta_ai",
+      "criterion": "c_individual_majority_voting",
+      "verdict": "fails",
+      "claim": "Meta's own proxy statement says: “Because Mr. Zuckerberg controls a majority of our outstanding voting power, we are a ‘controlled company’ under the corporate governance rules of Nasdaq.”",
+      "claim_type": "established_outcome",
+      "source": "Meta Platforms, Inc. DEF 14A filed 2026-04-16 (meta-20260416.htm), read on SEC EDGAR",
+      "source_date": "2026-04-16",
+      "scope": "Voting power at Meta Platforms, Inc., the operator of Meta AI.",
+      "uncertainty": "Read from the filing itself. It states the fact of majority control without a percentage in the section read.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "meta_ai",
+      "criterion": "c_founder_bloc_majority_voting",
+      "verdict": "fails",
+      "claim": "The same filing settles it: a co-founder controls a majority of voting power alone, so the founders as a group do too.",
+      "claim_type": "established_outcome",
+      "source": "Meta Platforms, Inc. DEF 14A filed 2026-04-16",
+      "source_date": "2026-04-16",
+      "scope": "Follows from the individual finding rather than a separate founder-bloc disclosure. Unlike Alphabet, where the two questions have opposite answers, here one person already clears the bar alone.",
+      "uncertainty": "The combined founder holding is not separately stated; it does not need to be for this verdict.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "meta_ai",
+      "criterion": "c_board_election_rights",
+      "verdict": "meets",
+      "claim": "Meta reports itself a “controlled company” under Nasdaq rules on the basis of Mr. Zuckerberg's majority voting power, which is what decides board elections.",
+      "claim_type": "established_outcome",
+      "source": "Meta Platforms, Inc. DEF 14A filed 2026-04-16",
+      "source_date": "2026-04-16",
+      "scope": "Establishes who controls board election. Which specific Nasdaq governance exemptions Meta takes as a controlled company was not read.",
+      "uncertainty": "Low on the control point; the exemptions were not read.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "meta_ai",
+      "criterion": "c_public_benefit",
+      "verdict": "unconfirmed",
+      "claim": "No public-benefit mechanism is recorded for this provider.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Meta's certificate of incorporation was not read. An absence of record, not a finding that none exists.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "meta_ai",
+      "criterion": "c_commitment_continuity",
+      "verdict": "unconfirmed",
+      "claim": "No adopted-then-withdrawn public-benefit commitment is recorded for this provider.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "meta_ai",
+      "criterion": "c_content_export",
+      "verdict": "meets",
+      "claim": "Meta AI offers a self-serve export: Settings → Data & privacy → Manage your information → Download your information → Export your information, in “machine readable HTML or JSON format”. You have four days to download it once ready, and it may take up to 30 days to receive the link.",
+      "claim_type": "established_outcome",
+      "source": "Meta Help Center, artificial-intelligence article 1314808549771571",
+      "source_date": "read 2026-09-19",
+      "scope": "Meta AI and AI glasses device information. Meta states the file “won't include content that you've deleted from your Meta AI account”.",
+      "uncertainty": "Read directly from the Help Center article.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "meta_ai",
+      "criterion": "c_account_transfer",
+      "verdict": "unconfirmed",
+      "claim": "Meta documents importing Meta.ai data into its newer Meta.ai experience, which is a move between product versions rather than between two accounts at the same provider.",
+      "claim_type": "third_party_report",
+      "source": "Meta Help Center, artificial-intelligence article 23891956840393175 (title read)",
+      "source_date": "read 2026-09-19",
+      "scope": null,
+      "uncertainty": "The documented feature does not answer this criterion.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "meta_ai",
+      "criterion": "c_service_migration",
+      "verdict": "unconfirmed",
+      "claim": "Meta's export tool can send an export to an external service as well as to your device, but the documented destinations are storage providers rather than a competing assistant.",
+      "claim_type": "third_party_report",
+      "source": "Meta Help Center, artificial-intelligence article 1314808549771571",
+      "source_date": "read 2026-09-19",
+      "scope": "The destination list itself was not enumerated.",
+      "uncertainty": "Sending a file to third-party storage does not establish that the history can be used in a competitor's product. Recorded as unconfirmed rather than stretched into a match.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "meta_ai",
+      "criterion": "c_model_hosting",
+      "verdict": "unconfirmed",
+      "claim": "Meta's Help Center does not name the model serving Meta AI, so no published release can be attached to this product.",
+      "claim_type": "third_party_report",
+      "source": "Meta Help Center, artificial-intelligence article 943942350800511",
+      "source_date": "read 2026-09-19",
+      "scope": null,
+      "uncertainty": "Meta publishes Llama weights, but that is a fact about Meta, not about this product. Treating it as portability here would repeat the error this pilot already corrected for Mistral.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "grok",
+      "criterion": "c_individual_majority_voting",
+      "verdict": "unconfirmed",
+      "claim": "Voting power at this provider is not established. xAI is reported to be a wholly owned subsidiary of SpaceX, which is privately held and files no proxy statement.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "grok",
+      "criterion": "c_founder_bloc_majority_voting",
+      "verdict": "unconfirmed",
+      "claim": "Founder voting power at this provider is not established.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "grok",
+      "criterion": "c_board_election_rights",
+      "verdict": "unconfirmed",
+      "claim": "Who appoints and removes the board of the controlling entity is not established.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "grok",
+      "criterion": "c_public_benefit",
+      "verdict": "unconfirmed",
+      "claim": "No public-benefit mechanism is recorded for this provider.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "grok",
+      "criterion": "c_commitment_continuity",
+      "verdict": "unconfirmed",
+      "claim": "No adopted-then-withdrawn public-benefit commitment is recorded for this provider.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "grok",
+      "criterion": "c_account_transfer",
+      "verdict": "unconfirmed",
+      "claim": "Account-to-account transfer is not documented.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "grok",
+      "criterion": "c_service_migration",
+      "verdict": "unconfirmed",
+      "claim": "Moving Grok conversations into another company's product is not documented.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "grok",
+      "criterion": "c_content_export",
+      "verdict": "unconfirmed",
+      "claim": "The consumer FAQ covers deleting files and chats but documents no export or download of your conversations.",
+      "claim_type": "third_party_report",
+      "source": "docs.x.ai/grok/faq",
+      "source_date": "read 2026-09-19",
+      "scope": null,
+      "uncertainty": "Silence on export is not a denial. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "grok",
+      "criterion": "c_model_hosting",
+      "verdict": "unconfirmed",
+      "claim": "The model release serving grok.com is not documented, so no published release can be attached to this product.",
+      "claim_type": "third_party_report",
+      "source": "docs.x.ai/grok/faq",
+      "source_date": "read 2026-09-19",
+      "scope": null,
+      "uncertainty": "Earlier Grok weights have been published, but no document read here links a named release to the current consumer product.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "perplexity",
+      "criterion": "c_individual_majority_voting",
+      "verdict": "unconfirmed",
+      "claim": "Voting power at this provider is not established. Perplexity is privately held and publishes no ownership table.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Perplexity's help centre refused automated fetches (403), so coverage here is thinner than for products whose documentation we could read. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "perplexity",
+      "criterion": "c_founder_bloc_majority_voting",
+      "verdict": "unconfirmed",
+      "claim": "Founder voting power at this provider is not established.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Perplexity's help centre refused automated fetches (403), so coverage here is thinner than for products whose documentation we could read. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "perplexity",
+      "criterion": "c_board_election_rights",
+      "verdict": "unconfirmed",
+      "claim": "Who appoints and removes Perplexity's board is not established.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Perplexity's help centre refused automated fetches (403), so coverage here is thinner than for products whose documentation we could read. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "perplexity",
+      "criterion": "c_public_benefit",
+      "verdict": "unconfirmed",
+      "claim": "No public-benefit mechanism is recorded for this provider.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Perplexity's help centre refused automated fetches (403), so coverage here is thinner than for products whose documentation we could read. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "perplexity",
+      "criterion": "c_commitment_continuity",
+      "verdict": "unconfirmed",
+      "claim": "No adopted-then-withdrawn public-benefit commitment is recorded for this provider.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Perplexity's help centre refused automated fetches (403), so coverage here is thinner than for products whose documentation we could read. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "perplexity",
+      "criterion": "c_content_export",
+      "verdict": "unconfirmed",
+      "claim": "Export of your threads is not documented.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Perplexity's help centre refused automated fetches (403), so coverage here is thinner than for products whose documentation we could read. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "perplexity",
+      "criterion": "c_account_transfer",
+      "verdict": "unconfirmed",
+      "claim": "Account-to-account transfer is not documented.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Perplexity's help centre refused automated fetches (403), so coverage here is thinner than for products whose documentation we could read. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "perplexity",
+      "criterion": "c_service_migration",
+      "verdict": "unconfirmed",
+      "claim": "Moving Perplexity threads into another company's product is not documented.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Perplexity's help centre refused automated fetches (403), so coverage here is thinner than for products whose documentation we could read. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "perplexity",
+      "criterion": "c_model_hosting",
+      "verdict": "unconfirmed",
+      "claim": "Perplexity orchestrates other companies' frontier models plus its own Sonar model, and does not document a published release backing the consumer product.",
+      "claim_type": "third_party_report",
+      "source": "Perplexity Help Center article 10354919, read through search indexing",
+      "source_date": "read 2026-09-19",
+      "scope": null,
+      "uncertainty": "Self-hosting a model would in any case not reproduce Perplexity's search and citation layer, which is what the product is.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "kimi",
+      "criterion": "c_individual_majority_voting",
+      "verdict": "unconfirmed",
+      "claim": "Voting power at this provider is not established. Moonshot AI is privately held.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "kimi",
+      "criterion": "c_founder_bloc_majority_voting",
+      "verdict": "unconfirmed",
+      "claim": "Founder voting power at this provider is not established.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "kimi",
+      "criterion": "c_board_election_rights",
+      "verdict": "unconfirmed",
+      "claim": "Who appoints and removes Moonshot AI's board is not established.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "kimi",
+      "criterion": "c_public_benefit",
+      "verdict": "unconfirmed",
+      "claim": "No public-benefit mechanism is recorded for this provider.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "kimi",
+      "criterion": "c_commitment_continuity",
+      "verdict": "unconfirmed",
+      "claim": "No adopted-then-withdrawn public-benefit commitment is recorded for this provider.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "kimi",
+      "criterion": "c_content_export",
+      "verdict": "unconfirmed",
+      "claim": "Export of your conversations is not documented.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "kimi",
+      "criterion": "c_account_transfer",
+      "verdict": "unconfirmed",
+      "claim": "Account-to-account transfer is not documented.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "kimi",
+      "criterion": "c_service_migration",
+      "verdict": "unconfirmed",
+      "claim": "Moving Kimi conversations into another company's product is not documented.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "kimi",
+      "criterion": "c_model_hosting",
+      "verdict": "meets",
+      "claim": "Moonshot states that Kimi users on web and mobile can select the K2 model for free, and publishes Kimi-K2-Instruct weights on Hugging Face. The licence is MIT with one addition: products above 100 million monthly active users or $20 million monthly revenue “shall prominently display ‘Kimi K2’ on the user interface”. Nothing there restricts an individual running it.",
+      "claim_type": "established_outcome",
+      "source": "Moonshot AI's Kimi K2 release post; Hugging Face moonshotai/Kimi-K2-Instruct LICENSE, read in full",
+      "source_date": "read 2026-09-19",
+      "scope": "Applies to the selectable K2 option. Kimi currently headlines K3, which was not established as published. Establishes only that the model weights can be run. It does not establish that the assistant service can be reproduced or self-hosted — the search layer, retrieval, tools, apps and moderation around the model are not in the weights.",
+      "uncertainty": "The licence text was read directly, which resolves the “modified MIT might restrict use” question this pilot previously left open for a different provider.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "qwen_chat",
+      "criterion": "c_individual_majority_voting",
+      "verdict": "unconfirmed",
+      "claim": "Voting power at this provider is not established. Alibaba is publicly listed and files an annual report, which was not read in this pass.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "qwen_chat",
+      "criterion": "c_founder_bloc_majority_voting",
+      "verdict": "unconfirmed",
+      "claim": "Founder voting power at this provider is not established.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "qwen_chat",
+      "criterion": "c_board_election_rights",
+      "verdict": "unconfirmed",
+      "claim": "Board appointment rights at this provider are not established. Alibaba's partnership structure is documented in its annual report, which was not read in this pass.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "qwen_chat",
+      "criterion": "c_public_benefit",
+      "verdict": "unconfirmed",
+      "claim": "No public-benefit mechanism is recorded for this provider.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "qwen_chat",
+      "criterion": "c_commitment_continuity",
+      "verdict": "unconfirmed",
+      "claim": "No adopted-then-withdrawn public-benefit commitment is recorded for this provider.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "qwen_chat",
+      "criterion": "c_content_export",
+      "verdict": "unconfirmed",
+      "claim": "Export of your conversations is not documented.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "qwen_chat",
+      "criterion": "c_account_transfer",
+      "verdict": "unconfirmed",
+      "claim": "Account-to-account transfer is not documented.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "qwen_chat",
+      "criterion": "c_service_migration",
+      "verdict": "unconfirmed",
+      "claim": "Moving Qwen conversations into another company's product is not documented.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "qwen_chat",
+      "criterion": "c_model_hosting",
+      "verdict": "unconfirmed",
+      "claim": "Alibaba publishes Qwen3 weights under Apache-2.0, but which release serves the consumer chat is not documented, so the licence cannot be attached to this product.",
+      "claim_type": "third_party_report",
+      "source": "QwenLM/Qwen3 repository and Qwen3 model cards",
+      "source_date": "read 2026-09-19",
+      "scope": null,
+      "uncertainty": "The same discipline applied to Meta and Llama: a published model is a fact about the maker, not about the product.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "lumo",
+      "criterion": "c_individual_majority_voting",
+      "verdict": "meets",
+      "claim": "Proton's largest voting shareholder is the non-profit Proton Foundation, and Proton states that “no change of control can occur without the consent of the foundation”.",
+      "claim_type": "company_statement",
+      "source": "Proton blog, proton.me/blog/proton-non-profit-foundation",
+      "source_date": "2024-06-17",
+      "scope": "Proton AG, the operator of Lumo. A largest voting shareholder that is not a person precludes any individual holding a majority.",
+      "uncertainty": "Proton publishes no ownership table or percentage split, so this rests on its own statement rather than a filing. Weaker evidence than a proxy statement.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "lumo",
+      "criterion": "c_founder_bloc_majority_voting",
+      "verdict": "unconfirmed",
+      "claim": "The three founders jointly endowed the Proton Foundation with a donation of Proton shares. Their combined remaining voting stake is not published.",
+      "claim_type": "company_statement",
+      "source": "Proton blog, proton.me/blog/proton-non-profit-foundation",
+      "source_date": "2024-06-17",
+      "scope": "Proton AG.",
+      "uncertainty": "The donation is documented; the residual founder holding is not.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "lumo",
+      "criterion": "c_board_election_rights",
+      "verdict": "meets",
+      "claim": "Control sits with a Swiss non-profit foundation whose trustees are, in Proton's words, “legally obligated to act in accordance with the purpose for which they were established” — here, defending Proton's original mission.",
+      "claim_type": "company_statement",
+      "source": "Proton blog, proton.me/blog/proton-non-profit-foundation",
+      "source_date": "2024-06-17",
+      "scope": "Describes the foundation's mandate. Proton does not publish who appoints or removes the trustees.",
+      "uncertainty": "The appointment mechanism — the part that would show how accountable the trustees are — is exactly what is missing.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "lumo",
+      "criterion": "c_public_benefit",
+      "verdict": "meets",
+      "claim": "Proton AG's controlling shareholder is a non-profit foundation bound by Swiss law to the purpose it was established for, which Proton describes as making “irrevocable our wish that Proton remains in perpetuity an organization that places people ahead of profits”.",
+      "claim_type": "company_statement",
+      "source": "Proton blog, proton.me/blog/proton-non-profit-foundation",
+      "source_date": "2024-06-17",
+      "scope": "The binding duty sits on the foundation's trustees, not on Proton AG's own directors: Proton AG remains a Swiss for-profit company. Structurally this resembles OpenAI's arrangement — a non-profit controlling a for-profit — and is recorded on the same basis.",
+      "uncertainty": "Read from Proton's own description, not from the foundation's deed or a register entry.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "lumo",
+      "criterion": "c_commitment_continuity",
+      "verdict": "unconfirmed",
+      "claim": "No adopted-then-withdrawn public-benefit commitment is recorded for this provider.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "lumo",
+      "criterion": "c_content_export",
+      "verdict": "unconfirmed",
+      "claim": "Proton's Lumo privacy documentation describes zero-access encryption and per-device storage but documents no way to export or download your conversations.",
+      "claim_type": "third_party_report",
+      "source": "Proton Support, “Lumo privacy”",
+      "source_date": "read 2026-09-19",
+      "scope": "Lumo specifically. Other Proton services document their own export routes; those were not read and do not transfer to Lumo.",
+      "uncertainty": "Proton's Lumo privacy page covers deletion and guest-mode erasure and is silent on export. Silence is not a denial, and this counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "lumo",
+      "criterion": "c_account_transfer",
+      "verdict": "unconfirmed",
+      "claim": "Account-to-account transfer of Lumo conversations is not documented.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "lumo",
+      "criterion": "c_service_migration",
+      "verdict": "unconfirmed",
+      "claim": "Moving Lumo conversations into another company's product is not documented.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "lumo",
+      "criterion": "c_model_hosting",
+      "verdict": "meets",
+      "claim": "Proton documents Apertus 1.5 as a model you can select inside Lumo, describing it as “an independent, fully open large language model (LLM) developed by researchers at EPHL, ETH Zurich, and the Swiss National Supercomputing Centre (CSCS)”. Apertus v1.5 weights are published on Hugging Face under Apache-2.0 and are downloadable for self-hosting.",
+      "claim_type": "established_outcome",
+      "source": "Proton Support, “Lumo models and reasoning modes”; Hugging Face swiss-ai/Apertus-v1.5-70B (licence apache-2.0)",
+      "source_date": "read 2026-09-19",
+      "scope": "Applies to the Apertus option only — Proton documents no publisher or licence for its default Lumo 2.0 models. Establishes only that the model weights can be run. It does not establish that the assistant service can be reproduced or self-hosted — the search layer, retrieval, tools, apps and moderation around the model are not in the weights. In particular, Lumo's zero-access encryption is a property of Proton's service, not of the weights.",
+      "uncertainty": "Proton spells the institution “EPHL”; EPFL is meant.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "duckai",
+      "criterion": "c_individual_majority_voting",
+      "verdict": "unconfirmed",
+      "claim": "Voting power at this provider is not established. DuckDuckGo is privately held and publishes no ownership table.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "duckai",
+      "criterion": "c_founder_bloc_majority_voting",
+      "verdict": "unconfirmed",
+      "claim": "Founder voting power at this provider is not established.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "duckai",
+      "criterion": "c_board_election_rights",
+      "verdict": "unconfirmed",
+      "claim": "Who appoints and removes DuckDuckGo's board is not established.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "duckai",
+      "criterion": "c_public_benefit",
+      "verdict": "unconfirmed",
+      "claim": "No public-benefit mechanism is recorded for this provider.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "duckai",
+      "criterion": "c_commitment_continuity",
+      "verdict": "unconfirmed",
+      "claim": "No adopted-then-withdrawn public-benefit commitment is recorded for this provider.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "duckai",
+      "criterion": "c_account_transfer",
+      "verdict": "unconfirmed",
+      "claim": "Account-to-account transfer is not documented, and the free tier has no account.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "duckai",
+      "criterion": "c_service_migration",
+      "verdict": "unconfirmed",
+      "claim": "Moving Duck.ai chats into another company's product is not documented.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "duckai",
+      "criterion": "c_content_export",
+      "verdict": "unconfirmed",
+      "claim": "DuckDuckGo documents that “your Duck.ai chats and settings are stored locally on your device” and can be synced end-to-end encrypted between your own devices, but documents no export or download of a conversation.",
+      "claim_type": "third_party_report",
+      "source": "DuckDuckGo help pages, Duck.ai “Recent chats”",
+      "source_date": "read 2026-09-19",
+      "scope": "Because chats never reach DuckDuckGo's servers there is also nothing for the operator to export — a different situation from a provider holding your history and not offering it back. The criterion cannot tell the two apart.",
+      "uncertainty": "Local storage is not an export route, and DuckDuckGo does not describe one.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "duckai",
+      "criterion": "c_model_hosting",
+      "verdict": "meets",
+      "claim": "Duck.ai's free tier includes gpt-oss-120b, whose weights OpenAI publishes on Hugging Face under Apache-2.0 with documented local deployment via vLLM, Ollama and LM Studio.",
+      "claim_type": "established_outcome",
+      "source": "DuckDuckGo help pages, Duck.ai; Hugging Face openai/gpt-oss-120b (licence apache-2.0)",
+      "source_date": "read 2026-09-19",
+      "scope": "Applies to that one model option; the Claude, GPT, Mistral and Gemma models Duck.ai also offers are not established as self-hostable and the Gemma terms were not read. Establishes only that the model weights can be run. It does not establish that the assistant service can be reproduced or self-hosted — the search layer, retrieval, tools, apps and moderation around the model are not in the weights. Running the weights yourself would not reproduce Duck.ai's anonymising layer, which is the thing most of its users are choosing.",
+      "uncertainty": "DuckDuckGo names the model on its own help page, which is what links product to release.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
     }
   ]
 }

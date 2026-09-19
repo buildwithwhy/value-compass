@@ -1,4 +1,5 @@
 import pilotRaw from '../data/recommendation-pilot.json'
+import makersRaw from '../data/makers.json'
 
 // ---------------------------------------------------------------------------
 // Recommendation preview — deliberately small.
@@ -30,6 +31,13 @@ export interface ProviderRef {
   note?: string
 }
 
+/** A documented limit on getting at the product at all — not a capability. */
+export interface AccessNote {
+  label: string
+  detail: string
+  source: string
+}
+
 export interface PilotAlternative {
   id: string
   product: string
@@ -41,6 +49,19 @@ export interface PilotAlternative {
   model_release: { name: string; status: string; note?: string }
   identity_note: string
   functional: Record<string, string>
+  /**
+   * True where the operator serves models it does not publish. Worth showing
+   * plainly: it means the governance you are choosing and the model you are
+   * talking to belong to different companies.
+   */
+  uses_third_party_models?: boolean
+  access_notes?: AccessNote[]
+  /**
+   * Whether the operator has a page in the maker directory. Computed from
+   * makers.json when the pilot is built, so it cannot drift from the
+   * directory by being authored twice.
+   */
+  maker_in_directory?: boolean
 }
 
 export interface PilotCriterion {
@@ -63,6 +84,15 @@ export interface PilotCriterion {
   distinct_from?: string
   supported: boolean
   unsupported_note?: string
+}
+
+const makerIds = new Set<string>(
+  ((makersRaw as any).makers as Array<{ id: string }>).map((m) => m.id),
+)
+
+/** Does this operator have a maker page to link to? */
+export function makerInDirectory(makerId: string): boolean {
+  return makerIds.has(makerId)
 }
 
 export type Verdict = 'meets' | 'fails' | 'unconfirmed'
@@ -94,6 +124,53 @@ export const assessments = raw.assessments as Assessment[]
 
 export const criterionById = new Map(criteria.map((c) => [c.id, c]))
 export const alternativeById = new Map(alternatives.map((a) => [a.id, a]))
+
+/**
+ * The vocabulary a functional record may use. Kept explicit because a value
+ * outside it silently reads as "not verified" — which is how a third spelling
+ * of "verified_official_documentation" quietly turned four researched
+ * capabilities into gaps.
+ */
+export const FUNCTIONAL_STATUSES = [
+  'verified_official_documentation',
+  'verified_secondary',
+  'unknown',
+] as const
+
+function isVerified(v: string | undefined): boolean {
+  return v === 'verified_official_documentation' || v === 'verified_secondary'
+}
+
+/**
+ * Capabilities every alternative in the category is verified to have. They are
+ * the price of entry rather than a distinction, so cards state the ones that
+ * differ and the page states these once.
+ */
+export const baselineCapabilityIds = new Set(
+  functionalRequirements
+    .filter((f) => alternatives.every((a) => isVerified(a.functional[f.id])))
+    .map((f) => f.id),
+)
+
+/**
+ * The task/capability tags we have actually verified for an alternative.
+ *
+ * These are the same researched functional records the filters use — not a new
+ * benchmark. A tag missing here means we did not verify it, NOT that the
+ * product lacks it, and nothing about relative quality is implied: two products
+ * carrying the same tag have not been compared on how well they do it.
+ */
+export function verifiedCapabilities(
+  alt: PilotAlternative,
+): { id: string; label: string; secondhand: boolean }[] {
+  return functionalRequirements
+    .filter((f) => isVerified(alt.functional[f.id]))
+    .map((f) => ({
+      id: f.id,
+      label: f.label,
+      secondhand: alt.functional[f.id] === 'verified_secondary',
+    }))
+}
 
 export function assessmentFor(altId: string, critId: string): Assessment | undefined {
   return assessments.find((a) => a.alternative === altId && a.criterion === critId)
@@ -156,12 +233,11 @@ export type FunctionalState = 'confirmed' | 'unknown'
 /** Light, and honest about its own weakness: "assumed_from_dataset" is not a
  *  confirmation, so it reads as unknown rather than as a pass. */
 export function functionalState(alt: PilotAlternative, reqId: string): FunctionalState {
-  const v = alt.functional[reqId]
-  return v === 'verified_official' ||
-    v === 'verified_official_documentation' ||
-    v === 'verified_secondary'
-    ? 'confirmed'
-    : 'unknown'
+  // One definition of "verified", shared with the capability tags. The records
+  // previously carried two spellings of the same status; they are normalised in
+  // the data and FUNCTIONAL_STATUSES is asserted in the tests so a third cannot
+  // reappear and read as unknown.
+  return isVerified(alt.functional[reqId]) ? 'confirmed' : 'unknown'
 }
 
 // ---- The result --------------------------------------------------------

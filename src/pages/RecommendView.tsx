@@ -7,17 +7,21 @@ import {
   criterionGroup,
   findingLabel,
   functionalRequirements,
+  baselineCapabilityIds,
+  makerInDirectory,
   pilotCategory,
   pilotMeta,
   recommend,
   summarisePreferences,
+  verifiedCapabilities,
   type AlternativeOutcome,
   type CriterionOutcome,
+  type PilotAlternative,
 } from '../lib/recommend'
 import { SectionTitle } from '../components/ui'
 
 // ---------------------------------------------------------------------------
-// Recommendation preview. One category, six researched alternatives.
+// Recommendation preview. One category, a researched set of alternatives.
 //
 // It shows what the evidence can and cannot support. There is no overall
 // score, no ranking number, and an unconfirmed option is presented as a real
@@ -110,6 +114,66 @@ function EvidenceRow({ row, showAsk = true }: { row: CriterionOutcome; showAsk?:
   )
 }
 
+/**
+ * Enough to tell two products apart before reading any finding: who runs it,
+ * whose model answers you, what we verified it can do, and what stops you
+ * getting at it. None of this is a quality comparison — see the note rendered
+ * under the tags.
+ */
+function ProductFacts({ alt }: { alt: PilotAlternative }) {
+  // Tags every option shares are the category's price of entry, not a way to
+  // tell two products apart. They are stated once for the page instead.
+  const caps = verifiedCapabilities(alt).filter((c) => !baselineCapabilityIds.has(c.id))
+  const modelKnown =
+    alt.model_provider.maker_id !== 'unknown' && alt.model_release.status !== 'unknown'
+  return (
+    <div className="mt-0.5 space-y-1.5">
+      <p className="text-xs text-slate-500">
+        Operated by {alt.product_provider.maker_id}
+        {alt.uses_third_party_models && (
+          <>
+            {' · '}
+            <span className="font-medium text-slate-600">
+              answers come from other companies&rsquo; models
+            </span>
+          </>
+        )}
+      </p>
+
+      {caps.length > 0 && (
+        <div className="flex flex-wrap gap-1">
+          {caps.map((c) => (
+            <span
+              key={c.id}
+              title={c.secondhand ? 'Verified from secondary sources' : 'Verified from the provider'}
+              className="rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] font-medium text-slate-600"
+            >
+              {c.label}
+              {c.secondhand && <span className="text-slate-400"> *</span>}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {alt.access_notes && alt.access_notes.length > 0 && (
+        <ul className="space-y-0.5">
+          {alt.access_notes.map((n) => (
+            <li key={n.label} className="text-[11px] leading-snug text-amber-800">
+              {n.label}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {modelKnown && (
+        <p className="text-[11px] leading-snug text-slate-500">
+          Model: {alt.model_release.name}
+        </p>
+      )}
+    </div>
+  )
+}
+
 function OutcomeCard({ o }: { o: AlternativeOutcome }) {
   // Neutral by default. A green card made alignment, contradiction and unknown
   // look alike; colour now lives on the finding, where it means something.
@@ -118,16 +182,22 @@ function OutcomeCard({ o }: { o: AlternativeOutcome }) {
     <div className={`rounded-xl border bg-white p-4 ${border}`}>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h3 className="text-base font-bold text-slate-900">{o.alternative.product}</h3>
-        <Link
-          to={`/maker/${encodeURIComponent(o.alternative.product_provider.maker_id)}`}
-          className="text-xs text-teal-700 hover:underline"
-        >
-          {o.alternative.product_provider.maker_id} ↗
-        </Link>
+        {/* Only link where a maker page actually exists. Three operators here
+            are not in the directory, and a dead link would imply otherwise. */}
+        {makerInDirectory(o.alternative.product_provider.maker_id) ? (
+          <Link
+            to={`/maker/${encodeURIComponent(o.alternative.product_provider.maker_id)}`}
+            className="text-xs text-teal-700 hover:underline"
+          >
+            {o.alternative.product_provider.maker_id} ↗
+          </Link>
+        ) : (
+          <span className="text-xs text-slate-400">
+            {o.alternative.product_provider.maker_id} · no maker page yet
+          </span>
+        )}
       </div>
-      <p className="mt-0.5 text-xs text-slate-500">
-        Operated by {o.alternative.product_provider.maker_id}
-      </p>
+      <ProductFacts alt={o.alternative} />
 
       {o.functionalGaps.length > 0 && (
         <p className="mt-2 rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-xs leading-snug text-amber-900">
@@ -443,9 +513,10 @@ export function RecommendView() {
         </span>
       </div>
       <p className="mt-1 max-w-3xl text-sm leading-relaxed text-slate-600">
-        {pilotCategory.definition} Six alternatives were researched on{' '}
-        {pilotMeta.researched_on}. There is no overall score here: the preview tells you what the
-        evidence supports, what it cannot answer, and what you would be deciding blind.
+        {pilotCategory.definition} {alternatives.length} alternatives were researched, most
+        recently on {pilotMeta.researched_on}. There is no overall score here and nothing has
+        been tested for quality: the preview tells you what the evidence supports, what it cannot
+        answer, and what you would be deciding blind.
       </p>
 
       {/* Step 1 — function */}
@@ -637,7 +708,12 @@ export function RecommendView() {
           )}
 
           <p className="text-xs leading-relaxed text-slate-500">
-            {alternatives.length} products in one category. Product quality is not assessed here.{' '}
+            {alternatives.length} products in one category. All of them are verified to work as a
+            general-purpose assistant in a browser without a developer account, so cards show only
+            the capabilities that differ. Tags say a product does something, never how well —
+            nothing here has been tested or compared for quality — and a tag we have not verified
+            is simply absent rather than denied. An asterisk marks one confirmed only from
+            secondary sources.{' '}
             <Link to="/about" className="text-teal-700 underline underline-offset-2">
               How this works
             </Link>

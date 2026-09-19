@@ -1,6 +1,6 @@
 # Recommendation preview
 
-The preview is at **`/recommend`**: one category, six researched alternatives, nine criteria.
+The preview is at **`/recommend`**: one category, thirteen researched alternatives, nine criteria.
 It computes no score and produces no ranking.
 
 Research 2026-09-17. Records in
@@ -10,15 +10,170 @@ is **automated and provisional** — a model read a source; no human re-read one
 ```bash
 npm install
 npm run dev          # → http://localhost:5173/#/recommend
-npm test             # 94 checks, 67 on the recommendation engine
+npm test             # 109 checks, 82 on the recommendation engine
 ```
 
-Nothing is deployed. `main` and the live site are untouched; this is all on
-`fix/evidence-eligibility`.
+Nothing is pushed or deployed. The work is committed to local `main`; `origin/main` and the
+live site are untouched.
 
 ---
 
-## Presentation pass (latest)
+## Catalogue expansion (latest)
+
+Seven products added, taking the pilot from six to thirteen. No new criteria, no scoring, no
+redesign.
+
+### What was already in the maker directory
+
+The directory holds 18 makers. Four of them had an everyday assistant that the pilot simply
+did not list — the familiar options a visitor would expect to compare:
+
+| Maker | Already in directory | Product now in the pilot |
+|---|---|---|
+| Meta | yes, with an FMTI transparency score of 31/100 | **Meta AI** |
+| xAI | yes, with an FMTI transparency score of 14/100 | **Grok** |
+| Perplexity | yes | **Perplexity** |
+| Moonshot AI | yes | **Kimi** |
+
+These now attach to the existing maker entity by `maker_id` rather than creating a second
+record, so the maker page and the pilot card cannot drift apart. A regression check asserts
+it.
+
+### What is newly available, and from operators with no maker page
+
+Three operators are not in the directory at all. They are included anyway — missing
+governance evidence is recorded as unknown, not treated as a reason to exclude a product:
+
+| Product | Operator | In directory | What it adds |
+|---|---|---|---|
+| **Lumo** | Proton | no | The only option controlled by a non-profit foundation |
+| **Duck.ai** | DuckDuckGo | no | Third-party models behind an anonymising operator; no account |
+| **Qwen Chat** | Alibaba | no | A large listed operator whose filings we have not yet read |
+
+Their cards say **“no maker page yet”** instead of linking to a page that does not exist.
+
+### What each addition actually contributes
+
+- **Meta AI** — the first *documented conflict* on individual control, from Meta's own DEF 14A
+  filed 2026-04-16: *“Because Mr. Zuckerberg controls a majority of our outstanding voting
+  power, we are a ‘controlled company’…”*. Before this, that criterion had two matches and no
+  evidenced failure, so it could not rule anything out. It also has documented export, so it
+  is not uniformly bad.
+- **Lumo** — Proton's controlling shareholder is a non-profit foundation, legally bound under
+  Swiss law to its purpose. It matches on individual control, board rights and public benefit.
+  It is **not** flattered throughout: Proton documents no way to export your conversations.
+- **Duck.ai** — an operator that publishes none of the models it serves. Its free tier
+  includes an Apache-2.0 model. Ownership is opaque, so every governance criterion is unknown.
+- **Kimi** — resolves a question this pilot previously left open. Moonshot's “Modified MIT”
+  licence was read in full: the only deviation is that products above 100M monthly active
+  users or $20M monthly revenue must display “Kimi K2”. Nothing restricts an individual.
+- **Grok, Perplexity, Qwen Chat** — familiar products a visitor would expect to see. All three
+  are thin on governance evidence and say so.
+
+### The fairness check changed an existing record
+
+Before crediting the new entries with the only self-hosting matches, we went back to the
+original six. **DeepSeek qualifies too**: its changelog states *“The GA release of
+DeepSeek-V4-Pro has been rolled out on the APP, Web, and API,”* and those weights are MIT on
+Hugging Face. The previous pass recorded the app's routing as unverified — that was a gap in
+our research, not a property of the product.
+
+Mistral stays unconfirmed: Vibe runs “flagship Mistral models” with no named release.
+
+### Scope: a hostable model is not a reproducible service
+
+Every self-hosting match now carries the same sentence, asserted by a test:
+
+> It does not establish that the assistant service can be reproduced or self-hosted — the
+> search layer, retrieval, tools, apps and moderation around the model are not in the weights.
+
+This matters most where the service *is* the point: running gpt-oss-120b yourself does not
+reproduce Duck.ai's anonymising layer, and running Apertus does not reproduce Lumo's
+zero-access encryption.
+
+### Product distinctions on the cards
+
+Each card now shows the operator, whether answers come from **other companies' models**,
+the model release where established, verified capability tags, and access constraints
+(“No account required”, “Regional availability is limited”, “Usable without an account, but
+nothing is kept”).
+
+Capability tags shared by all thirteen are the category's price of entry, so they are stated
+once for the page and the cards show only what differs. Nothing implies comparative
+performance: no product has been tested, and the page says so.
+
+### A latent trap this surfaced
+
+The functional records carried two spellings of the same status, `verified_official` and
+`verified_official_documentation`. The existing filter accepted both; the new capability tags
+accepted only one, which would have turned eleven researched capabilities into silent gaps.
+The data is normalised to one spelling and a test now asserts the whole vocabulary, so a third
+spelling fails loudly instead of quietly reading as unknown.
+
+### Two scenarios, and whether the expansion helps
+
+**“No one person should be able to override the board.”** Before: two matches, no evidenced
+failures, nothing ruled out. After: **three match** (Gemini, Copilot, Lumo), **one is ruled
+out** on Meta's own filing, nine remain unknown. The criterion now discriminates in both
+directions, and Lumo is an option most people would not have considered. *The expansion
+improves this decision.*
+
+**“I want to be able to leave.”** Before: nothing documented for any option. After: four
+documented matches (DeepSeek, Kimi, Lumo, Duck.ai) — but all four are matches on the *model*,
+and cross-service migration is still unconfirmed for all thirteen. Someone who means “take my
+conversations elsewhere” gets no more help than before, and the two privacy-first additions
+are among the seven with no documented export at all. *The expansion does not improve this
+decision.* It documents a different question more thoroughly.
+
+### Expected products still missing, and why
+
+| Product | Why not included |
+|---|---|
+| Pi (Inflection) | Consumer product effectively wound down after the 2024 Microsoft hire; existence as a live everyday assistant not established |
+| HuggingChat | Could not establish it is still operating as a consumer assistant |
+| Brave Leo | Browser-bound assistant; not established as usable as a standalone everyday assistant |
+| Copilot (Apple/Siri) | Assistant embedded in an OS rather than a substitutable product in this category |
+| Ernie (Baidu), Doubao (ByteDance) | Plausible category members; not researched in this pass |
+
+Nothing was excluded for having thin governance evidence.
+
+### Coverage after the expansion
+
+| Criterion | Documented | Match / conflict |
+|---|---|---|
+| You can download your own conversations | 6 of 13 | 6 match |
+| Who can appoint and remove the board *(informational)* | 4 of 13 | — |
+| You could run the model yourself | 4 of 13 | 4 match |
+| No single person holds more than half the votes | 4 of 13 | 3 match, **1 conflict** |
+| A legal duty to weigh more than shareholder returns | 3 of 13 | 3 match |
+| The founders together hold less than half the votes | 3 of 13 | 1 match, **2 conflicts** |
+| Past public-benefit promises have been kept | 1 of 13 | 1 conflict |
+| Move content to another account, same provider | 1 of 13 | 1 conflict |
+| Move content to a different company's product | **0 of 13** | — |
+
+### Screenshots
+
+![Input](screenshots/20-input-expanded.jpg)
+
+![Product distinctions](screenshots/21-product-distinctions.jpg)
+
+![Documented exclusion](screenshots/22-documented-exclusion.jpg)
+
+### Research gaps that still block useful guidance
+
+1. **Cross-service migration, all thirteen.** Still zero. The portability question most people
+   actually mean.
+2. **Export for the seven undocumented**, including both privacy-first additions.
+3. **Alibaba's filings.** A listed company with a published annual report and a distinctive
+   partnership board structure, unread.
+4. **SpaceX's acquisition of xAI.** Reported February 2026; SpaceX files no proxy, so Grok's
+   ownership cannot be established to this pilot's standard. The directory still lists xAI as
+   a standalone maker.
+5. **Which model serves each product**, for Meta AI, Grok, Qwen Chat and Perplexity.
+
+---
+
+## Presentation pass
 
 Six changes to how `/recommend` reads. No new research, no scoring, nothing deployed.
 Screenshots `10`–`14` show the current state; `00`–`06` are the previous pass, kept for
