@@ -76,6 +76,14 @@ export interface PilotCriterion {
    * offered as information and never inferred into a preference.
    */
   informational?: boolean
+  /**
+   * Supporting evidence rather than a headline question. Still selectable and
+   * still capable of excluding when made a must-have — it simply stops being
+   * what a motivation leads with. Share-voting findings sit here: they are the
+   * best-sourced governance evidence we have and the worst summary of "who am
+   * I empowering".
+   */
+  nested?: boolean
   concept: string
   /** Which of the three identities this criterion can speak to. */
   applies_to: 'product' | 'product_provider' | 'model_release'
@@ -441,37 +449,47 @@ export interface Motivation {
 
 export const motivations: Motivation[] = [
   {
-    id: 'm_benefit',
-    question: 'Who benefits from my spending on AI?',
-    blurb:
-      'Whether a provider is under any documented obligation to weigh people other than its shareholders.',
-    criterionIds: ['c_public_benefit'],
-    limits: [
-      'A duty to weigh other interests is not a record of money actually reaching anyone.',
-      'Who controls a company is a separate question from who is paid by it — that one sits under power below.',
-    ],
-    gap:
-      'This is the thinnest motivation we have. Nothing in this pilot covers revenue share, creator or worker compensation, or where subscription money goes. One criterion is not an answer to the question.',
-  },
-  {
     id: 'm_power',
-    question: 'How concentrated is power in the companies I support?',
-    blurb: 'Specific, documented voting and control arrangements at the operating company.',
+    question: 'Who am I empowering with this choice?',
+    blurb: 'What kind of company sits behind the product, and what it is obliged to weigh.',
     criterionIds: [
+      'c_ownership_shape',
+      'c_public_benefit',
       'c_individual_majority_voting',
       'c_founder_bloc_majority_voting',
       'c_board_election_rights',
     ],
     limits: [
-      'Holding no voting majority does not mean holding no control of the board. These are separate questions and we record them separately.',
-      'A founder group and an individual are different: a bloc needs its members to agree, an individual does not.',
-      'Nine of thirteen operators are private or unread, so most answers here are unknown rather than reassuring.',
+      'Ownership shape is shown as information, not as a ranking. A foundation and a listed company are different, not better and worse.',
+      'None of this establishes where your money ends up. Who controls a company and who is paid by it are separate questions.',
+      'Holding no voting majority does not mean holding no control of the board.',
+    ],
+    gap:
+      'Sourced for six of thirteen. The maker directory holds ownership attributes for more, but without per-attribute sources, so they are not used here.',
+  },
+  {
+    id: 'm_control',
+    question: 'How much control do I keep — and can I leave?',
+    blurb:
+      'Whether your conversations train the model, whether you can stop that yourself, and whether you can take your history with you.',
+    criterionIds: [
+      'c_training_default',
+      'c_training_control',
+      'c_content_export',
+      'c_account_transfer',
+      'c_service_migration',
+      'c_model_hosting',
+    ],
+    limits: [
+      'Training, retention and advertising are separate uses. Stopping one does not stop the others, and several providers say so explicitly.',
+      'Exporting a file is not the same as using it somewhere else.',
+      'Being able to run a model yourself is not being able to reproduce the service built around it.',
     ],
   },
   {
-    id: 'm_commitments',
-    question: 'What commitments do providers make to people affected by their technology?',
-    blurb: 'Whether a public-benefit commitment, once adopted, has been kept.',
+    id: 'm_conduct',
+    question: 'Have they behaved consistently with what they say?',
+    blurb: 'Whether a commitment, once adopted, has been kept.',
     criterionIds: ['c_commitment_continuity'],
     limits: [
       'A commitment is a statement of intent, not evidence of any outcome.',
@@ -479,21 +497,6 @@ export const motivations: Motivation[] = [
     ],
     gap:
       'Only one option has a documented finding, and it is a withdrawal. Absence of a finding for the other twelve is absence of research, not a clean record.',
-  },
-  {
-    id: 'm_leaving',
-    question: 'Could I leave, and take my things with me?',
-    blurb: 'Practical portability: getting your history out, and moving it somewhere else.',
-    criterionIds: [
-      'c_content_export',
-      'c_account_transfer',
-      'c_service_migration',
-      'c_model_hosting',
-    ],
-    limits: [
-      'Exporting a file is not the same as using it somewhere else.',
-      'Being able to run a model yourself is not being able to reproduce the service built around it.',
-    ],
   },
 ]
 

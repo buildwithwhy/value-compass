@@ -999,14 +999,14 @@ describe('motivations are starting questions, not bundles', () => {
   })
 
   it('does not imply worker or creator coverage the dataset lacks', () => {
-    const commitments = motivations.find((m) => m.id === 'm_commitments')!
-    expect(commitments.limits.join(' ')).toMatch(/workers|creators/i)
+    const conduct = motivations.find((m) => m.id === 'm_conduct')!
+    expect(conduct.limits.join(' ')).toMatch(/workers|creators/i)
   })
 
   it('keeps ownership separate from where the money goes', () => {
-    const benefit = motivations.find((m) => m.id === 'm_benefit')!
-    expect(benefit.gap).toMatch(/revenue share|compensation|subscription/i)
-    expect(benefit.limits.join(' ')).toMatch(/separate question/i)
+    const power = motivations.find((m) => m.id === 'm_power')!
+    expect(power.limits.join(' ')).toMatch(/where your money ends up/i)
+    expect(power.limits.join(' ')).toMatch(/separate questions/i)
   })
 
   it('keeps voting power separate from board control', () => {
@@ -1016,13 +1016,150 @@ describe('motivations are starting questions, not bundles', () => {
   })
 
   it('does not treat a commitment as evidence of an outcome', () => {
-    const commitments = motivations.find((m) => m.id === 'm_commitments')!
-    expect(commitments.limits.join(' ')).toMatch(/not evidence of any outcome/i)
+    const conduct = motivations.find((m) => m.id === 'm_conduct')!
+    expect(conduct.limits.join(' ')).toMatch(/not evidence of any outcome/i)
   })
 
   it('keeps export and portability reachable', () => {
-    const leaving = motivations.find((m) => m.id === 'm_leaving')!
-    expect(leaving.criterionIds).toContain('c_content_export')
-    expect(leaving.criterionIds).toContain('c_service_migration')
+    const control = motivations.find((m) => m.id === 'm_control')!
+    expect(control.criterionIds).toContain('c_content_export')
+    expect(control.criterionIds).toContain('c_service_migration')
+  })
+
+  it('advertises no value dimension it cannot yet answer', () => {
+    // Connected actors and where economic value goes are real research areas,
+    // but they live in the roadmap doc until they have coverage. The live
+    // product must not offer a question it cannot answer.
+    for (const m of motivations) {
+      for (const id of m.criterionIds) {
+        expect(criteria.some((c) => c.id === id)).toBe(true)
+      }
+      expect(motivationCoverage(m).documented).toBeGreaterThan(0)
+    }
+  })
+})
+
+// ---------------------------------------------------------------------------
+// 13. Training on your data
+// ---------------------------------------------------------------------------
+
+describe('the training criteria model the user outcome, not the mechanism', () => {
+  it('treats never-trained and opt-in alike on the default question', () => {
+    // Lumo and Duck.ai never train; Claude trains only where the user allows.
+    // All three give the user the same substantive outcome.
+    for (const id of ['lumo', 'duckai', 'claude']) {
+      expect(assessmentFor(id, 'c_training_default')?.verdict).toBe('meets')
+    }
+  })
+
+  it('records default-on providers as a documented conflict', () => {
+    const on = ['chatgpt', 'gemini', 'copilot', 'le_chat', 'grok', 'perplexity',
+                'deepseek_app', 'kimi', 'qwen_chat']
+    for (const id of on) {
+      expect(assessmentFor(id, 'c_training_default')?.verdict).toBe('fails')
+    }
+    expect(assessmentFor('meta_ai', 'c_training_default')?.verdict).toBe('unconfirmed')
+  })
+
+  it('does not require a toggle where there is nothing to switch off', () => {
+    // The control criterion asks whether the user can stay out alone. Lumo and
+    // Duck.ai meet it by outcome; recording them unconfirmed would be wrong.
+    for (const id of ['lumo', 'duckai']) {
+      const a = assessmentFor(id, 'c_training_control')
+      expect(a?.verdict).toBe('meets')
+      expect(a?.scope).toMatch(/outcome rather than by a setting/i)
+    }
+  })
+
+  it('leaves email-only opt-outs unresolved rather than failed', () => {
+    // Naming a contact route is not evidence that no setting exists.
+    for (const id of ['deepseek_app', 'kimi', 'qwen_chat']) {
+      const a = assessmentFor(id, 'c_training_control')
+      expect(a?.verdict).toBe('unconfirmed')
+      expect(a?.claim).toMatch(/email|customer service|notifying/i)
+      // The mechanism survives as evidence rather than being flattened away.
+      expect(a?.uncertainty).toMatch(/not evidence that no setting exists/i)
+    }
+  })
+
+  it('keeps the two questions genuinely distinct', () => {
+    // A provider can train by default and still give you a switch.
+    for (const id of ['chatgpt', 'gemini', 'copilot', 'grok', 'perplexity', 'le_chat']) {
+      expect(assessmentFor(id, 'c_training_default')?.verdict).toBe('fails')
+      expect(assessmentFor(id, 'c_training_control')?.verdict).toBe('meets')
+    }
+  })
+
+  it('separates on the default question, documented both ways', () => {
+    const input = { functional: F, priorities: ['c_training_default'], requirements: [] }
+    const [sep] = buildGuidance(recommend(input), input).separations
+    expect(sep.separates).toBe(true)
+    expect(sep.aligned).toHaveLength(3)
+    expect(sep.conflicting).toHaveLength(9)
+    expect(sep.unresolved).toHaveLength(1)
+  })
+
+  it('preserves the detailed mechanism as evidence under every finding', () => {
+    for (const alt of alternatives) {
+      for (const c of ['c_training_default', 'c_training_control']) {
+        const a = assessmentFor(alt.id, c)!
+        expect(a.claim.length).toBeGreaterThan(40)
+        expect(a.source.length).toBeGreaterThan(0)
+      }
+    }
+  })
+})
+
+describe('ownership shape is shown, never ranked', () => {
+  it('is informational, so it can never become a preference', () => {
+    const shape = criteria.find((c) => c.id === 'c_ownership_shape')!
+    expect(shape.informational).toBe(true)
+    const input = { functional: F, priorities: ['c_ownership_shape'], requirements: [] }
+    expect(buildGuidance(recommend(input), input).separations).toHaveLength(0)
+  })
+
+  it('only records a shape where this pilot has sourced it', () => {
+    // makers.json carries independence_type for ten operators, but
+    // capital_profile has no sources field. Importing it would put unsourced
+    // directory claims behind a recommendation.
+    const documented = alternatives.filter(
+      (a) => assessmentFor(a.id, 'c_ownership_shape')?.verdict === 'meets',
+    )
+    expect(documented.map((a) => a.id).sort()).toEqual(
+      ['chatgpt', 'claude', 'copilot', 'gemini', 'lumo', 'meta_ai'].sort(),
+    )
+  })
+
+  it('never claims a shape implies anything about where money goes', () => {
+    for (const alt of alternatives) {
+      const a = assessmentFor(alt.id, 'c_ownership_shape')!
+      if (a.verdict === 'meets') expect(a.scope).toMatch(/where revenue ends up/i)
+    }
+  })
+})
+
+describe('share-voting findings support rather than lead', () => {
+  it('marks them nested', () => {
+    for (const id of ['c_individual_majority_voting', 'c_founder_bloc_majority_voting',
+                      'c_board_election_rights', 'c_model_hosting']) {
+      expect(criteria.find((c) => c.id === id)?.nested).toBe(true)
+    }
+  })
+
+  it('leaves them fully able to exclude when chosen as a must-have', () => {
+    // Nested means "not what the section leads with", not "declawed".
+    const input = {
+      functional: F,
+      priorities: ['c_individual_majority_voting'],
+      requirements: ['c_individual_majority_voting'],
+    }
+    expect(recommend(input).excluded.map((o) => o.alternative.id)).toEqual(['meta_ai'])
+  })
+
+  it('does not put a nested criterion at the head of any motivation', () => {
+    for (const m of motivations) {
+      const first = criteria.find((c) => c.id === m.criterionIds[0])!
+      expect(first.nested).not.toBe(true)
+    }
   })
 })

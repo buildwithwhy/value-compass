@@ -632,7 +632,10 @@ function MotivationSection({
   onToggleRequirement: (id: string) => void
 }) {
   const cs = m.criterionIds.map((id) => criterionById.get(id)!).filter(Boolean)
+  const lead = cs.filter((c) => !c.nested)
+  const nested = cs.filter((c) => c.nested)
   const chosen = cs.filter((c) => priorities.includes(c.id) || requirements.includes(c.id))
+  const nestedChosen = nested.some((c) => priorities.includes(c.id) || requirements.includes(c.id))
   const cov = motivationCoverage(m)
 
   return (
@@ -668,7 +671,7 @@ function MotivationSection({
           </p>
         )}
         <ul className="space-y-2">
-          {cs.map((c) => (
+          {lead.map((c) => (
             <CriterionRow
               key={c.id}
               c={c}
@@ -679,6 +682,28 @@ function MotivationSection({
             />
           ))}
         </ul>
+
+        {/* Supporting evidence. Selectable and fully capable of excluding when
+            made a must-have — just not what the question leads with. */}
+        {nested.length > 0 && (
+          <details className="mt-2" open={nestedChosen}>
+            <summary className="cursor-pointer text-xs font-semibold text-teal-700 hover:underline">
+              Supporting evidence ({nested.length}) — narrower questions underneath this one
+            </summary>
+            <ul className="mt-2 space-y-2">
+              {nested.map((c) => (
+                <CriterionRow
+                  key={c.id}
+                  c={c}
+                  priorities={priorities}
+                  requirements={requirements}
+                  onTogglePriority={() => onTogglePriority(c.id)}
+                  onToggleRequirement={() => onToggleRequirement(c.id)}
+                />
+              ))}
+            </ul>
+          </details>
+        )}
       </div>
     </details>
   )
