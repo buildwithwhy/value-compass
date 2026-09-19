@@ -3,20 +3,25 @@ import { Link } from 'react-router-dom'
 import {
   alternatives,
   criteria,
+  criterionById,
   criterionCoverage,
-  criterionGroup,
   findingLabel,
   functionalRequirements,
   baselineCapabilityIds,
   makerInDirectory,
+  motivationCoverage,
+  motivations,
   pilotCategory,
   pilotMeta,
   recommend,
-  summarisePreferences,
+  buildGuidance,
   verifiedCapabilities,
   type AlternativeOutcome,
   type CriterionOutcome,
+  type Guidance,
+  type Motivation,
   type PilotAlternative,
+  type PreferenceSummary,
 } from '../lib/recommend'
 import { SectionTitle } from '../components/ui'
 
@@ -416,60 +421,184 @@ function CriterionRow({
   )
 }
 
+/** "A", "A and B", "A, B and C" — criterion labels and product names are both
+ *  read as prose here, so a bare comma-join reads as a typo. */
+function joinNames(names: string[]): string {
+  if (names.length <= 1) return names[0] ?? ''
+  return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`
+}
+
+/** Labels are whole sentences, so quote them rather than fold them into ours. */
+const quoted = (labels: string[]) => joinNames(labels.map((l) => `\u201C${l}\u201D`))
+
+/** One criterion, and who is documented where. */
+function SeparationRow({ sm }: { sm: PreferenceSummary }) {
+  const nothing = sm.aligned.length === 0 && sm.conflicting.length === 0
+  return (
+    <li className="border-t border-slate-100 pt-3 first:border-0 first:pt-0">
+      <p className="text-sm font-semibold text-slate-800">{sm.criterion.label}</p>
+      <p className="mt-1 text-xs leading-relaxed text-slate-600">
+        {sm.aligned.length > 0 && (
+          <>
+            <strong className="text-emerald-800">{sm.aligned.length} documented</strong> in favour
+            — {sm.aligned.map((a) => a.product).join(', ')}.{' '}
+          </>
+        )}
+        {sm.conflicting.length > 0 && (
+          <>
+            <strong className="text-rose-800">{sm.conflicting.length} documented</strong> against —{' '}
+            {sm.conflicting.map((a) => a.product).join(', ')}.{' '}
+          </>
+        )}
+        {sm.unresolved.length > 0 && (
+          <>
+            <strong className="text-slate-700">{sm.unresolved.length}</strong> we could not
+            establish — {sm.unresolved.map((a) => a.product).join(', ')}.
+          </>
+        )}
+      </p>
+      {sm.separates && (
+        <p className="mt-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-xs leading-snug text-emerald-900">
+          Documented both ways, so this one genuinely separates them:{' '}
+          <strong>{joinNames(sm.aligned.map((a) => a.product))}</strong> over{' '}
+          <strong>{joinNames(sm.conflicting.map((a) => a.product))}</strong> — on this point.
+        </p>
+      )}
+      {nothing && (
+        <p className="mt-1.5 text-xs leading-snug text-slate-500">
+          Nothing documented either way, so this cannot separate the options. A gap in our
+          research, not a mark against any of them.
+        </p>
+      )}
+    </li>
+  )
+}
+
 /**
- * What the selected preferences actually turned up. Counts and names, never a
- * winner: direction is offered only where one option holds the only documented
- * finding in favour, and it is stated as one attribute rather than a verdict.
+ * The guidance, stated rather than implied by position.
+ *
+ * It names what is worth considering and on what evidence, raises documented
+ * conflicts next to the options that carry them, and where two options are
+ * documented on exactly the same criteria it says plainly that an unknown does
+ * not make one of them better.
  */
-function ResultSummary({
-  summaries,
-}: {
-  summaries: ReturnType<typeof summarisePreferences>
-}) {
-  if (summaries.length === 0) return null
+function ResultSummary({ guidance }: { guidance: Guidance }) {
+  const g = guidance
+  if (g.separations.length === 0) return null
+
   return (
     <div className="rounded-xl border border-slate-300 bg-white p-4">
       <h2 className="text-sm font-bold text-slate-900">What we found</h2>
+
       <ul className="mt-2 space-y-3">
-        {summaries.map((sm) => (
-          <li key={sm.criterion.id} className="border-t border-slate-100 pt-3 first:border-0 first:pt-0">
-            <p className="text-sm font-semibold text-slate-800">{sm.criterion.label}</p>
-            <p className="mt-1 text-xs leading-relaxed text-slate-600">
-              {sm.aligned.length > 0 && (
-                <>
-                  <strong className="text-emerald-800">{sm.aligned.length} documented</strong> in
-                  favour — {sm.aligned.map((a) => a.product).join(', ')}.{' '}
-                </>
-              )}
-              {sm.conflicting.length > 0 && (
-                <>
-                  <strong className="text-rose-800">{sm.conflicting.length} documented</strong>{' '}
-                  against — {sm.conflicting.map((a) => a.product).join(', ')}.{' '}
-                </>
-              )}
-              {sm.unresolved.length > 0 && (
-                <>
-                  <strong className="text-slate-700">{sm.unresolved.length}</strong> we could not
-                  establish — {sm.unresolved.map((a) => a.product).join(', ')}.
-                </>
-              )}
-            </p>
-            {sm.soleAligned && (
-              <p className="mt-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-xs leading-snug text-emerald-900">
-                If this is what matters most to you, <strong>{sm.soleAligned.product}</strong> is
-                the only option here with a documented finding in its favour. That is one
-                documented attribute, not an overall assessment of the product.
-              </p>
-            )}
-            {sm.aligned.length === 0 && sm.conflicting.length === 0 && (
-              <p className="mt-1.5 text-xs leading-snug text-slate-500">
-                Nothing is documented either way, so this cannot separate the options. It is a gap
-                in our research, not a mark against any of them.
-              </p>
-            )}
-          </li>
+        {g.separations.map((sm) => (
+          <SeparationRow key={sm.criterion.id} sm={sm} />
         ))}
       </ul>
+
+      {g.cannotDistinguish ? (
+        <div className="mt-3 rounded-md border border-amber-200 bg-amber-50 p-3">
+          <p className="text-sm font-semibold text-amber-900">
+            What you picked cannot separate these options
+          </p>
+          <p className="mt-1 text-xs leading-relaxed text-amber-800">
+            We have no documented finding either way on any of it, so there is nothing here to
+            act on. That is about our research, not about the products.
+            {g.nextQuestion && (
+              <>
+                {' '}
+                A question we <em>can</em> answer for some options:{' '}
+                <strong>{g.nextQuestion.label}</strong>.
+              </>
+            )}
+          </p>
+        </div>
+      ) : (
+        <>
+          {g.considered.length > 0 && (
+            <div className="mt-3 border-t border-slate-100 pt-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Worth considering, and why
+              </h3>
+              <ul className="mt-1.5 space-y-1.5">
+                {g.considered.map((n) => (
+                  <li key={n.alternative.id} className="text-xs leading-relaxed text-slate-700">
+                    <strong className="text-slate-900">{n.alternative.product}</strong> — documented
+                    in favour on {quoted(n.alignsOn.map((c) => c.label))}.
+                    {n.conflictsOn.length > 0 && (
+                      <span className="text-rose-800">
+                        {' '}
+                        Also documented against on {quoted(n.conflictsOn.map((c) => c.label))} — a
+                        real trade-off, not a disqualification.
+                      </span>
+                    )}
+                    {n.unknownOn.length > 0 && (
+                      <span className="text-slate-500">
+                        {' '}
+                        Not established on {quoted(n.unknownOn.map((c) => c.label))}.
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              {g.unevidenced.length > 0 && (
+                <p className="mt-1.5 text-[11px] leading-snug text-slate-500">
+                  {g.unevidenced.length} other option{g.unevidenced.length === 1 ? '' : 's'} have no
+                  documented finding in favour on what you picked —{' '}
+                  {joinNames(g.unevidenced.map((a) => a.product))}. They are listed below and are
+                  not ruled out; we simply have nothing to say about them here.
+                </p>
+              )}
+            </div>
+          )}
+
+          {g.matchedGroups
+            .filter((grp) => grp.differences.length > 0)
+            .map((grp) => (
+              <div
+                key={grp.members.map((m) => m.alternative.id).join('|')}
+                className="mt-3 rounded-md border border-slate-200 bg-slate-50 p-3"
+              >
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  Too close to call
+                </p>
+                <p className="mt-1 text-xs leading-relaxed text-slate-700">
+                  {grp.members.length === 2 ? 'Both ' : `All ${grp.members.length} of `}
+                  <strong>{joinNames(grp.members.map((m) => m.alternative.product))}</strong> have
+                  documented support for {grp.alignsOn.length} of your priorities:{' '}
+                  {quoted(grp.alignsOn.map((c) => c.label))}.
+                </p>
+                {grp.differences.map((d) => (
+                  <p key={d.criterion.id} className="mt-1.5 text-xs leading-relaxed text-slate-700">
+                    <strong>{joinNames(d.conflicting.map((a) => a.product))}</strong>{' '}
+                    {d.conflicting.length === 1 ? 'has' : 'have'} a documented conflict concerning{' '}
+                    {quoted([d.criterion.label])}. We have not assessed{' '}
+                    <strong>{joinNames(d.unknown.map((a) => a.product))}</strong> on that question,
+                    so we cannot establish whether{' '}
+                    {d.unknown.length === 1 ? 'it is a better alternative' : 'they are better'} on
+                    this point.
+                  </p>
+                ))}
+                {g.nextQuestion && (
+                  <p className="mt-1.5 text-[11px] leading-snug text-slate-500">
+                    Next question worth investigating: {quoted([g.nextQuestion.label])} for{' '}
+                    {joinNames(
+                      grp.differences.flatMap((d) => d.unknown.map((a) => a.product)),
+                    ) || 'the options above'}.
+                  </p>
+                )}
+              </div>
+            ))}
+
+          {g.openQuestions.length > 0 && (
+            <p className="mt-3 border-t border-slate-100 pt-2 text-[11px] leading-snug text-slate-500">
+              Still open, and could change this: {quoted(g.openQuestions.map((c) => c.label))} —
+              no option has a finding either way.
+            </p>
+          )}
+        </>
+      )}
+
       <p className="mt-3 border-t border-slate-100 pt-2 text-xs leading-snug text-slate-500">
         Every option stays listed below, whatever we found.{' '}
         <Link to="/about" className="text-teal-700 underline underline-offset-2">
@@ -477,6 +606,81 @@ function ResultSummary({
         </Link>
       </p>
     </div>
+  )
+}
+
+
+/**
+ * A starting question, opened to reveal what we can actually assess under it.
+ *
+ * Opening one selects nothing. The user still ticks individual criteria, and
+ * the limits are shown before the criteria rather than after, because the gap
+ * between the broad question and the narrow evidence is where this page could
+ * most easily mislead.
+ */
+function MotivationSection({
+  m,
+  priorities,
+  requirements,
+  onTogglePriority,
+  onToggleRequirement,
+}: {
+  m: Motivation
+  priorities: string[]
+  requirements: string[]
+  onTogglePriority: (id: string) => void
+  onToggleRequirement: (id: string) => void
+}) {
+  const cs = m.criterionIds.map((id) => criterionById.get(id)!).filter(Boolean)
+  const chosen = cs.filter((c) => priorities.includes(c.id) || requirements.includes(c.id))
+  const cov = motivationCoverage(m)
+
+  return (
+    // Open when the user already has something selected inside, so reorganising
+    // the page can never hide a choice they made.
+    <details className="rounded-lg border border-slate-200 bg-slate-50/60" open={chosen.length > 0}>
+      <summary className="cursor-pointer list-none px-3 py-2.5">
+        <span className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+          <span className="text-sm font-semibold text-slate-900">{m.question}</span>
+          <span className="text-[11px] text-slate-500">
+            {chosen.length > 0 && (
+              <span className="mr-2 rounded-full border border-teal-300 bg-teal-50 px-1.5 py-0.5 font-semibold text-teal-800">
+                {chosen.length} selected
+              </span>
+            )}
+            {cov.documented} of {cov.total} question{cov.total === 1 ? '' : 's'} with evidence
+          </span>
+        </span>
+        <span className="mt-0.5 block text-xs leading-snug text-slate-500">{m.blurb}</span>
+      </summary>
+
+      <div className="border-t border-slate-200 px-3 py-2.5">
+        <ul className="mb-2 space-y-0.5">
+          {m.limits.map((l) => (
+            <li key={l} className="text-[11px] leading-snug text-slate-500">
+              — {l}
+            </li>
+          ))}
+        </ul>
+        {m.gap && (
+          <p className="mb-2 rounded border border-amber-200 bg-amber-50 px-2 py-1.5 text-[11px] leading-snug text-amber-900">
+            <span className="font-semibold">Research gap.</span> {m.gap}
+          </p>
+        )}
+        <ul className="space-y-2">
+          {cs.map((c) => (
+            <CriterionRow
+              key={c.id}
+              c={c}
+              priorities={priorities}
+              requirements={requirements}
+              onTogglePriority={() => onTogglePriority(c.id)}
+              onToggleRequirement={() => onToggleRequirement(c.id)}
+            />
+          ))}
+        </ul>
+      </div>
+    </details>
   )
 }
 
@@ -490,14 +694,7 @@ export function RecommendView() {
     [functional, priorities, requirements],
   )
   const result = useMemo(() => recommend(input), [input])
-  const summaries = useMemo(() => summarisePreferences(result, input), [result, input])
-
-  const core = criteria.filter((c) => criterionGroup(c) === 'core')
-  const more = criteria.filter((c) => criterionGroup(c) === 'more')
-  // A selection inside the collapsed group must never be hidden from the user.
-  const moreHasSelection = more.some(
-    (c) => priorities.includes(c.id) || requirements.includes(c.id),
-  )
+  const guidance = useMemo(() => buildGuidance(result, input), [result, input])
 
   const toggle = (list: string[], set: (v: string[]) => void, id: string) =>
     set(list.includes(id) ? list.filter((x) => x !== id) : [...list, id])
@@ -549,45 +746,28 @@ export function RecommendView() {
       <section className="mt-4 rounded-xl border border-slate-200 bg-white p-4">
         <SectionTitle>2 · What matters to you</SectionTitle>
         <p className="mb-3 text-xs leading-snug text-slate-500">
-          Tick what you care about. Add <strong>must have</strong> to rule out options we have
-          evidence against.
+          Start from a question you care about, then tick the specific things we can actually
+          check. Add <strong>must have</strong> to rule out options we have evidence against.
+          Opening a question selects nothing on its own.
         </p>
-        <ul className="space-y-2">
-          {core.map((c) => (
-            <CriterionRow
-              key={c.id}
-              c={c}
+        <div className="space-y-2">
+          {motivations.map((m) => (
+            <MotivationSection
+              key={m.id}
+              m={m}
               priorities={priorities}
               requirements={requirements}
-              onTogglePriority={() => toggle(priorities, setPriorities, c.id)}
-              onToggleRequirement={() => toggle(requirements, setRequirements, c.id)}
+              onTogglePriority={(id) => toggle(priorities, setPriorities, id)}
+              onToggleRequirement={(id) => toggle(requirements, setRequirements, id)}
             />
           ))}
-        </ul>
-
-        <details className="mt-3" open={moreHasSelection}>
-          <summary className="cursor-pointer text-sm font-semibold text-teal-700 hover:underline">
-            More priorities ({more.length}) — thinner evidence, or no direction to prefer
-          </summary>
-          <ul className="mt-2 space-y-2">
-            {more.map((c) => (
-              <CriterionRow
-                key={c.id}
-                c={c}
-                priorities={priorities}
-                requirements={requirements}
-                onTogglePriority={() => toggle(priorities, setPriorities, c.id)}
-                onToggleRequirement={() => toggle(requirements, setRequirements, c.id)}
-              />
-            ))}
-          </ul>
-        </details>
+        </div>
       </section>
 
       {/* Step 3 — results */}
       {started && (
         <section className="mt-6 space-y-6">
-          <ResultSummary summaries={summaries} />
+          <ResultSummary guidance={guidance} />
 
           {result.unassessableRequirements.length > 0 && (
             <div className="rounded-xl border-2 border-amber-400 bg-amber-50 p-4">
@@ -656,6 +836,7 @@ export function RecommendView() {
                 </>
               )}
             </p>
+            <p className="mb-2 text-[11px] text-slate-400">Alphabetical within each group.</p>
             {result.noConfirmedMatch ? (
               <div className="rounded-xl border-2 border-dashed border-slate-300 bg-white p-5">
                 <p className="text-sm font-semibold text-slate-800">

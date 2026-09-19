@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   alternatives,
   assessmentFor,
+  buildGuidance,
   criteria,
   criterionIsAssessable,
   functionalRequirements,
@@ -592,19 +593,16 @@ describe('the result summary reports without nominating a winner', () => {
     expect(s.unresolved).toHaveLength(10)
   })
 
-  it('offers direction only where one option holds the only finding in favour', () => {
-    expect(summaries[0].soleAligned?.id).toBe('copilot')
-  })
+  it('marks a criterion as separating only when documented BOTH ways', () => {
+    // Alignment against a conflict points somewhere. Alignment against an
+    // unknown does not — it only means we did not look.
+    expect(summaries[0].separates).toBe(true)
 
-  it('offers no direction when several options align', () => {
-    const many = {
-      functional: F,
-      priorities: ['c_content_export'],
-      requirements: [],
-    }
-    const [s] = summarisePreferences(recommend(many), many)
-    expect(s.aligned.length).toBeGreaterThan(1)
-    expect(s.soleAligned).toBeNull()
+    const oneSided = { functional: F, priorities: ['c_content_export'], requirements: [] }
+    const [exportSm] = summarisePreferences(recommend(oneSided), oneSided)
+    expect(exportSm.aligned.length).toBeGreaterThan(1)
+    expect(exportSm.conflicting).toHaveLength(0)
+    expect(exportSm.separates).toBe(false)
   })
 
   it('offers no direction when nothing is documented', () => {
@@ -612,7 +610,15 @@ describe('the result summary reports without nominating a winner', () => {
     const [s] = summarisePreferences(recommend(none), none)
     expect(s.aligned).toHaveLength(0)
     expect(s.conflicting).toHaveLength(0)
-    expect(s.soleAligned).toBeNull()
+    expect(s.separates).toBe(false)
+  })
+
+  it('gives several aligned options guidance rather than demanding exactly one', () => {
+    const many = { functional: F, priorities: ['c_content_export'], requirements: [] }
+    const g = buildGuidance(recommend(many), many)
+    expect(g.considered.length).toBeGreaterThan(1)
+    for (const n of g.considered) expect(n.alignsOn.map((c) => c.id)).toContain('c_content_export')
+    expect(g.cannotDistinguish).toBe(false)
   })
 
   it('keeps every option discoverable whatever the summary says', () => {
@@ -645,24 +651,12 @@ describe('the summary reports every researched option', () => {
     )
   })
 
-  it('points only at an option the user can still choose', () => {
-    expect(s.soleAligned?.id).toBe('copilot')
-    expect(result.confirmed.map((o) => o.alternative.id)).toContain('copilot')
-  })
-
-  it('offers no direction when the sole aligned option is itself excluded', () => {
-    // Require something Copilot fails, while preferring the criterion it alone meets.
-    const conflicted = {
-      functional: F,
-      priorities: ['c_founder_bloc_majority_voting'],
-      requirements: ['c_public_benefit_mechanism'],
-    }
-    const r = recommend(conflicted)
-    const [sm] = summarisePreferences(r, conflicted)
-    expect(sm.aligned.map((a) => a.id)).toEqual(['copilot'])
-    if (r.excluded.some((o) => o.alternative.id === 'copilot')) {
-      expect(sm.soleAligned).toBeNull()
-    }
+  it('considers only options the user can still choose', () => {
+    const g = buildGuidance(result, input)
+    const ids = g.considered.map((n) => n.alternative.id)
+    expect(ids).toContain('copilot')
+    // Excluded options keep their finding in the counts but are not offered.
+    for (const o of result.excluded) expect(ids).not.toContain(o.alternative.id)
   })
 })
 
@@ -820,5 +814,215 @@ describe('one definition of a verified capability', () => {
     // Something must still vary, or the tags would carry nothing at all.
     const varying = functionalRequirements.filter((f) => !baselineCapabilityIds.has(f.id))
     expect(varying.length).toBeGreaterThan(0)
+  })
+})
+
+describe('ordering carries no signal at all', () => {
+  const input = {
+    functional: F,
+    priorities: ['c_public_benefit', 'c_content_export', 'c_commitment_continuity'],
+    requirements: [],
+  }
+  const r = recommend(input)
+  const at = (id: string) => r.confirmed.find((o) => o.alternative.id === id)!
+
+  const alphabetical = (list: AlternativeOutcome[]) =>
+    list.map((o) => o.alternative.product)
+
+  it('sorts every group alphabetically and by nothing else', () => {
+    for (const group of [r.confirmed, r.notConfirmed, r.excluded]) {
+      const names = alphabetical(group)
+      expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b)))
+    }
+  })
+
+  it('does not let a documented conflict change placement', () => {
+    // ChatGPT carries a withdrawn commitment; Claude carries an unknown on the
+    // same criterion. Both have two documented alignments. Placement must come
+    // from the name, not from either of those facts.
+    const chatgpt = at('chatgpt')
+    const claude = at('claude')
+    expect(chatgpt.tradeoffs).toHaveLength(1)
+    expect(claude.tradeoffs).toHaveLength(0)
+    expect(r.confirmed.indexOf(chatgpt)).toBeLessThan(r.confirmed.indexOf(claude))
+    expect('ChatGPT'.localeCompare('Claude')).toBeLessThan(0)
+  })
+
+  it('does not let research completeness change placement either', () => {
+    // The mirror failure. An option we happen to know more about must not rise.
+    const documented = (o: AlternativeOutcome) =>
+      o.met.length + o.supportingPriorities.length + o.tradeoffs.length
+    const pairs = r.confirmed.slice(0, -1).map((o, i) => [o, r.confirmed[i + 1]] as const)
+    const anyDescending = pairs.some(([a, b]) => documented(a) > documented(b))
+    const anyAscending = pairs.some(([a, b]) => documented(a) < documented(b))
+    // Both directions occur, so the list is demonstrably not sorted by volume.
+    expect(anyDescending && anyAscending).toBe(true)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// 12. Guidance: what the summary may and may not say
+// ---------------------------------------------------------------------------
+
+import { motivationForCriterion, motivations, motivationCoverage } from '../recommend'
+
+describe('the reported ChatGPT / Claude case', () => {
+  const input = {
+    functional: F,
+    priorities: ['c_public_benefit', 'c_content_export', 'c_commitment_continuity'],
+    requirements: [],
+  }
+  const g = buildGuidance(recommend(input), input)
+  const group = g.matchedGroups.find((x) =>
+    x.members.some((m) => m.alternative.id === 'chatgpt'),
+  )!
+
+  it('puts them in one group on identical documented support', () => {
+    const ids = group.members.map((m) => m.alternative.id).sort()
+    expect(ids).toEqual(['chatgpt', 'claude'])
+    expect(group.alignsOn.map((c) => c.id).sort()).toEqual([
+      'c_content_export',
+      'c_public_benefit',
+    ])
+  })
+
+  it('names the conflict against ChatGPT and refuses to promote Claude', () => {
+    const diff = group.differences.find((d) => d.criterion.id === 'c_commitment_continuity')!
+    expect(diff.conflicting.map((a) => a.id)).toEqual(['chatgpt'])
+    expect(diff.unknown.map((a) => a.id)).toEqual(['claude'])
+    const claude = group.members.find((m) => m.alternative.id === 'claude')!
+    expect(claude.conflictsOn).toHaveLength(0)
+    expect(claude.unknownOn.map((c) => c.id)).toContain('c_commitment_continuity')
+  })
+
+  it('offers the next question rather than an answer', () => {
+    expect(g.nextQuestion?.id).toBe('c_commitment_continuity')
+  })
+
+  it('keeps ChatGPT in consideration despite the conflict', () => {
+    const chatgpt = g.considered.find((n) => n.alternative.id === 'chatgpt')!
+    expect(chatgpt.alignsOn).toHaveLength(2)
+    expect(chatgpt.conflictsOn.map((c) => c.id)).toEqual(['c_commitment_continuity'])
+  })
+})
+
+describe('guidance principles', () => {
+  it('lets alignment against a documented conflict inform the advice', () => {
+    const input = { functional: F, priorities: ['c_individual_majority_voting'], requirements: [] }
+    const [sep] = buildGuidance(recommend(input), input).separations
+    expect(sep.separates).toBe(true)
+    expect(sep.aligned.map((a) => a.id)).toContain('lumo')
+    expect(sep.conflicting.map((a) => a.id)).toEqual(['meta_ai'])
+  })
+
+  it('does not let alignment against an unknown claim the same', () => {
+    const input = { functional: F, priorities: ['c_content_export'], requirements: [] }
+    const [sep] = buildGuidance(recommend(input), input).separations
+    expect(sep.aligned.length).toBeGreaterThan(0)
+    expect(sep.conflicting).toHaveLength(0)
+    expect(sep.separates).toBe(false)
+  })
+
+  it('shows an option carrying both support and a conflict as a trade-off', () => {
+    const input = {
+      functional: F,
+      priorities: ['c_content_export', 'c_commitment_continuity'],
+      requirements: [],
+    }
+    const g = buildGuidance(recommend(input), input)
+    const chatgpt = g.considered.find((n) => n.alternative.id === 'chatgpt')!
+    expect(chatgpt.alignsOn.map((c) => c.id)).toEqual(['c_content_export'])
+    expect(chatgpt.conflictsOn.map((c) => c.id)).toEqual(['c_commitment_continuity'])
+  })
+
+  it('keeps unknown and failed must-haves in distinct groups', () => {
+    const input = {
+      functional: F,
+      priorities: ['c_individual_majority_voting'],
+      requirements: ['c_individual_majority_voting'],
+    }
+    const r = recommend(input)
+    const excluded = r.excluded.map((o) => o.alternative.id)
+    const unconfirmed = r.notConfirmed.map((o) => o.alternative.id)
+    expect(excluded).toEqual(['meta_ai'])
+    expect(unconfirmed).not.toContain('meta_ai')
+    expect(unconfirmed.length).toBeGreaterThan(0)
+    for (const id of excluded) {
+      expect(assessmentFor(id, 'c_individual_majority_voting')?.verdict).toBe('fails')
+    }
+    for (const id of unconfirmed) {
+      expect(assessmentFor(id, 'c_individual_majority_voting')?.verdict).toBe('unconfirmed')
+    }
+  })
+
+  it('says plainly when the chosen priorities cannot separate anything', () => {
+    const input = { functional: F, priorities: ['c_service_migration'], requirements: [] }
+    const g = buildGuidance(recommend(input), input)
+    expect(g.cannotDistinguish).toBe(true)
+    expect(g.considered).toHaveLength(0)
+    expect(g.openQuestions.map((c) => c.id)).toEqual(['c_service_migration'])
+  })
+
+  it('gives several aligned options guidance without truncating to a top three', () => {
+    const input = { functional: F, priorities: ['c_content_export'], requirements: [] }
+    const g = buildGuidance(recommend(input), input)
+    expect(g.considered.length).toBe(6)
+    const grouped = g.matchedGroups.reduce((n, x) => n + x.members.length, 0)
+    expect(grouped).toBe(g.considered.length)
+    expect(g.considered.length + g.unevidenced.length).toBe(alternatives.length)
+  })
+})
+
+describe('motivations are starting questions, not bundles', () => {
+  it('covers every criterion exactly once', () => {
+    const assigned = motivations.flatMap((m) => m.criterionIds)
+    expect(assigned.slice().sort()).toEqual(criteria.map((c) => c.id).sort())
+    expect(new Set(assigned).size).toBe(assigned.length)
+    for (const c of criteria) expect(motivationForCriterion.get(c.id)).toBeDefined()
+  })
+
+  it('selects nothing by itself', () => {
+    // Opening a motivation cannot change the result: guidance is a pure
+    // function of the criteria the user actually ticked.
+    const empty = { functional: F, priorities: [], requirements: [] }
+    const g = buildGuidance(recommend(empty), empty)
+    expect(g.separations).toHaveLength(0)
+    expect(g.considered).toHaveLength(0)
+  })
+
+  it('states a limit for every motivation and a gap where it rests on one question', () => {
+    for (const m of motivations) {
+      expect(m.limits.length).toBeGreaterThan(0)
+      expect(motivationCoverage(m).total).toBe(m.criterionIds.length)
+      if (m.criterionIds.length === 1) expect(m.gap).toBeTruthy()
+    }
+  })
+
+  it('does not imply worker or creator coverage the dataset lacks', () => {
+    const commitments = motivations.find((m) => m.id === 'm_commitments')!
+    expect(commitments.limits.join(' ')).toMatch(/workers|creators/i)
+  })
+
+  it('keeps ownership separate from where the money goes', () => {
+    const benefit = motivations.find((m) => m.id === 'm_benefit')!
+    expect(benefit.gap).toMatch(/revenue share|compensation|subscription/i)
+    expect(benefit.limits.join(' ')).toMatch(/separate question/i)
+  })
+
+  it('keeps voting power separate from board control', () => {
+    const power = motivations.find((m) => m.id === 'm_power')!
+    expect(power.limits.join(' ')).toMatch(/no voting majority does not mean/i)
+    expect(power.criterionIds).toContain('c_board_election_rights')
+  })
+
+  it('does not treat a commitment as evidence of an outcome', () => {
+    const commitments = motivations.find((m) => m.id === 'm_commitments')!
+    expect(commitments.limits.join(' ')).toMatch(/not evidence of any outcome/i)
+  })
+
+  it('keeps export and portability reachable', () => {
+    const leaving = motivations.find((m) => m.id === 'm_leaving')!
+    expect(leaving.criterionIds).toContain('c_content_export')
+    expect(leaving.criterionIds).toContain('c_service_migration')
   })
 })

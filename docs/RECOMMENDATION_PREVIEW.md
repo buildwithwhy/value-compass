@@ -10,7 +10,7 @@ is **automated and provisional** — a model read a source; no human re-read one
 ```bash
 npm install
 npm run dev          # → http://localhost:5173/#/recommend
-npm test             # 109 checks, 82 on the recommendation engine
+npm test             # 129 checks, 102 on the recommendation engine
 ```
 
 Nothing is pushed or deployed. The work is committed to local `main`; `origin/main` and the
@@ -18,7 +18,88 @@ live site are untouched.
 
 ---
 
-## Catalogue expansion (latest)
+## Guidance pass (latest)
+
+Position stopped carrying meaning; the summary started carrying it instead.
+
+### Ordering says nothing now
+
+Every group is **alphabetical**, full stop. The previous rule ordered by number of supporting
+findings, which tracked how much we had researched an option rather than anything about the
+option — and still read as a ranking however it was labelled. The label is gone too; the list
+just says *Alphabetical within each group*.
+
+The three groups still mean different things, and that distinction is the point: options
+confirmed to meet every must-have, options whose must-have we could not check, and options
+with a documented conflict against a must-have. With no must-haves set it is simply
+**Options to consider**.
+
+### The summary does the work
+
+`buildGuidance()` replaces the old sole-aligned rule. It reports:
+
+- **Per criterion** — who is documented in favour, against, and unestablished. A criterion is
+  marked as *separating* only when documented on **both** sides. Alignment against an unknown
+  is not a separation; it means we did not look.
+- **Worth considering, and why** — every option with at least one documented alignment, with
+  its conflicts stated alongside rather than used to demote it silently. No cap, no top three.
+- **Too close to call** — options documented on exactly the same criteria, grouped, with the
+  difference spelled out.
+- **Still open** — selected criteria nobody has a finding on, plus the next question worth
+  investigating.
+
+The rule requiring exactly one favourable option before offering guidance is gone: six aligned
+options get six explanations.
+
+### The reported case
+
+Selecting public benefit, export and commitment continuity now produces:
+
+> **Too close to call.** Both **ChatGPT and Claude** have documented support for 2 of your
+> priorities: "A legal duty to weigh more than shareholder returns" and "You can download your
+> own conversations".
+>
+> **ChatGPT** has a documented conflict concerning "Past public-benefit promises have been
+> kept". We have not assessed **Claude** on that question, so we cannot establish whether it is
+> a better alternative on this point.
+>
+> *Next question worth investigating: "Past public-benefit promises have been kept" for Claude.*
+
+Claude is not promoted, ChatGPT's conflict is not hidden, and neither is called a winner.
+
+### Motivations as entry points
+
+Four expandable starting questions sit above the criteria. Opening one **selects nothing** —
+it reveals the concrete questions we can assess, their coverage, and the limits, which are
+shown *before* the criteria rather than after:
+
+| Starting question | Criteria under it | Coverage |
+|---|---|---|
+| Who benefits from my spending on AI? | 1 | 1 of 1 |
+| How concentrated is power in the companies I support? | 3 | 3 of 3 |
+| What commitments do providers make to people affected? | 1 | 1 of 1 |
+| Could I leave, and take my things with me? | 4 | 3 of 4 |
+
+Every criterion belongs to exactly one motivation, asserted by a test. Sections auto-open when
+they contain a selection, so reorganising cannot hide a choice already made.
+
+Stated limits include: *holding no voting majority does not mean holding no control of the
+board*; *a commitment is a statement of intent, not evidence of any outcome*; *this pilot holds
+no findings about workers, creators or anyone whose data or labour went into these systems*.
+
+The two thinnest motivations carry an explicit research gap. "Who benefits from my spending"
+is the weakest thing on the page and says so: nothing in the pilot covers revenue share,
+creator or worker compensation, or where subscription money goes.
+
+### Screenshots
+
+![Motivation inputs](screenshots/30-motivation-inputs.jpg)
+
+![Guidance summary](screenshots/31-guidance-summary.jpg)
+
+---
+
+## Catalogue expansion
 
 Seven products added, taking the pilot from six to thirteen. No new criteria, no scoring, no
 redesign.

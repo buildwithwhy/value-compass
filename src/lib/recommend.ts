@@ -208,6 +208,8 @@ export function criterionCoverage(critId: string): { decided: number; total: num
  * actual direction to prefer. The rest stay available under "More priorities"
  * with their coverage on show.
  */
+/** @deprecated Criteria are grouped by motivation now. Kept for the coverage
+ *  tests, which still care about how thin a criterion's evidence is. */
 export function criterionGroup(c: PilotCriterion): 'core' | 'more' {
   if (c.informational) return 'more'
   return criterionCoverage(c.id).decided >= 2 ? 'core' : 'more'
@@ -379,19 +381,20 @@ export function recommend(input: RecommendationInput): RecommendationResult {
 
   const unassessableRequirements = blindCriteria.filter((c) => input.requirements.includes(c.id))
 
-  // Within a bucket, order by how much is documented — never by a score, and
-  // ties are left as ties rather than broken arbitrarily. Ordering is not a
-  // ranking: two options with the same documented reasons stay level.
-  const byEvidence = (a: AlternativeOutcome, b: AlternativeOutcome) =>
-    b.met.length + b.supportingPriorities.length - (a.met.length + a.supportingPriorities.length) ||
-    a.unresolved.length - b.unresolved.length ||
+  // Alphabetical within every group, always.
+  //
+  // Ordering by supporting findings still read as a ranking however it was
+  // labelled, and it tracked how much we had researched an option rather than
+  // anything about the option. Guidance now comes from the summary, which can
+  // say WHY, so position is free to carry nothing at all.
+  const byName = (a: AlternativeOutcome, b: AlternativeOutcome) =>
     a.alternative.product.localeCompare(b.alternative.product)
 
-  const confirmed = outcomes.filter((o) => o.bucket === 'confirmed_match').sort(byEvidence)
+  const confirmed = outcomes.filter((o) => o.bucket === 'confirmed_match').sort(byName)
   const notConfirmed = outcomes
     .filter((o) => o.bucket === 'requirement_not_confirmed')
-    .sort(byEvidence)
-  const excluded = outcomes.filter((o) => o.bucket === 'excluded').sort(byEvidence)
+    .sort(byName)
+  const excluded = outcomes.filter((o) => o.bucket === 'excluded').sort(byName)
 
   return {
     confirmed,
@@ -412,27 +415,118 @@ export function recommend(input: RecommendationInput): RecommendationResult {
 // finding in favour — stated as one documented attribute, not a verdict.
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Motivations — broad starting questions.
+//
+// These are NOT axes, scores, or bundles. Opening one reveals the concrete
+// criteria we can actually assess underneath it, and the user still ticks
+// those individually. Each carries what it does NOT establish, because the
+// gap between a motivation and the evidence we hold is the easiest place for
+// this page to mislead.
+// ---------------------------------------------------------------------------
+
+export interface Motivation {
+  id: string
+  /** The question a person might arrive with. */
+  question: string
+  /** What we can speak to underneath it. */
+  blurb: string
+  criterionIds: string[]
+  /** Read these before the findings. Each is a claim this section must not
+   *  be taken to support. */
+  limits: string[]
+  /** Named where the dataset does not yet cover the motivation properly. */
+  gap?: string
+}
+
+export const motivations: Motivation[] = [
+  {
+    id: 'm_benefit',
+    question: 'Who benefits from my spending on AI?',
+    blurb:
+      'Whether a provider is under any documented obligation to weigh people other than its shareholders.',
+    criterionIds: ['c_public_benefit'],
+    limits: [
+      'A duty to weigh other interests is not a record of money actually reaching anyone.',
+      'Who controls a company is a separate question from who is paid by it — that one sits under power below.',
+    ],
+    gap:
+      'This is the thinnest motivation we have. Nothing in this pilot covers revenue share, creator or worker compensation, or where subscription money goes. One criterion is not an answer to the question.',
+  },
+  {
+    id: 'm_power',
+    question: 'How concentrated is power in the companies I support?',
+    blurb: 'Specific, documented voting and control arrangements at the operating company.',
+    criterionIds: [
+      'c_individual_majority_voting',
+      'c_founder_bloc_majority_voting',
+      'c_board_election_rights',
+    ],
+    limits: [
+      'Holding no voting majority does not mean holding no control of the board. These are separate questions and we record them separately.',
+      'A founder group and an individual are different: a bloc needs its members to agree, an individual does not.',
+      'Nine of thirteen operators are private or unread, so most answers here are unknown rather than reassuring.',
+    ],
+  },
+  {
+    id: 'm_commitments',
+    question: 'What commitments do providers make to people affected by their technology?',
+    blurb: 'Whether a public-benefit commitment, once adopted, has been kept.',
+    criterionIds: ['c_commitment_continuity'],
+    limits: [
+      'A commitment is a statement of intent, not evidence of any outcome.',
+      'This pilot holds no findings about workers, creators or anyone whose data or labour went into these systems. Nothing here should be read as covering them.',
+    ],
+    gap:
+      'Only one option has a documented finding, and it is a withdrawal. Absence of a finding for the other twelve is absence of research, not a clean record.',
+  },
+  {
+    id: 'm_leaving',
+    question: 'Could I leave, and take my things with me?',
+    blurb: 'Practical portability: getting your history out, and moving it somewhere else.',
+    criterionIds: [
+      'c_content_export',
+      'c_account_transfer',
+      'c_service_migration',
+      'c_model_hosting',
+    ],
+    limits: [
+      'Exporting a file is not the same as using it somewhere else.',
+      'Being able to run a model yourself is not being able to reproduce the service built around it.',
+    ],
+  },
+]
+
+/** Every criterion belongs to exactly one motivation; asserted in the tests. */
+export const motivationForCriterion = new Map<string, Motivation>(
+  motivations.flatMap((m) => m.criterionIds.map((id) => [id, m] as [string, Motivation])),
+)
+
+/** How many of a motivation's criteria have any documented finding at all. */
+export function motivationCoverage(m: Motivation): { documented: number; total: number } {
+  const documented = m.criterionIds.filter((id) => criterionCoverage(id).decided > 0).length
+  return { documented, total: m.criterionIds.length }
+}
+
 export interface PreferenceSummary {
   criterion: PilotCriterion
   aligned: PilotAlternative[]
   conflicting: PilotAlternative[]
   unresolved: PilotAlternative[]
-  /** Set only where exactly one eligible option has a documented alignment
-   *  and no other does. Deliberately narrow. */
-  soleAligned: PilotAlternative | null
+  /**
+   * True where the criterion has a documented finding on BOTH sides. Only then
+   * does the evidence point anywhere: alignment against conflict is a reason to
+   * favour one option over another on this point. Alignment against an unknown
+   * is not — it says we did not look.
+   */
+  separates: boolean
 }
 
 export function summarisePreferences(
   result: RecommendationResult,
   input: RecommendationInput,
 ): PreferenceSummary[] {
-  // Counts describe the evidence across every researched option. Reporting only
-  // the survivors would delete a documented finding from "what we found" the
-  // moment some other requirement excluded the option carrying it.
-  const inPlay = new Set(
-    [...result.confirmed, ...result.notConfirmed].map((o) => o.alternative.id),
-  )
-
+  void result
   return input.priorities
     .map((id) => criterionById.get(id))
     .filter((c): c is PilotCriterion => !!c && !c.informational)
@@ -446,8 +540,143 @@ export function summarisePreferences(
         else if (v === 'fails') conflicting.push(alt)
         else unresolved.push(alt)
       }
-      // Direction is only worth offering for something the user can still pick.
-      const sole = aligned.length === 1 && inPlay.has(aligned[0].id) ? aligned[0] : null
-      return { criterion, aligned, conflicting, unresolved, soleAligned: sole }
+      return {
+        criterion,
+        aligned,
+        conflicting,
+        unresolved,
+        separates: aligned.length > 0 && conflicting.length > 0,
+      }
     })
+}
+
+// ---------------------------------------------------------------------------
+// Guidance
+//
+// What the summary is allowed to say, and what it is not:
+//
+//   - An option with a documented alignment on something the user chose is
+//     worth considering, and we say on what.
+//   - An option carrying a documented conflict is still worth considering, and
+//     we say so alongside the conflict rather than demoting it silently.
+//   - Where two options are documented to align on exactly the same criteria,
+//     any conflict one of them carries is the honest thing to raise — and if
+//     the other is merely unknown there, we say we cannot establish that it is
+//     better, rather than implying it.
+//   - Nothing is a winner for having more researched fields.
+// ---------------------------------------------------------------------------
+
+export interface OptionNote {
+  alternative: PilotAlternative
+  alignsOn: PilotCriterion[]
+  conflictsOn: PilotCriterion[]
+  unknownOn: PilotCriterion[]
+}
+
+/** Options documented to align on exactly the same selected criteria. */
+export interface MatchedGroup {
+  alignsOn: PilotCriterion[]
+  members: OptionNote[]
+  /** Where members of the group differ: one conflicts, another is unknown. */
+  differences: {
+    criterion: PilotCriterion
+    conflicting: PilotAlternative[]
+    unknown: PilotAlternative[]
+  }[]
+}
+
+export interface Guidance {
+  /** Per selected criterion, who aligns, who conflicts, who is unknown. */
+  separations: PreferenceSummary[]
+  /** Every option with at least one documented alignment, alphabetical. */
+  considered: OptionNote[]
+  /** Options with no documented alignment — not rejected, just unevidenced. */
+  unevidenced: PilotAlternative[]
+  matchedGroups: MatchedGroup[]
+  /** Selected criteria with no documented finding for anyone. */
+  openQuestions: PilotCriterion[]
+  /** The single most useful thing to research next, or null. */
+  nextQuestion: PilotCriterion | null
+  /** True where no selected criterion has any documented finding at all. */
+  cannotDistinguish: boolean
+}
+
+const sameIds = (a: PilotCriterion[], b: PilotCriterion[]) =>
+  a.length === b.length && a.every((c, i) => c.id === b[i].id)
+
+export function buildGuidance(
+  result: RecommendationResult,
+  input: RecommendationInput,
+): Guidance {
+  const separations = summarisePreferences(result, input)
+  const chosen = separations.map((s) => s.criterion)
+
+  // Only options the user can still pick. An excluded option keeps its finding
+  // in the counts above, but it is not something to consider.
+  const inPlay = [...result.confirmed, ...result.notConfirmed]
+    .map((o) => o.alternative)
+    .sort((a, b) => a.product.localeCompare(b.product))
+
+  const noteFor = (alt: PilotAlternative): OptionNote => {
+    const alignsOn: PilotCriterion[] = []
+    const conflictsOn: PilotCriterion[] = []
+    const unknownOn: PilotCriterion[] = []
+    for (const c of chosen) {
+      const v = assessmentFor(alt.id, c.id)?.verdict ?? 'unconfirmed'
+      if (v === 'meets') alignsOn.push(c)
+      else if (v === 'fails') conflictsOn.push(c)
+      else unknownOn.push(c)
+    }
+    return { alternative: alt, alignsOn, conflictsOn, unknownOn }
+  }
+
+  const notes = inPlay.map(noteFor)
+  const considered = notes.filter((n) => n.alignsOn.length > 0)
+  const unevidenced = notes.filter((n) => n.alignsOn.length === 0).map((n) => n.alternative)
+
+  // Group by identical alignment sets. No cap and no truncation: a tie of six
+  // is reported as a tie of six.
+  const matchedGroups: MatchedGroup[] = []
+  for (const note of considered) {
+    const existing = matchedGroups.find((g) => sameIds(g.alignsOn, note.alignsOn))
+    if (existing) existing.members.push(note)
+    else matchedGroups.push({ alignsOn: note.alignsOn, members: [note], differences: [] })
+  }
+  for (const g of matchedGroups) {
+    if (g.members.length < 2) continue
+    for (const c of chosen) {
+      if (g.alignsOn.some((a) => a.id === c.id)) continue
+      const conflicting = g.members
+        .filter((m) => m.conflictsOn.some((x) => x.id === c.id))
+        .map((m) => m.alternative)
+      const unknown = g.members
+        .filter((m) => m.unknownOn.some((x) => x.id === c.id))
+        .map((m) => m.alternative)
+      // Only worth raising where the group actually splits on it.
+      if (conflicting.length > 0 && unknown.length > 0) {
+        g.differences.push({ criterion: c, conflicting, unknown })
+      }
+    }
+  }
+
+  const openQuestions = separations
+    .filter((s) => s.aligned.length === 0 && s.conflicting.length === 0)
+    .map((s) => s.criterion)
+
+  // The most useful next question is the one that would resolve a live
+  // difference: a criterion where someone is documented to conflict and
+  // someone else is simply unknown. Failing that, an entirely open question.
+  const fromDifference = matchedGroups.flatMap((g) => g.differences).map((d) => d.criterion)[0]
+  const nextQuestion = fromDifference ?? openQuestions[0] ?? null
+
+  return {
+    separations,
+    considered,
+    unevidenced,
+    matchedGroups: matchedGroups.filter((g) => g.members.length > 0),
+    openQuestions,
+    nextQuestion,
+    cannotDistinguish: separations.length > 0 && separations.every((s) => !s.separates &&
+      s.aligned.length === 0 && s.conflicting.length === 0),
+  }
 }
