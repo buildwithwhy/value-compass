@@ -57,6 +57,18 @@ export interface PilotAlternative {
   uses_third_party_models?: boolean
   access_notes?: AccessNote[]
   /**
+   * Who gets paid, who owns it, what it runs on, and the specific things we
+   * could not establish. Deliberately prose: these are relationships a person
+   * reads, not a graph to traverse.
+   */
+  relationships?: {
+    pays: string
+    free_tier?: string
+    owners: string[]
+    suppliers: string[]
+    unknowns: string[]
+  }
+  /**
    * Whether the operator has a page in the maker directory. Computed from
    * makers.json when the pilot is built, so it cannot drift from the
    * directory by being authored twice.
@@ -433,6 +445,14 @@ export function recommend(input: RecommendationInput): RecommendationResult {
 // this page to mislead.
 // ---------------------------------------------------------------------------
 
+/** A distinct question inside a motivation. Control, financial benefit and
+ *  supplier dependency are different relationships and must not be blurred. */
+export interface MotivationGroup {
+  heading: string
+  blurb?: string
+  criterionIds: string[]
+}
+
 export interface Motivation {
   id: string
   /** The question a person might arrive with. */
@@ -440,8 +460,10 @@ export interface Motivation {
   /** What we can speak to underneath it. */
   blurb: string
   criterionIds: string[]
-  /** Read these before the findings. Each is a claim this section must not
-   *  be taken to support. */
+  /** Sub-questions, where one motivation covers several distinct relationships. */
+  groups?: MotivationGroup[]
+  /** Behind a disclosure. Each is a claim this section must not be taken to
+   *  support — but they are context, not the lead. */
   limits: string[]
   /** Named where the dataset does not yet cover the motivation properly. */
   gap?: string
@@ -451,21 +473,49 @@ export const motivations: Motivation[] = [
   {
     id: 'm_power',
     question: 'Who am I empowering with this choice?',
-    blurb: 'What kind of company sits behind the product, and what it is obliged to weigh.',
+    blurb:
+      'Who controls the company, who benefits financially from it, and which other companies it depends on.',
     criterionIds: [
-      'c_ownership_shape',
-      'c_public_benefit',
+      'c_nonprofit_control',
+      'c_parent_independence',
       'c_individual_majority_voting',
       'c_founder_bloc_majority_voting',
       'c_board_election_rights',
+      'c_public_purpose_stake',
+      'c_public_benefit',
+      'c_ownership_shape',
+    ],
+    groups: [
+      {
+        heading: 'Who controls the company I’m supporting?',
+        blurb: 'Parent companies, controlling owners and who decides the board.',
+        criterionIds: [
+          'c_nonprofit_control',
+          'c_parent_independence',
+          'c_individual_majority_voting',
+          'c_founder_bloc_majority_voting',
+          'c_board_election_rights',
+        ],
+      },
+      {
+        heading: 'Who benefits financially from my choice?',
+        blurb:
+          'Who receives the money, and whether any public-purpose body has a real economic stake — which is not the same as a mission.',
+        criterionIds: ['c_public_purpose_stake', 'c_public_benefit'],
+      },
+      {
+        heading: 'Which other companies does this product depend on?',
+        blurb:
+          'Model suppliers and commercial dependencies. Shown as context on each option rather than as something to prefer — a third-party supplier can be better or worse for you depending on why you care.',
+        criterionIds: ['c_ownership_shape'],
+      },
     ],
     limits: [
-      'Ownership shape is shown as information, not as a ranking. A foundation and a listed company are different, not better and worse.',
-      'None of this establishes where your money ends up. Who controls a company and who is paid by it are separate questions.',
+      'Controlling a company and benefiting financially from it are different. One provider here has a trust that controls the board and is deliberately insulated from any financial interest.',
+      'A public-benefit duty obliges directors to weigh other interests. It distributes nothing, and is not evidence that anyone is paid.',
+      'An investor’s stake does not mean your subscription is paid to that investor, and using a supplier’s model does not tell us the payment terms.',
       'Holding no voting majority does not mean holding no control of the board.',
     ],
-    gap:
-      'Sourced for six of thirteen. The maker directory holds ownership attributes for more, but without per-attribute sources, so they are not used here.',
   },
   {
     id: 'm_control',

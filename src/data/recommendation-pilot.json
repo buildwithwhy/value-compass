@@ -100,7 +100,22 @@
       },
       "uses_third_party_models": false,
       "access_notes": [],
-      "maker_in_directory": true
+      "maker_in_directory": true,
+      "relationships": {
+        "pays": "OpenAI Group PBC, a public benefit corporation",
+        "free_tier": "A free tier exists; paid plans bill OpenAI.",
+        "owners": [
+          "Controlled by the non-profit OpenAI Foundation, which holds about 26% of the equity",
+          "Microsoft holds roughly 27%"
+        ],
+        "suppliers": [
+          "OpenAI’s own models"
+        ],
+        "unknowns": [
+          "Whether OpenAI distributes profits at all, and so whether the Foundation’s stake ever pays out",
+          "The commercial terms between OpenAI and Microsoft"
+        ]
+      }
     },
     {
       "id": "claude",
@@ -129,7 +144,21 @@
       },
       "uses_third_party_models": false,
       "access_notes": [],
-      "maker_in_directory": true
+      "maker_in_directory": true,
+      "relationships": {
+        "pays": "Anthropic PBC",
+        "owners": [
+          "Board control phases to a Long-Term Benefit Trust holding Class T stock with no economic rights",
+          "Amazon and Google are large investors"
+        ],
+        "suppliers": [
+          "Anthropic’s own models"
+        ],
+        "unknowns": [
+          "How subscription revenue is distributed",
+          "What economic rights Anthropic’s investors hold"
+        ]
+      }
     },
     {
       "id": "gemini",
@@ -159,7 +188,20 @@
       },
       "uses_third_party_models": false,
       "access_notes": [],
-      "maker_in_directory": true
+      "maker_in_directory": true,
+      "relationships": {
+        "pays": "Google, part of Alphabet Inc.",
+        "owners": [
+          "Alphabet is the parent",
+          "Founders hold 52.7% of voting power between them"
+        ],
+        "suppliers": [
+          "Google DeepMind’s own models"
+        ],
+        "unknowns": [
+          "How revenue is allocated within Alphabet"
+        ]
+      }
     },
     {
       "id": "copilot",
@@ -194,7 +236,19 @@
           "source": "Recorded in this pilot's earlier product-identity pass"
         }
       ],
-      "maker_in_directory": true
+      "maker_in_directory": true,
+      "relationships": {
+        "pays": "Microsoft Corporation",
+        "owners": [
+          "No parent above it; widely held, largest holder Vanguard at 8.95%"
+        ],
+        "suppliers": [
+          "Varies by surface — which model backs Copilot is not documented per surface"
+        ],
+        "unknowns": [
+          "Which model provider serves a given Copilot surface, and on what terms"
+        ]
+      }
     },
     {
       "id": "le_chat",
@@ -223,7 +277,19 @@
       },
       "uses_third_party_models": false,
       "access_notes": [],
-      "maker_in_directory": true
+      "maker_in_directory": true,
+      "relationships": {
+        "pays": "Mistral AI",
+        "owners": [
+          "No parent documented"
+        ],
+        "suppliers": [
+          "Mistral’s own flagship models, release not named"
+        ],
+        "unknowns": [
+          "Which named release serves the product"
+        ]
+      }
     },
     {
       "id": "deepseek_app",
@@ -253,7 +319,19 @@
       },
       "uses_third_party_models": false,
       "access_notes": [],
-      "maker_in_directory": true
+      "maker_in_directory": true,
+      "relationships": {
+        "pays": "DeepSeek",
+        "owners": [
+          "Reported to be parented by the hedge fund High-Flyer; not sourced to a filing here"
+        ],
+        "suppliers": [
+          "DeepSeek-V4-Pro, published under the MIT licence"
+        ],
+        "unknowns": [
+          "The ownership chain above DeepSeek"
+        ]
+      }
     },
     {
       "id": "meta_ai",
@@ -289,7 +367,22 @@
         "fr_mobile": "verified_official_documentation",
         "fr_free_entry": "verified_secondary"
       },
-      "maker_in_directory": true
+      "maker_in_directory": true,
+      "relationships": {
+        "pays": "Meta Platforms, Inc.",
+        "free_tier": "Offered without a subscription.",
+        "owners": [
+          "No parent above it",
+          "Mr. Zuckerberg controls a majority of voting power"
+        ],
+        "suppliers": [
+          "Not documented — Meta does not name the model serving Meta AI"
+        ],
+        "unknowns": [
+          "Which model serves the product",
+          "How Meta AI is funded, given there is no subscription"
+        ]
+      }
     },
     {
       "id": "grok",
@@ -325,7 +418,20 @@
         "fr_mobile": "verified_official_documentation",
         "fr_free_entry": "verified_official_documentation"
       },
-      "maker_in_directory": true
+      "maker_in_directory": true,
+      "relationships": {
+        "pays": "xAI",
+        "owners": [
+          "Reported since February 2026 to be a wholly owned subsidiary of SpaceX; SpaceX files no proxy"
+        ],
+        "suppliers": [
+          "xAI’s own models, release not named"
+        ],
+        "unknowns": [
+          "Whether the SpaceX ownership is as reported",
+          "Which model release serves grok.com"
+        ]
+      }
     },
     {
       "id": "perplexity",
@@ -362,7 +468,20 @@
         "fr_mobile": "verified_secondary",
         "fr_free_entry": "verified_secondary"
       },
-      "maker_in_directory": true
+      "maker_in_directory": true,
+      "relationships": {
+        "pays": "Perplexity",
+        "owners": [
+          "No parent documented"
+        ],
+        "suppliers": [
+          "Third-party frontier models from OpenAI, Google, Anthropic and NVIDIA, plus its own Sonar model"
+        ],
+        "unknowns": [
+          "What Perplexity pays those model providers",
+          "Which model answers a given free-tier query"
+        ]
+      }
     },
     {
       "id": "kimi",
@@ -392,7 +511,19 @@
         "fr_mobile": "verified_official_documentation",
         "fr_free_entry": "verified_official_documentation"
       },
-      "maker_in_directory": true
+      "maker_in_directory": true,
+      "relationships": {
+        "pays": "Moonshot AI",
+        "owners": [
+          "No parent documented"
+        ],
+        "suppliers": [
+          "Moonshot’s own models; K2 weights published under a modified MIT licence"
+        ],
+        "unknowns": [
+          "The ownership chain above Moonshot"
+        ]
+      }
     },
     {
       "id": "qwen_chat",
@@ -422,7 +553,20 @@
         "fr_mobile": "verified_secondary",
         "fr_free_entry": "verified_secondary"
       },
-      "maker_in_directory": false
+      "maker_in_directory": false,
+      "relationships": {
+        "pays": "Alibaba Cloud",
+        "owners": [
+          "Part of Alibaba Group; operating entity not established here"
+        ],
+        "suppliers": [
+          "Alibaba’s own Qwen models; the release serving the chat is not documented"
+        ],
+        "unknowns": [
+          "The operating and billing entity",
+          "Which model release serves the chat"
+        ]
+      }
     },
     {
       "id": "lumo",
@@ -464,7 +608,23 @@
         "fr_mobile": "verified_official_documentation",
         "fr_free_entry": "verified_official_documentation"
       },
-      "maker_in_directory": false
+      "maker_in_directory": false,
+      "relationships": {
+        "pays": "Proton AG, a Swiss company",
+        "free_tier": "A limited free tier exists; paid plans bill Proton AG.",
+        "owners": [
+          "Primary shareholder is the non-profit Proton Foundation",
+          "Proton states 1% of revenues goes to the Foundation’s charitable activities when finances allow"
+        ],
+        "suppliers": [
+          "Proton’s own Lumo models, publisher and licence not documented",
+          "Apertus, published by the Swiss AI Initiative under Apache-2.0, selectable by the user"
+        ],
+        "unknowns": [
+          "How much the 1% amounted to in any year",
+          "Who publishes the default Lumo models"
+        ]
+      }
     },
     {
       "id": "duckai",
@@ -506,7 +666,21 @@
         "fr_mobile": "verified_official_documentation",
         "fr_free_entry": "verified_official_documentation"
       },
-      "maker_in_directory": false
+      "maker_in_directory": false,
+      "relationships": {
+        "pays": "DuckDuckGo. The free tier takes no payment at all.",
+        "free_tier": "Free tier needs no account and no payment.",
+        "owners": [
+          "No parent documented; DuckDuckGo publishes no ownership table"
+        ],
+        "suppliers": [
+          "Third-party models from Anthropic, OpenAI, Mistral, Azure and Tinfoil, anonymised by DuckDuckGo"
+        ],
+        "unknowns": [
+          "What DuckDuckGo pays those providers",
+          "Who owns DuckDuckGo"
+        ]
+      }
     }
   ],
   "criteria": [
@@ -629,13 +803,44 @@
     {
       "id": "c_ownership_shape",
       "label": "What kind of owner sits behind the product",
-      "plain": "Whether you are choosing an independent company, a subsidiary, a listed giant, or a foundation.",
+      "plain": "Background on the kind of company behind the product. The specific things you can act on are the three questions above.",
       "concept": "The ownership shape of the operating company.",
       "applies_to": "product_provider",
       "does_not_establish": "That any shape is better than another, or anything about where your money ends up.",
       "distinct_from": "Voting arrangements, which describe who decides rather than who owns.",
       "supported": true,
-      "informational": true
+      "informational": true,
+      "context_note": "Shown as background. The shapes overlap — a company can be listed and founder-controlled at once — so this is not a single choice. Pick the precise questions above instead."
+    },
+    {
+      "id": "c_nonprofit_control",
+      "label": "A foundation or non-profit holds control of the company",
+      "plain": "Whether a body with a public purpose — not shareholders or a founder — decides who runs it.",
+      "concept": "Where board-level control sits.",
+      "applies_to": "product_provider",
+      "does_not_establish": "That the foundation receives any money. Control and financial benefit are separate, and at least one provider here has one without the other.",
+      "distinct_from": "Whether a non-profit holds an economic stake, which is the next question.",
+      "supported": true
+    },
+    {
+      "id": "c_public_purpose_stake",
+      "label": "A public-purpose body has a documented economic stake or revenue share",
+      "plain": "Whether money from the business actually reaches a non-profit, rather than a non-profit merely steering it.",
+      "concept": "Documented economic participation by a public-purpose body.",
+      "applies_to": "product_provider",
+      "does_not_establish": "How much money moves, when, or whether it ever does. An equity stake pays out only if profits are distributed.",
+      "distinct_from": "A public-benefit duty, which obliges directors to weigh other interests but distributes nothing.",
+      "supported": true
+    },
+    {
+      "id": "c_parent_independence",
+      "label": "The operator is not a subsidiary of a larger commercial group",
+      "plain": "Whether the company you pay answers to a bigger corporate owner.",
+      "concept": "Whether a larger commercial parent sits above the operator.",
+      "applies_to": "product_provider",
+      "does_not_establish": "Anything about size or influence. A company can have no parent and still be one of the largest firms in the world.",
+      "distinct_from": "Investor stakes. A large minority investor is not a parent.",
+      "supported": true
     }
   ],
   "assessments": [
@@ -2664,6 +2869,513 @@
       "source_date": null,
       "scope": null,
       "uncertainty": "Where a shape is reported rather than filed, it is recorded here as unresolved. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "claude",
+      "criterion": "c_nonprofit_control",
+      "verdict": "meets",
+      "claim": "Anthropic’s Long-Term Benefit Trust holds Class T stock that \"grants the Trust the authority to elect and remove a number of Anthropic’s board members\", phasing in so that \"the Trust will elect a majority of the board within 4 years\".",
+      "claim_type": "company_statement",
+      "source": "Anthropic, \"The Long-Term Benefit Trust\"",
+      "source_date": "read 2026-09-20",
+      "scope": "Board-level control. It says nothing about who receives money — see the economic-stake finding, which points the other way.",
+      "uncertainty": "Read from the source named.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "chatgpt",
+      "criterion": "c_nonprofit_control",
+      "verdict": "meets",
+      "claim": "The non-profit OpenAI Foundation controls OpenAI Group PBC, appointing all members of its board and able to replace directors.",
+      "claim_type": "company_statement",
+      "source": "OpenAI, \"Our Structure\", read through search indexing after openai.com returned HTTP 403",
+      "source_date": "read 2026-09-20",
+      "scope": "Control of the for-profit PBC. OpenAI also holds an economic stake, recorded separately.",
+      "uncertainty": "Read from the source named.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "lumo",
+      "criterion": "c_nonprofit_control",
+      "verdict": "meets",
+      "claim": "The non-profit Proton Foundation is Proton AG’s primary shareholder, and Proton states \"no change of control can occur without the consent of the foundation\".",
+      "claim_type": "company_statement",
+      "source": "Proton, proton.me/blog/proton-non-profit-foundation and proton.me/foundation",
+      "source_date": "read 2026-09-20",
+      "scope": "Control of the operating company.",
+      "uncertainty": "Read from the source named.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "gemini",
+      "criterion": "c_nonprofit_control",
+      "verdict": "fails",
+      "claim": "Control of Alphabet sits with its founders through a dual-class structure: Page holds 27.1% and Brin 25.2% of total voting power, 52.7% between them. No foundation holds control.",
+      "claim_type": "established_outcome",
+      "source": "Alphabet 2026 annual meeting proxy statement, via reporting of the filing",
+      "source_date": "read 2026-09-20",
+      "scope": "A founder bloc holding a voting majority leaves no room for foundation control.",
+      "uncertainty": "Read from the source named.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "meta_ai",
+      "criterion": "c_nonprofit_control",
+      "verdict": "fails",
+      "claim": "Meta reports itself a \"controlled company\" under Nasdaq rules because Mr. Zuckerberg controls a majority of outstanding voting power. Control sits with an individual, not a foundation.",
+      "claim_type": "established_outcome",
+      "source": "Meta Platforms, Inc. DEF 14A filed 2026-04-16",
+      "source_date": "read 2026-09-20",
+      "scope": "An individual holding a voting majority leaves no room for foundation control.",
+      "uncertainty": "Read from the source named.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "copilot",
+      "criterion": "c_nonprofit_control",
+      "verdict": "fails",
+      "claim": "Microsoft has a single class of common stock and the largest holder in the 2025 proxy is Vanguard at 8.95%. No holder — foundation or otherwise — has a controlling stake.",
+      "claim_type": "established_outcome",
+      "source": "Microsoft DEF 14A, 2025-12-05",
+      "source_date": "read 2026-09-20",
+      "scope": "Establishes that no foundation controls Microsoft. It does not establish anything about Microsoft’s own scale or influence.",
+      "uncertainty": "Read from the source named.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "le_chat",
+      "criterion": "c_nonprofit_control",
+      "verdict": "unconfirmed",
+      "claim": "Whether any foundation or non-profit holds control of this operator is not established.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "deepseek_app",
+      "criterion": "c_nonprofit_control",
+      "verdict": "unconfirmed",
+      "claim": "Whether any foundation or non-profit holds control of this operator is not established.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "grok",
+      "criterion": "c_nonprofit_control",
+      "verdict": "unconfirmed",
+      "claim": "Whether any foundation or non-profit holds control of this operator is not established.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "perplexity",
+      "criterion": "c_nonprofit_control",
+      "verdict": "unconfirmed",
+      "claim": "Whether any foundation or non-profit holds control of this operator is not established.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "kimi",
+      "criterion": "c_nonprofit_control",
+      "verdict": "unconfirmed",
+      "claim": "Whether any foundation or non-profit holds control of this operator is not established.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "qwen_chat",
+      "criterion": "c_nonprofit_control",
+      "verdict": "unconfirmed",
+      "claim": "Whether any foundation or non-profit holds control of this operator is not established.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "duckai",
+      "criterion": "c_nonprofit_control",
+      "verdict": "unconfirmed",
+      "claim": "Whether any foundation or non-profit holds control of this operator is not established.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "lumo",
+      "criterion": "c_public_purpose_stake",
+      "verdict": "meets",
+      "claim": "Proton states the Foundation receives \"1% of Proton’s revenues to the Foundation’s charitable activities whenever financial conditions allow\", and that the Foundation is Proton’s primary shareholder, holding shares donated by the founders.",
+      "claim_type": "company_statement",
+      "source": "Proton, proton.me/foundation",
+      "source_date": "read 2026-09-20",
+      "scope": "A revenue share, conditional on financial circumstances, plus a shareholding. Proton does not publish the amount transferred in any year.",
+      "uncertainty": "\"Whenever financial conditions allow\" is a real qualifier: this is a stated ongoing arrangement, not an unconditional obligation.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "chatgpt",
+      "criterion": "c_public_purpose_stake",
+      "verdict": "meets",
+      "claim": "The non-profit OpenAI Foundation holds roughly 26% of the equity in OpenAI Group PBC, so it participates economically rather than only governing.",
+      "claim_type": "company_statement",
+      "source": "OpenAI, \"Our Structure\", read through search indexing after a 403; corroborated by reporting of the October 2025 recapitalisation",
+      "source_date": "read 2026-09-20",
+      "scope": "An equity stake, not a distribution. It pays out only if and when value is distributed, and OpenAI has not committed to distributing profits.",
+      "uncertainty": "Percentage read through search indexing of the official page rather than from the page directly.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "claude",
+      "criterion": "c_public_purpose_stake",
+      "verdict": "fails",
+      "claim": "Anthropic’s Trust holds Class T stock carrying no economic interest: the arrangements are \"designed to insulate the Trustees from financial interest in Anthropic\".",
+      "claim_type": "company_statement",
+      "source": "Anthropic, \"The Long-Term Benefit Trust\"",
+      "source_date": "read 2026-09-20",
+      "scope": "The Trust controls board seats without participating economically. This is deliberate on Anthropic’s part — insulation from financial interest is the design goal, not an oversight.",
+      "uncertainty": "Read from Anthropic’s own description of the Trust.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "gemini",
+      "criterion": "c_public_purpose_stake",
+      "verdict": "unconfirmed",
+      "claim": "No economic stake or revenue share held by a public-purpose body is documented for this operator.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "An absence of record, not a finding that none exists. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "copilot",
+      "criterion": "c_public_purpose_stake",
+      "verdict": "unconfirmed",
+      "claim": "No economic stake or revenue share held by a public-purpose body is documented for this operator.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "An absence of record, not a finding that none exists. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "meta_ai",
+      "criterion": "c_public_purpose_stake",
+      "verdict": "unconfirmed",
+      "claim": "No economic stake or revenue share held by a public-purpose body is documented for this operator.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "An absence of record, not a finding that none exists. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "le_chat",
+      "criterion": "c_public_purpose_stake",
+      "verdict": "unconfirmed",
+      "claim": "No economic stake or revenue share held by a public-purpose body is documented for this operator.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "An absence of record, not a finding that none exists. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "deepseek_app",
+      "criterion": "c_public_purpose_stake",
+      "verdict": "unconfirmed",
+      "claim": "No economic stake or revenue share held by a public-purpose body is documented for this operator.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "An absence of record, not a finding that none exists. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "grok",
+      "criterion": "c_public_purpose_stake",
+      "verdict": "unconfirmed",
+      "claim": "No economic stake or revenue share held by a public-purpose body is documented for this operator.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "An absence of record, not a finding that none exists. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "perplexity",
+      "criterion": "c_public_purpose_stake",
+      "verdict": "unconfirmed",
+      "claim": "No economic stake or revenue share held by a public-purpose body is documented for this operator.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "An absence of record, not a finding that none exists. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "kimi",
+      "criterion": "c_public_purpose_stake",
+      "verdict": "unconfirmed",
+      "claim": "No economic stake or revenue share held by a public-purpose body is documented for this operator.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "An absence of record, not a finding that none exists. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "qwen_chat",
+      "criterion": "c_public_purpose_stake",
+      "verdict": "unconfirmed",
+      "claim": "No economic stake or revenue share held by a public-purpose body is documented for this operator.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "An absence of record, not a finding that none exists. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "duckai",
+      "criterion": "c_public_purpose_stake",
+      "verdict": "unconfirmed",
+      "claim": "No economic stake or revenue share held by a public-purpose body is documented for this operator.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "An absence of record, not a finding that none exists. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "gemini",
+      "criterion": "c_parent_independence",
+      "verdict": "fails",
+      "claim": "Gemini is operated by Google DeepMind, a business within Alphabet Inc. Alphabet is the filing parent and its proxy covers the group.",
+      "claim_type": "established_outcome",
+      "source": "Alphabet 2026 annual meeting proxy statement, via reporting of the filing",
+      "source_date": "read 2026-09-20",
+      "scope": "A commercial parent sits above the operator. It says nothing about how much autonomy DeepMind has day to day.",
+      "uncertainty": "Read from the source named.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "copilot",
+      "criterion": "c_parent_independence",
+      "verdict": "meets",
+      "claim": "Microsoft Corporation files as the top-level parent and is not owned by a larger group.",
+      "claim_type": "established_outcome",
+      "source": "Microsoft DEF 14A, 2025-12-05",
+      "source_date": "read 2026-09-20",
+      "scope": "No parent above it. Microsoft is itself one of the largest companies in the world, which this criterion does not speak to.",
+      "uncertainty": "Read from the source named.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "meta_ai",
+      "criterion": "c_parent_independence",
+      "verdict": "meets",
+      "claim": "Meta Platforms, Inc. files as the top-level parent and is not owned by a larger group.",
+      "claim_type": "established_outcome",
+      "source": "Meta Platforms, Inc. DEF 14A filed 2026-04-16",
+      "source_date": "read 2026-09-20",
+      "scope": "No parent above it. Control still sits with one individual, recorded separately.",
+      "uncertainty": "Read from the source named.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "chatgpt",
+      "criterion": "c_parent_independence",
+      "verdict": "meets",
+      "claim": "OpenAI Group PBC is controlled by the non-profit OpenAI Foundation rather than by a commercial group.",
+      "claim_type": "company_statement",
+      "source": "OpenAI, \"Our Structure\", read through search indexing after a 403",
+      "source_date": "read 2026-09-20",
+      "scope": "Microsoft holds roughly 27% of the equity, which is a large minority investment rather than a parent relationship.",
+      "uncertainty": "Read from the source named.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "lumo",
+      "criterion": "c_parent_independence",
+      "verdict": "meets",
+      "claim": "Proton AG’s primary shareholder is the non-profit Proton Foundation, not a commercial group.",
+      "claim_type": "company_statement",
+      "source": "Proton, proton.me/blog/proton-non-profit-foundation",
+      "source_date": "read 2026-09-20",
+      "scope": "No commercial parent above the operator.",
+      "uncertainty": "Read from the source named.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "grok",
+      "criterion": "c_parent_independence",
+      "verdict": "unconfirmed",
+      "claim": "xAI is reported to have become a wholly owned subsidiary of SpaceX in February 2026, with Grok moved under a unit branded SpaceXAI. SpaceX is private and files no proxy, so this is reported rather than filed.",
+      "claim_type": "third_party_report",
+      "source": "Contemporaneous reporting, February 2026",
+      "source_date": "read 2026-09-20",
+      "scope": null,
+      "uncertainty": "If confirmed this would be a documented conflict. Reporting alone does not meet this pilot’s bar, so it counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "claude",
+      "criterion": "c_parent_independence",
+      "verdict": "unconfirmed",
+      "claim": "Anthropic has large minority investors including Amazon and Google, but no controlling commercial parent is documented.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "An absence of record, not a finding that none exists. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "le_chat",
+      "criterion": "c_parent_independence",
+      "verdict": "unconfirmed",
+      "claim": "No parent company is documented for Mistral.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "An absence of record, not a finding that none exists. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "deepseek_app",
+      "criterion": "c_parent_independence",
+      "verdict": "unconfirmed",
+      "claim": "DeepSeek is reported to be parented by the hedge fund High-Flyer. We have not sourced that to a filing or company statement.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "An absence of record, not a finding that none exists. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "perplexity",
+      "criterion": "c_parent_independence",
+      "verdict": "unconfirmed",
+      "claim": "No parent company is documented for Perplexity.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "An absence of record, not a finding that none exists. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "kimi",
+      "criterion": "c_parent_independence",
+      "verdict": "unconfirmed",
+      "claim": "No parent company is documented for Moonshot AI.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "An absence of record, not a finding that none exists. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "qwen_chat",
+      "criterion": "c_parent_independence",
+      "verdict": "unconfirmed",
+      "claim": "Qwen Chat is operated by Alibaba Cloud, part of Alibaba Group. We have not read Alibaba’s filings to establish the operating entity.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "An absence of record, not a finding that none exists. Counts neither way.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "duckai",
+      "criterion": "c_parent_independence",
+      "verdict": "unconfirmed",
+      "claim": "No parent company is documented for DuckDuckGo.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "An absence of record, not a finding that none exists. Counts neither way.",
       "provenance": "automated_provisional",
       "status": "in_force"
     }

@@ -1003,10 +1003,13 @@ describe('motivations are starting questions, not bundles', () => {
     expect(conduct.limits.join(' ')).toMatch(/workers|creators/i)
   })
 
-  it('keeps ownership separate from where the money goes', () => {
+  it('keeps control separate from financial benefit', () => {
     const power = motivations.find((m) => m.id === 'm_power')!
-    expect(power.limits.join(' ')).toMatch(/where your money ends up/i)
-    expect(power.limits.join(' ')).toMatch(/separate questions/i)
+    expect(power.limits.join(' ')).toMatch(/controlling a company and benefiting financially/i)
+    expect(power.limits.join(' ')).toMatch(/does not mean your subscription is paid/i)
+    // And the separation is real, not just asserted in prose.
+    expect(power.criterionIds).toContain('c_nonprofit_control')
+    expect(power.criterionIds).toContain('c_public_purpose_stake')
   })
 
   it('keeps voting power separate from board control', () => {
@@ -1161,5 +1164,132 @@ describe('share-voting findings support rather than lead', () => {
       const first = criteria.find((c) => c.id === m.criterionIds[0])!
       expect(first.nested).not.toBe(true)
     }
+  })
+})
+
+// ---------------------------------------------------------------------------
+// 14. Control, financial benefit and dependency are different things
+// ---------------------------------------------------------------------------
+
+describe('control is never read as financial benefit', () => {
+  it('splits Anthropic: the trust controls the board and gets nothing', () => {
+    // The whole point of the separation. Same company, same filing, opposite
+    // answers -- and the second one is a documented conflict, not an unknown.
+    expect(assessmentFor('claude', 'c_nonprofit_control')?.verdict).toBe('meets')
+    expect(assessmentFor('claude', 'c_public_purpose_stake')?.verdict).toBe('fails')
+    expect(assessmentFor('claude', 'c_public_purpose_stake')?.claim).toMatch(/no economic interest/i)
+  })
+
+  it('does not treat a public-benefit duty as a profit-distribution arrangement', () => {
+    // A PBC duty obliges directors to weigh other interests. It distributes
+    // nothing, so it must never carry the economic-stake criterion by itself.
+    for (const alt of alternatives) {
+      const duty = assessmentFor(alt.id, 'c_public_benefit')?.verdict
+      const stake = assessmentFor(alt.id, 'c_public_purpose_stake')?.verdict
+      if (duty === 'meets' && stake === 'meets') {
+        // Allowed only where a SEPARATE economic fact was documented.
+        const a = assessmentFor(alt.id, 'c_public_purpose_stake')!
+        expect(a.claim).toMatch(/equity|revenue|shareholder/i)
+      }
+    }
+    // Anthropic is the proof: duty yes, stake no.
+    expect(assessmentFor('claude', 'c_public_benefit')?.verdict).toBe('meets')
+    expect(assessmentFor('claude', 'c_public_purpose_stake')?.verdict).toBe('fails')
+  })
+
+  it('states what an economic stake does not establish', () => {
+    for (const alt of alternatives) {
+      const a = assessmentFor(alt.id, 'c_public_purpose_stake')!
+      if (a.verdict === 'meets') {
+        expect(a.scope).toMatch(/only if|conditional|does not publish|not committed/i)
+      }
+    }
+  })
+})
+
+describe('no money flow is inferred from investment or supply', () => {
+  it('never claims subscription revenue reaches an investor', () => {
+    for (const alt of alternatives) {
+      const r = alt.relationships!
+      const text = [r.pays, ...r.owners, ...r.suppliers].join(' ')
+      // An investor stake may be described; it must not be described as being paid.
+      expect(text).not.toMatch(/subscription (?:revenue |money )?(?:is |goes |flows )?(?:paid )?to .*investor/i)
+    }
+  })
+
+  it('names a specific unknown wherever commercial terms are unestablished', () => {
+    for (const alt of alternatives) {
+      const r = alt.relationships!
+      expect(r.unknowns.length).toBeGreaterThan(0)
+      for (const u of r.unknowns) expect(u.length).toBeGreaterThan(15)
+    }
+  })
+
+  it('does not turn a supplier into an owner', () => {
+    // Duck.ai and Perplexity run other companies' models and own none of them.
+    for (const id of ['duckai', 'perplexity']) {
+      const r = alternativeById.get(id)!.relationships!
+      expect(r.suppliers.join(' ')).toMatch(/third-party|Anthropic|OpenAI/i)
+      expect(r.owners.join(' ')).not.toMatch(/Anthropic|OpenAI/i)
+      expect(r.unknowns.join(' ')).toMatch(/pays/i)
+    }
+  })
+
+  it('describes free services without inventing a payment', () => {
+    const free = alternativeById.get('duckai')!.relationships!
+    expect(free.pays).toMatch(/free tier takes no payment/i)
+    expect(alternativeById.get('meta_ai')!.relationships!.free_tier).toMatch(/without a subscription/i)
+  })
+})
+
+describe('the ownership criteria inform decisions without double-counting', () => {
+  it('lets a user prefer foundation control', () => {
+    const input = { functional: F, priorities: ['c_nonprofit_control'], requirements: [] }
+    const [sep] = buildGuidance(recommend(input), input).separations
+    expect(sep.separates).toBe(true)
+    expect(sep.aligned.map((a) => a.id).sort()).toEqual(['chatgpt', 'claude', 'lumo'])
+    expect(sep.conflicting.map((a) => a.id).sort()).toEqual(['copilot', 'gemini', 'meta_ai'])
+  })
+
+  it('lets a user ask who benefits financially and get a different answer', () => {
+    const input = { functional: F, priorities: ['c_public_purpose_stake'], requirements: [] }
+    const [sep] = buildGuidance(recommend(input), input).separations
+    // Claude drops out of the aligned set even though it led on control.
+    expect(sep.aligned.map((a) => a.id).sort()).toEqual(['chatgpt', 'lumo'])
+    expect(sep.conflicting.map((a) => a.id)).toEqual(['claude'])
+  })
+
+  it('does not let two criteria on the same fact stack', () => {
+    // Control and economic stake must be capable of disagreeing, or they are
+    // the same fact wearing two hats and would double an option's strength.
+    const disagree = alternatives.filter((alt) => {
+      const c = assessmentFor(alt.id, 'c_nonprofit_control')?.verdict
+      const e = assessmentFor(alt.id, 'c_public_purpose_stake')?.verdict
+      return c === 'meets' && e === 'fails'
+    })
+    expect(disagree.map((a) => a.id)).toEqual(['claude'])
+  })
+
+  it('keeps unknown preferences and requirements behaving as before', () => {
+    const soft = { functional: F, priorities: ['c_public_purpose_stake'], requirements: [] }
+    expect(recommend(soft).excluded).toHaveLength(0)
+
+    const hard = {
+      functional: F,
+      priorities: ['c_public_purpose_stake'],
+      requirements: ['c_public_purpose_stake'],
+    }
+    const r = recommend(hard)
+    expect(r.excluded.map((o) => o.alternative.id)).toEqual(['claude'])
+    expect(r.confirmed.map((o) => o.alternative.id).sort()).toEqual(['chatgpt', 'lumo'])
+    for (const o of r.notConfirmed) {
+      expect(assessmentFor(o.alternative.id, 'c_public_purpose_stake')?.verdict).toBe('unconfirmed')
+    }
+  })
+
+  it('keeps ownership shape as context rather than a preference', () => {
+    const shape = criteria.find((c) => c.id === 'c_ownership_shape')!
+    expect(shape.informational).toBe(true)
+    expect((shape as { context_note?: string }).context_note).toMatch(/overlap/i)
   })
 })

@@ -179,7 +179,52 @@ function ProductFacts({ alt }: { alt: PilotAlternative }) {
   )
 }
 
-function OutcomeCard({ o }: { o: AlternativeOutcome }) {
+/**
+ * Who gets paid, who owns it, what it runs on — and the specific things we
+ * could not establish.
+ *
+ * Shown only when the visitor has chosen something from the ownership
+ * question, because otherwise it is noise. Every unknown here names what is
+ * missing rather than shrugging, and none of it asserts a money flow we have
+ * not documented: an investor stake is not a payment, and a supplier
+ * relationship is not a price.
+ */
+function RelationshipSummary({ alt }: { alt: PilotAlternative }) {
+  const r = alt.relationships
+  if (!r) return null
+  return (
+    <details className="mt-2 rounded-md border border-slate-200 bg-slate-50 p-2.5">
+      <summary className="cursor-pointer text-xs font-semibold text-slate-700">
+        Who gets paid, and what this runs on
+      </summary>
+      <div className="mt-1.5 space-y-1.5 text-[11px] leading-relaxed text-slate-600">
+        <p>
+          <span className="font-semibold text-slate-700">Money goes to:</span> {r.pays}
+          {r.free_tier && <span className="text-slate-500"> {r.free_tier}</span>}
+        </p>
+        {r.owners?.length > 0 && (
+          <p>
+            <span className="font-semibold text-slate-700">Ownership and control:</span>{' '}
+            {r.owners.join('. ')}.
+          </p>
+        )}
+        {r.suppliers?.length > 0 && (
+          <p>
+            <span className="font-semibold text-slate-700">Runs on:</span> {r.suppliers.join('. ')}.
+          </p>
+        )}
+        {r.unknowns?.length > 0 && (
+          <p className="text-slate-500">
+            <span className="font-semibold">We have not established:</span>{' '}
+            {r.unknowns.join('; ')}.
+          </p>
+        )}
+      </div>
+    </details>
+  )
+}
+
+function OutcomeCard({ o, showRelationships }: { o: AlternativeOutcome; showRelationships: boolean }) {
   // Neutral by default. A green card made alignment, contradiction and unknown
   // look alike; colour now lives on the finding, where it means something.
   const border = o.bucket === 'excluded' ? 'border-rose-200' : 'border-slate-200'
@@ -203,6 +248,7 @@ function OutcomeCard({ o }: { o: AlternativeOutcome }) {
         )}
       </div>
       <ProductFacts alt={o.alternative} />
+      {showRelationships && <RelationshipSummary alt={o.alternative} />}
 
       {o.functionalGaps.length > 0 && (
         <p className="mt-2 rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-xs leading-snug text-amber-900">
@@ -637,6 +683,14 @@ function MotivationSection({
   const chosen = cs.filter((c) => priorities.includes(c.id) || requirements.includes(c.id))
   const nestedChosen = nested.some((c) => priorities.includes(c.id) || requirements.includes(c.id))
   const cov = motivationCoverage(m)
+  // "5 of 5 questions with evidence" read as full coverage. It means five
+  // questions have SOME evidence, which is a different and weaker claim.
+  const coverageText =
+    cov.documented === 0
+      ? 'No evidence yet'
+      : cov.documented === cov.total
+        ? `Some evidence for all ${cov.total} question${cov.total === 1 ? '' : 's'}`
+        : `Some evidence for ${cov.documented} of ${cov.total} questions`
 
   return (
     // Open when the user already has something selected inside, so reorganising
@@ -651,40 +705,78 @@ function MotivationSection({
                 {chosen.length} selected
               </span>
             )}
-            {cov.documented} of {cov.total} question{cov.total === 1 ? '' : 's'} with evidence
+            {coverageText}
           </span>
         </span>
         <span className="mt-0.5 block text-xs leading-snug text-slate-500">{m.blurb}</span>
       </summary>
 
       <div className="border-t border-slate-200 px-3 py-2.5">
-        <ul className="mb-2 space-y-0.5">
-          {m.limits.map((l) => (
-            <li key={l} className="text-[11px] leading-snug text-slate-500">
-              — {l}
-            </li>
-          ))}
-        </ul>
-        {m.gap && (
-          <p className="mb-2 rounded border border-amber-200 bg-amber-50 px-2 py-1.5 text-[11px] leading-snug text-amber-900">
-            <span className="font-semibold">Research gap.</span> {m.gap}
-          </p>
+        {/* Choices first. The caveats are real and stay one click away, but a
+            section that opens with four warnings reads as a disclaimer, not an
+            offer. A limitation that changes what a finding MEANS stays pinned
+            to that finding instead. */}
+        {m.groups ? (
+          <div className="space-y-3">
+            {m.groups.map((g) => (
+              <div key={g.heading}>
+                <p className="text-xs font-bold text-slate-800">{g.heading}</p>
+                {g.blurb && (
+                  <p className="mb-1.5 text-[11px] leading-snug text-slate-500">{g.blurb}</p>
+                )}
+                <ul className="space-y-2">
+                  {g.criterionIds
+                    .map((id) => criterionById.get(id)!)
+                    .filter((c) => c && !c.nested)
+                    .map((c) => (
+                      <CriterionRow
+                        key={c.id}
+                        c={c}
+                        priorities={priorities}
+                        requirements={requirements}
+                        onTogglePriority={() => onTogglePriority(c.id)}
+                        onToggleRequirement={() => onToggleRequirement(c.id)}
+                      />
+                    ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <ul className="space-y-2">
+            {lead.map((c) => (
+              <CriterionRow
+                key={c.id}
+                c={c}
+                priorities={priorities}
+                requirements={requirements}
+                onTogglePriority={() => onTogglePriority(c.id)}
+                onToggleRequirement={() => onToggleRequirement(c.id)}
+              />
+            ))}
+          </ul>
         )}
-        <ul className="space-y-2">
-          {lead.map((c) => (
-            <CriterionRow
-              key={c.id}
-              c={c}
-              priorities={priorities}
-              requirements={requirements}
-              onTogglePriority={() => onTogglePriority(c.id)}
-              onToggleRequirement={() => onToggleRequirement(c.id)}
-            />
-          ))}
-        </ul>
 
         {/* Supporting evidence. Selectable and fully capable of excluding when
             made a must-have — just not what the question leads with. */}
+        <details className="mt-2.5">
+          <summary className="cursor-pointer text-[11px] font-medium text-slate-500 hover:text-slate-700">
+            What these findings do and do not show
+          </summary>
+          <ul className="mt-1 space-y-0.5">
+            {m.limits.map((l) => (
+              <li key={l} className="text-[11px] leading-snug text-slate-500">
+                — {l}
+              </li>
+            ))}
+          </ul>
+          {m.gap && (
+            <p className="mt-1.5 text-[11px] leading-snug text-amber-800">
+              <span className="font-semibold">Where the evidence runs out.</span> {m.gap}
+            </p>
+          )}
+        </details>
+
         {nested.length > 0 && (
           <details className="mt-2" open={nestedChosen}>
             <summary className="cursor-pointer text-xs font-semibold text-teal-700 hover:underline">
@@ -720,6 +812,11 @@ export function RecommendView() {
   )
   const result = useMemo(() => recommend(input), [input])
   const guidance = useMemo(() => buildGuidance(result, input), [result, input])
+
+  // The relationship block answers the ownership question, so it appears when
+  // the visitor has actually asked it.
+  const ownershipIds = new Set(motivations.find((m) => m.id === 'm_power')?.criterionIds ?? [])
+  const showRelationships = [...priorities, ...requirements].some((id) => ownershipIds.has(id))
 
   const toggle = (list: string[], set: (v: string[]) => void, id: string) =>
     set(list.includes(id) ? list.filter((x) => x !== id) : [...list, id])
@@ -876,7 +973,7 @@ export function RecommendView() {
             ) : (
               <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
                 {result.confirmed.map((o) => (
-                  <OutcomeCard key={o.alternative.id} o={o} />
+                  <OutcomeCard key={o.alternative.id} o={o} showRelationships={showRelationships} />
                 ))}
               </div>
             )}
@@ -893,7 +990,7 @@ export function RecommendView() {
               </p>
               <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
                 {result.notConfirmed.map((o) => (
-                  <OutcomeCard key={o.alternative.id} o={o} />
+                  <OutcomeCard key={o.alternative.id} o={o} showRelationships={showRelationships} />
                 ))}
               </div>
             </div>
@@ -907,7 +1004,7 @@ export function RecommendView() {
               </p>
               <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
                 {result.excluded.map((o) => (
-                  <OutcomeCard key={o.alternative.id} o={o} />
+                  <OutcomeCard key={o.alternative.id} o={o} showRelationships={showRelationships} />
                 ))}
               </div>
             </div>
