@@ -1441,3 +1441,18 @@ describe('the corrections propagate through soft and hard selections', () => {
     expect(claude.unknownOn.map((c) => c.id)).toEqual(['c_public_purpose_stake'])
   })
 })
+
+describe('relationship text agrees with the findings it sits beside', () => {
+  it('does not describe control as still phasing in where it is established', () => {
+    const claude = alternativeById.get('claude')!
+    expect(assessmentFor('claude', 'c_nonprofit_control')?.verdict).toBe('meets')
+    expect(claude.relationships!.owners.join(' ')).not.toMatch(/phases to|will elect/i)
+    expect(claude.relationships!.owners.join(' ')).toMatch(/since April 2026/i)
+  })
+
+  it('carries the open stake question into the named unknowns', () => {
+    const claude = alternativeById.get('claude')!
+    expect(assessmentFor('claude', 'c_public_purpose_stake')?.verdict).toBe('unconfirmed')
+    expect(claude.relationships!.unknowns.join(' ')).toMatch(/stake or revenue share/i)
+  })
+})

@@ -148,7 +148,8 @@
       "relationships": {
         "pays": "Anthropic PBC",
         "owners": [
-          "Board control phases to a Long-Term Benefit Trust holding Class T stock with no economic rights",
+          "Trust-appointed directors have made up a majority of the board since April 2026",
+          "The Long-Term Benefit Trust holds Class T stock carrying no economic rights",
           "Amazon and Google are large investors"
         ],
         "suppliers": [
@@ -156,6 +157,7 @@
         ],
         "unknowns": [
           "How subscription revenue is distributed",
+          "Whether any public-purpose body holds a stake or revenue share",
           "What economic rights Anthropic’s investors hold"
         ]
       }
