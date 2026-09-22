@@ -528,7 +528,7 @@ function SeparationRow({ sm }: { sm: PreferenceSummary }) {
  * documented on exactly the same criteria it says plainly that an unknown does
  * not make one of them better.
  */
-function ResultSummary({ guidance }: { guidance: Guidance }) {
+function ResultSummary({ guidance, hasRequirements }: { guidance: Guidance; hasRequirements: boolean }) {
   const g = guidance
   if (g.separations.length === 0) return null
 
@@ -587,13 +587,41 @@ function ResultSummary({ guidance }: { guidance: Guidance }) {
                   </li>
                 ))}
               </ul>
-              {g.unevidenced.length > 0 && (
-                <p className="mt-1.5 text-[11px] leading-snug text-slate-500">
-                  {g.unevidenced.length} other option{g.unevidenced.length === 1 ? '' : 's'} have no
-                  documented finding in favour on what you picked —{' '}
-                  {joinNames(g.unevidenced.map((a) => a.product))}. They are listed below and are
-                  not ruled out; we simply have nothing to say about them here.
-                </p>
+              {(g.unaligned.conflicted.length > 0 ||
+                g.unaligned.unresolved.length > 0 ||
+                g.unaligned.mixed.length > 0) && (
+                <div className="mt-2 space-y-1 border-t border-slate-100 pt-2">
+                  {/* Why an option is not in the list above, generated from what
+                      the visitor actually picked. A documented conflict and an
+                      unresearched question are different answers and are not
+                      collapsed into one. */}
+                  {g.unaligned.conflicted.length > 0 && (
+                    <p className="text-[11px] leading-snug text-slate-500">
+                      <strong className="text-rose-800">Documented against</strong> on what you
+                      picked — {joinNames(g.unaligned.conflicted.map((n) => n.alternative.product))}
+                      .{' '}
+                      {hasRequirements
+                        ? 'Where you made that a must-have, they are ruled out below.'
+                        : 'These are preferences, so they stay available; the conflict is on each card.'}
+                    </p>
+                  )}
+                  {g.unaligned.mixed.length > 0 && (
+                    <p className="text-[11px] leading-snug text-slate-500">
+                      <strong className="text-slate-700">Part documented against, part
+                      unresolved</strong> —{' '}
+                      {joinNames(g.unaligned.mixed.map((n) => n.alternative.product))}. Each card
+                      says which is which.
+                    </p>
+                  )}
+                  {g.unaligned.unresolved.length > 0 && (
+                    <p className="text-[11px] leading-snug text-slate-500">
+                      <strong className="text-slate-700">Not yet researched</strong> on what you
+                      picked — {joinNames(g.unaligned.unresolved.map((n) => n.alternative.product))}
+                      . We have no finding either way, which is a gap on our side rather than a
+                      mark against them.
+                    </p>
+                  )}
+                </div>
               )}
             </div>
           )}
@@ -889,7 +917,7 @@ export function RecommendView() {
       {/* Step 3 — results */}
       {started && (
         <section className="mt-6 space-y-6">
-          <ResultSummary guidance={guidance} />
+          <ResultSummary guidance={guidance} hasRequirements={result.hasRequirements} />
 
           {result.unassessableRequirements.length > 0 && (
             <div className="rounded-xl border-2 border-amber-400 bg-amber-50 p-4">

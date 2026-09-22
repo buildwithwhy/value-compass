@@ -969,7 +969,9 @@ describe('guidance principles', () => {
     expect(g.considered.length).toBe(6)
     const grouped = g.matchedGroups.reduce((n, x) => n + x.members.length, 0)
     expect(grouped).toBe(g.considered.length)
-    expect(g.considered.length + g.unevidenced.length).toBe(alternatives.length)
+    const un = g.unaligned
+    expect(g.considered.length + un.conflicted.length + un.unresolved.length + un.mixed.length)
+      .toBe(alternatives.length)
   })
 })
 
@@ -1172,15 +1174,46 @@ describe('share-voting findings support rather than lead', () => {
 // ---------------------------------------------------------------------------
 
 describe('control is never read as financial benefit', () => {
-  it('splits Anthropic: the trust controls the board and gets nothing', () => {
-    // The whole point of the separation. Same company, same filing, opposite
-    // answers -- and the second one is a documented conflict, not an unknown.
-    expect(assessmentFor('claude', 'c_nonprofit_control')?.verdict).toBe('meets')
-    expect(assessmentFor('claude', 'c_public_purpose_stake')?.verdict).toBe('fails')
-    expect(assessmentFor('claude', 'c_public_purpose_stake')?.claim).toMatch(/no economic interest/i)
+  it('cites present control, not a future commitment, for Anthropic', () => {
+    // A 2023 statement that the Trust "will elect a majority within 4 years"
+    // is a projection. Anthropic's April 2026 post states it as a present
+    // fact, and that is what the finding must rest on.
+    const a = assessmentFor('claude', 'c_nonprofit_control')!
+    expect(a.verdict).toBe('meets')
+    expect(a.claim).toMatch(/now make up a majority of the Board/i)
+    expect(a.claim).not.toMatch(/will elect a majority/i)
+    expect(a.source_date).toBe('2026-04-14')
   })
 
-  it('does not treat a public-benefit duty as a profit-distribution arrangement', () => {
+  it('does not read one body’s lack of economic rights as a broad negative', () => {
+    // Class T carrying no economic interest is a fact about that trust. It
+    // does not survey every public-purpose body, which is what the criterion
+    // asks, so the broad negative is withdrawn and the narrow fact kept.
+    const a = assessmentFor('claude', 'c_public_purpose_stake')!
+    expect(a.verdict).toBe('unconfirmed')
+    expect(a.claim).toMatch(/no economic interest/i)
+    expect(a.claim).toMatch(/not established/i)
+    expect(a.uncertainty).toMatch(/absence argument/i)
+  })
+
+  it('never states a broad negative on the economic criterion anywhere', () => {
+    // No option may fail this criterion on the strength of one body's terms.
+    for (const alt of alternatives) {
+      expect(assessmentFor(alt.id, 'c_public_purpose_stake')?.verdict).not.toBe('fails')
+    }
+  })
+
+  it('keeps a financial interest distinct from a payment', () => {
+    const c = criteria.find((x) => x.id === 'c_public_purpose_stake')!
+    expect(c.plain).toMatch(/holds a financial interest .* or has a documented right to a share/i)
+    expect(c.plain).not.toMatch(/actually reaches/i)
+    expect(c.does_not_establish).toMatch(/actually been paid/i)
+    // And the evidence still separates the three.
+    expect(assessmentFor('chatgpt', 'c_public_purpose_stake')?.scope).toMatch(/not a distribution/i)
+    expect(assessmentFor('lumo', 'c_public_purpose_stake')?.scope).toMatch(/revenue share/i)
+  })
+
+  it('does not treat a public-benefit duty as a financial interest', () => {
     // A PBC duty obliges directors to weigh other interests. It distributes
     // nothing, so it must never carry the economic-stake criterion by itself.
     for (const alt of alternatives) {
@@ -1192,9 +1225,9 @@ describe('control is never read as financial benefit', () => {
         expect(a.claim).toMatch(/equity|revenue|shareholder/i)
       }
     }
-    // Anthropic is the proof: duty yes, stake no.
+    // Anthropic is the proof: a PBC duty, and the stake question still open.
     expect(assessmentFor('claude', 'c_public_benefit')?.verdict).toBe('meets')
-    expect(assessmentFor('claude', 'c_public_purpose_stake')?.verdict).toBe('fails')
+    expect(assessmentFor('claude', 'c_public_purpose_stake')?.verdict).toBe('unconfirmed')
   })
 
   it('states what an economic stake does not establish', () => {
@@ -1254,20 +1287,23 @@ describe('the ownership criteria inform decisions without double-counting', () =
   it('lets a user ask who benefits financially and get a different answer', () => {
     const input = { functional: F, priorities: ['c_public_purpose_stake'], requirements: [] }
     const [sep] = buildGuidance(recommend(input), input).separations
-    // Claude drops out of the aligned set even though it led on control.
+    // Claude leads on control and is unresolved here -- a real difference
+    // between the two questions, without inventing a conflict to dramatise it.
     expect(sep.aligned.map((a) => a.id).sort()).toEqual(['chatgpt', 'lumo'])
-    expect(sep.conflicting.map((a) => a.id)).toEqual(['claude'])
+    expect(sep.conflicting).toHaveLength(0)
+    expect(sep.separates).toBe(false)
+    expect(sep.unresolved.map((a) => a.id)).toContain('claude')
   })
 
   it('does not let two criteria on the same fact stack', () => {
-    // Control and economic stake must be capable of disagreeing, or they are
-    // the same fact wearing two hats and would double an option's strength.
-    const disagree = alternatives.filter((alt) => {
+    // Control and economic stake must be capable of diverging, or they are the
+    // same fact wearing two hats and would double an option's strength.
+    const diverge = alternatives.filter((alt) => {
       const c = assessmentFor(alt.id, 'c_nonprofit_control')?.verdict
       const e = assessmentFor(alt.id, 'c_public_purpose_stake')?.verdict
-      return c === 'meets' && e === 'fails'
+      return c === 'meets' && e !== 'meets'
     })
-    expect(disagree.map((a) => a.id)).toEqual(['claude'])
+    expect(diverge.map((a) => a.id)).toEqual(['claude'])
   })
 
   it('keeps unknown preferences and requirements behaving as before', () => {
@@ -1280,8 +1316,12 @@ describe('the ownership criteria inform decisions without double-counting', () =
       requirements: ['c_public_purpose_stake'],
     }
     const r = recommend(hard)
-    expect(r.excluded.map((o) => o.alternative.id)).toEqual(['claude'])
+    // Nothing is excluded now: withdrawing the broad negative means no option
+    // is documented to fail, so the must-have confirms two and leaves the rest
+    // unconfirmed rather than ruling anyone out.
+    expect(r.excluded).toHaveLength(0)
     expect(r.confirmed.map((o) => o.alternative.id).sort()).toEqual(['chatgpt', 'lumo'])
+    expect(r.notConfirmed.map((o) => o.alternative.id)).toContain('claude')
     for (const o of r.notConfirmed) {
       expect(assessmentFor(o.alternative.id, 'c_public_purpose_stake')?.verdict).toBe('unconfirmed')
     }
@@ -1291,5 +1331,113 @@ describe('the ownership criteria inform decisions without double-counting', () =
     const shape = criteria.find((c) => c.id === 'c_ownership_shape')!
     expect(shape.informational).toBe(true)
     expect((shape as { context_note?: string }).context_note).toMatch(/overlap/i)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// 15. Inference boundaries, and why an option is not in the list
+// ---------------------------------------------------------------------------
+
+describe('a future commitment is not present control', () => {
+  it('rests every control finding on a present-tense statement', () => {
+    for (const alt of alternatives) {
+      const a = assessmentFor(alt.id, 'c_nonprofit_control')!
+      if (a.verdict === 'meets') {
+        // "will elect", "within N years", "phasing in" describe a future state.
+        expect(a.claim).not.toMatch(/\bwill (?:elect|hold|control)\b|within \d+ years/i)
+      }
+    }
+  })
+
+  it('keeps the phased arrangement as evidence without letting it decide', () => {
+    const a = assessmentFor('claude', 'c_nonprofit_control')!
+    expect(a.uncertainty).toMatch(/future commitment|does not establish present control/i)
+    expect(a.scope).toMatch(/present fact/i)
+  })
+})
+
+describe('the summary says why an option is not listed', () => {
+  const input = {
+    functional: F,
+    priorities: ['c_nonprofit_control', 'c_public_purpose_stake'],
+    requirements: [],
+  }
+  const g = buildGuidance(recommend(input), input)
+
+  it('separates documented conflicts from unresearched questions', () => {
+    // Gemini, Copilot and Meta AI are documented against on control and
+    // unresolved on the stake question -- a mixture, not "nothing to say".
+    expect(g.unaligned.mixed.map((n) => n.alternative.id).sort()).toEqual(
+      ['copilot', 'gemini', 'meta_ai'],
+    )
+    for (const n of g.unaligned.mixed) {
+      expect(n.conflictsOn.length).toBeGreaterThan(0)
+      expect(n.unknownOn.length).toBeGreaterThan(0)
+    }
+  })
+
+  it('puts the genuinely unresearched options in their own group', () => {
+    for (const n of g.unaligned.unresolved) {
+      expect(n.conflictsOn).toHaveLength(0)
+      expect(n.alignsOn).toHaveLength(0)
+    }
+    expect(g.unaligned.unresolved.length).toBeGreaterThan(0)
+  })
+
+  it('accounts for every option exactly once', () => {
+    const u = g.unaligned
+    const all = [...g.considered, ...u.conflicted, ...u.unresolved, ...u.mixed]
+    expect(all).toHaveLength(alternatives.length)
+    expect(new Set(all.map((n) => n.alternative.id)).size).toBe(alternatives.length)
+  })
+
+  it('puts an option in conflicted only when every selected criterion conflicts', () => {
+    const single = { functional: F, priorities: ['c_nonprofit_control'], requirements: [] }
+    const one = buildGuidance(recommend(single), single)
+    expect(one.unaligned.conflicted.map((n) => n.alternative.id).sort()).toEqual(
+      ['copilot', 'gemini', 'meta_ai'],
+    )
+    expect(one.unaligned.mixed).toHaveLength(0)
+  })
+})
+
+describe('the corrections propagate through soft and hard selections', () => {
+  it('still excludes nobody on a soft preference', () => {
+    const input = {
+      functional: F,
+      priorities: ['c_nonprofit_control', 'c_public_purpose_stake'],
+      requirements: [],
+    }
+    const r = recommend(input)
+    expect(r.excluded).toHaveLength(0)
+    expect(r.confirmed).toHaveLength(alternatives.length)
+  })
+
+  it('excludes on control, where a conflict really is documented', () => {
+    const input = {
+      functional: F,
+      priorities: ['c_nonprofit_control'],
+      requirements: ['c_nonprofit_control'],
+    }
+    const r = recommend(input)
+    expect(r.excluded.map((o) => o.alternative.id).sort()).toEqual(
+      ['copilot', 'gemini', 'meta_ai'],
+    )
+    expect(r.confirmed.map((o) => o.alternative.id).sort()).toEqual(
+      ['chatgpt', 'claude', 'lumo'],
+    )
+  })
+
+  it('shows Claude aligned on control and unresolved on the stake question', () => {
+    const input = {
+      functional: F,
+      priorities: ['c_nonprofit_control', 'c_public_purpose_stake'],
+      requirements: [],
+    }
+    const g = buildGuidance(recommend(input), input)
+    const claude = g.considered.find((n) => n.alternative.id === 'claude')!
+    expect(claude.alignsOn.map((c) => c.id)).toEqual(['c_nonprofit_control'])
+    expect(claude.conflictsOn).toHaveLength(0)
+    expect(claude.unknownOn.map((c) => c.id)).toEqual(['c_public_purpose_stake'])
   })
 })

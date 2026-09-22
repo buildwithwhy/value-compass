@@ -643,8 +643,19 @@ export interface Guidance {
   separations: PreferenceSummary[]
   /** Every option with at least one documented alignment, alphabetical. */
   considered: OptionNote[]
-  /** Options with no documented alignment — not rejected, just unevidenced. */
-  unevidenced: PilotAlternative[]
+  /**
+   * Options with no documented alignment, split by WHY. Calling them all
+   * "nothing to say" flattened a documented conflict into the same bucket as
+   * an unresearched question, which are not the same situation for a reader.
+   */
+  unaligned: {
+    /** Every selected criterion is a documented conflict. */
+    conflicted: OptionNote[]
+    /** Nothing documented either way on any of them. */
+    unresolved: OptionNote[]
+    /** Some conflicts, some unresolved. */
+    mixed: OptionNote[]
+  }
   matchedGroups: MatchedGroup[]
   /** Selected criteria with no documented finding for anyone. */
   openQuestions: PilotCriterion[]
@@ -685,7 +696,12 @@ export function buildGuidance(
 
   const notes = inPlay.map(noteFor)
   const considered = notes.filter((n) => n.alignsOn.length > 0)
-  const unevidenced = notes.filter((n) => n.alignsOn.length === 0).map((n) => n.alternative)
+  const rest = notes.filter((n) => n.alignsOn.length === 0)
+  const unaligned = {
+    conflicted: rest.filter((n) => n.conflictsOn.length > 0 && n.unknownOn.length === 0),
+    unresolved: rest.filter((n) => n.conflictsOn.length === 0),
+    mixed: rest.filter((n) => n.conflictsOn.length > 0 && n.unknownOn.length > 0),
+  }
 
   // Group by identical alignment sets. No cap and no truncation: a tie of six
   // is reported as a tie of six.
@@ -725,7 +741,7 @@ export function buildGuidance(
   return {
     separations,
     considered,
-    unevidenced,
+    unaligned,
     matchedGroups: matchedGroups.filter((g) => g.members.length > 0),
     openQuestions,
     nextQuestion,
