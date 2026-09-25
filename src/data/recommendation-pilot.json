@@ -56,19 +56,53 @@
   "functional_requirements": [
     {
       "id": "fr_general_chat",
-      "label": "General-purpose conversational assistant"
+      "label": "General-purpose conversational assistant",
+      "categories": [
+        "everyday_assistant"
+      ]
     },
     {
       "id": "fr_web",
-      "label": "Usable in a browser without a developer account"
+      "label": "Usable in a browser without a developer account",
+      "categories": [
+        "everyday_assistant"
+      ]
     },
     {
       "id": "fr_mobile",
-      "label": "Mobile app available"
+      "label": "Mobile app available",
+      "categories": [
+        "everyday_assistant"
+      ]
     },
     {
       "id": "fr_free_entry",
-      "label": "Some no-cost entry path"
+      "label": "Some no-cost entry path",
+      "categories": [
+        "everyday_assistant",
+        "app_builder"
+      ]
+    },
+    {
+      "id": "fr_browser_build",
+      "label": "Works in a browser, no local setup",
+      "categories": [
+        "app_builder"
+      ]
+    },
+    {
+      "id": "fr_prompt_to_app",
+      "label": "Builds from a description",
+      "categories": [
+        "app_builder"
+      ]
+    },
+    {
+      "id": "fr_publish",
+      "label": "Can publish the app for you",
+      "categories": [
+        "app_builder"
+      ]
     }
   ],
   "alternatives": [
@@ -115,7 +149,8 @@
           "Whether OpenAI distributes profits at all, and so whether the Foundation’s stake ever pays out",
           "The commercial terms between OpenAI and Microsoft"
         ]
-      }
+      },
+      "category": "everyday_assistant"
     },
     {
       "id": "claude",
@@ -160,7 +195,8 @@
           "Whether any public-purpose body holds a stake or revenue share",
           "What economic rights Anthropic’s investors hold"
         ]
-      }
+      },
+      "category": "everyday_assistant"
     },
     {
       "id": "gemini",
@@ -203,7 +239,8 @@
         "unknowns": [
           "How revenue is allocated within Alphabet"
         ]
-      }
+      },
+      "category": "everyday_assistant"
     },
     {
       "id": "copilot",
@@ -250,7 +287,8 @@
         "unknowns": [
           "Which model provider serves a given Copilot surface, and on what terms"
         ]
-      }
+      },
+      "category": "everyday_assistant"
     },
     {
       "id": "le_chat",
@@ -291,7 +329,8 @@
         "unknowns": [
           "Which named release serves the product"
         ]
-      }
+      },
+      "category": "everyday_assistant"
     },
     {
       "id": "deepseek_app",
@@ -333,7 +372,8 @@
         "unknowns": [
           "The ownership chain above DeepSeek"
         ]
-      }
+      },
+      "category": "everyday_assistant"
     },
     {
       "id": "meta_ai",
@@ -384,7 +424,8 @@
           "Which model serves the product",
           "How Meta AI is funded, given there is no subscription"
         ]
-      }
+      },
+      "category": "everyday_assistant"
     },
     {
       "id": "grok",
@@ -433,7 +474,8 @@
           "Whether the SpaceX ownership is as reported",
           "Which model release serves grok.com"
         ]
-      }
+      },
+      "category": "everyday_assistant"
     },
     {
       "id": "perplexity",
@@ -483,7 +525,8 @@
           "What Perplexity pays those model providers",
           "Which model answers a given free-tier query"
         ]
-      }
+      },
+      "category": "everyday_assistant"
     },
     {
       "id": "kimi",
@@ -525,7 +568,8 @@
         "unknowns": [
           "The ownership chain above Moonshot"
         ]
-      }
+      },
+      "category": "everyday_assistant"
     },
     {
       "id": "qwen_chat",
@@ -568,7 +612,8 @@
           "The operating and billing entity",
           "Which model release serves the chat"
         ]
-      }
+      },
+      "category": "everyday_assistant"
     },
     {
       "id": "lumo",
@@ -626,7 +671,8 @@
           "How much the 1% amounted to in any year",
           "Who publishes the default Lumo models"
         ]
-      }
+      },
+      "category": "everyday_assistant"
     },
     {
       "id": "duckai",
@@ -682,6 +728,257 @@
           "What DuckDuckGo pays those providers",
           "Who owns DuckDuckGo"
         ]
+      },
+      "category": "everyday_assistant"
+    },
+    {
+      "id": "bolt",
+      "product": "Bolt",
+      "category": "app_builder",
+      "product_provider": {
+        "maker_id": "StackBlitz",
+        "status": "verified_official_documentation",
+        "source": "stackblitz.com/privacy-policy, which identifies StackBlitz as Bolt's operator",
+        "retrieval_status": "ok",
+        "retrieval_note": "Policy and support pages fetched directly."
+      },
+      "model_provider": {
+        "maker_id": "unknown",
+        "status": "unknown",
+        "note": "Which model providers serve Bolt is not established from the pages read. The policy distinguishes third-party inference processing from dataset licensing."
+      },
+      "model_release": {
+        "name": "not established",
+        "status": "unknown"
+      },
+      "identity_note": "Browser-based app builder operated by StackBlitz. Not to be confused with bolt.diy, WebContainers, or unrelated products named Bolt.",
+      "discovery": "Builds a web app in the browser from a description, and lets you download the project to run locally.",
+      "official_url": "https://bolt.new/",
+      "uses_third_party_models": false,
+      "access_notes": [],
+      "plans": [],
+      "functional": {
+        "fr_browser_build": "verified_official_documentation",
+        "fr_prompt_to_app": "verified_official_documentation",
+        "fr_publish": "verified_official_documentation",
+        "fr_free_entry": "verified_official_documentation"
+      },
+      "maker_in_directory": true,
+      "relationships": {
+        "pays": "StackBlitz",
+        "owners": [
+          "Privately held",
+          "2022 seed announcement names Greylock, GV and Tom Preston-Werner; no current cap table established"
+        ],
+        "suppliers": [
+          "Not established. The policy separates third-party inference processing from dataset licensing, without naming providers on the pages read"
+        ],
+        "unknowns": [
+          "Which model providers serve Bolt",
+          "Current ownership and voting control",
+          "Which terms version a given account has accepted"
+        ]
+      }
+    },
+    {
+      "id": "lovable",
+      "product": "Lovable",
+      "category": "app_builder",
+      "product_provider": {
+        "maker_id": "Lovable",
+        "status": "verified_official_documentation",
+        "source": "lovable.dev/terms, which names Lovable Labs Incorporated as the contracting entity",
+        "retrieval_status": "ok",
+        "retrieval_note": "Terms and docs fetched directly. The contracting name is recorded separately from the existing maker record; the older Stockholm label is a headquarters description, not a claim about incorporation or data residency."
+      },
+      "model_provider": {
+        "maker_id": "multiple",
+        "status": "verified_secondary",
+        "note": "The terms distinguish the platform, optional hosting and an AI Gateway. Example gateway providers named there are not an exhaustive statement of the build agent's routing."
+      },
+      "model_release": {
+        "name": "not established",
+        "status": "unknown"
+      },
+      "identity_note": "Operated by Lovable Labs Incorporated. Builds React/Vite or TanStack Start apps; the two have different hosting requirements.",
+      "discovery": "Builds a web app from a description, with two-way Git sync and a documented route to host the result elsewhere.",
+      "official_url": "https://lovable.dev/",
+      "uses_third_party_models": true,
+      "access_notes": [],
+      "plans": [
+        {
+          "id": "free",
+          "label": "Free"
+        },
+        {
+          "id": "pro",
+          "label": "Pro"
+        },
+        {
+          "id": "business",
+          "label": "Business"
+        },
+        {
+          "id": "enterprise",
+          "label": "Enterprise"
+        }
+      ],
+      "functional": {
+        "fr_browser_build": "verified_official_documentation",
+        "fr_prompt_to_app": "verified_official_documentation",
+        "fr_publish": "verified_official_documentation",
+        "fr_free_entry": "verified_official_documentation"
+      },
+      "maker_in_directory": true,
+      "relationships": {
+        "pays": "Lovable Labs Incorporated, the contracting entity named in the terms",
+        "free_tier": "A free tier exists; paid plans bill Lovable.",
+        "owners": [
+          "Privately held",
+          "August 2026 round led or co-led by Menlo Ventures and the EQT-managed Scaleup Europe Fund, with Tencent and CapitalG among the investors named"
+        ],
+        "suppliers": [
+          "The terms distinguish the platform, optional hosting and an AI Gateway; named example gateway providers are not a complete statement of the build agent's routing"
+        ],
+        "unknowns": [
+          "Which model providers serve the build agent at a given moment",
+          "Ownership percentages and voting control",
+          "Whether any public-purpose body holds an economic interest"
+        ]
+      }
+    },
+    {
+      "id": "replit",
+      "product": "Replit",
+      "category": "app_builder",
+      "product_provider": {
+        "maker_id": "Replit",
+        "status": "verified_official_documentation",
+        "source": "replit.com/pro-agreement and docs.replit.com",
+        "retrieval_status": "ok",
+        "retrieval_note": "Agreement and docs fetched directly."
+      },
+      "model_provider": {
+        "maker_id": "multiple",
+        "status": "verified_official_documentation",
+        "note": "Replit's August 2026 subprocessor list names Anthropic, Google and OpenAI as AI-model suppliers. That is a platform subprocessor list, not per-request routing."
+      },
+      "model_release": {
+        "name": "not established",
+        "status": "unknown"
+      },
+      "identity_note": "Browser IDE and agent. A publicly deployed site and a publicly shared project are different settings and are not interchangeable.",
+      "discovery": "Browser development environment with an AI agent that builds and runs projects, and pushes code to GitHub.",
+      "official_url": "https://replit.com/",
+      "uses_third_party_models": true,
+      "access_notes": [],
+      "plans": [
+        {
+          "id": "starter",
+          "label": "Starter"
+        },
+        {
+          "id": "core",
+          "label": "Core"
+        },
+        {
+          "id": "pro",
+          "label": "Pro"
+        },
+        {
+          "id": "enterprise",
+          "label": "Enterprise"
+        }
+      ],
+      "functional": {
+        "fr_browser_build": "verified_official_documentation",
+        "fr_prompt_to_app": "verified_official_documentation",
+        "fr_publish": "verified_official_documentation",
+        "fr_free_entry": "verified_official_documentation"
+      },
+      "maker_in_directory": true,
+      "relationships": {
+        "pays": "Replit",
+        "owners": [
+          "Privately held",
+          "2026 round names Georgian, G Squared, Prysm Capital, 1789 Capital, Y Combinator, Coatue, a16z, Craft Ventures and QIA, plus Accenture Ventures, Databricks Ventures, Okta Ventures and Tether"
+        ],
+        "suppliers": [
+          "Subprocessor list of August 2026 names Anthropic, Google and OpenAI as AI-model suppliers, alongside infrastructure and integration providers"
+        ],
+        "unknowns": [
+          "Which supplier serves any given request",
+          "What Replit pays those suppliers",
+          "Ownership percentages and voting control",
+          "Whether Starter and Core follow the Pro training terms"
+        ]
+      }
+    },
+    {
+      "id": "v0",
+      "product": "v0",
+      "category": "app_builder",
+      "product_provider": {
+        "maker_id": "Vercel",
+        "status": "verified_official_documentation",
+        "source": "v0.app and v0.app/pricing",
+        "retrieval_status": "partial",
+        "retrieval_note": "The pricing page and AI policy were fetched directly. Some documentation pages returned an unsupported text/markdown error; a retrieval error is not evidence a feature is absent."
+      },
+      "model_provider": {
+        "maker_id": "multiple",
+        "status": "unknown",
+        "note": "Which models serve v0 is not established. Vercel operates an AI Gateway offering many models; that does not establish that v0 uses all of them."
+      },
+      "model_release": {
+        "name": "not established",
+        "status": "unknown"
+      },
+      "identity_note": "Vercel's app builder. Vercel account tiers (Hobby, trial Pro, paid Pro, Enterprise) are labelled differently from v0's subscription tiers.",
+      "discovery": "Vercel's app builder, with GitHub sync listed on the free tier.",
+      "official_url": "https://v0.app/",
+      "uses_third_party_models": true,
+      "access_notes": [],
+      "plans": [
+        {
+          "id": "free",
+          "label": "Free"
+        },
+        {
+          "id": "plus",
+          "label": "Plus"
+        },
+        {
+          "id": "business",
+          "label": "Business"
+        },
+        {
+          "id": "enterprise",
+          "label": "Enterprise"
+        }
+      ],
+      "functional": {
+        "fr_browser_build": "verified_official_documentation",
+        "fr_prompt_to_app": "verified_official_documentation",
+        "fr_publish": "verified_official_documentation",
+        "fr_free_entry": "verified_official_documentation"
+      },
+      "maker_in_directory": true,
+      "relationships": {
+        "pays": "Vercel",
+        "free_tier": "A free tier exists; paid plans bill Vercel.",
+        "owners": [
+          "Privately held",
+          "September 2025 Series F co-led by Accel and GIC, announced with a tender offer involving some employees and early investors"
+        ],
+        "suppliers": [
+          "Not established for v0 specifically. Vercel operates an AI Gateway offering many models; that does not establish which v0 uses"
+        ],
+        "unknowns": [
+          "Which models serve v0",
+          "How Vercel account tiers map to v0 subscription tiers",
+          "Ownership percentages and voting control"
+        ]
       }
     }
   ],
@@ -695,7 +992,11 @@
       "does_not_establish": "That no individual controls the company, or that no one can override the board. Control can also run through board seats, class rights, supermajority provisions or contract. We only report the voting-power figure.",
       "distinct_from": "Founder-bloc voting power. Two founders with 52.7% between them is not one founder with 52.7%.",
       "plain": "Whether one person could outvote everyone else.",
-      "nested": true
+      "nested": true,
+      "categories": [
+        "everyday_assistant",
+        "app_builder"
+      ]
     },
     {
       "id": "c_founder_bloc_majority_voting",
@@ -706,7 +1007,11 @@
       "does_not_establish": "That the founders act together in practice, or that they control the company by other means. A bloc requires its members to agree.",
       "distinct_from": "Any single individual's voting power.",
       "plain": "Whether the founders, voting as a group, could outvote everyone else.",
-      "nested": true
+      "nested": true,
+      "categories": [
+        "everyday_assistant",
+        "app_builder"
+      ]
     },
     {
       "id": "c_board_election_rights",
@@ -718,7 +1023,11 @@
       "distinct_from": "Voting power over ordinary resolutions.",
       "plain": "We have findings on this, but there is no single better answer to prefer — the arrangements differ in kind, not in degree.",
       "informational": true,
-      "nested": true
+      "nested": true,
+      "categories": [
+        "everyday_assistant",
+        "app_builder"
+      ]
     },
     {
       "id": "c_public_benefit",
@@ -728,7 +1037,11 @@
       "concept": "A legal structure currently obliging the company to weigh non-shareholder interests.",
       "does_not_establish": "That the obligation has changed any decision.",
       "distinct_from": "Commitment continuity — whether earlier commitments were kept.",
-      "plain": "A company structure that currently obliges directors to consider people other than shareholders."
+      "plain": "A company structure that currently obliges directors to consider people other than shareholders.",
+      "categories": [
+        "everyday_assistant",
+        "app_builder"
+      ]
     },
     {
       "id": "c_commitment_continuity",
@@ -738,7 +1051,11 @@
       "concept": "Whether public-benefit mechanisms this provider adopted have been kept or withdrawn.",
       "does_not_establish": "What the provider will do next.",
       "distinct_from": "What is in force now.",
-      "plain": "Whether commitments of this kind, once adopted, were later withdrawn."
+      "plain": "Whether commitments of this kind, once adopted, were later withdrawn.",
+      "categories": [
+        "everyday_assistant",
+        "app_builder"
+      ]
     },
     {
       "id": "c_content_export",
@@ -748,7 +1065,10 @@
       "concept": "Whether you can download your conversations and account data from the product.",
       "does_not_establish": "That the export can be used anywhere else.",
       "distinct_from": "Migrating to another service, which needs somewhere to import it.",
-      "plain": "A way to get your chat history and account data out of the product."
+      "plain": "A way to get your chat history and account data out of the product.",
+      "categories": [
+        "everyday_assistant"
+      ]
     },
     {
       "id": "c_account_transfer",
@@ -758,7 +1078,10 @@
       "supported": true,
       "concept": "Whether exported content can be loaded into a different account at the same provider.",
       "does_not_establish": "Anything about moving to a different company’s product. A provider can refuse account-to-account transfer and still place no obstacle in front of taking your data elsewhere.",
-      "distinct_from": "Cross-service migration, which is about a different destination entirely."
+      "distinct_from": "Cross-service migration, which is about a different destination entirely.",
+      "categories": [
+        "everyday_assistant"
+      ]
     },
     {
       "id": "c_service_migration",
@@ -769,7 +1092,10 @@
       "does_not_establish": "Anything about model portability, and nothing about transfers within the same provider.",
       "distinct_from": "Account-to-account transfer at the same provider, which has a different destination and different evidence.",
       "plain": "Taking your history out of one product and using it in a competitor’s.",
-      "requires_evidence_about": "Both the destination product and what actually has to transfer for the move to be useful."
+      "requires_evidence_about": "Both the destination product and what actually has to transfer for the move to be useful.",
+      "categories": [
+        "everyday_assistant"
+      ]
     },
     {
       "id": "c_model_hosting",
@@ -780,7 +1106,10 @@
       "does_not_establish": "That the hosted assistant is portable, or that your content comes with you.",
       "distinct_from": "Export and migration, which are about your data, not the model.",
       "plain": "Whether the model serving this product is published under a licence letting you host it.",
-      "nested": true
+      "nested": true,
+      "categories": [
+        "everyday_assistant"
+      ]
     },
     {
       "id": "c_training_default",
@@ -790,7 +1119,10 @@
       "applies_to": "product",
       "does_not_establish": "Anything about retention, human review, or use for advertising and product analytics, which are separate and often continue regardless.",
       "distinct_from": "Whether you can switch training off, which is the next question and has a different answer for several providers.",
-      "supported": true
+      "supported": true,
+      "categories": [
+        "everyday_assistant"
+      ]
     },
     {
       "id": "c_training_control",
@@ -800,7 +1132,10 @@
       "applies_to": "product",
       "does_not_establish": "That opting out removes data already used, or that it covers uses other than model training.",
       "distinct_from": "The default. A provider can train by default and still give you a switch.",
-      "supported": true
+      "supported": true,
+      "categories": [
+        "everyday_assistant"
+      ]
     },
     {
       "id": "c_ownership_shape",
@@ -812,7 +1147,11 @@
       "distinct_from": "Voting arrangements, which describe who decides rather than who owns.",
       "supported": true,
       "informational": true,
-      "context_note": "Shown as background. The shapes overlap — a company can be listed and founder-controlled at once — so this is not a single choice. Pick the precise questions above instead."
+      "context_note": "Shown as background. The shapes overlap — a company can be listed and founder-controlled at once — so this is not a single choice. Pick the precise questions above instead.",
+      "categories": [
+        "everyday_assistant",
+        "app_builder"
+      ]
     },
     {
       "id": "c_nonprofit_control",
@@ -822,7 +1161,11 @@
       "applies_to": "product_provider",
       "does_not_establish": "That the foundation receives any money. Control and financial benefit are separate, and at least one provider here has one without the other.",
       "distinct_from": "Whether a non-profit holds an economic stake, which is the next question.",
-      "supported": true
+      "supported": true,
+      "categories": [
+        "everyday_assistant",
+        "app_builder"
+      ]
     },
     {
       "id": "c_public_purpose_stake",
@@ -832,7 +1175,11 @@
       "applies_to": "product_provider",
       "does_not_establish": "That any money has actually been paid. An ownership interest, a right to a share of revenue, and an actual payment are three different things and are recorded separately in the evidence.",
       "distinct_from": "A public-benefit duty, which obliges directors to weigh other interests but distributes nothing.",
-      "supported": true
+      "supported": true,
+      "categories": [
+        "everyday_assistant",
+        "app_builder"
+      ]
     },
     {
       "id": "c_parent_independence",
@@ -842,6 +1189,62 @@
       "applies_to": "product_provider",
       "does_not_establish": "Anything about size or influence. A company can have no parent and still be one of the largest firms in the world.",
       "distinct_from": "Investor stakes. A large minority investor is not a parent.",
+      "supported": true,
+      "categories": [
+        "everyday_assistant",
+        "app_builder"
+      ]
+    },
+    {
+      "id": "c_code_export",
+      "categories": [
+        "app_builder"
+      ],
+      "label": "I can take a copy of my project code out of the tool",
+      "plain": "A documented route to get the code itself onto your own machine or repository.",
+      "concept": "A documented code export or repository route.",
+      "applies_to": "product",
+      "does_not_establish": "That the running app moves with it. Databases, stored files, secrets, sign-in providers and hosting are separate, and are asked about separately.",
+      "distinct_from": "Hosting the app elsewhere, which needs somewhere for the code to run.",
+      "supported": true
+    },
+    {
+      "id": "c_external_hosting",
+      "categories": [
+        "app_builder"
+      ],
+      "label": "There is a documented way to host my app elsewhere",
+      "plain": "A described route to run the finished app somewhere other than the tool that built it.",
+      "concept": "A described external-hosting route for the generated app.",
+      "applies_to": "product",
+      "does_not_establish": "That migration is effortless or complete. What carries over — database records, stored files, secrets, authentication — is stated per finding.",
+      "distinct_from": "Code export. Having the code is not the same as having somewhere it runs.",
+      "supported": true
+    },
+    {
+      "id": "c_work_training_default",
+      "categories": [
+        "app_builder"
+      ],
+      "label": "My prompts and code are not used for training unless I opt in",
+      "plain": "What happens by default, before you change any setting.",
+      "concept": "Default treatment of prompts and generated code for the stated plan, region and account context.",
+      "applies_to": "product",
+      "does_not_establish": "That training has or has not actually occurred. Permission in terms is evidence about permitted use, not a record of use.",
+      "distinct_from": "Whether you can switch it off, which several providers allow even where the default is on.",
+      "supported": true
+    },
+    {
+      "id": "c_work_training_control",
+      "categories": [
+        "app_builder"
+      ],
+      "label": "I can stop training use through a setting",
+      "plain": "Whether staying out is something you can do yourself, and what it covers.",
+      "concept": "An evidenced self-service control, or no training use for the stated context.",
+      "applies_to": "product",
+      "does_not_establish": "That the default already satisfies you, or that the control reaches content already used or contributed by collaborators.",
+      "distinct_from": "The default position, which is asked separately.",
       "supported": true
     }
   ],
@@ -3380,6 +3783,813 @@
       "uncertainty": "An absence of record, not a finding that none exists. Counts neither way.",
       "provenance": "automated_provisional",
       "status": "in_force"
+    },
+    {
+      "alternative": "lovable",
+      "criterion": "c_code_export",
+      "verdict": "meets",
+      "claim": "Lovable states “Your apps, code, and content you create with Lovable are yours, subject to third-party rights such as open-source licenses”, and documents two-way Git sync: “Use Git sync to keep your code in your own repository.”",
+      "claim_type": "company_statement",
+      "source": "Lovable docs — deployment, hosting and ownership; Git sync overview",
+      "source_date": "retrieved 2026-09-24",
+      "scope": "Repository syncing is documented with GitHub, GitLab and Bitbucket. Ownership is subject to third-party rights such as open-source licences.",
+      "uncertainty": "Provider statement, read directly. Automated research, not human-reviewed.",
+      "provenance": "automated_provisional",
+      "status": "in_force",
+      "source_url": "https://docs.lovable.dev/tips-tricks/deployment-hosting-ownership"
+    },
+    {
+      "alternative": "replit",
+      "criterion": "c_code_export",
+      "verdict": "meets",
+      "claim": "Replit documents pushing code between Replit and GitHub for version control.",
+      "claim_type": "company_statement",
+      "source": "Replit docs — version control",
+      "source_date": "retrieved 2026-09-24",
+      "scope": "Establishes a route for the code itself. It does not establish migration of Replit-hosted databases, authentication or other runtime features.",
+      "uncertainty": "Provider statement, read directly. Automated research, not human-reviewed.",
+      "provenance": "automated_provisional",
+      "status": "in_force",
+      "source_url": "https://docs.replit.com/learn/projects-and-artifacts/version-control"
+    },
+    {
+      "alternative": "bolt",
+      "criterion": "c_code_export",
+      "verdict": "meets",
+      "claim": "Bolt documents downloading a project as a zip: “You can download your project as a zip file to work on it outside of Bolt, using your own code editor,” and running it locally with Node using npm install && npm run dev.",
+      "claim_type": "company_statement",
+      "source": "Bolt support — projects and files",
+      "source_date": "retrieved 2026-09-24",
+      "scope": "Covers the project files and a documented local run. It does not cover hosted backend services, and duplicating or transferring a project does not carry GitHub or Netlify integration settings.",
+      "uncertainty": "Provider statement, read directly. Automated research, not human-reviewed.",
+      "provenance": "automated_provisional",
+      "status": "in_force",
+      "source_url": "https://support.bolt.new/building/using-bolt/projects-files"
+    },
+    {
+      "alternative": "v0",
+      "criterion": "c_code_export",
+      "verdict": "meets",
+      "claim": "The v0 pricing page lists “Sync with GitHub” on the Free tier, with paid tiers building on the Free feature set.",
+      "claim_type": "company_statement",
+      "source": "v0 pricing",
+      "source_date": "retrieved 2026-09-24",
+      "scope": "Plan-invariant so far as the pricing page shows, since it is listed on the lowest tier. It is not proof that managed services migrate with the repository.",
+      "uncertainty": "Read from the live pricing page. The page does not separately confirm the feature for each paid tier; it presents paid tiers as adding to Free.",
+      "provenance": "automated_provisional",
+      "status": "in_force",
+      "source_url": "https://v0.app/pricing"
+    },
+    {
+      "alternative": "lovable",
+      "criterion": "c_external_hosting",
+      "verdict": "meets",
+      "claim": "Lovable documents hosting the built app elsewhere. Older React + Vite apps produce “static files that any static host can serve”, deployable to AWS, GCP, Azure, Netlify, Cloudflare Pages or self-hosted infrastructure. TanStack Start apps “run server code, such as server-side rendering, server functions, and API routes”, and need a host that supports server execution.",
+      "claim_type": "company_statement",
+      "source": "Lovable docs — deployment, hosting and ownership; external deployment and hosting",
+      "source_date": "retrieved 2026-09-24",
+      "scope": "Database, storage and configuration are described as portable to managed or self-hosted Supabase; moving to a different database provider requires code changes. A database export can include accounts and password hashes, but sign-in providers need reconfiguring and existing sessions do not carry over. The Lovable platform itself cannot be self-hosted.",
+      "uncertainty": "A scoped route, not effortless migration. The app type changes which hosts will work.",
+      "provenance": "automated_provisional",
+      "status": "in_force",
+      "source_url": "https://docs.lovable.dev/tips-tricks/external-deployment-hosting"
+    },
+    {
+      "alternative": "replit",
+      "criterion": "c_external_hosting",
+      "verdict": "unconfirmed",
+      "claim": "No route for hosting the built app outside Replit was found in the documentation read. Code export to GitHub is documented; hosting is not.",
+      "claim_type": "third_party_report",
+      "source": "Replit docs — version control",
+      "source_date": "retrieved 2026-09-24",
+      "scope": "A gap in what we read, not a finding that no route exists.",
+      "uncertainty": "Counts neither way. Code export is recorded separately and does not answer this question.",
+      "provenance": "automated_provisional",
+      "status": "in_force",
+      "source_url": "https://docs.replit.com/learn/projects-and-artifacts/version-control"
+    },
+    {
+      "alternative": "bolt",
+      "criterion": "c_external_hosting",
+      "verdict": "unconfirmed",
+      "claim": "Bolt documents downloading the project and running it locally, but the page read does not describe deploying or hosting the app on an external service. It references GitHub and Netlify integrations without giving a deployment route.",
+      "claim_type": "third_party_report",
+      "source": "Bolt support — projects and files",
+      "source_date": "retrieved 2026-09-24",
+      "scope": "A gap in what we read, not a finding that no route exists.",
+      "uncertainty": "Counts neither way. Code export is recorded separately and does not answer this question.",
+      "provenance": "automated_provisional",
+      "status": "in_force",
+      "source_url": "https://support.bolt.new/building/using-bolt/projects-files"
+    },
+    {
+      "alternative": "v0",
+      "criterion": "c_external_hosting",
+      "verdict": "unconfirmed",
+      "claim": "GitHub sync is documented, but no external-hosting route for the built app was established from the pages read.",
+      "claim_type": "third_party_report",
+      "source": "v0 pricing",
+      "source_date": "retrieved 2026-09-24",
+      "scope": "A gap in what we read, not a finding that no route exists.",
+      "uncertainty": "Counts neither way. Code export is recorded separately and does not answer this question.",
+      "provenance": "automated_provisional",
+      "status": "in_force",
+      "source_url": "https://v0.app/pricing"
+    },
+    {
+      "alternative": "lovable",
+      "criterion": "c_work_training_default",
+      "verdict": "unconfirmed",
+      "claim": "Lovable states that Free and Pro customer content may be used for model development unless the account user opts out, and that Business and Enterprise workspace content is excluded by default. The answer therefore depends on the plan.",
+      "claim_type": "company_statement",
+      "source": "Lovable docs — data opt-out",
+      "source_date": "retrieved 2026-09-24",
+      "scope": "The described customer-content scope excludes submissions made by an app’s own end users held in its database or storage.",
+      "uncertainty": "Unresolved until a plan is chosen. Choosing one below resolves it.",
+      "provenance": "automated_provisional",
+      "status": "in_force",
+      "source_url": "https://docs.lovable.dev/features/business/data-opt-out",
+      "by_plan": {
+        "free": {
+          "verdict": "fails",
+          "claim": "On Free, customer content may be used for model development unless the account user opts out."
+        },
+        "pro": {
+          "verdict": "fails",
+          "claim": "On Pro, customer content may be used for model development unless the account user opts out."
+        },
+        "business": {
+          "verdict": "meets",
+          "claim": "Business workspace content is excluded from model development by default."
+        },
+        "enterprise": {
+          "verdict": "meets",
+          "claim": "Enterprise workspace content is excluded from model development by default."
+        }
+      }
+    },
+    {
+      "alternative": "replit",
+      "criterion": "c_work_training_default",
+      "verdict": "unconfirmed",
+      "claim": "Replit’s Pro agreement permits model development using customer content with a settings opt-out, and its documentation states that for Enterprise users “Replit does not use customer content to train its models”. Starter and Core are not addressed in the documentation read.",
+      "claim_type": "company_statement",
+      "source": "Replit Pro agreement; Replit docs — model improvement",
+      "source_date": "retrieved 2026-09-24",
+      "scope": "Pro and Enterprise are documented. Starter and Core are not, and are not assumed to follow either.",
+      "uncertainty": "An older Replit engineering article says only public Repls are used for training, which conflicts with the current Pro agreement. Recorded as a source conflict, not as an unresearched gap.",
+      "provenance": "automated_provisional",
+      "status": "in_force",
+      "source_url": "https://docs.replit.com/legal-and-security-info/model-improvement",
+      "by_plan": {
+        "starter": {
+          "verdict": "unconfirmed",
+          "claim": "Starter is not addressed in the model-improvement documentation read. Pro’s terms are not assumed to apply to it."
+        },
+        "core": {
+          "verdict": "unconfirmed",
+          "claim": "Core is not addressed in the model-improvement documentation read. Pro’s terms are not assumed to apply to it."
+        },
+        "pro": {
+          "verdict": "fails",
+          "claim": "The Pro agreement permits model development using customer content, with an opt-out in settings. Content is used unless you turn it off."
+        },
+        "enterprise": {
+          "verdict": "meets",
+          "claim": "Replit states that for Enterprise users it does not use customer content to train its models."
+        }
+      }
+    },
+    {
+      "alternative": "bolt",
+      "criterion": "c_work_training_default",
+      "verdict": "unconfirmed",
+      "claim": "StackBlitz’s policy, updated 22 September 2026, announces that customer content will be used for AI model development and for preparing datasets for licensing from “October 7, 2026 or before the Terms take effect for your account”, whichever is later. Accounts it determines to be in the European Economic Area, the United Kingdom or Switzerland are excluded. Bolt Forge is separate and requires affirmative consent.",
+      "claim_type": "company_statement",
+      "source": "StackBlitz privacy policy, sections 5.B–5.D",
+      "source_date": "retrieved 2026-09-24",
+      "scope": "Announced, not yet in effect at the date of this research. Which terms version a given account has accepted is not established here, and the answer differs by region.",
+      "uncertainty": "Left conditional deliberately: the start date depends on the account, and EEA/UK/Swiss accounts are excluded entirely. A future-dated policy is not a description of today.",
+      "provenance": "automated_provisional",
+      "status": "in_force",
+      "source_url": "https://stackblitz.com/privacy-policy",
+      "effective_from": "2026-10-07",
+      "regions_excluded": [
+        "EEA",
+        "UK",
+        "Switzerland"
+      ]
+    },
+    {
+      "alternative": "v0",
+      "criterion": "c_work_training_default",
+      "verdict": "unconfirmed",
+      "claim": "The v0 pricing page states “Training opt-out by default” for Business and “Your data is never used for training” for Enterprise. Free and Plus say nothing about training. Vercel’s AI policy describes defaults using different account labels — Hobby, trial Pro, paid Pro and Enterprise — which do not map onto v0’s subscription tiers.",
+      "claim_type": "company_statement",
+      "source": "v0 pricing; Vercel AI policy (updated 2026-03-17, effective 2026-03-31)",
+      "source_date": "retrieved 2026-09-24",
+      "scope": "Business and Enterprise are documented on the v0 pricing page. Free and Plus are not, and the Vercel account labels are not assumed to correspond to them.",
+      "uncertainty": "Two official sources describe plan tiers differently. Recorded as a source conflict rather than an unresearched gap, and not resolved by guessing which label means which.",
+      "provenance": "automated_provisional",
+      "status": "in_force",
+      "source_url": "https://v0.app/pricing",
+      "by_plan": {
+        "free": {
+          "verdict": "unconfirmed",
+          "claim": "The v0 pricing page does not mention training for Free. Vercel’s AI policy uses different account labels that cannot be mapped to it with confidence."
+        },
+        "plus": {
+          "verdict": "unconfirmed",
+          "claim": "The v0 pricing page does not mention training for Plus. Vercel’s AI policy uses different account labels that cannot be mapped to it with confidence."
+        },
+        "business": {
+          "verdict": "meets",
+          "claim": "The v0 pricing page lists “Training opt-out by default” for Business."
+        },
+        "enterprise": {
+          "verdict": "meets",
+          "claim": "The v0 pricing page states for Enterprise that “Your data is never used for training”."
+        }
+      }
+    },
+    {
+      "alternative": "lovable",
+      "criterion": "c_work_training_control",
+      "verdict": "meets",
+      "claim": "Lovable documents an account-level opt-out toggle, free of charge and applying going forward.",
+      "claim_type": "company_statement",
+      "source": "Lovable docs — data opt-out",
+      "source_date": "retrieved 2026-09-24",
+      "scope": "The toggle covers that account user’s own contributions. It does not cover every collaborator’s contributions, and it is prospective rather than retroactive. The documentation says changes apply from 9 September 2026.",
+      "uncertainty": "Provider statement, read directly. Automated research, not human-reviewed.",
+      "provenance": "automated_provisional",
+      "status": "in_force",
+      "source_url": "https://docs.lovable.dev/features/business/data-opt-out"
+    },
+    {
+      "alternative": "replit",
+      "criterion": "c_work_training_control",
+      "verdict": "unconfirmed",
+      "claim": "Replit documents the path Settings → Personalization → Opt out of Model Improvement, and says that once opted out, “new content associated with your account will not be used to develop or improve our models.” The documentation addresses Pro and Enterprise; Starter and Core are not covered.",
+      "claim_type": "company_statement",
+      "source": "Replit docs — model improvement",
+      "source_date": "retrieved 2026-09-24",
+      "scope": "Even after opting out, Replit states it may still process content to provide, maintain, secure and troubleshoot the service, enforce its terms and comply with law.",
+      "uncertainty": "Documented for Pro; not established for Starter or Core. Choosing a plan below resolves it.",
+      "provenance": "automated_provisional",
+      "status": "in_force",
+      "source_url": "https://docs.replit.com/legal-and-security-info/model-improvement",
+      "by_plan": {
+        "starter": {
+          "verdict": "unconfirmed",
+          "claim": "The model-improvement documentation does not address Starter."
+        },
+        "core": {
+          "verdict": "unconfirmed",
+          "claim": "The model-improvement documentation does not address Core."
+        },
+        "pro": {
+          "verdict": "meets",
+          "claim": "Pro users can opt out at Settings → Personalization → Model Improvement. The opt-out applies to new content."
+        },
+        "enterprise": {
+          "verdict": "meets",
+          "claim": "Replit states Enterprise customer content is not used to train its models, so there is nothing to switch off."
+        }
+      }
+    },
+    {
+      "alternative": "bolt",
+      "criterion": "c_work_training_control",
+      "verdict": "meets",
+      "claim": "StackBlitz states you may opt out of the model-development and dataset-licensing uses “at any time, free of charge and regardless of your plan”, through account settings or by contacting privacy@stackblitz.com, implemented within 15 days.",
+      "claim_type": "company_statement",
+      "source": "StackBlitz privacy policy, sections 5.B–5.D",
+      "source_date": "retrieved 2026-09-24",
+      "scope": "Plan-invariant and explicitly free. Organisations may also opt out through administrator controls. Bolt Forge is governed separately by affirmative consent, and withdrawing consent does not necessarily stop use of content already contributed under it.",
+      "uncertainty": "The control is documented even though the underlying default is not yet in effect. Having a switch is not the same as the default already suiting you.",
+      "provenance": "automated_provisional",
+      "status": "in_force",
+      "source_url": "https://stackblitz.com/privacy-policy"
+    },
+    {
+      "alternative": "v0",
+      "criterion": "c_work_training_control",
+      "verdict": "unconfirmed",
+      "claim": "Vercel’s AI policy says users “can change their opt out of such use and sharing at any time through their Team Settings or by purchasing the appropriate subscription”, while an older pricing table limits the data opt-out to certain tiers.",
+      "claim_type": "company_statement",
+      "source": "Vercel AI policy; v0 pricing documentation",
+      "source_date": "retrieved 2026-09-24",
+      "scope": "The general statement and the tier-limited table have not been reconciled, and the account labels differ between them.",
+      "uncertainty": "A source conflict, not an unresearched gap.",
+      "provenance": "automated_provisional",
+      "status": "in_force",
+      "source_url": "https://v0.app/policy",
+      "by_plan": {
+        "free": {
+          "verdict": "unconfirmed",
+          "claim": "Whether the Team Settings opt-out is available on this tier is not resolved; the two official sources disagree."
+        },
+        "plus": {
+          "verdict": "unconfirmed",
+          "claim": "Whether the Team Settings opt-out is available on this tier is not resolved; the two official sources disagree."
+        },
+        "business": {
+          "verdict": "meets",
+          "claim": "Business lists “Training opt-out by default”, so the outcome is available without the user changing anything."
+        },
+        "enterprise": {
+          "verdict": "meets",
+          "claim": "Enterprise states data is never used for training, so there is nothing to switch off."
+        }
+      }
+    },
+    {
+      "alternative": "bolt",
+      "criterion": "c_nonprofit_control",
+      "verdict": "unconfirmed",
+      "claim": "Not established for StackBlitz. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "bolt",
+      "criterion": "c_parent_independence",
+      "verdict": "unconfirmed",
+      "claim": "Not established for StackBlitz. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "bolt",
+      "criterion": "c_individual_majority_voting",
+      "verdict": "unconfirmed",
+      "claim": "Not established for StackBlitz. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "bolt",
+      "criterion": "c_founder_bloc_majority_voting",
+      "verdict": "unconfirmed",
+      "claim": "Not established for StackBlitz. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "bolt",
+      "criterion": "c_board_election_rights",
+      "verdict": "unconfirmed",
+      "claim": "Not established for StackBlitz. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "bolt",
+      "criterion": "c_public_purpose_stake",
+      "verdict": "unconfirmed",
+      "claim": "Not established for StackBlitz. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "bolt",
+      "criterion": "c_public_benefit",
+      "verdict": "unconfirmed",
+      "claim": "Not established for StackBlitz. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "bolt",
+      "criterion": "c_commitment_continuity",
+      "verdict": "unconfirmed",
+      "claim": "Not established for StackBlitz. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "lovable",
+      "criterion": "c_nonprofit_control",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Lovable Labs Incorporated. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "lovable",
+      "criterion": "c_parent_independence",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Lovable Labs Incorporated. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "lovable",
+      "criterion": "c_individual_majority_voting",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Lovable Labs Incorporated. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "lovable",
+      "criterion": "c_founder_bloc_majority_voting",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Lovable Labs Incorporated. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "lovable",
+      "criterion": "c_board_election_rights",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Lovable Labs Incorporated. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "lovable",
+      "criterion": "c_public_purpose_stake",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Lovable Labs Incorporated. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "lovable",
+      "criterion": "c_public_benefit",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Lovable Labs Incorporated. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "lovable",
+      "criterion": "c_commitment_continuity",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Lovable Labs Incorporated. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "replit",
+      "criterion": "c_nonprofit_control",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Replit. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "replit",
+      "criterion": "c_parent_independence",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Replit. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "replit",
+      "criterion": "c_individual_majority_voting",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Replit. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "replit",
+      "criterion": "c_founder_bloc_majority_voting",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Replit. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "replit",
+      "criterion": "c_board_election_rights",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Replit. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "replit",
+      "criterion": "c_public_purpose_stake",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Replit. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "replit",
+      "criterion": "c_public_benefit",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Replit. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "replit",
+      "criterion": "c_commitment_continuity",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Replit. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "v0",
+      "criterion": "c_nonprofit_control",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Vercel. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "v0",
+      "criterion": "c_parent_independence",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Vercel. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "v0",
+      "criterion": "c_individual_majority_voting",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Vercel. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "v0",
+      "criterion": "c_founder_bloc_majority_voting",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Vercel. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "v0",
+      "criterion": "c_board_election_rights",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Vercel. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "v0",
+      "criterion": "c_public_purpose_stake",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Vercel. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "v0",
+      "criterion": "c_public_benefit",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Vercel. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "v0",
+      "criterion": "c_commitment_continuity",
+      "verdict": "unconfirmed",
+      "claim": "Not established for Vercel. Announced funding participation does not establish ownership percentages, voting control, or a public-purpose economic interest.",
+      "claim_type": "third_party_report",
+      "source": "Not established in this pass",
+      "source_date": null,
+      "scope": null,
+      "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "lovable",
+      "criterion": "c_ownership_shape",
+      "verdict": "meets",
+      "claim": "Privately held. An August 2026 announcement names Menlo Ventures and the EQT-managed Scaleup Europe Fund as leads or co-leads, with new and returning investors including Tencent and CapitalG. Announced participation only — no ownership percentages or control are established.",
+      "claim_type": "company_statement",
+      "source": "Company funding announcement",
+      "source_date": "retrieved 2026-09-24",
+      "scope": "Describes announced investment participation. It does not establish who controls the company, and it is not evidence that subscription payments reach any investor.",
+      "uncertainty": "Announcements are dated and may be superseded.",
+      "provenance": "automated_provisional",
+      "status": "in_force",
+      "source_url": "https://lovable.dev/blog/series-c"
+    },
+    {
+      "alternative": "replit",
+      "criterion": "c_ownership_shape",
+      "verdict": "meets",
+      "claim": "Privately held. A 2026 funding announcement names Georgian, G Squared, Prysm Capital, 1789 Capital, Y Combinator, Coatue, a16z, Craft Ventures and QIA, with strategic investors including Accenture Ventures, Databricks Ventures, Okta Ventures and Tether. Announced participation only, not a current cap table.",
+      "claim_type": "company_statement",
+      "source": "Company funding announcement",
+      "source_date": "retrieved 2026-09-24",
+      "scope": "Describes announced investment participation. It does not establish who controls the company, and it is not evidence that subscription payments reach any investor.",
+      "uncertainty": "Announcements are dated and may be superseded.",
+      "provenance": "automated_provisional",
+      "status": "in_force",
+      "source_url": "https://replit.com/blog/replit-raises-400-million-dollars"
+    },
+    {
+      "alternative": "bolt",
+      "criterion": "c_ownership_shape",
+      "verdict": "meets",
+      "claim": "Privately held. A 2022 seed announcement names Greylock, GV and Tom Preston-Werner. Historical funding only; a more recent relationship was indicated in investor social posts but not confirmed from a primary page.",
+      "claim_type": "company_statement",
+      "source": "Company funding announcement",
+      "source_date": "retrieved 2026-09-24",
+      "scope": "Describes announced investment participation. It does not establish who controls the company, and it is not evidence that subscription payments reach any investor.",
+      "uncertainty": "Announcements are dated and may be superseded.",
+      "provenance": "automated_provisional",
+      "status": "in_force",
+      "source_url": "https://blog.stackblitz.com/posts/seed-funding/"
+    },
+    {
+      "alternative": "v0",
+      "criterion": "c_ownership_shape",
+      "verdict": "meets",
+      "claim": "Privately held. A September 2025 Series F announcement names Accel and GIC as co-leads, alongside a tender offer involving some employees and early investors. A tender offer is not evidence of broadly distributed control.",
+      "claim_type": "company_statement",
+      "source": "Company funding announcement",
+      "source_date": "retrieved 2026-09-24",
+      "scope": "Describes announced investment participation. It does not establish who controls the company, and it is not evidence that subscription payments reach any investor.",
+      "uncertainty": "Announcements are dated and may be superseded.",
+      "provenance": "automated_provisional",
+      "status": "in_force",
+      "source_url": "https://vercel.com/blog/series-f"
+    }
+  ],
+  "categories": [
+    {
+      "id": "everyday_assistant",
+      "label": "Everyday AI assistants",
+      "definition": "A general-purpose conversational assistant used for drafting, summarising, explaining and answering questions.",
+      "researched_on": "2026-09-17"
+    },
+    {
+      "id": "app_builder",
+      "label": "Build a website or app",
+      "definition": "A browser-based tool that builds a website or web app from a description, without local setup.",
+      "researched_on": "2026-09-24",
+      "scope_note": "Tools you start a new project in. Editors that work inside a codebase you already have, such as Cursor, are a different starting point and are not listed here."
     }
   ]
 }

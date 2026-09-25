@@ -38,9 +38,25 @@ export interface AccessNote {
   source: string
 }
 
+export interface PilotPlan {
+  id: string
+  label: string
+}
+
 export interface PilotAlternative {
   id: string
   product: string
+  /** Which recommendation category this product belongs to. */
+  category?: string
+  /** One factual sentence, shown before any preference is chosen. */
+  discovery?: string
+  official_url?: string
+  /**
+   * Named plans, where a finding actually differs between them. Empty means
+   * every finding we hold is plan-invariant, so no selector is offered.
+   * Labels are the provider's own and are never equated across companies.
+   */
+  plans?: PilotPlan[]
   /** Who operates the product. Governance criteria attach here. */
   product_provider: ProviderRef
   /** Whose model serves it. May be unknown without affecting the above. */
@@ -87,6 +103,8 @@ export interface PilotCriterion {
    * outcome. We have findings, but there is no direction to prefer, so it is
    * offered as information and never inferred into a preference.
    */
+  /** Categories this question applies to. */
+  categories?: string[]
   informational?: boolean
   /**
    * Supporting evidence rather than a headline question. Still selectable and
@@ -130,6 +148,17 @@ export interface Assessment {
   scope: string | null
   uncertainty: string
   provenance: string
+  source_url?: string
+  /**
+   * Verdicts that differ by plan. The top-level verdict is the answer when no
+   * plan is chosen, which is deliberately the unresolved one rather than the
+   * most favourable tier.
+   */
+  by_plan?: Record<string, { verdict: Verdict; claim: string; scope?: string; uncertainty?: string }>
+  /** A policy that has been announced but has not started yet. */
+  effective_from?: string
+  /** Regions the finding explicitly does not apply to. */
+  regions_excluded?: string[]
 }
 
 export const pilotMeta = raw._meta
@@ -138,8 +167,34 @@ export const functionalRequirements = raw.functional_requirements as {
   id: string
   label: string
 }[]
+export interface PilotCategoryDef {
+  id: string
+  label: string
+  definition: string
+  researched_on: string
+  scope_note?: string
+}
+export const categories = raw.categories as PilotCategoryDef[]
+export const DEFAULT_CATEGORY = categories[0].id
+
 export const alternatives = raw.alternatives as PilotAlternative[]
+
+/** Products in one category, alphabetical. Categories never mix. */
+export function alternativesIn(category: string): PilotAlternative[] {
+  return alternatives
+    .filter((a) => a.category === category)
+    .sort((x, y) => x.product.localeCompare(y.product))
+}
 export const criteria = raw.criteria as PilotCriterion[]
+
+export function criteriaIn(category: string): PilotCriterion[] {
+  return criteria.filter((c) => (c.categories ?? []).includes(category))
+}
+export function functionalIn(category: string) {
+  return functionalRequirements.filter((f) =>
+    ((f as { categories?: string[] }).categories ?? []).includes(category),
+  )
+}
 export const assessments = raw.assessments as Assessment[]
 
 export const criterionById = new Map(criteria.map((c) => [c.id, c]))
@@ -196,6 +251,60 @@ export function assessmentFor(altId: string, critId: string): Assessment | undef
   return assessments.find((a) => a.alternative === altId && a.criterion === critId)
 }
 
+function todayISO(): string {
+  return new Date().toISOString().slice(0, 10)
+}
+
+/**
+ * The verdict that actually applies, given the plan the visitor chose and the
+ * date we are asking on.
+ *
+ * Three rules, each a real failure this guards against:
+ *
+ *   1. No plan chosen means the plan-unspecified verdict — never the most
+ *      favourable tier. An unspecified plan cannot inherit an enterprise
+ *      protection.
+ *   2. A policy that starts in the future is not a description of today. It
+ *      is reported, and it does not decide anything until it takes effect.
+ *   3. A finding that excludes some regions cannot be applied as a general
+ *      answer while we do not know where the visitor is.
+ */
+/**
+ * Why an answer is unresolved. "We have not looked" and "it depends on your
+ * plan, your region, or a date that has not arrived" are different answers,
+ * and telling a reader the second is a research gap is simply wrong.
+ */
+export type UnresolvedKind = 'conditional' | 'conflicting' | 'unresearched'
+
+export function unresolvedKind(altId: string, critId: string): UnresolvedKind {
+  const a = assessmentFor(altId, critId)
+  if (!a) return 'unresearched'
+  if (a.effective_from || a.regions_excluded || a.by_plan) return 'conditional'
+  if (/conflict/i.test(a.uncertainty ?? '')) return 'conflicting'
+  return 'unresearched'
+}
+
+export function resolvedVerdict(
+  altId: string,
+  critId: string,
+  plan?: string,
+  asOf: string = todayISO(),
+): { verdict: Verdict; assessment?: Assessment; reason?: 'future' | 'regional' } {
+  const a = assessmentFor(altId, critId)
+  if (!a) return { verdict: 'unconfirmed' }
+
+  if (a.effective_from && a.effective_from > asOf) {
+    return { verdict: 'unconfirmed', assessment: a, reason: 'future' }
+  }
+  if (a.regions_excluded && a.regions_excluded.length > 0) {
+    return { verdict: 'unconfirmed', assessment: a, reason: 'regional' }
+  }
+  if (plan && a.by_plan && a.by_plan[plan]) {
+    return { verdict: a.by_plan[plan].verdict, assessment: a }
+  }
+  return { verdict: a.verdict, assessment: a }
+}
+
 /**
  * True where at least one alternative has a meets/fails verdict on this
  * criterion.
@@ -215,11 +324,22 @@ export function criterionIsAssessable(critId: string): boolean {
 
 /** How many options have a documented finding either way. Shown before the
  *  visitor chooses, so coverage is not a surprise afterwards. */
-export function criterionCoverage(critId: string): { decided: number; total: number } {
-  const rows = assessments.filter((a) => a.criterion === critId)
+export function criterionCoverage(
+  critId: string,
+  category?: string,
+): { decided: number; total: number } {
+  // Coverage is per category. A question shared by both categories has a
+  // different answer in each, and showing the combined number would misreport
+  // how much is known about the products actually on screen.
+  const cats = criterionById.get(critId)?.categories ?? []
+  const scope = alternatives.filter((a) =>
+    category ? a.category === category : cats.includes(a.category ?? ''),
+  )
+  const ids = new Set(scope.map((a) => a.id))
+  const rows = assessments.filter((a) => a.criterion === critId && ids.has(a.alternative))
   return {
     decided: rows.filter((a) => a.verdict !== 'unconfirmed').length,
-    total: alternatives.length,
+    total: scope.length,
   }
 }
 
@@ -297,6 +417,12 @@ export interface AlternativeOutcome {
 }
 
 export interface RecommendationInput {
+  /** Which category is being asked about. Results never cross categories. */
+  category?: string
+  /** Chosen plan per product id, where the product offers a choice. */
+  plans?: Record<string, string>
+  /** Date to evaluate announced policies against. Tests pin this. */
+  asOf?: string
   /** Functional requirements the user needs. */
   functional: string[]
   /** Criterion ids the user cares about, in no order. */
@@ -325,7 +451,11 @@ export interface RecommendationResult {
 }
 
 export function recommend(input: RecommendationInput): RecommendationResult {
-  const outcomes: AlternativeOutcome[] = alternatives.map((alt) => {
+  // Results never cross categories: the pool, the counts and the guidance
+  // are all drawn from the one the visitor is asking about.
+  const category = input.category ?? DEFAULT_CATEGORY
+  const pool = alternativesIn(category)
+  const outcomes: AlternativeOutcome[] = pool.map((alt) => {
     const met: CriterionOutcome[] = []
     const unresolved: CriterionOutcome[] = []
     const failed: CriterionOutcome[] = []
@@ -335,8 +465,9 @@ export function recommend(input: RecommendationInput): RecommendationResult {
     for (const critId of input.priorities) {
       const criterion = criterionById.get(critId)
       if (!criterion) continue
-      const assessment = assessmentFor(alt.id, critId)
-      const verdict: Verdict = assessment?.verdict ?? 'unconfirmed'
+      const resolved = resolvedVerdict(alt.id, critId, input.plans?.[alt.id], input.asOf)
+      const assessment = resolved.assessment
+      const verdict: Verdict = resolved.verdict
       // The user's designation stands whatever the evidence looks like.
       const isRequirement = input.requirements.includes(critId)
       const row: CriterionOutcome = {
@@ -460,6 +591,8 @@ export interface Motivation {
   /** What we can speak to underneath it. */
   blurb: string
   criterionIds: string[]
+  /** Wording that differs by category — a builder asks about code, not chats. */
+  blurb_by_category?: Record<string, string>
   /** Sub-questions, where one motivation covers several distinct relationships. */
   groups?: MotivationGroup[]
   /** Behind a disclosure. Each is a claim this section must not be taken to
@@ -522,6 +655,10 @@ export const motivations: Motivation[] = [
     question: 'How much control do I keep — and can I leave?',
     blurb:
       'Whether your conversations train the model, whether you can stop that yourself, and whether you can take your history with you.',
+    blurb_by_category: {
+      app_builder:
+        'Whether your prompts and code train the model, whether you can stop that yourself, and whether you can take the project with you.',
+    },
     criterionIds: [
       'c_training_default',
       'c_training_control',
@@ -529,6 +666,12 @@ export const motivations: Motivation[] = [
       'c_account_transfer',
       'c_service_migration',
       'c_model_hosting',
+      // App builders ask the same questions about different objects: your
+      // project code rather than your conversations.
+      'c_work_training_default',
+      'c_work_training_control',
+      'c_code_export',
+      'c_external_hosting',
     ],
     limits: [
       'Training, retention and advertising are separate uses. Stopping one does not stop the others, and several providers say so explicitly.',
@@ -550,15 +693,35 @@ export const motivations: Motivation[] = [
   },
 ]
 
+/** The criteria of a motivation that apply in one category. */
+export function motivationCriteria(m: Motivation, category: string): PilotCriterion[] {
+  return m.criterionIds
+    .map((id) => criterionById.get(id))
+    .filter((c): c is PilotCriterion => !!c && (c.categories ?? []).includes(category))
+}
+
+/** Motivations that have anything to ask in this category. */
+export function motivationBlurb(m: Motivation, category: string): string {
+  return m.blurb_by_category?.[category] ?? m.blurb
+}
+
+export function motivationsIn(category: string): Motivation[] {
+  return motivations.filter((m) => motivationCriteria(m, category).length > 0)
+}
+
 /** Every criterion belongs to exactly one motivation; asserted in the tests. */
 export const motivationForCriterion = new Map<string, Motivation>(
   motivations.flatMap((m) => m.criterionIds.map((id) => [id, m] as [string, Motivation])),
 )
 
 /** How many of a motivation's criteria have any documented finding at all. */
-export function motivationCoverage(m: Motivation): { documented: number; total: number } {
-  const documented = m.criterionIds.filter((id) => criterionCoverage(id).decided > 0).length
-  return { documented, total: m.criterionIds.length }
+export function motivationCoverage(
+  m: Motivation,
+  category: string = DEFAULT_CATEGORY,
+): { documented: number; total: number } {
+  const cs = motivationCriteria(m, category)
+  const documented = cs.filter((c) => criterionCoverage(c.id, category).decided > 0).length
+  return { documented, total: cs.length }
 }
 
 export interface PreferenceSummary {
@@ -566,6 +729,8 @@ export interface PreferenceSummary {
   aligned: PilotAlternative[]
   conflicting: PilotAlternative[]
   unresolved: PilotAlternative[]
+  /** Why the unresolved ones are unresolved, where they agree on a reason. */
+  unresolvedKinds: UnresolvedKind[]
   /**
    * True where the criterion has a documented finding on BOTH sides. Only then
    * does the evidence point anywhere: alignment against conflict is a reason to
@@ -587,8 +752,8 @@ export function summarisePreferences(
       const aligned: PilotAlternative[] = []
       const conflicting: PilotAlternative[] = []
       const unresolved: PilotAlternative[] = []
-      for (const alt of alternatives) {
-        const v = assessmentFor(alt.id, criterion.id)?.verdict ?? 'unconfirmed'
+      for (const alt of alternativesIn(input.category ?? DEFAULT_CATEGORY)) {
+        const v = resolvedVerdict(alt.id, criterion.id, input.plans?.[alt.id], input.asOf).verdict
         if (v === 'meets') aligned.push(alt)
         else if (v === 'fails') conflicting.push(alt)
         else unresolved.push(alt)
@@ -598,6 +763,7 @@ export function summarisePreferences(
         aligned,
         conflicting,
         unresolved,
+        unresolvedKinds: [...new Set(unresolved.map((a) => unresolvedKind(a.id, criterion.id)))],
         separates: aligned.length > 0 && conflicting.length > 0,
       }
     })
@@ -686,7 +852,7 @@ export function buildGuidance(
     const conflictsOn: PilotCriterion[] = []
     const unknownOn: PilotCriterion[] = []
     for (const c of chosen) {
-      const v = assessmentFor(alt.id, c.id)?.verdict ?? 'unconfirmed'
+      const v = resolvedVerdict(alt.id, c.id, input.plans?.[alt.id], input.asOf).verdict
       if (v === 'meets') alignsOn.push(c)
       else if (v === 'fails') conflictsOn.push(c)
       else unknownOn.push(c)

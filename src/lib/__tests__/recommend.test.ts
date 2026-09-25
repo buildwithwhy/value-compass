@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   alternatives,
+  alternativesIn,
   assessmentFor,
   buildGuidance,
   criteria,
@@ -11,6 +12,9 @@ import {
   type AlternativeOutcome,
   type CriterionOutcome,
 } from '../recommend'
+
+/** Every suite above section 16 is about the assistant category. */
+const ASSISTANTS = alternativesIn('everyday_assistant')
 
 const ids = (list: AlternativeOutcome[]) => list.map((o) => o.alternative.id).sort()
 const critIds = (list: CriterionOutcome[]) => list.map((r) => r.criterion.id)
@@ -224,7 +228,7 @@ describe('the three portability questions are distinct', () => {
     // way for any of the six, so nothing is ruled in or out.
     expect(r.excluded).toHaveLength(0)
     expect(r.confirmed).toHaveLength(0)
-    expect(r.notConfirmed).toHaveLength(alternatives.length)
+    expect(r.notConfirmed).toHaveLength(ASSISTANTS.length)
     expect(r.unassessableRequirements.map((c) => c.id)).toContain('c_service_migration')
   })
 
@@ -246,7 +250,7 @@ describe('the three portability questions are distinct', () => {
 
   it('never reads a hostable model as a reproducible service', () => {
     // Running the weights is not running the assistant. Every match has to say so.
-    for (const alt of alternatives) {
+    for (const alt of ASSISTANTS) {
       const a = assessmentFor(alt.id, 'c_model_hosting')
       if (a?.verdict === 'meets') {
         expect(a.scope).toMatch(/not establish that the assistant service/i)
@@ -268,7 +272,7 @@ describe('exercise: a soft preference with mixed evidence', () => {
 
   it('shows one match, two trade-offs and ten unknowns, excluding nobody', () => {
     expect(r.excluded).toHaveLength(0)
-    expect(r.confirmed).toHaveLength(alternatives.length)
+    expect(r.confirmed).toHaveLength(ASSISTANTS.length)
     const copilot = all(r).find((o) => o.alternative.id === 'copilot')!
     const gemini = all(r).find((o) => o.alternative.id === 'gemini')!
     expect(critIds(copilot.supportingPriorities)).toContain('c_founder_bloc_majority_voting')
@@ -345,7 +349,7 @@ describe('a requirement is preserved when nothing is documented', () => {
     expect(criterionIsAssessable('c_service_migration')).toBe(false)
     // It stays a requirement, so nothing is shortlisted as though it were met.
     expect(r.confirmed).toHaveLength(0)
-    expect(r.notConfirmed).toHaveLength(alternatives.length)
+    expect(r.notConfirmed).toHaveLength(ASSISTANTS.length)
     expect(r.hasRequirements).toBe(true)
     for (const o of r.notConfirmed) {
       const row = o.unresolved.find((u) => u.criterion.id === 'c_service_migration')!
@@ -444,7 +448,7 @@ describe('eligibility and preference fit are reported separately', () => {
     })
     // The heading depends on this: "Options to consider", not "confirmed matches".
     expect(r.hasRequirements).toBe(false)
-    expect(r.confirmed).toHaveLength(alternatives.length)
+    expect(r.confirmed).toHaveLength(ASSISTANTS.length)
     for (const o of r.confirmed) expect(o.met).toHaveLength(0)
   })
 
@@ -573,8 +577,8 @@ describe('inputs express preferences, not questions', () => {
   })
 
   it('exposes coverage before a criterion is chosen', () => {
-    expect(criterionCoverage('c_content_export')).toEqual({ decided: 6, total: alternatives.length })
-    expect(criterionCoverage('c_service_migration').decided).toBe(0)
+    expect(criterionCoverage('c_content_export', 'everyday_assistant')).toEqual({ decided: 6, total: ASSISTANTS.length })
+    expect(criterionCoverage('c_service_migration', 'everyday_assistant').decided).toBe(0)
   })
 })
 
@@ -624,7 +628,7 @@ describe('the result summary reports without nominating a winner', () => {
   it('keeps every option discoverable whatever the summary says', () => {
     const r = recommend(input)
     expect(r.confirmed.length + r.notConfirmed.length + r.excluded.length).toBe(
-      alternatives.length,
+      ASSISTANTS.length,
     )
   })
 })
@@ -647,7 +651,7 @@ describe('the summary reports every researched option', () => {
 
   it('accounts for all six options', () => {
     expect(s.aligned.length + s.conflicting.length + s.unresolved.length).toBe(
-      alternatives.length,
+      ASSISTANTS.length,
     )
   })
 
@@ -694,7 +698,7 @@ describe('the pilot and the maker directory agree', () => {
   })
 
   it('marks operators with no directory page instead of implying one', () => {
-    const outside = alternatives.filter((a) => !a.maker_in_directory).map((a) => a.id)
+    const outside = ASSISTANTS.filter((a) => !a.maker_in_directory).map((a) => a.id)
     expect(outside.sort()).toEqual(['duckai', 'lumo', 'qwen_chat'])
     for (const a of alternatives) {
       expect(a.maker_in_directory).toBe(makerInDirectory(a.product_provider.maker_id))
@@ -710,7 +714,7 @@ describe('the pilot and the maker directory agree', () => {
 
 describe('product distinctions are descriptive, never comparative', () => {
   it('shows only capabilities we actually verified', () => {
-    for (const alt of alternatives) {
+    for (const alt of ASSISTANTS) {
       for (const c of verifiedCapabilities(alt)) {
         const v = alt.functional[c.id]
         expect(['verified_official_documentation', 'verified_secondary']).toContain(v)
@@ -720,7 +724,7 @@ describe('product distinctions are descriptive, never comparative', () => {
   })
 
   it('carries no ranking, score or performance field on any alternative', () => {
-    for (const alt of alternatives) {
+    for (const alt of ASSISTANTS) {
       for (const banned of ['score', 'rank', 'rating', 'quality', 'benchmark']) {
         expect(alt).not.toHaveProperty(banned)
       }
@@ -728,12 +732,12 @@ describe('product distinctions are descriptive, never comparative', () => {
   })
 
   it('flags the services that answer with other companies models', () => {
-    const thirdParty = alternatives.filter((a) => a.uses_third_party_models).map((a) => a.id)
+    const thirdParty = ASSISTANTS.filter((a) => a.uses_third_party_models).map((a) => a.id)
     expect(thirdParty.sort()).toEqual(['copilot', 'duckai', 'lumo', 'perplexity'])
   })
 
   it('sources every access constraint it states', () => {
-    for (const alt of alternatives) {
+    for (const alt of ASSISTANTS) {
       for (const n of alt.access_notes ?? []) {
         expect(n.label.length).toBeGreaterThan(0)
         expect(n.source.length).toBeGreaterThan(0)
@@ -743,10 +747,22 @@ describe('product distinctions are descriptive, never comparative', () => {
 })
 
 describe('every option is assessed on every criterion', () => {
-  it('leaves no alternative-criterion pair unrecorded', () => {
+  it('leaves no alternative-criterion pair unrecorded, within its category', () => {
+    // A criterion only needs an answer for products in the categories it
+    // applies to. Builder questions are not asked of assistants.
     for (const alt of alternatives) {
       for (const c of criteria) {
-        expect(assessmentFor(alt.id, c.id)).toBeDefined()
+        if (!(c.categories ?? []).includes(alt.category ?? '')) continue
+        expect(assessmentFor(alt.id, c.id), `${alt.id}/${c.id}`).toBeDefined()
+      }
+    }
+  })
+
+  it('records nothing for a criterion outside a product’s category', () => {
+    for (const alt of alternatives) {
+      for (const c of criteria) {
+        if ((c.categories ?? []).includes(alt.category ?? '')) continue
+        expect(assessmentFor(alt.id, c.id), `${alt.id}/${c.id}`).toBeUndefined()
       }
     }
   })
@@ -759,7 +775,7 @@ describe('every option is assessed on every criterion', () => {
       requirements: [],
     })
     expect(soft.excluded).toHaveLength(0)
-    expect(soft.confirmed).toHaveLength(alternatives.length)
+    expect(soft.confirmed).toHaveLength(ASSISTANTS.length)
 
     // An exclusion still needs a documented failure, never an absence.
     const hard = recommend({
@@ -771,7 +787,7 @@ describe('every option is assessed on every criterion', () => {
       expect(assessmentFor(o.alternative.id, 'c_individual_majority_voting')?.verdict).toBe('fails')
     }
     expect(hard.confirmed.length + hard.notConfirmed.length + hard.excluded.length).toBe(
-      alternatives.length,
+      ASSISTANTS.length,
     )
   })
 
@@ -791,7 +807,7 @@ describe('one definition of a verified capability', () => {
   it('rejects any functional status outside the known vocabulary', () => {
     // A third spelling of "verified" would silently read as unknown, turning
     // researched capabilities into gaps. Fail loudly instead.
-    for (const alt of alternatives) {
+    for (const alt of ASSISTANTS) {
       for (const [req, status] of Object.entries(alt.functional)) {
         expect(FUNCTIONAL_STATUSES, `${alt.id}.${req}`).toContain(status)
       }
@@ -799,7 +815,7 @@ describe('one definition of a verified capability', () => {
   })
 
   it('agrees between the filter and the tags', () => {
-    for (const alt of alternatives) {
+    for (const alt of ASSISTANTS) {
       const tagged = new Set(verifiedCapabilities(alt).map((c) => c.id))
       for (const f of functionalRequirements) {
         expect(functionalState(alt, f.id) === 'confirmed').toBe(tagged.has(f.id))
@@ -809,7 +825,7 @@ describe('one definition of a verified capability', () => {
 
   it('treats a capability shared by everything as the entry price, not a distinction', () => {
     for (const id of baselineCapabilityIds) {
-      expect(alternatives.every((a) => functionalState(a, id) === 'confirmed')).toBe(true)
+      expect(ASSISTANTS.every((a) => functionalState(a, id) === 'confirmed')).toBe(true)
     }
     // Something must still vary, or the tags would carry nothing at all.
     const varying = functionalRequirements.filter((f) => !baselineCapabilityIds.has(f.id))
@@ -971,7 +987,7 @@ describe('guidance principles', () => {
     expect(grouped).toBe(g.considered.length)
     const un = g.unaligned
     expect(g.considered.length + un.conflicted.length + un.unresolved.length + un.mixed.length)
-      .toBe(alternatives.length)
+      .toBe(ASSISTANTS.length)
   })
 })
 
@@ -995,7 +1011,10 @@ describe('motivations are starting questions, not bundles', () => {
   it('states a limit for every motivation and a gap where it rests on one question', () => {
     for (const m of motivations) {
       expect(m.limits.length).toBeGreaterThan(0)
-      expect(motivationCoverage(m).total).toBe(m.criterionIds.length)
+      // Coverage is per category; a motivation asks fewer questions in one.
+      const perCat = motivationCoverage(m, 'everyday_assistant')
+      expect(perCat.total).toBeGreaterThan(0)
+      expect(perCat.total).toBeLessThanOrEqual(m.criterionIds.length)
       if (m.criterionIds.length === 1) expect(m.gap).toBeTruthy()
     }
   })
@@ -1105,7 +1124,7 @@ describe('the training criteria model the user outcome, not the mechanism', () =
   })
 
   it('preserves the detailed mechanism as evidence under every finding', () => {
-    for (const alt of alternatives) {
+    for (const alt of ASSISTANTS) {
       for (const c of ['c_training_default', 'c_training_control']) {
         const a = assessmentFor(alt.id, c)!
         expect(a.claim.length).toBeGreaterThan(40)
@@ -1127,7 +1146,7 @@ describe('ownership shape is shown, never ranked', () => {
     // makers.json carries independence_type for ten operators, but
     // capital_profile has no sources field. Importing it would put unsourced
     // directory claims behind a recommendation.
-    const documented = alternatives.filter(
+    const documented = ASSISTANTS.filter(
       (a) => assessmentFor(a.id, 'c_ownership_shape')?.verdict === 'meets',
     )
     expect(documented.map((a) => a.id).sort()).toEqual(
@@ -1136,7 +1155,7 @@ describe('ownership shape is shown, never ranked', () => {
   })
 
   it('never claims a shape implies anything about where money goes', () => {
-    for (const alt of alternatives) {
+    for (const alt of ASSISTANTS) {
       const a = assessmentFor(alt.id, 'c_ownership_shape')!
       if (a.verdict === 'meets') expect(a.scope).toMatch(/where revenue ends up/i)
     }
@@ -1198,7 +1217,7 @@ describe('control is never read as financial benefit', () => {
 
   it('never states a broad negative on the economic criterion anywhere', () => {
     // No option may fail this criterion on the strength of one body's terms.
-    for (const alt of alternatives) {
+    for (const alt of ASSISTANTS) {
       expect(assessmentFor(alt.id, 'c_public_purpose_stake')?.verdict).not.toBe('fails')
     }
   })
@@ -1216,7 +1235,7 @@ describe('control is never read as financial benefit', () => {
   it('does not treat a public-benefit duty as a financial interest', () => {
     // A PBC duty obliges directors to weigh other interests. It distributes
     // nothing, so it must never carry the economic-stake criterion by itself.
-    for (const alt of alternatives) {
+    for (const alt of ASSISTANTS) {
       const duty = assessmentFor(alt.id, 'c_public_benefit')?.verdict
       const stake = assessmentFor(alt.id, 'c_public_purpose_stake')?.verdict
       if (duty === 'meets' && stake === 'meets') {
@@ -1231,7 +1250,7 @@ describe('control is never read as financial benefit', () => {
   })
 
   it('states what an economic stake does not establish', () => {
-    for (const alt of alternatives) {
+    for (const alt of ASSISTANTS) {
       const a = assessmentFor(alt.id, 'c_public_purpose_stake')!
       if (a.verdict === 'meets') {
         expect(a.scope).toMatch(/only if|conditional|does not publish|not committed/i)
@@ -1242,7 +1261,7 @@ describe('control is never read as financial benefit', () => {
 
 describe('no money flow is inferred from investment or supply', () => {
   it('never claims subscription revenue reaches an investor', () => {
-    for (const alt of alternatives) {
+    for (const alt of ASSISTANTS) {
       const r = alt.relationships!
       const text = [r.pays, ...r.owners, ...r.suppliers].join(' ')
       // An investor stake may be described; it must not be described as being paid.
@@ -1251,7 +1270,7 @@ describe('no money flow is inferred from investment or supply', () => {
   })
 
   it('names a specific unknown wherever commercial terms are unestablished', () => {
-    for (const alt of alternatives) {
+    for (const alt of ASSISTANTS) {
       const r = alt.relationships!
       expect(r.unknowns.length).toBeGreaterThan(0)
       for (const u of r.unknowns) expect(u.length).toBeGreaterThan(15)
@@ -1298,7 +1317,7 @@ describe('the ownership criteria inform decisions without double-counting', () =
   it('does not let two criteria on the same fact stack', () => {
     // Control and economic stake must be capable of diverging, or they are the
     // same fact wearing two hats and would double an option's strength.
-    const diverge = alternatives.filter((alt) => {
+    const diverge = ASSISTANTS.filter((alt) => {
       const c = assessmentFor(alt.id, 'c_nonprofit_control')?.verdict
       const e = assessmentFor(alt.id, 'c_public_purpose_stake')?.verdict
       return c === 'meets' && e !== 'meets'
@@ -1340,7 +1359,7 @@ describe('the ownership criteria inform decisions without double-counting', () =
 
 describe('a future commitment is not present control', () => {
   it('rests every control finding on a present-tense statement', () => {
-    for (const alt of alternatives) {
+    for (const alt of ASSISTANTS) {
       const a = assessmentFor(alt.id, 'c_nonprofit_control')!
       if (a.verdict === 'meets') {
         // "will elect", "within N years", "phasing in" describe a future state.
@@ -1387,8 +1406,8 @@ describe('the summary says why an option is not listed', () => {
   it('accounts for every option exactly once', () => {
     const u = g.unaligned
     const all = [...g.considered, ...u.conflicted, ...u.unresolved, ...u.mixed]
-    expect(all).toHaveLength(alternatives.length)
-    expect(new Set(all.map((n) => n.alternative.id)).size).toBe(alternatives.length)
+    expect(all).toHaveLength(ASSISTANTS.length)
+    expect(new Set(all.map((n) => n.alternative.id)).size).toBe(ASSISTANTS.length)
   })
 
   it('puts an option in conflicted only when every selected criterion conflicts', () => {
@@ -1410,7 +1429,7 @@ describe('the corrections propagate through soft and hard selections', () => {
     }
     const r = recommend(input)
     expect(r.excluded).toHaveLength(0)
-    expect(r.confirmed).toHaveLength(alternatives.length)
+    expect(r.confirmed).toHaveLength(ASSISTANTS.length)
   })
 
   it('excludes on control, where a conflict really is documented', () => {
@@ -1454,5 +1473,247 @@ describe('relationship text agrees with the findings it sits beside', () => {
     const claude = alternativeById.get('claude')!
     expect(assessmentFor('claude', 'c_public_purpose_stake')?.verdict).toBe('unconfirmed')
     expect(claude.relationships!.unknowns.join(' ')).toMatch(/stake or revenue share/i)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// 16. The app-builder category
+// ---------------------------------------------------------------------------
+
+import { alternativesIn as inCat, criteriaIn, resolvedVerdict, categories as allCategories,
+         motivationsIn, motivationCriteria, unresolvedKind } from '../recommend'
+
+const BUILDERS = inCat('app_builder')
+const BF = ['fr_browser_build']
+
+describe('categories do not mix', () => {
+  it('lists exactly the four builders, alphabetically', () => {
+    expect(BUILDERS.map((a) => a.product)).toEqual(['Bolt', 'Lovable', 'Replit', 'v0'])
+  })
+
+  it('never returns a product from another category', () => {
+    const r = recommend({ category: 'app_builder', functional: BF, priorities: [], requirements: [] })
+    const all = [...r.confirmed, ...r.notConfirmed, ...r.excluded].map((o) => o.alternative.id)
+    expect(all).toHaveLength(BUILDERS.length)
+    for (const id of all) expect(alternativeById.get(id)!.category).toBe('app_builder')
+  })
+
+  it('counts coverage within the category, not across both', () => {
+    // c_content_export is assistant-only; c_code_export is builder-only.
+    expect(criterionCoverage('c_code_export', 'app_builder').total).toBe(4)
+    expect(criterionCoverage('c_content_export', 'everyday_assistant').total).toBe(13)
+  })
+
+  it('offers no assistant-only question in the builder category', () => {
+    const builderIds = criteriaIn('app_builder').map((c) => c.id)
+    for (const id of ['c_content_export', 'c_training_default', 'c_model_hosting']) {
+      expect(builderIds).not.toContain(id)
+    }
+    const assistantIds = criteriaIn('everyday_assistant').map((c) => c.id)
+    for (const id of ['c_code_export', 'c_external_hosting', 'c_work_training_default']) {
+      expect(assistantIds).not.toContain(id)
+    }
+  })
+
+  it('keeps ownership questions available in both', () => {
+    for (const cat of allCategories.map((c) => c.id)) {
+      expect(criteriaIn(cat).map((c) => c.id)).toContain('c_nonprofit_control')
+      expect(motivationsIn(cat).map((m) => m.id)).toContain('m_power')
+      expect(motivationCriteria(motivations.find((m) => m.id === 'm_power')!, cat).length)
+        .toBeGreaterThan(0)
+    }
+  })
+
+  it('does not let an assistant requirement affect builders', () => {
+    // c_training_default does not exist for builders, so selecting it cannot
+    // silently exclude one.
+    const r = recommend({
+      category: 'app_builder', functional: BF,
+      priorities: ['c_training_default'], requirements: ['c_training_default'],
+    })
+    expect(r.excluded).toHaveLength(0)
+    expect(r.notConfirmed).toHaveLength(BUILDERS.length)
+  })
+})
+
+describe('code export never satisfies external hosting', () => {
+  it('passes export for all four and hosting for one', () => {
+    for (const b of BUILDERS) {
+      expect(assessmentFor(b.id, 'c_code_export')?.verdict).toBe('meets')
+    }
+    const hosting = BUILDERS.filter(
+      (b) => assessmentFor(b.id, 'c_external_hosting')?.verdict === 'meets',
+    )
+    expect(hosting.map((b) => b.id)).toEqual(['lovable'])
+  })
+
+  it('does not let an export requirement confirm hosting', () => {
+    const r = recommend({
+      category: 'app_builder', functional: BF,
+      priorities: ['c_code_export', 'c_external_hosting'],
+      requirements: ['c_external_hosting'],
+    })
+    expect(r.confirmed.map((o) => o.alternative.id)).toEqual(['lovable'])
+    expect(r.excluded).toHaveLength(0)
+    expect(r.notConfirmed).toHaveLength(3)
+  })
+
+  it('states what an export finding does not carry', () => {
+    const c = criteria.find((x) => x.id === 'c_code_export')!
+    expect(c.does_not_establish).toMatch(/databases|stored files|hosting/i)
+    expect(c.distinct_from).toMatch(/hosting/i)
+  })
+})
+
+describe('announced policies do not describe today', () => {
+  it('does not apply Bolt’s training change before it takes effect', () => {
+    const before = resolvedVerdict('bolt', 'c_work_training_default', undefined, '2026-09-25')
+    expect(before.verdict).toBe('unconfirmed')
+    expect(before.reason).toBe('future')
+    expect(before.assessment?.effective_from).toBe('2026-10-07')
+  })
+
+  it('still does not apply it globally once the date passes', () => {
+    // EEA/UK/Swiss accounts are excluded, so a general verdict is not available
+    // even after the effective date.
+    const after = resolvedVerdict('bolt', 'c_work_training_default', undefined, '2026-11-01')
+    expect(after.verdict).toBe('unconfirmed')
+    expect(after.reason).toBe('regional')
+    expect(after.assessment?.regions_excluded).toContain('EEA')
+  })
+
+  it('keeps the announcement readable rather than hiding it', () => {
+    const a = assessmentFor('bolt', 'c_work_training_default')!
+    expect(a.claim).toMatch(/October 7, 2026/)
+    expect(a.claim).toMatch(/European Economic Area/)
+    expect(a.source_url).toBe('https://stackblitz.com/privacy-policy')
+  })
+})
+
+describe('plans resolve without inheriting a better tier', () => {
+  it('leaves an unspecified plan unresolved', () => {
+    for (const id of ['lovable', 'replit', 'v0']) {
+      expect(resolvedVerdict(id, 'c_work_training_default', undefined, '2026-09-25').verdict)
+        .toBe('unconfirmed')
+    }
+  })
+
+  it('does not let an unspecified plan inherit an enterprise protection', () => {
+    expect(resolvedVerdict('replit', 'c_work_training_default', 'enterprise', '2026-09-25').verdict)
+      .toBe('meets')
+    expect(resolvedVerdict('replit', 'c_work_training_default', undefined, '2026-09-25').verdict)
+      .not.toBe('meets')
+  })
+
+  it('keeps undocumented plans unresolved rather than following a documented one', () => {
+    for (const plan of ['starter', 'core']) {
+      expect(resolvedVerdict('replit', 'c_work_training_default', plan, '2026-09-25').verdict)
+        .toBe('unconfirmed')
+    }
+    expect(resolvedVerdict('replit', 'c_work_training_default', 'pro', '2026-09-25').verdict)
+      .toBe('fails')
+  })
+
+  it('does not let one product’s plan change another product', () => {
+    const base = recommend({
+      category: 'app_builder', functional: BF,
+      priorities: ['c_work_training_default'], requirements: [],
+      plans: {}, asOf: '2026-09-25',
+    })
+    const withPlan = recommend({
+      category: 'app_builder', functional: BF,
+      priorities: ['c_work_training_default'], requirements: [],
+      plans: { replit: 'enterprise' }, asOf: '2026-09-25',
+    })
+    const verdictFor = (r: typeof base, id: string) => {
+      const o = [...r.confirmed, ...r.notConfirmed, ...r.excluded]
+        .find((x) => x.alternative.id === id)!
+      return [...o.met, ...o.failed, ...o.unresolved, ...o.supportingPriorities, ...o.tradeoffs]
+        .find((row) => row.criterion.id === 'c_work_training_default')?.verdict
+    }
+    expect(verdictFor(base, 'replit')).toBe('unconfirmed')
+    expect(verdictFor(withPlan, 'replit')).toBe('meets')
+    // v0 and Lovable are untouched by Replit's plan.
+    for (const id of ['v0', 'lovable']) {
+      expect(verdictFor(base, id)).toBe(verdictFor(withPlan, id))
+    }
+  })
+
+  it('offers a plan selector only where a finding actually differs', () => {
+    expect(alternativeById.get('bolt')!.plans).toEqual([])
+    for (const id of ['lovable', 'replit', 'v0']) {
+      expect(alternativeById.get(id)!.plans!.length).toBeGreaterThan(1)
+    }
+  })
+})
+
+describe('the builder evidence keeps its conditions', () => {
+  it('links a real source for every documented builder finding', () => {
+    for (const b of BUILDERS) {
+      for (const c of criteriaIn('app_builder')) {
+        const a = assessmentFor(b.id, c.id)!
+        if (a.verdict !== 'unconfirmed' || a.by_plan) {
+          expect(a.source.length, `${b.id}/${c.id}`).toBeGreaterThan(0)
+        }
+      }
+    }
+  })
+
+  it('never turns announced funding into ownership or a payment', () => {
+    for (const b of BUILDERS) {
+      const shape = assessmentFor(b.id, 'c_ownership_shape')!
+      expect(shape.scope).toMatch(/does not establish who controls|not evidence that subscription/i)
+      // And no ownership predicate is answered from a funding list.
+      for (const id of ['c_nonprofit_control', 'c_public_purpose_stake', 'c_parent_independence']) {
+        expect(assessmentFor(b.id, id)?.verdict).toBe('unconfirmed')
+      }
+    }
+  })
+
+  it('names a source conflict as a conflict, not as unresearched', () => {
+    expect(assessmentFor('v0', 'c_work_training_default')?.uncertainty).toMatch(/conflict/i)
+    expect(assessmentFor('replit', 'c_work_training_default')?.uncertainty).toMatch(/conflict/i)
+  })
+
+  it('reuses the existing maker identities for Lovable and Replit', () => {
+    expect(alternativeById.get('lovable')!.product_provider.maker_id).toBe('Lovable')
+    expect(alternativeById.get('replit')!.product_provider.maker_id).toBe('Replit')
+    expect(alternativeById.get('bolt')!.product_provider.maker_id).toBe('StackBlitz')
+    expect(alternativeById.get('v0')!.product_provider.maker_id).toBe('Vercel')
+    for (const b of BUILDERS) expect(makerInDirectory(b.product_provider.maker_id)).toBe(true)
+  })
+
+  it('gives every builder a discovery line and an official link', () => {
+    for (const b of BUILDERS) {
+      expect(b.discovery!.length).toBeGreaterThan(20)
+      expect(b.official_url).toMatch(/^https:\/\//)
+    }
+  })
+})
+
+describe('an unresolved answer says why', () => {
+  it('calls a plan/date/region dependency conditional, not unresearched', () => {
+    for (const id of ['lovable', 'replit', 'v0', 'bolt']) {
+      expect(unresolvedKind(id, 'c_work_training_default')).not.toBe('unresearched')
+    }
+    expect(unresolvedKind('bolt', 'c_work_training_default')).toBe('conditional')
+  })
+
+  it('calls a genuine gap a gap', () => {
+    // No hosting route was found for these; that really is unresearched.
+    for (const id of ['replit', 'v0', 'bolt']) {
+      expect(unresolvedKind(id, 'c_external_hosting')).toBe('unresearched')
+    }
+  })
+
+  it('surfaces the reason on the separation', () => {
+    const input = {
+      category: 'app_builder', functional: BF,
+      priorities: ['c_work_training_default'], requirements: [], asOf: '2026-09-25',
+    }
+    const [sep] = buildGuidance(recommend(input), input).separations
+    expect(sep.unresolved).toHaveLength(4)
+    expect(sep.unresolvedKinds).toContain('conditional')
+    expect(sep.unresolvedKinds).not.toContain('unresearched')
   })
 })

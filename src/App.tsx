@@ -44,6 +44,7 @@ export default function App() {
               <Route path="/compare" element={<CompareView />} />
               <Route path="/priorities" element={<PrioritiesView />} />
               <Route path="/recommend" element={<RecommendView />} />
+              <Route path="/recommend/:category" element={<RecommendView />} />
               <Route path="/switch" element={<SwitchView />} />
               <Route path="/switch/:from" element={<SwitchView />} />
               <Route path="/switch/:from/:to" element={<SwitchView />} />

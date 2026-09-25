@@ -1,18 +1,23 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
   alternatives,
   criteria,
+  alternativesIn,
+  assessmentFor,
+  categories,
   criterionById,
   criterionCoverage,
+  functionalIn,
+  motivationCriteria,
+  motivationsIn,
+  DEFAULT_CATEGORY,
   findingLabel,
-  functionalRequirements,
   baselineCapabilityIds,
   makerInDirectory,
+  motivationBlurb,
   motivationCoverage,
   motivations,
-  pilotCategory,
-  pilotMeta,
   recommend,
   buildGuidance,
   verifiedCapabilities,
@@ -21,6 +26,7 @@ import {
   type Guidance,
   type Motivation,
   type PilotAlternative,
+  type PilotPlan,
   type PreferenceSummary,
 } from '../lib/recommend'
 import { SectionTitle } from '../components/ui'
@@ -224,7 +230,124 @@ function RelationshipSummary({ alt }: { alt: PilotAlternative }) {
   )
 }
 
-function OutcomeCard({ o, showRelationships }: { o: AlternativeOutcome; showRelationships: boolean }) {
+/**
+ * One documented fact per product for the discovery state, picked from the
+ * evidence rather than written by hand, so it cannot drift from the findings.
+ * Prefers something plan-invariant and concrete.
+ */
+function discoveryFact(alt: PilotAlternative): string | undefined {
+  const order = ['c_code_export', 'c_external_hosting', 'c_work_training_control',
+                 'c_content_export', 'c_training_control']
+  for (const id of order) {
+    const a = assessmentFor(alt.id, id)
+    if (a && a.verdict === 'meets' && !a.by_plan && !a.effective_from) {
+      return `${criterionById.get(id)?.label}: yes. ${a.claim}`
+    }
+  }
+  return undefined
+}
+
+/**
+ * What a visitor sees before choosing anything: the products that exist, what
+ * each one is, and one thing we actually know. No ordering claim, no default
+ * preferences, no winner — the point is that you can find out what is covered
+ * without filling in a form first.
+ */
+function DiscoveryCard({ alt, fact }: { alt: PilotAlternative; fact?: string }) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <h3 className="text-base font-bold text-slate-900">{alt.product}</h3>
+        {alt.official_url && (
+          <a
+            href={alt.official_url}
+            target="_blank"
+            rel="noreferrer"
+            className="text-xs text-teal-700 hover:underline"
+          >
+            Official site ↗
+          </a>
+        )}
+      </div>
+      <p className="mt-0.5 text-xs text-slate-500">
+        Operated by {alt.product_provider.maker_id}
+        {makerInDirectory(alt.product_provider.maker_id) && (
+          <>
+            {' · '}
+            <Link
+              to={`/maker/${encodeURIComponent(alt.product_provider.maker_id)}`}
+              className="text-teal-700 hover:underline"
+            >
+              profile
+            </Link>
+          </>
+        )}
+      </p>
+      {alt.discovery && (
+        <p className="mt-2 text-sm leading-snug text-slate-700">{alt.discovery}</p>
+      )}
+      {fact && (
+        <p className="mt-2 rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs leading-snug text-slate-600">
+          {fact}
+        </p>
+      )}
+    </div>
+  )
+}
+
+/** The provider's own plan names. Never equated across companies. */
+function PlanPicker({
+  alt,
+  value,
+  onChange,
+}: {
+  alt: PilotAlternative
+  value: string | undefined
+  onChange: (plan: string | undefined) => void
+}) {
+  const plans = alt.plans ?? []
+  if (plans.length === 0) return null
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-1.5">
+      <span className="text-[11px] font-medium text-slate-500">Your plan:</span>
+      {[{ id: '', label: 'Not sure' } as PilotPlan, ...plans].map((p) => {
+        const active = (value ?? '') === p.id
+        return (
+          <button
+            key={p.id || 'unsure'}
+            type="button"
+            onClick={() => onChange(p.id || undefined)}
+            aria-pressed={active}
+            className={`rounded-full border px-2 py-0.5 text-[11px] font-medium ${
+              active
+                ? 'border-teal-400 bg-teal-100 text-teal-800'
+                : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50'
+            }`}
+          >
+            {p.label}
+          </button>
+        )
+      })}
+      {!value && (
+        <span className="text-[11px] text-slate-400">
+          answers that differ by plan stay unresolved until you pick one
+        </span>
+      )}
+    </div>
+  )
+}
+
+function OutcomeCard({
+  o,
+  showRelationships,
+  plan,
+  onPlan,
+}: {
+  o: AlternativeOutcome
+  showRelationships: boolean
+  plan?: string
+  onPlan?: (p: string | undefined) => void
+}) {
   // Neutral by default. A green card made alignment, contradiction and unknown
   // look alike; colour now lives on the finding, where it means something.
   const border = o.bucket === 'excluded' ? 'border-rose-200' : 'border-slate-200'
@@ -248,6 +371,7 @@ function OutcomeCard({ o, showRelationships }: { o: AlternativeOutcome; showRela
         )}
       </div>
       <ProductFacts alt={o.alternative} />
+      {onPlan && <PlanPicker alt={o.alternative} value={plan} onChange={onPlan} />}
       {showRelationships && <RelationshipSummary alt={o.alternative} />}
 
       {o.functionalGaps.length > 0 && (
@@ -382,19 +506,21 @@ function OutcomeCard({ o, showRelationships }: { o: AlternativeOutcome; showRela
  *  an empty answer afterwards is never a surprise. */
 function CriterionRow({
   c,
+  category,
   priorities,
   requirements,
   onTogglePriority,
   onToggleRequirement,
 }: {
   c: (typeof criteria)[number]
+  category: string
   priorities: string[]
   requirements: string[]
   onTogglePriority: () => void
   onToggleRequirement: () => void
 }) {
   const on = priorities.includes(c.id)
-  const cov = criterionCoverage(c.id)
+  const cov = criterionCoverage(c.id, category)
 
   if (c.informational) {
     return (
@@ -512,8 +638,23 @@ function SeparationRow({ sm }: { sm: PreferenceSummary }) {
       )}
       {nothing && (
         <p className="mt-1.5 text-xs leading-snug text-slate-500">
-          Nothing documented either way, so this cannot separate the options. A gap in our
-          research, not a mark against any of them.
+          {sm.unresolvedKinds.includes('conditional') ? (
+            <>
+              Unresolved rather than unresearched: the answer depends on details we do not have —
+              which plan you are on, where your account is, or a policy date that has not arrived.
+              Choosing a plan on a card below resolves it where we have the evidence.
+            </>
+          ) : sm.unresolvedKinds.includes('conflicting') ? (
+            <>
+              The provider’s own documents disagree on this, so we have not picked one. That is a
+              conflict in the sources, not a gap in our research.
+            </>
+          ) : (
+            <>
+              Nothing documented either way, so this cannot separate the options. A gap in our
+              research, not a mark against any of them.
+            </>
+          )}
         </p>
       )}
     </li>
@@ -615,10 +756,10 @@ function ResultSummary({ guidance, hasRequirements }: { guidance: Guidance; hasR
                   )}
                   {g.unaligned.unresolved.length > 0 && (
                     <p className="text-[11px] leading-snug text-slate-500">
-                      <strong className="text-slate-700">Not yet researched</strong> on what you
-                      picked — {joinNames(g.unaligned.unresolved.map((n) => n.alternative.product))}
-                      . We have no finding either way, which is a gap on our side rather than a
-                      mark against them.
+                      <strong className="text-slate-700">Not confirmed</strong> on what you picked
+                      — {joinNames(g.unaligned.unresolved.map((n) => n.alternative.product))}. Some
+                      of this depends on your plan, your region, or a policy date; some we have
+                      simply not established. Each card says which.
                     </p>
                   )}
                 </div>
@@ -694,23 +835,25 @@ function ResultSummary({ guidance, hasRequirements }: { guidance: Guidance; hasR
  */
 function MotivationSection({
   m,
+  category,
   priorities,
   requirements,
   onTogglePriority,
   onToggleRequirement,
 }: {
   m: Motivation
+  category: string
   priorities: string[]
   requirements: string[]
   onTogglePriority: (id: string) => void
   onToggleRequirement: (id: string) => void
 }) {
-  const cs = m.criterionIds.map((id) => criterionById.get(id)!).filter(Boolean)
+  const cs = motivationCriteria(m, category)
   const lead = cs.filter((c) => !c.nested)
   const nested = cs.filter((c) => c.nested)
   const chosen = cs.filter((c) => priorities.includes(c.id) || requirements.includes(c.id))
   const nestedChosen = nested.some((c) => priorities.includes(c.id) || requirements.includes(c.id))
-  const cov = motivationCoverage(m)
+  const cov = motivationCoverage(m, category)
   // "5 of 5 questions with evidence" read as full coverage. It means five
   // questions have SOME evidence, which is a different and weaker claim.
   const coverageText =
@@ -736,7 +879,9 @@ function MotivationSection({
             {coverageText}
           </span>
         </span>
-        <span className="mt-0.5 block text-xs leading-snug text-slate-500">{m.blurb}</span>
+        <span className="mt-0.5 block text-xs leading-snug text-slate-500">
+          {motivationBlurb(m, category)}
+        </span>
       </summary>
 
       <div className="border-t border-slate-200 px-3 py-2.5">
@@ -755,11 +900,12 @@ function MotivationSection({
                 <ul className="space-y-2">
                   {g.criterionIds
                     .map((id) => criterionById.get(id)!)
-                    .filter((c) => c && !c.nested)
+                    .filter((c) => c && !c.nested && (c.categories ?? []).includes(category))
                     .map((c) => (
                       <CriterionRow
                         key={c.id}
                         c={c}
+                        category={category}
                         priorities={priorities}
                         requirements={requirements}
                         onTogglePriority={() => onTogglePriority(c.id)}
@@ -776,6 +922,7 @@ function MotivationSection({
               <CriterionRow
                 key={c.id}
                 c={c}
+                category={category}
                 priorities={priorities}
                 requirements={requirements}
                 onTogglePriority={() => onTogglePriority(c.id)}
@@ -815,6 +962,7 @@ function MotivationSection({
                 <CriterionRow
                   key={c.id}
                   c={c}
+                  category={category}
                   priorities={priorities}
                   requirements={requirements}
                   onTogglePriority={() => onTogglePriority(c.id)}
@@ -829,14 +977,49 @@ function MotivationSection({
   )
 }
 
+type Picks = {
+  functional: string[]
+  priorities: string[]
+  requirements: string[]
+  plans: Record<string, string>
+}
+
+const emptyPicks = (category: string): Picks => ({
+  functional: functionalIn(category).slice(0, 1).map((f) => f.id),
+  priorities: [],
+  requirements: [],
+  plans: {},
+})
+
 export function RecommendView() {
-  const [functional, setFunctional] = useState<string[]>(['fr_general_chat'])
-  const [priorities, setPriorities] = useState<string[]>([])
-  const [requirements, setRequirements] = useState<string[]>([])
+  const { category: slug } = useParams()
+  const navigate = useNavigate()
+  const category =
+    categories.find((c) => c.id === slug)?.id ?? DEFAULT_CATEGORY
+  const categoryDef = categories.find((c) => c.id === category)!
+
+  // Selections are kept per category. A requirement set for assistants must
+  // never quietly filter app builders, so the two never share an object.
+  const [byCategory, setByCategory] = useState<Record<string, Picks>>(() => ({
+    [category]: emptyPicks(category),
+  }))
+  const picks = byCategory[category] ?? emptyPicks(category)
+  const { functional, priorities, requirements, plans } = picks
+  const update = (patch: Partial<Picks>) =>
+    setByCategory((prev) => ({ ...prev, [category]: { ...picks, ...patch } }))
+  const setFunctional = (v: string[]) => update({ functional: v })
+  const setPriorities = (v: string[]) => update({ priorities: v })
+  const setRequirements = (v: string[]) => update({ requirements: v })
+  const setPlan = (altId: string, plan: string | undefined) => {
+    const next = { ...plans }
+    if (plan) next[altId] = plan
+    else delete next[altId]
+    update({ plans: next })
+  }
 
   const input = useMemo(
-    () => ({ functional, priorities, requirements }),
-    [functional, priorities, requirements],
+    () => ({ category, functional, priorities, requirements, plans }),
+    [category, functional, priorities, requirements, plans],
   )
   const result = useMemo(() => recommend(input), [input])
   const guidance = useMemo(() => buildGuidance(result, input), [result, input])
@@ -853,24 +1036,61 @@ export function RecommendView() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6">
-      <div className="flex flex-wrap items-baseline gap-2">
-        <h1 className="text-2xl font-extrabold text-slate-900">Recommendation preview</h1>
-        <span className="rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[11px] font-bold uppercase text-amber-800">
-          one category · researched pilot
-        </span>
-      </div>
+      <h1 className="text-2xl font-extrabold text-slate-900">
+        Find AI tools that fit your values
+      </h1>
       <p className="mt-1 max-w-3xl text-sm leading-relaxed text-slate-600">
-        {pilotCategory.definition} {alternatives.length} alternatives were researched, most
-        recently on {pilotMeta.researched_on}. There is no overall score here and nothing has
-        been tested for quality: the preview tells you what the evidence supports, what it cannot
-        answer, and what you would be deciding blind.
+        Choose a type of tool, then see how the options match what matters to you. This compares
+        documented policies and relationships, not tested product quality.{' '}
+        <Link to="/about" className="text-teal-700 underline underline-offset-2">
+          How this works
+        </Link>
+      </p>
+
+      {/* Category first, so the products are findable before any question. */}
+      <div className="mt-4 flex flex-wrap gap-2" role="tablist" aria-label="Type of tool">
+        {categories.map((c) => {
+          const active = c.id === category
+          return (
+            <button
+              key={c.id}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => navigate(c.id === DEFAULT_CATEGORY ? '/recommend' : `/recommend/${c.id}`)}
+              className={`rounded-full border px-3.5 py-1.5 text-sm font-semibold ${
+                active
+                  ? 'border-teal-400 bg-teal-100 text-teal-900'
+                  : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50'
+              }`}
+            >
+              {c.label}
+              <span className="ml-1.5 font-normal text-slate-500">
+                {alternativesIn(c.id).length}
+              </span>
+            </button>
+          )
+        })}
+        <Link
+          to="/browse"
+          className="rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-50"
+        >
+          Browse all makers →
+        </Link>
+      </div>
+
+      <p className="mt-2 max-w-3xl text-xs leading-snug text-slate-500">
+        {categoryDef.definition}{' '}
+        {categoryDef.scope_note && <span>{categoryDef.scope_note} </span>}
+        {alternativesIn(category).length} researched, most recently on{' '}
+        {categoryDef.researched_on}.
       </p>
 
       {/* Step 1 — function */}
       <section className="mt-6 rounded-xl border border-slate-200 bg-white p-4">
         <SectionTitle>1 · What you need it to do</SectionTitle>
         <div className="flex flex-wrap gap-2">
-          {functionalRequirements.map((f) => (
+          {functionalIn(category).map((f) => (
             <button
               key={f.id}
               type="button"
@@ -901,10 +1121,11 @@ export function RecommendView() {
           Opening a question selects nothing on its own.
         </p>
         <div className="space-y-2">
-          {motivations.map((m) => (
+          {motivationsIn(category).map((m) => (
             <MotivationSection
               key={m.id}
               m={m}
+              category={category}
               priorities={priorities}
               requirements={requirements}
               onTogglePriority={(id) => toggle(priorities, setPriorities, id)}
@@ -1001,7 +1222,13 @@ export function RecommendView() {
             ) : (
               <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
                 {result.confirmed.map((o) => (
-                  <OutcomeCard key={o.alternative.id} o={o} showRelationships={showRelationships} />
+                  <OutcomeCard
+                    key={o.alternative.id}
+                    o={o}
+                    showRelationships={showRelationships}
+                    plan={plans[o.alternative.id]}
+                    onPlan={(p) => setPlan(o.alternative.id, p)}
+                  />
                 ))}
               </div>
             )}
@@ -1018,7 +1245,13 @@ export function RecommendView() {
               </p>
               <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
                 {result.notConfirmed.map((o) => (
-                  <OutcomeCard key={o.alternative.id} o={o} showRelationships={showRelationships} />
+                  <OutcomeCard
+                    key={o.alternative.id}
+                    o={o}
+                    showRelationships={showRelationships}
+                    plan={plans[o.alternative.id]}
+                    onPlan={(p) => setPlan(o.alternative.id, p)}
+                  />
                 ))}
               </div>
             </div>
@@ -1032,7 +1265,13 @@ export function RecommendView() {
               </p>
               <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
                 {result.excluded.map((o) => (
-                  <OutcomeCard key={o.alternative.id} o={o} showRelationships={showRelationships} />
+                  <OutcomeCard
+                    key={o.alternative.id}
+                    o={o}
+                    showRelationships={showRelationships}
+                    plan={plans[o.alternative.id]}
+                    onPlan={(p) => setPlan(o.alternative.id, p)}
+                  />
                 ))}
               </div>
             </div>
@@ -1053,9 +1292,20 @@ export function RecommendView() {
       )}
 
       {!started && (
-        <p className="mt-6 rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
-          Pick at least one thing that matters to you to see what the evidence supports.
-        </p>
+        <section className="mt-6">
+          <SectionTitle>
+            {alternativesIn(category).length} options we have researched
+          </SectionTitle>
+          <p className="mb-3 max-w-3xl text-xs leading-snug text-slate-500">
+            Listed alphabetically, with no ordering or endorsement implied. Choose what matters to
+            you above to see documented reasons, concerns and unresolved questions for each.
+          </p>
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+            {alternativesIn(category).map((a) => (
+              <DiscoveryCard key={a.id} alt={a} fact={discoveryFact(a)} />
+            ))}
+          </div>
+        </section>
       )}
     </div>
   )
