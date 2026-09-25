@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
-  alternatives,
   criteria,
   alternativesIn,
   assessmentFor,
@@ -1202,7 +1201,7 @@ export function RecommendView() {
                 </>
               ) : (
                 <>
-                  All {alternatives.length} options, with what we found for and against each on
+                  All {alternativesIn(category).length} options, with what we found for and against each on
                   what you picked.
                 </>
               )}
@@ -1278,9 +1277,9 @@ export function RecommendView() {
           )}
 
           <p className="text-xs leading-relaxed text-slate-500">
-            {alternatives.length} products in one category. All of them are verified to work as a
-            general-purpose assistant in a browser without a developer account, so cards show only
-            the capabilities that differ. Tags say a product does something, never how well —
+            {alternativesIn(category).length} products in this category, researched most recently
+            on {categoryDef.researched_on}. Cards show only the capabilities that differ from what
+            every option here already does. Tags say a product does something, never how well —
             nothing here has been tested or compared for quality — and a tag we have not verified
             is simply absent rather than denied. An asterisk marks one confirmed only from
             secondary sources.{' '}

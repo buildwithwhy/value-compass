@@ -1717,3 +1717,14 @@ describe('an unresolved answer says why', () => {
     expect(sep.unresolvedKinds).not.toContain('unresearched')
   })
 })
+
+describe('displayed counts come from the category', () => {
+  it('never reports the whole catalogue inside one category', () => {
+    for (const cat of allCategories.map((c) => c.id)) {
+      const r = recommend({ category: cat, functional: [], priorities: [], requirements: [] })
+      const shown = r.confirmed.length + r.notConfirmed.length + r.excluded.length
+      expect(shown).toBe(inCat(cat).length)
+      expect(shown).toBeLessThan(alternatives.length)
+    }
+  })
+})
