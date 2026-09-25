@@ -577,7 +577,9 @@ describe('inputs express preferences, not questions', () => {
   })
 
   it('exposes coverage before a criterion is chosen', () => {
-    expect(criterionCoverage('c_content_export', 'everyday_assistant')).toEqual({ decided: 6, total: ASSISTANTS.length })
+    expect(criterionCoverage('c_content_export', 'everyday_assistant')).toEqual({
+      decided: 6, conditional: 0, total: ASSISTANTS.length,
+    })
     expect(criterionCoverage('c_service_migration', 'everyday_assistant').decided).toBe(0)
   })
 })
@@ -1481,7 +1483,7 @@ describe('relationship text agrees with the findings it sits beside', () => {
 // ---------------------------------------------------------------------------
 
 import { alternativesIn as inCat, criteriaIn, resolvedVerdict, categories as allCategories,
-         motivationsIn, motivationCriteria, unresolvedKind } from '../recommend'
+         motivationsIn, motivationCriteria, unresolvedKind, answerLabel } from '../recommend'
 
 const BUILDERS = inCat('app_builder')
 const BF = ['fr_browser_build']
@@ -1536,32 +1538,47 @@ describe('categories do not mix', () => {
   })
 })
 
-describe('code export never satisfies external hosting', () => {
-  it('passes export for all four and hosting for one', () => {
+describe('taking code, hosting the app, and moving its data are three questions', () => {
+  it('records all four as able to export code and to host elsewhere', () => {
+    // Corrected: an earlier pass had Lovable as the only hosting route, which
+    // reflected how much we had read rather than what the providers document.
     for (const b of BUILDERS) {
-      expect(assessmentFor(b.id, 'c_code_export')?.verdict).toBe('meets')
+      expect(assessmentFor(b.id, 'c_code_export')?.verdict, b.id).toBe('meets')
+      expect(assessmentFor(b.id, 'c_external_hosting')?.verdict, b.id).toBe('meets')
     }
-    const hosting = BUILDERS.filter(
-      (b) => assessmentFor(b.id, 'c_external_hosting')?.verdict === 'meets',
-    )
-    expect(hosting.map((b) => b.id)).toEqual(['lovable'])
   })
 
-  it('does not let an export requirement confirm hosting', () => {
+  it('separates them on the backend question, where they genuinely differ', () => {
+    const movable = BUILDERS.filter(
+      (b) => assessmentFor(b.id, 'c_backend_migration')?.verdict === 'meets',
+    )
+    expect(movable.map((b) => b.id).sort()).toEqual(['lovable', 'replit'])
+  })
+
+  it('does not let hosting confirm that the data moves too', () => {
     const r = recommend({
       category: 'app_builder', functional: BF,
-      priorities: ['c_code_export', 'c_external_hosting'],
-      requirements: ['c_external_hosting'],
+      priorities: ['c_external_hosting', 'c_backend_migration'],
+      requirements: ['c_backend_migration'],
     })
-    expect(r.confirmed.map((o) => o.alternative.id)).toEqual(['lovable'])
+    expect(r.confirmed.map((o) => o.alternative.id).sort()).toEqual(['lovable', 'replit'])
     expect(r.excluded).toHaveLength(0)
-    expect(r.notConfirmed).toHaveLength(3)
+    expect(r.notConfirmed.map((o) => o.alternative.id).sort()).toEqual(['bolt', 'v0'])
   })
 
-  it('states what an export finding does not carry', () => {
-    const c = criteria.find((x) => x.id === 'c_code_export')!
-    expect(c.does_not_establish).toMatch(/databases|stored files|hosting/i)
-    expect(c.distinct_from).toMatch(/hosting/i)
+  it('keeps each question distinct in what it disclaims', () => {
+    expect(criteria.find((c) => c.id === 'c_code_export')!.does_not_establish)
+      .toMatch(/databases|hosting/i)
+    expect(criteria.find((c) => c.id === 'c_external_hosting')!.distinct_from)
+      .toMatch(/code export/i)
+    expect(criteria.find((c) => c.id === 'c_backend_migration')!.distinct_from)
+      .toMatch(/hosting/i)
+  })
+
+  it('keeps Bolt’s hosting restriction beside the answer, not buried', () => {
+    const a = assessmentFor('bolt', 'c_external_hosting')!
+    expect(a.condition).toMatch(/already published to Bolt hosting/i)
+    expect(a.source_url).toBe('https://support.bolt.new/integrations/netlify')
   })
 })
 
@@ -1726,5 +1743,97 @@ describe('displayed counts come from the category', () => {
       expect(shown).toBe(inCat(cat).length)
       expect(shown).toBeLessThan(alternatives.length)
     }
+  })
+})
+
+describe('plan-dependent evidence is shown as evidence', () => {
+  it('counts a plan-dependent answer as coverage, not as a gap', () => {
+    const cov = criterionCoverage('c_work_training_default', 'app_builder')
+    expect(cov.decided).toBe(0)
+    expect(cov.conditional).toBe(3) // Lovable, Replit and v0 all vary by plan
+  })
+
+  it('names the qualifying plans before one is selected', () => {
+    const input = {
+      category: 'app_builder', functional: BF,
+      priorities: ['c_work_training_default'], requirements: [], asOf: '2026-09-25',
+    }
+    const [sep] = buildGuidance(recommend(input), input).separations
+    const routes = Object.fromEntries(
+      sep.planRoutes.map((r) => [r.alternative.id, r.plans.map((p) => p.label)]),
+    )
+    expect(routes.lovable).toEqual(['Business', 'Enterprise'])
+    expect(routes.replit).toEqual(['Enterprise'])
+    expect(routes.v0).toEqual(['Business', 'Enterprise'])
+    expect(routes.bolt).toBeUndefined() // no plan would change Bolt's answer
+  })
+
+  it('does not call it unanswerable when a plan would answer it', () => {
+    const input = {
+      category: 'app_builder', functional: BF,
+      priorities: ['c_work_training_default'], requirements: [], asOf: '2026-09-25',
+    }
+    const g = buildGuidance(recommend(input), input)
+    expect(g.cannotDistinguish).toBe(false)
+    expect(g.openQuestions.map((c) => c.id)).not.toContain('c_work_training_default')
+  })
+
+  it('still refuses to confirm a hard requirement on an unselected plan', () => {
+    const r = recommend({
+      category: 'app_builder', functional: BF,
+      priorities: ['c_work_training_default'], requirements: ['c_work_training_default'],
+      asOf: '2026-09-25',
+    })
+    expect(r.confirmed).toHaveLength(0)
+    expect(r.notConfirmed).toHaveLength(4)
+  })
+
+  it('never suggests the question the visitor just asked', () => {
+    const input = {
+      category: 'app_builder', functional: BF,
+      priorities: ['c_backend_migration'], requirements: [],
+    }
+    const g = buildGuidance(recommend(input), input)
+    if (g.suggestion) expect(g.suggestion.id).not.toBe('c_backend_migration')
+  })
+})
+
+describe('the findings read like answers, not research notes', () => {
+  it('gives every builder finding a short plain answer', () => {
+    for (const b of BUILDERS) {
+      for (const c of criteriaIn('app_builder')) {
+        const a = assessmentFor(b.id, c.id)!
+        expect(a.plain, `${b.id}/${c.id}`).toBeTruthy()
+        expect(a.plain!.length).toBeLessThan(220)
+      }
+    }
+  })
+
+  it('keeps a decision-changing condition beside the answer', () => {
+    // Bolt's hosting route is real but blocked once you have published to Bolt.
+    expect(assessmentFor('bolt', 'c_external_hosting')!.condition).toBeTruthy()
+    // A plan dependency is flagged in the open too.
+    expect(assessmentFor('lovable', 'c_work_training_default')!.condition).toMatch(/plan/i)
+  })
+
+  it('labels the reason in consumer terms', () => {
+    expect(answerLabel('bolt', 'c_work_training_default', 'unconfirmed')).toBe('Takes effect later')
+    expect(answerLabel('lovable', 'c_work_training_default', 'unconfirmed')).toBe('Depends on your plan')
+    expect(answerLabel('bolt', 'c_backend_migration', 'unconfirmed')).toBe('Not confirmed')
+    expect(answerLabel('bolt', 'c_code_export', 'meets')).toBe('Yes')
+  })
+
+  it('keeps discovery facts short and tied to a record', () => {
+    for (const b of BUILDERS) {
+      expect(b.discovery_fact!.length).toBeLessThan(110)
+      expect(criteria.map((c) => c.id)).toContain(b.discovery_fact_from!)
+    }
+  })
+
+  it('preselects no functional filter', () => {
+    // An assumed preference must not become the visitor's requirement.
+    const r = recommend({ category: 'app_builder', functional: [], priorities: [], requirements: [] })
+    expect(r.confirmed).toHaveLength(4)
+    for (const o of r.confirmed) expect(o.functionalGaps).toHaveLength(0)
   })
 })

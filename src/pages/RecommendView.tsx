@@ -3,7 +3,6 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
   criteria,
   alternativesIn,
-  assessmentFor,
   categories,
   criterionById,
   criterionCoverage,
@@ -11,7 +10,8 @@ import {
   motivationCriteria,
   motivationsIn,
   DEFAULT_CATEGORY,
-  findingLabel,
+  answerLabel,
+  planAvailability,
   baselineCapabilityIds,
   makerInDirectory,
   motivationBlurb,
@@ -46,9 +46,20 @@ import { SectionTitle } from '../components/ui'
  * above a finding that contradicted it — so a card could appear to assert that
  * founders hold less than half the votes while the text underneath said 52.7%.
  */
-function EvidenceRow({ row, showAsk = true }: { row: CriterionOutcome; showAsk?: boolean }) {
+function EvidenceRow({
+  row,
+  showAsk = true,
+  plan,
+}: {
+  row: CriterionOutcome
+  showAsk?: boolean
+  plan?: string
+}) {
   const a = row.assessment
-  const label = findingLabel(row.verdict)
+  const label = answerLabel(row.alternativeId, row.criterion.id, row.verdict)
+  const avail = planAvailability(row.alternativeId, row.criterion.id)
+  const perPlan = plan ? a?.by_plan?.[plan] : undefined
+
   const tone =
     row.verdict === 'meets'
       ? 'border-l-emerald-500 bg-emerald-50/40'
@@ -60,65 +71,76 @@ function EvidenceRow({ row, showAsk = true }: { row: CriterionOutcome; showAsk?:
       ? 'text-emerald-800'
       : row.verdict === 'fails'
         ? 'text-rose-800'
-        : 'text-slate-500'
+        : 'text-slate-600'
+
+  // The answer someone can act on. Authored per finding where the nuance
+  // matters; otherwise the recorded claim, which is already a plain statement.
+  const answer = perPlan?.claim ?? a?.plain ?? a?.claim
+  const condition = a?.condition
 
   return (
     <li className={`rounded-md border border-slate-200 border-l-4 p-2.5 ${tone}`}>
       {showAsk && (
         <p className="text-[11px] leading-snug text-slate-500">
-          {/* Labels are written as whole sentences ("You could run the model
-              yourself"), so quote rather than fold into one of ours. */}
-          You asked for: &ldquo;{row.criterion.label}&rdquo;
+          {row.criterion.label}
           {row.weight === 'requirement' && (
             <span className="ml-1.5 rounded-full border border-teal-300 bg-white px-1.5 py-0.5 text-[10px] font-semibold uppercase text-teal-800">
-              required
+              must have
             </span>
           )}
         </p>
       )}
-      <p className={`mt-0.5 text-xs font-bold uppercase tracking-wide ${labelTone}`}>
-        {label}
-        {/* A status badge only where it means something. An unknown finding
-            must never carry "in force", which reads as confirmation. */}
-        {a && row.verdict !== 'unconfirmed' && a.status !== 'in_force' && (
-          <span className="ml-1.5 rounded-full border border-amber-300 bg-white px-1.5 py-0.5 text-[10px] font-semibold normal-case tracking-normal text-amber-800">
-            {a.status}
-          </span>
-        )}
-        {a && row.verdict === 'unconfirmed' && a.status === 'proposed' && (
-          <span className="ml-1.5 rounded-full border border-amber-300 bg-white px-1.5 py-0.5 text-[10px] font-semibold normal-case tracking-normal text-amber-800">
-            proposed change, not in force
-          </span>
-        )}
-      </p>
-      {a ? (
-        <>
-          <p className="mt-1 text-sm leading-snug text-slate-800">{a.claim}</p>
-          <details className="mt-1.5">
-            <summary className="cursor-pointer text-[11px] font-medium text-slate-500 hover:text-slate-700">
-              Source, scope and date
-            </summary>
-            <div className="mt-1 space-y-0.5 text-[11px] leading-snug text-slate-500">
-              <p>
-                {a.claim_type.replace(/_/g, ' ')} · {a.source}
-                {a.source_date && ` · ${a.source_date}`}
-              </p>
-              {a.scope && (
-                <p>
-                  <span className="font-semibold">Scope:</span> {a.scope}
-                </p>
-              )}
-              <p>
-                <span className="font-semibold">Uncertainty:</span> {a.uncertainty}
-              </p>
-              <p className="text-slate-400">Automated and provisional — not human-reviewed.</p>
-            </div>
-          </details>
-        </>
-      ) : (
-        <p className="mt-1 text-sm leading-snug text-slate-600">
-          We have no finding either way for this option.
+      <p className={`mt-0.5 text-xs font-bold uppercase tracking-wide ${labelTone}`}>{label}</p>
+
+      {answer && <p className="mt-1 text-sm leading-snug text-slate-800">{answer}</p>}
+
+      {/* A qualification that changes the decision stays in the open. */}
+      {condition && (
+        <p className="mt-1 text-xs leading-snug text-amber-800">{condition}</p>
+      )}
+
+      {/* What you could do about it, where a plan would answer the question. */}
+      {avail && avail.qualifying.length > 0 && !perPlan && (
+        <p className="mt-1 text-xs leading-snug text-slate-600">
+          Available on{' '}
+          <strong>{avail.qualifying.map((p) => p.label).join(' and ')}</strong>
+          {avail.other.length > 0 && <> — not confirmed on {avail.other.map((p) => p.label).join(', ')}</>}.
         </p>
+      )}
+
+      {a && (
+        <details className="mt-1.5">
+          <summary className="cursor-pointer text-[11px] font-medium text-slate-500 hover:text-slate-700">
+            Evidence
+          </summary>
+          <div className="mt-1 space-y-1 text-[11px] leading-snug text-slate-500">
+            <p className="text-slate-600">{a.claim}</p>
+            <p>
+              {a.source_url ? (
+                <a
+                  href={a.source_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-teal-700 underline underline-offset-2"
+                >
+                  {a.source}
+                </a>
+              ) : (
+                a.source
+              )}
+              {a.source_date && ` · ${a.source_date}`}
+            </p>
+            {a.scope && (
+              <p>
+                <span className="font-semibold">Scope:</span> {a.scope}
+              </p>
+            )}
+            <p>
+              <span className="font-semibold">Uncertainty:</span> {a.uncertainty}
+            </p>
+            <p className="text-slate-400">Automated research, not human-reviewed.</p>
+          </div>
+        </details>
       )}
     </li>
   )
@@ -230,69 +252,85 @@ function RelationshipSummary({ alt }: { alt: PilotAlternative }) {
 }
 
 /**
- * One documented fact per product for the discovery state, picked from the
- * evidence rather than written by hand, so it cannot drift from the findings.
- * Prefers something plan-invariant and concrete.
- */
-function discoveryFact(alt: PilotAlternative): string | undefined {
-  const order = ['c_code_export', 'c_external_hosting', 'c_work_training_control',
-                 'c_content_export', 'c_training_control']
-  for (const id of order) {
-    const a = assessmentFor(alt.id, id)
-    if (a && a.verdict === 'meets' && !a.by_plan && !a.effective_from) {
-      return `${criterionById.get(id)?.label}: yes. ${a.claim}`
-    }
-  }
-  return undefined
-}
-
-/**
  * What a visitor sees before choosing anything: the products that exist, what
  * each one is, and one thing we actually know. No ordering claim, no default
  * preferences, no winner — the point is that you can find out what is covered
  * without filling in a form first.
  */
-function DiscoveryCard({ alt, fact }: { alt: PilotAlternative; fact?: string }) {
+function DiscoveryCard({ alt }: { alt: PilotAlternative }) {
+  const r = alt.relationships
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
+    <div className="rounded-xl border border-slate-200 bg-white p-3.5">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <h3 className="text-base font-bold text-slate-900">{alt.product}</h3>
-        {alt.official_url && (
-          <a
-            href={alt.official_url}
-            target="_blank"
-            rel="noreferrer"
-            className="text-xs text-teal-700 hover:underline"
-          >
-            Official site ↗
-          </a>
-        )}
+        <span className="text-xs text-slate-500">
+          by {alt.product_provider.maker_id}
+          {makerInDirectory(alt.product_provider.maker_id) && (
+            <>
+              {' · '}
+              <Link
+                to={`/maker/${encodeURIComponent(alt.product_provider.maker_id)}`}
+                className="text-teal-700 hover:underline"
+              >
+                who they are
+              </Link>
+            </>
+          )}
+          {alt.official_url && (
+            <>
+              {' · '}
+              <a
+                href={alt.official_url}
+                target="_blank"
+                rel="noreferrer"
+                className="text-teal-700 hover:underline"
+              >
+                site ↗
+              </a>
+            </>
+          )}
+        </span>
       </div>
-      <p className="mt-0.5 text-xs text-slate-500">
-        Operated by {alt.product_provider.maker_id}
-        {makerInDirectory(alt.product_provider.maker_id) && (
-          <>
-            {' · '}
-            <Link
-              to={`/maker/${encodeURIComponent(alt.product_provider.maker_id)}`}
-              className="text-teal-700 hover:underline"
-            >
-              profile
-            </Link>
-          </>
-        )}
-      </p>
       {alt.discovery && (
-        <p className="mt-2 text-sm leading-snug text-slate-700">{alt.discovery}</p>
+        <p className="mt-1 text-sm leading-snug text-slate-700">{alt.discovery}</p>
       )}
-      {fact && (
-        <p className="mt-2 rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs leading-snug text-slate-600">
-          {fact}
-        </p>
+      {alt.discovery_fact && (
+        <p className="mt-1.5 text-xs leading-snug text-slate-600">{alt.discovery_fact}</p>
+      )}
+      {/* Ownership and money are part of the point, so they are reachable
+          here rather than only after choosing an ownership requirement that
+          comes back unknown for everything. */}
+      {r && (
+        <details className="mt-2">
+          <summary className="cursor-pointer text-[11px] font-medium text-slate-500 hover:text-slate-700">
+            Who is behind this?
+          </summary>
+          <div className="mt-1 space-y-1 text-[11px] leading-snug text-slate-600">
+            <p>
+              <span className="font-semibold">You pay:</span> {r.pays}
+            </p>
+            {r.owners?.length > 0 && (
+              <p>
+                <span className="font-semibold">Backers:</span> {r.owners.join('. ')}.
+              </p>
+            )}
+            {r.suppliers?.length > 0 && (
+              <p>
+                <span className="font-semibold">Runs on:</span> {r.suppliers.join('. ')}.
+              </p>
+            )}
+            {r.unknowns?.length > 0 && (
+              <p className="text-slate-500">
+                <span className="font-semibold">Not established:</span> {r.unknowns.join('; ')}.
+              </p>
+            )}
+          </div>
+        </details>
       )}
     </div>
   )
 }
+
 
 /** The provider's own plan names. Never equated across companies. */
 function PlanPicker({
@@ -308,7 +346,7 @@ function PlanPicker({
   if (plans.length === 0) return null
   return (
     <div className="mt-2 flex flex-wrap items-center gap-1.5">
-      <span className="text-[11px] font-medium text-slate-500">Your plan:</span>
+      <span className="text-[11px] font-medium text-slate-500">Plan to compare:</span>
       {[{ id: '', label: 'Not sure' } as PilotPlan, ...plans].map((p) => {
         const active = (value ?? '') === p.id
         return (
@@ -329,7 +367,7 @@ function PlanPicker({
       })}
       {!value && (
         <span className="text-[11px] text-slate-400">
-          answers that differ by plan stay unresolved until you pick one
+          pick one to see what it would give you
         </span>
       )}
     </div>
@@ -388,7 +426,7 @@ function OutcomeCard({
           </p>
           <ul className="space-y-1.5">
             {o.failed.map((r) => (
-              <EvidenceRow key={r.criterion.id} row={r} />
+              <EvidenceRow key={r.criterion.id} row={r} plan={plan} />
             ))}
           </ul>
         </div>
@@ -401,7 +439,7 @@ function OutcomeCard({
           </p>
           <ul className="space-y-1.5">
             {o.met.map((r) => (
-              <EvidenceRow key={r.criterion.id} row={r} />
+              <EvidenceRow key={r.criterion.id} row={r} plan={plan} />
             ))}
           </ul>
         </div>
@@ -414,7 +452,7 @@ function OutcomeCard({
           </p>
           <ul className="space-y-1.5">
             {o.supportingPriorities.map((r) => (
-              <EvidenceRow key={r.criterion.id} row={r} />
+              <EvidenceRow key={r.criterion.id} row={r} plan={plan} />
             ))}
           </ul>
         </div>
@@ -427,7 +465,7 @@ function OutcomeCard({
           </p>
           <ul className="space-y-1.5">
             {o.tradeoffs.map((r) => (
-              <EvidenceRow key={r.criterion.id} row={r} />
+              <EvidenceRow key={r.criterion.id} row={r} plan={plan} />
             ))}
           </ul>
         </div>
@@ -442,7 +480,7 @@ function OutcomeCard({
           </p>
           <ul className="space-y-1.5">
             {o.unresolved.map((r) => (
-              <EvidenceRow key={r.criterion.id} row={r} />
+              <EvidenceRow key={r.criterion.id} row={r} plan={plan} />
             ))}
           </ul>
         </div>
@@ -546,14 +584,20 @@ function CriterionRow({
             </span>
             <span
               className={`mt-1 inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                cov.decided === 0
+                cov.decided === 0 && cov.conditional === 0
                   ? 'bg-amber-100 text-amber-800'
                   : 'bg-slate-100 text-slate-600'
               }`}
             >
-              {cov.decided === 0
-                ? 'nothing documented yet'
-                : `documented for ${cov.decided} of ${cov.total}`}
+              {/* An answer that depends on a plan is evidence, and labelling it
+                  "nothing" made a researched question look unresearched. */}
+              {cov.decided === 0 && cov.conditional === 0
+                ? 'not researched yet'
+                : cov.decided === 0
+                  ? `answered for ${cov.conditional} of ${cov.total}, depending on plan`
+                  : cov.conditional > 0
+                    ? `answered for ${cov.decided} of ${cov.total}, plus ${cov.conditional} depending on plan`
+                    : `answered for ${cov.decided} of ${cov.total}`}
             </span>
           </span>
         </label>
@@ -611,49 +655,49 @@ function SeparationRow({ sm }: { sm: PreferenceSummary }) {
       <p className="mt-1 text-xs leading-relaxed text-slate-600">
         {sm.aligned.length > 0 && (
           <>
-            <strong className="text-emerald-800">{sm.aligned.length} documented</strong> in favour
-            — {sm.aligned.map((a) => a.product).join(', ')}.{' '}
+            <strong className="text-emerald-800">{sm.aligned.length} yes</strong> —{' '}
+            {sm.aligned.map((a) => a.product).join(', ')}.{' '}
           </>
         )}
         {sm.conflicting.length > 0 && (
           <>
-            <strong className="text-rose-800">{sm.conflicting.length} documented</strong> against —{' '}
+            <strong className="text-rose-800">{sm.conflicting.length} no</strong> —{' '}
             {sm.conflicting.map((a) => a.product).join(', ')}.{' '}
           </>
         )}
         {sm.unresolved.length > 0 && (
           <>
-            <strong className="text-slate-700">{sm.unresolved.length}</strong> we could not
-            establish — {sm.unresolved.map((a) => a.product).join(', ')}.
+            <strong className="text-slate-700">{sm.unresolved.length}</strong> not confirmed —{' '}
+            {sm.unresolved.map((a) => a.product).join(', ')}.
           </>
         )}
       </p>
       {sm.separates && (
         <p className="mt-1.5 rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-xs leading-snug text-emerald-900">
-          Documented both ways, so this one genuinely separates them:{' '}
-          <strong>{joinNames(sm.aligned.map((a) => a.product))}</strong> over{' '}
-          <strong>{joinNames(sm.conflicting.map((a) => a.product))}</strong> — on this point.
+          This one separates them: <strong>{joinNames(sm.aligned.map((a) => a.product))}</strong>{' '}
+          do; <strong>{joinNames(sm.conflicting.map((a) => a.product))}</strong> don’t.
         </p>
       )}
-      {nothing && (
+      {sm.planRoutes.length > 0 && (
+        <p className="mt-1.5 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-xs leading-relaxed text-slate-700">
+          <span className="font-semibold">On some plans, yes.</span>{' '}
+          {sm.planRoutes.map((r, i) => (
+            <span key={r.alternative.id}>
+              {i > 0 && '; '}
+              <strong>{r.alternative.product}</strong> on{' '}
+              {r.plans.map((p) => p.label).join(' or ')}
+            </span>
+          ))}
+          . Pick a plan on a card below to see it applied.
+        </p>
+      )}
+      {nothing && sm.planRoutes.length === 0 && (
         <p className="mt-1.5 text-xs leading-snug text-slate-500">
-          {sm.unresolvedKinds.includes('conditional') ? (
-            <>
-              Unresolved rather than unresearched: the answer depends on details we do not have —
-              which plan you are on, where your account is, or a policy date that has not arrived.
-              Choosing a plan on a card below resolves it where we have the evidence.
-            </>
-          ) : sm.unresolvedKinds.includes('conflicting') ? (
-            <>
-              The provider’s own documents disagree on this, so we have not picked one. That is a
-              conflict in the sources, not a gap in our research.
-            </>
-          ) : (
-            <>
-              Nothing documented either way, so this cannot separate the options. A gap in our
-              research, not a mark against any of them.
-            </>
-          )}
+          {sm.unresolvedKinds.includes('conflicting')
+            ? 'The published policies give conflicting answers, so we have not picked one.'
+            : sm.unresolvedKinds.includes('conditional')
+              ? 'The answer depends on your plan, where your account is, or a policy date that has not arrived yet.'
+              : 'We haven’t confirmed this for any of them yet.'}
         </p>
       )}
     </li>
@@ -685,16 +729,15 @@ function ResultSummary({ guidance, hasRequirements }: { guidance: Guidance; hasR
       {g.cannotDistinguish ? (
         <div className="mt-3 rounded-md border border-amber-200 bg-amber-50 p-3">
           <p className="text-sm font-semibold text-amber-900">
-            What you picked cannot separate these options
+            We can’t answer this one yet
           </p>
           <p className="mt-1 text-xs leading-relaxed text-amber-800">
-            We have no documented finding either way on any of it, so there is nothing here to
-            act on. That is about our research, not about the products.
-            {g.nextQuestion && (
+            We haven’t confirmed this for any of them, so there is nothing here to act on. That
+            is about our research, not about the products.
+            {g.suggestion && (
               <>
                 {' '}
-                A question we <em>can</em> answer for some options:{' '}
-                <strong>{g.nextQuestion.label}</strong>.
+                Something we <em>can</em> answer: <strong>{g.suggestion.label}</strong>.
               </>
             )}
           </p>
@@ -704,24 +747,24 @@ function ResultSummary({ guidance, hasRequirements }: { guidance: Guidance; hasR
           {g.considered.length > 0 && (
             <div className="mt-3 border-t border-slate-100 pt-3">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                Worth considering, and why
+                What fits, and why
               </h3>
               <ul className="mt-1.5 space-y-1.5">
                 {g.considered.map((n) => (
                   <li key={n.alternative.id} className="text-xs leading-relaxed text-slate-700">
-                    <strong className="text-slate-900">{n.alternative.product}</strong> — documented
-                    in favour on {quoted(n.alignsOn.map((c) => c.label))}.
+                    <strong className="text-slate-900">{n.alternative.product}</strong> — meets{' '}
+                    {quoted(n.alignsOn.map((c) => c.label))}.
                     {n.conflictsOn.length > 0 && (
                       <span className="text-rose-800">
                         {' '}
-                        Also documented against on {quoted(n.conflictsOn.map((c) => c.label))} — a
-                        real trade-off, not a disqualification.
+                        Doesn’t meet {quoted(n.conflictsOn.map((c) => c.label))} — a real
+                        trade-off, not a disqualification.
                       </span>
                     )}
                     {n.unknownOn.length > 0 && (
                       <span className="text-slate-500">
                         {' '}
-                        Not established on {quoted(n.unknownOn.map((c) => c.label))}.
+                        Not confirmed on {quoted(n.unknownOn.map((c) => c.label))}.
                       </span>
                     )}
                   </li>
@@ -756,9 +799,19 @@ function ResultSummary({ guidance, hasRequirements }: { guidance: Guidance; hasR
                   {g.unaligned.unresolved.length > 0 && (
                     <p className="text-[11px] leading-snug text-slate-500">
                       <strong className="text-slate-700">Not confirmed</strong> on what you picked
-                      — {joinNames(g.unaligned.unresolved.map((n) => n.alternative.product))}. Some
-                      of this depends on your plan, your region, or a policy date; some we have
-                      simply not established. Each card says which.
+                      — {joinNames(g.unaligned.unresolved.map((n) => n.alternative.product))}.{' '}
+                      {(() => {
+                        const kinds = new Set(
+                          g.unaligned.unresolved.flatMap((n) => n.unknownKinds),
+                        )
+                        if (kinds.size === 1 && kinds.has('unresearched'))
+                          return 'We haven’t confirmed this for them yet.'
+                        if (kinds.size === 1 && kinds.has('conditional'))
+                          return 'It depends on the plan, the region, or a policy date. Each card says which.'
+                        if (kinds.size === 1 && kinds.has('conflicting'))
+                          return 'The published policies give conflicting answers.'
+                        return 'Each card says whether that is a plan, a date, or something we haven’t established.'
+                      })()}
                     </p>
                   )}
                 </div>
@@ -983,8 +1036,9 @@ type Picks = {
   plans: Record<string, string>
 }
 
-const emptyPicks = (category: string): Picks => ({
-  functional: functionalIn(category).slice(0, 1).map((f) => f.id),
+const emptyPicks = (): Picks => ({
+  // Nothing preselected: a filter the visitor did not choose is not theirs.
+  functional: [],
   priorities: [],
   requirements: [],
   plans: {},
@@ -1000,9 +1054,9 @@ export function RecommendView() {
   // Selections are kept per category. A requirement set for assistants must
   // never quietly filter app builders, so the two never share an object.
   const [byCategory, setByCategory] = useState<Record<string, Picks>>(() => ({
-    [category]: emptyPicks(category),
+    [category]: emptyPicks(),
   }))
-  const picks = byCategory[category] ?? emptyPicks(category)
+  const picks = byCategory[category] ?? emptyPicks()
   const { functional, priorities, requirements, plans } = picks
   const update = (patch: Partial<Picks>) =>
     setByCategory((prev) => ({ ...prev, [category]: { ...picks, ...patch } }))
@@ -1079,15 +1133,43 @@ export function RecommendView() {
       </div>
 
       <p className="mt-2 max-w-3xl text-xs leading-snug text-slate-500">
-        {categoryDef.definition}{' '}
-        {categoryDef.scope_note && <span>{categoryDef.scope_note} </span>}
-        {alternativesIn(category).length} researched, most recently on{' '}
-        {categoryDef.researched_on}.
+        {categoryDef.definition}
+        {categoryDef.scope_note && (
+          <>
+            {' '}
+            <span
+              title={categoryDef.scope_note}
+              className="cursor-help underline decoration-dotted underline-offset-2"
+            >
+              What counts
+            </span>
+          </>
+        )}
       </p>
 
+      {!started && (
+        <section className="mt-6">
+          <SectionTitle>
+            {alternativesIn(category).length} options we have researched
+          </SectionTitle>
+          <p className="mb-3 max-w-3xl text-xs leading-snug text-slate-500">
+            Listed alphabetically, with no ordering or endorsement implied. Choose what matters to
+            you above to see documented reasons, concerns and unresolved questions for each.
+          </p>
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+            {alternativesIn(category).map((a) => (
+              <DiscoveryCard key={a.id} alt={a} />
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Step 1 — function */}
-      <section className="mt-6 rounded-xl border border-slate-200 bg-white p-4">
-        <SectionTitle>1 · What you need it to do</SectionTitle>
+      <details className="mt-4 rounded-xl border border-slate-200 bg-white p-4">
+        <summary className="cursor-pointer text-sm font-semibold text-slate-700">
+          Narrow by what it needs to do
+        </summary>
+        <div className="mt-3">
         <div className="flex flex-wrap gap-2">
           {functionalIn(category).map((f) => (
             <button
@@ -1109,11 +1191,12 @@ export function RecommendView() {
           Where we have not confirmed a capability with the provider, we say so rather than assume
           it.
         </p>
-      </section>
+        </div>
+      </details>
 
       {/* Step 2 — priorities */}
       <section className="mt-4 rounded-xl border border-slate-200 bg-white p-4">
-        <SectionTitle>2 · What matters to you</SectionTitle>
+        <SectionTitle>What matters to you</SectionTitle>
         <p className="mb-3 text-xs leading-snug text-slate-500">
           Start from a question you care about, then tick the specific things we can actually
           check. Add <strong>must have</strong> to rule out options we have evidence against.
@@ -1290,22 +1373,6 @@ export function RecommendView() {
         </section>
       )}
 
-      {!started && (
-        <section className="mt-6">
-          <SectionTitle>
-            {alternativesIn(category).length} options we have researched
-          </SectionTitle>
-          <p className="mb-3 max-w-3xl text-xs leading-snug text-slate-500">
-            Listed alphabetically, with no ordering or endorsement implied. Choose what matters to
-            you above to see documented reasons, concerns and unresolved questions for each.
-          </p>
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-            {alternativesIn(category).map((a) => (
-              <DiscoveryCard key={a.id} alt={a} fact={discoveryFact(a)} />
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   )
 }

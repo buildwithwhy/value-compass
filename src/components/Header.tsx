@@ -22,11 +22,8 @@ function PrioritiesChip() {
   // these. Showing them there implied unrelated defaults were driving the
   // results, so the chip stands down and points at where the settings live.
   if (pathname.startsWith('/recommend')) {
-    return (
-      <span className="text-xs text-slate-500">
-        Preferences for this page are set below
-      </span>
-    )
+    // The page's own controls are right there; saying so was noise.
+    return null
   }
   const axisCount = AXIS_KEYS.filter((k) => priorities.weights[k] > 0).length
   const capital = anyCapitalPrioritised(priorities.capital)

@@ -778,7 +778,9 @@
           "Current ownership and voting control",
           "Which terms version a given account has accepted"
         ]
-      }
+      },
+      "discovery_fact": "Download your project and run it locally, or publish it to Netlify.",
+      "discovery_fact_from": "c_external_hosting"
     },
     {
       "id": "lovable",
@@ -845,7 +847,9 @@
           "Ownership percentages and voting control",
           "Whether any public-purpose body holds an economic interest"
         ]
-      }
+      },
+      "discovery_fact": "Two-way Git sync, and a documented route to move the database too.",
+      "discovery_fact_from": "c_backend_migration"
     },
     {
       "id": "replit",
@@ -912,7 +916,9 @@
           "Ownership percentages and voting control",
           "Whether Starter and Core follow the Pro training terms"
         ]
-      }
+      },
+      "discovery_fact": "Take the code out by zip, GitHub or SSH and deploy on your own cloud.",
+      "discovery_fact_from": "c_external_hosting"
     },
     {
       "id": "v0",
@@ -979,7 +985,9 @@
           "How Vercel account tiers map to v0 subscription tiers",
           "Ownership percentages and voting control"
         ]
-      }
+      },
+      "discovery_fact": "GitHub sync from the free tier, and code you can deploy elsewhere.",
+      "discovery_fact_from": "c_external_hosting"
     }
   ],
   "criteria": [
@@ -1245,6 +1253,19 @@
       "applies_to": "product",
       "does_not_establish": "That the default already satisfies you, or that the control reaches content already used or contributed by collaborators.",
       "distinct_from": "The default position, which is asked separately.",
+      "supported": true
+    },
+    {
+      "id": "c_backend_migration",
+      "categories": [
+        "app_builder"
+      ],
+      "label": "I can move the app’s database and services too",
+      "plain": "Whether the data and backend behind the app can move, not just the code.",
+      "concept": "A documented route for the database, stored files, secrets and authentication.",
+      "applies_to": "product",
+      "does_not_establish": "That a move is quick or complete. Sign-in providers and live sessions usually need reconfiguring wherever you go.",
+      "distinct_from": "Hosting the app elsewhere, which can be true while the data stays put.",
       "supported": true
     }
   ],
@@ -3796,7 +3817,9 @@
       "uncertainty": "Provider statement, read directly. Automated research, not human-reviewed.",
       "provenance": "automated_provisional",
       "status": "in_force",
-      "source_url": "https://docs.lovable.dev/tips-tricks/deployment-hosting-ownership"
+      "source_url": "https://docs.lovable.dev/tips-tricks/deployment-hosting-ownership",
+      "plain": "Yes — two-way Git sync keeps the code in your own repository.",
+      "condition": null
     },
     {
       "alternative": "replit",
@@ -3810,7 +3833,9 @@
       "uncertainty": "Provider statement, read directly. Automated research, not human-reviewed.",
       "provenance": "automated_provisional",
       "status": "in_force",
-      "source_url": "https://docs.replit.com/learn/projects-and-artifacts/version-control"
+      "source_url": "https://docs.replit.com/learn/projects-and-artifacts/version-control",
+      "plain": "Yes — push the code to GitHub from Replit.",
+      "condition": null
     },
     {
       "alternative": "bolt",
@@ -3824,7 +3849,9 @@
       "uncertainty": "Provider statement, read directly. Automated research, not human-reviewed.",
       "provenance": "automated_provisional",
       "status": "in_force",
-      "source_url": "https://support.bolt.new/building/using-bolt/projects-files"
+      "source_url": "https://support.bolt.new/building/using-bolt/projects-files",
+      "plain": "Yes — download the project as a zip and open it in your own editor.",
+      "condition": null
     },
     {
       "alternative": "v0",
@@ -3838,7 +3865,9 @@
       "uncertainty": "Read from the live pricing page. The page does not separately confirm the feature for each paid tier; it presents paid tiers as adding to Free.",
       "provenance": "automated_provisional",
       "status": "in_force",
-      "source_url": "https://v0.app/pricing"
+      "source_url": "https://v0.app/pricing",
+      "plain": "Yes — GitHub sync is included from the free tier up.",
+      "condition": null
     },
     {
       "alternative": "lovable",
@@ -3852,49 +3881,57 @@
       "uncertainty": "A scoped route, not effortless migration. The app type changes which hosts will work.",
       "provenance": "automated_provisional",
       "status": "in_force",
-      "source_url": "https://docs.lovable.dev/tips-tricks/external-deployment-hosting"
+      "source_url": "https://docs.lovable.dev/tips-tricks/external-deployment-hosting",
+      "plain": "Yes — static apps run on any static host; newer server-rendered apps need a host that runs server code.",
+      "condition": "Which hosts work depends on whether your app is React + Vite or TanStack Start."
     },
     {
       "alternative": "replit",
       "criterion": "c_external_hosting",
-      "verdict": "unconfirmed",
-      "claim": "No route for hosting the built app outside Replit was found in the documentation read. Code export to GitHub is documented; hosting is not.",
-      "claim_type": "third_party_report",
-      "source": "Replit docs — version control",
-      "source_date": "retrieved 2026-09-24",
-      "scope": "A gap in what we read, not a finding that no route exists.",
-      "uncertainty": "Counts neither way. Code export is recorded separately and does not answer this question.",
+      "verdict": "meets",
+      "claim": "Replit describes code leaving as standard, uncompiled source with no proprietary format and no custom runtime dependency, via zip export, GitHub sync or SSH from a local IDE, and documents deploying to external cloud providers including AWS, Azure and GCP.",
+      "claim_type": "company_statement",
+      "source": "Replit Learn — the production handoff",
+      "source_date": "retrieved 2026-09-25",
+      "scope": "Source files, manifests, configuration and git history are described as travelling with the code. CI/CD, database and secrets are set up separately.",
+      "uncertainty": "The page is JavaScript-rendered and did not load for direct fetching; read through search indexing of the official page. A retrieval failure is not evidence a capability is absent, but this is weaker than a directly-read page.",
       "provenance": "automated_provisional",
       "status": "in_force",
-      "source_url": "https://docs.replit.com/learn/projects-and-artifacts/version-control"
+      "source_url": "https://learn.replit.com/docs/enterprise-foundations/lesson-8",
+      "plain": "Yes — take the code out by zip, GitHub or SSH and deploy it on your own cloud.",
+      "condition": null
     },
     {
       "alternative": "bolt",
       "criterion": "c_external_hosting",
-      "verdict": "unconfirmed",
-      "claim": "Bolt documents downloading the project and running it locally, but the page read does not describe deploying or hosting the app on an external service. It references GitHub and Netlify integrations without giving a deployment route.",
-      "claim_type": "third_party_report",
-      "source": "Bolt support — projects and files",
-      "source_date": "retrieved 2026-09-24",
-      "scope": "A gap in what we read, not a finding that no route exists.",
-      "uncertainty": "Counts neither way. Code export is recorded separately and does not answer this question.",
+      "verdict": "meets",
+      "claim": "Bolt documents two routes to Netlify: a built-in integration where you connect your Netlify account, and a manual route — run the build, download the project, and follow Netlify’s manual deploy instructions.",
+      "claim_type": "company_statement",
+      "source": "Bolt support — Netlify integration",
+      "source_date": "retrieved 2026-09-25",
+      "scope": "Covers the app itself. Bolt notes Netlify “can’t host your database or a traditional backend”, so a full-stack app needs those services elsewhere.",
+      "uncertainty": "Corrected. An earlier pass recorded this as undocumented after reading only the projects-and-files page; the Netlify page documents it.",
       "provenance": "automated_provisional",
       "status": "in_force",
-      "source_url": "https://support.bolt.new/building/using-bolt/projects-files"
+      "source_url": "https://support.bolt.new/integrations/netlify",
+      "plain": "Yes — publish to Netlify through the built-in integration, or build and upload it yourself.",
+      "condition": "Only if you have not already published to Bolt hosting. Bolt states there is no going back: you would need a new, unpublished copy."
     },
     {
       "alternative": "v0",
       "criterion": "c_external_hosting",
-      "verdict": "unconfirmed",
-      "claim": "GitHub sync is documented, but no external-hosting route for the built app was established from the pages read.",
-      "claim_type": "third_party_report",
-      "source": "v0 pricing",
-      "source_date": "retrieved 2026-09-24",
-      "scope": "A gap in what we read, not a finding that no route exists.",
-      "uncertainty": "Counts neither way. Code export is recorded separately and does not answer this question.",
+      "verdict": "meets",
+      "claim": "v0’s FAQ states “You can still export code and deploy elsewhere”, and describes a bi-directional GitHub integration for syncing between local development and v0.",
+      "claim_type": "company_statement",
+      "source": "v0 documentation — FAQs",
+      "source_date": "retrieved 2026-09-25",
+      "scope": "Vercel describes the “full experience” as involving its own hosting. Deploying elsewhere is documented as possible, not as equivalent.",
+      "uncertainty": "Corrected. An earlier pass left this unresolved after a retrieval error; the FAQ page was retrieved in full this time.",
       "provenance": "automated_provisional",
       "status": "in_force",
-      "source_url": "https://v0.app/pricing"
+      "source_url": "https://v0.app/docs/faqs",
+      "plain": "Yes — export the code and deploy it wherever you like.",
+      "condition": null
     },
     {
       "alternative": "lovable",
@@ -3926,7 +3963,9 @@
           "verdict": "meets",
           "claim": "Enterprise workspace content is excluded from model development by default."
         }
-      }
+      },
+      "plain": "Business and Enterprise exclude your content by default. On Free and Pro it is used unless you turn it off.",
+      "condition": "Depends which plan you are on."
     },
     {
       "alternative": "replit",
@@ -3958,7 +3997,9 @@
           "verdict": "meets",
           "claim": "Replit states that for Enterprise users it does not use customer content to train its models."
         }
-      }
+      },
+      "plain": "Enterprise content is not used for training. On Pro it is used unless you turn it off, and Starter and Core are not covered by the documentation we read.",
+      "condition": "Depends which plan you are on."
     },
     {
       "alternative": "bolt",
@@ -3978,7 +4019,9 @@
         "EEA",
         "UK",
         "Switzerland"
-      ]
+      ],
+      "plain": "Not yet. Bolt has announced that content will be used for model development from 7 October 2026 at the earliest, and accounts in the EEA, UK and Switzerland are excluded.",
+      "condition": "This policy takes effect later, and not everywhere."
     },
     {
       "alternative": "v0",
@@ -4010,7 +4053,9 @@
           "verdict": "meets",
           "claim": "The v0 pricing page states for Enterprise that “Your data is never used for training”."
         }
-      }
+      },
+      "plain": "Business and Enterprise exclude your content by default. For Free and Plus the published pages disagree, so we have not settled it.",
+      "condition": "Depends which plan you are on, and two official pages conflict."
     },
     {
       "alternative": "lovable",
@@ -4024,7 +4069,9 @@
       "uncertainty": "Provider statement, read directly. Automated research, not human-reviewed.",
       "provenance": "automated_provisional",
       "status": "in_force",
-      "source_url": "https://docs.lovable.dev/features/business/data-opt-out"
+      "source_url": "https://docs.lovable.dev/features/business/data-opt-out",
+      "plain": "Yes — an account toggle turns it off, going forward.",
+      "condition": "It covers your own contributions, not every collaborator’s."
     },
     {
       "alternative": "replit",
@@ -4056,7 +4103,9 @@
           "verdict": "meets",
           "claim": "Replit states Enterprise customer content is not used to train its models, so there is nothing to switch off."
         }
-      }
+      },
+      "plain": "On Pro, turn it off at Settings → Personalization → Model Improvement. Enterprise content is not used at all. Starter and Core are not covered by the documentation we read.",
+      "condition": "Applies to new content only."
     },
     {
       "alternative": "bolt",
@@ -4070,39 +4119,26 @@
       "uncertainty": "The control is documented even though the underlying default is not yet in effect. Having a switch is not the same as the default already suiting you.",
       "provenance": "automated_provisional",
       "status": "in_force",
-      "source_url": "https://stackblitz.com/privacy-policy"
+      "source_url": "https://stackblitz.com/privacy-policy",
+      "plain": "Yes — opt out at any time, free, on any plan, in account settings or by email.",
+      "condition": null
     },
     {
       "alternative": "v0",
       "criterion": "c_work_training_control",
-      "verdict": "unconfirmed",
-      "claim": "Vercel’s AI policy says users “can change their opt out of such use and sharing at any time through their Team Settings or by purchasing the appropriate subscription”, while an older pricing table limits the data opt-out to certain tiers.",
+      "verdict": "meets",
+      "claim": "v0’s FAQ states that content of Enterprise customers “or any customer that has opted out of model training in their Vercel settings, is not used for training”, and directs users to change their Vercel team’s data preferences.",
       "claim_type": "company_statement",
-      "source": "Vercel AI policy; v0 pricing documentation",
-      "source_date": "retrieved 2026-09-24",
-      "scope": "The general statement and the tier-limited table have not been reconciled, and the account labels differ between them.",
-      "uncertainty": "A source conflict, not an unresearched gap.",
+      "source": "v0 documentation — FAQs",
+      "source_date": "retrieved 2026-09-25",
+      "scope": "Establishes a self-service route. It does not establish what each v0 subscription tier does by default.",
+      "uncertainty": "Corrected. An earlier pass left this unresolved on an older tier-limited pricing table; the current FAQ describes the control without limiting it to a tier.",
       "provenance": "automated_provisional",
       "status": "in_force",
-      "source_url": "https://v0.app/policy",
-      "by_plan": {
-        "free": {
-          "verdict": "unconfirmed",
-          "claim": "Whether the Team Settings opt-out is available on this tier is not resolved; the two official sources disagree."
-        },
-        "plus": {
-          "verdict": "unconfirmed",
-          "claim": "Whether the Team Settings opt-out is available on this tier is not resolved; the two official sources disagree."
-        },
-        "business": {
-          "verdict": "meets",
-          "claim": "Business lists “Training opt-out by default”, so the outcome is available without the user changing anything."
-        },
-        "enterprise": {
-          "verdict": "meets",
-          "claim": "Enterprise states data is never used for training, so there is nothing to switch off."
-        }
-      }
+      "source_url": "https://v0.app/docs/faqs",
+      "by_plan": null,
+      "plain": "Yes — turn training off in your Vercel team’s data settings.",
+      "condition": "The setting lives in Vercel team settings rather than in v0 itself, so a team admin may need to make the change."
     },
     {
       "alternative": "bolt",
@@ -4115,7 +4151,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "bolt",
@@ -4128,7 +4165,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "bolt",
@@ -4141,7 +4179,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "bolt",
@@ -4154,7 +4193,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "bolt",
@@ -4167,7 +4207,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "bolt",
@@ -4180,7 +4221,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "bolt",
@@ -4193,7 +4235,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "bolt",
@@ -4206,7 +4249,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "lovable",
@@ -4219,7 +4263,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "lovable",
@@ -4232,7 +4277,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "lovable",
@@ -4245,7 +4291,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "lovable",
@@ -4258,7 +4305,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "lovable",
@@ -4271,7 +4319,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "lovable",
@@ -4284,7 +4333,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "lovable",
@@ -4297,7 +4347,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "lovable",
@@ -4310,7 +4361,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "replit",
@@ -4323,7 +4375,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "replit",
@@ -4336,7 +4389,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "replit",
@@ -4349,7 +4403,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "replit",
@@ -4362,7 +4417,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "replit",
@@ -4375,7 +4431,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "replit",
@@ -4388,7 +4445,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "replit",
@@ -4401,7 +4459,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "replit",
@@ -4414,7 +4473,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "v0",
@@ -4427,7 +4487,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "v0",
@@ -4440,7 +4501,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "v0",
@@ -4453,7 +4515,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "v0",
@@ -4466,7 +4529,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "v0",
@@ -4479,7 +4543,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "v0",
@@ -4492,7 +4557,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "v0",
@@ -4505,7 +4571,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "v0",
@@ -4518,7 +4585,8 @@
       "scope": null,
       "uncertainty": "Counts neither way. Company size, headquarters, venture funding and a stated mission are not evidence for these questions.",
       "provenance": "automated_provisional",
-      "status": "in_force"
+      "status": "in_force",
+      "plain": "We haven’t confirmed this."
     },
     {
       "alternative": "lovable",
@@ -4532,7 +4600,8 @@
       "uncertainty": "Announcements are dated and may be superseded.",
       "provenance": "automated_provisional",
       "status": "in_force",
-      "source_url": "https://lovable.dev/blog/series-c"
+      "source_url": "https://lovable.dev/blog/series-c",
+      "plain": "Privately held, with investors announced publicly."
     },
     {
       "alternative": "replit",
@@ -4546,7 +4615,8 @@
       "uncertainty": "Announcements are dated and may be superseded.",
       "provenance": "automated_provisional",
       "status": "in_force",
-      "source_url": "https://replit.com/blog/replit-raises-400-million-dollars"
+      "source_url": "https://replit.com/blog/replit-raises-400-million-dollars",
+      "plain": "Privately held, with investors announced publicly."
     },
     {
       "alternative": "bolt",
@@ -4560,7 +4630,8 @@
       "uncertainty": "Announcements are dated and may be superseded.",
       "provenance": "automated_provisional",
       "status": "in_force",
-      "source_url": "https://blog.stackblitz.com/posts/seed-funding/"
+      "source_url": "https://blog.stackblitz.com/posts/seed-funding/",
+      "plain": "Privately held, with investors announced publicly."
     },
     {
       "alternative": "v0",
@@ -4574,7 +4645,72 @@
       "uncertainty": "Announcements are dated and may be superseded.",
       "provenance": "automated_provisional",
       "status": "in_force",
-      "source_url": "https://vercel.com/blog/series-f"
+      "source_url": "https://vercel.com/blog/series-f",
+      "plain": "Privately held, with investors announced publicly."
+    },
+    {
+      "alternative": "lovable",
+      "criterion": "c_backend_migration",
+      "verdict": "meets",
+      "claim": "Lovable states the database, storage and configuration are portable, and documents moving to managed or self-hosted Supabase. A database export can include accounts and password hashes.",
+      "plain": "Yes — the database and storage can move, with Supabase the documented path.",
+      "condition": "Sign-in providers need reconfiguring and existing sessions do not carry over. Moving to a different database provider requires code changes.",
+      "claim_type": "company_statement",
+      "source": "Lovable docs — external deployment and hosting",
+      "source_url": "https://docs.lovable.dev/tips-tricks/external-deployment-hosting",
+      "source_date": "retrieved 2026-09-25",
+      "scope": "The database, stored files, secrets and authentication behind the app — not the code, which is asked separately.",
+      "uncertainty": "Read from the provider's own documentation.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "replit",
+      "criterion": "c_backend_migration",
+      "verdict": "meets",
+      "claim": "Replit describes database exports going to managed cloud databases such as RDS or Aurora, with secrets provisioned into the target cloud’s secret manager.",
+      "plain": "Yes — database exports and secrets have a documented route to your own cloud.",
+      "condition": null,
+      "claim_type": "company_statement",
+      "source": "Replit Learn — the production handoff",
+      "source_url": "https://learn.replit.com/docs/enterprise-foundations/lesson-8",
+      "source_date": "retrieved 2026-09-25",
+      "scope": "The database, stored files, secrets and authentication behind the app — not the code, which is asked separately.",
+      "uncertainty": "Read from the provider's own documentation.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "bolt",
+      "criterion": "c_backend_migration",
+      "verdict": "unconfirmed",
+      "claim": "No route for moving a Bolt app’s database or backend services was found. Bolt notes that Netlify “can’t host your database or a traditional backend”, which describes a limit of the hosting target rather than a migration path.",
+      "plain": "Not confirmed — we have not found a documented way to move the data and backend.",
+      "condition": null,
+      "claim_type": "third_party_report",
+      "source": "Bolt support — Netlify integration",
+      "source_url": "https://support.bolt.new/integrations/netlify",
+      "source_date": "retrieved 2026-09-25",
+      "scope": "The database, stored files, secrets and authentication behind the app — not the code, which is asked separately.",
+      "uncertainty": "A gap in what we found, not a finding that no route exists.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
+    },
+    {
+      "alternative": "v0",
+      "criterion": "c_backend_migration",
+      "verdict": "unconfirmed",
+      "claim": "No route for moving a v0 app’s managed services was found. The FAQ documents exporting code and deploying elsewhere without addressing the backend.",
+      "plain": "Not confirmed — exporting the code is documented, moving the services behind it is not.",
+      "condition": null,
+      "claim_type": "third_party_report",
+      "source": "v0 documentation — FAQs",
+      "source_url": "https://v0.app/docs/faqs",
+      "source_date": "retrieved 2026-09-25",
+      "scope": "The database, stored files, secrets and authentication behind the app — not the code, which is asked separately.",
+      "uncertainty": "A gap in what we found, not a finding that no route exists.",
+      "provenance": "automated_provisional",
+      "status": "in_force"
     }
   ],
   "categories": [

@@ -50,6 +50,10 @@ export interface PilotAlternative {
   category?: string
   /** One factual sentence, shown before any preference is chosen. */
   discovery?: string
+  /** One short useful fact for this category. Authored, not research prose. */
+  discovery_fact?: string
+  /** Which evidence record the fact summarises, so it can be rechecked. */
+  discovery_fact_from?: string
   official_url?: string
   /**
    * Named plans, where a finding actually differs between them. Empty means
@@ -149,6 +153,10 @@ export interface Assessment {
   uncertainty: string
   provenance: string
   source_url?: string
+  /** The practical answer, in the words a person choosing a tool would use. */
+  plain?: string
+  /** A qualification that changes the decision. Stays beside the answer. */
+  condition?: string | null
   /**
    * Verdicts that differ by plan. The top-level verdict is the answer when no
    * plan is chosen, which is deliberately the unresolved one rather than the
@@ -284,6 +292,45 @@ export function unresolvedKind(altId: string, critId: string): UnresolvedKind {
   return 'unresearched'
 }
 
+/** Which of a product's plans meet a criterion, so a visitor can see the
+ *  options before committing to one. Null where the product has no plans or
+ *  the finding does not vary by plan. */
+export function planAvailability(
+  altId: string,
+  critId: string,
+): { qualifying: PilotPlan[]; other: PilotPlan[] } | null {
+  const alt = alternativeById.get(altId)
+  const a = assessmentFor(altId, critId)
+  if (!alt?.plans?.length || !a?.by_plan) return null
+  const qualifying = alt.plans.filter((p) => a.by_plan![p.id]?.verdict === 'meets')
+  return { qualifying, other: alt.plans.filter((p) => !qualifying.includes(p)) }
+}
+
+/**
+ * The answer in consumer terms.
+ *
+ * "Not established in our research" covers four different situations, and a
+ * person choosing a tool needs to know which one they are in: is it their
+ * plan, a policy that has not started, two pages that disagree, or a gap.
+ */
+export type AnswerLabel =
+  | 'Yes'
+  | 'No'
+  | 'Depends on your plan'
+  | 'Published policies disagree'
+  | 'Takes effect later'
+  | 'Not confirmed'
+
+export function answerLabel(altId: string, critId: string, verdict: Verdict): AnswerLabel {
+  if (verdict === 'meets') return 'Yes'
+  if (verdict === 'fails') return 'No'
+  const a = assessmentFor(altId, critId)
+  if (a?.effective_from) return 'Takes effect later'
+  if (a?.by_plan) return 'Depends on your plan'
+  if (/conflict|disagree/i.test(a?.uncertainty ?? '')) return 'Published policies disagree'
+  return 'Not confirmed'
+}
+
 export function resolvedVerdict(
   altId: string,
   critId: string,
@@ -327,7 +374,7 @@ export function criterionIsAssessable(critId: string): boolean {
 export function criterionCoverage(
   critId: string,
   category?: string,
-): { decided: number; total: number } {
+): { decided: number; conditional: number; total: number } {
   // Coverage is per category. A question shared by both categories has a
   // different answer in each, and showing the combined number would misreport
   // how much is known about the products actually on screen.
@@ -337,8 +384,15 @@ export function criterionCoverage(
   )
   const ids = new Set(scope.map((a) => a.id))
   const rows = assessments.filter((a) => a.criterion === critId && ids.has(a.alternative))
+  // An answer that depends on a plan is evidence we hold, not evidence we
+  // lack. Counting it as nothing made a researched question look unresearched.
+  const conditional = rows.filter(
+    (a) => a.verdict === 'unconfirmed' && a.by_plan &&
+      Object.values(a.by_plan).some((v) => v.verdict !== 'unconfirmed'),
+  ).length
   return {
     decided: rows.filter((a) => a.verdict !== 'unconfirmed').length,
+    conditional,
     total: scope.length,
   }
 }
@@ -385,6 +439,8 @@ export function functionalState(alt: PilotAlternative, reqId: string): Functiona
 // ---- The result --------------------------------------------------------
 
 export interface CriterionOutcome {
+  /** Which product this row belongs to, so the row can show its plan options. */
+  alternativeId: string
   criterion: PilotCriterion
   weight: 'requirement' | 'priority'
   verdict: Verdict
@@ -471,6 +527,7 @@ export function recommend(input: RecommendationInput): RecommendationResult {
       // The user's designation stands whatever the evidence looks like.
       const isRequirement = input.requirements.includes(critId)
       const row: CriterionOutcome = {
+        alternativeId: alt.id,
         criterion,
         weight: isRequirement ? 'requirement' : 'priority',
         verdict,
@@ -672,6 +729,7 @@ export const motivations: Motivation[] = [
       'c_work_training_control',
       'c_code_export',
       'c_external_hosting',
+      'c_backend_migration',
     ],
     limits: [
       'Training, retention and advertising are separate uses. Stopping one does not stop the others, and several providers say so explicitly.',
@@ -732,6 +790,12 @@ export interface PreferenceSummary {
   /** Why the unresolved ones are unresolved, where they agree on a reason. */
   unresolvedKinds: UnresolvedKind[]
   /**
+   * Options that could meet this on a plan the visitor has not selected.
+   * Showing these is the difference between "we found nothing" and "we found
+   * something, and here is what it would take".
+   */
+  planRoutes: { alternative: PilotAlternative; plans: PilotPlan[] }[]
+  /**
    * True where the criterion has a documented finding on BOTH sides. Only then
    * does the evidence point anywhere: alignment against conflict is a reason to
    * favour one option over another on this point. Alignment against an unknown
@@ -764,6 +828,9 @@ export function summarisePreferences(
         conflicting,
         unresolved,
         unresolvedKinds: [...new Set(unresolved.map((a) => unresolvedKind(a.id, criterion.id)))],
+        planRoutes: unresolved
+          .map((alt) => ({ alternative: alt, plans: planAvailability(alt.id, criterion.id)?.qualifying ?? [] }))
+          .filter((x) => x.plans.length > 0),
         separates: aligned.length > 0 && conflicting.length > 0,
       }
     })
@@ -787,6 +854,8 @@ export function summarisePreferences(
 
 export interface OptionNote {
   alternative: PilotAlternative
+  /** Why its unknowns are unknown, so the copy can say which. */
+  unknownKinds: UnresolvedKind[]
   alignsOn: PilotCriterion[]
   conflictsOn: PilotCriterion[]
   unknownOn: PilotCriterion[]
@@ -825,8 +894,10 @@ export interface Guidance {
   matchedGroups: MatchedGroup[]
   /** Selected criteria with no documented finding for anyone. */
   openQuestions: PilotCriterion[]
-  /** The single most useful thing to research next, or null. */
+  /** What we should research next to break a tie. May be one already chosen. */
   nextQuestion: PilotCriterion | null
+  /** A different question we can actually answer, for when this one fails. */
+  suggestion: PilotCriterion | null
   /** True where no selected criterion has any documented finding at all. */
   cannotDistinguish: boolean
 }
@@ -857,7 +928,13 @@ export function buildGuidance(
       else if (v === 'fails') conflictsOn.push(c)
       else unknownOn.push(c)
     }
-    return { alternative: alt, alignsOn, conflictsOn, unknownOn }
+    return {
+      alternative: alt,
+      alignsOn,
+      conflictsOn,
+      unknownOn,
+      unknownKinds: [...new Set(unknownOn.map((c) => unresolvedKind(alt.id, c.id)))],
+    }
   }
 
   const notes = inPlay.map(noteFor)
@@ -894,15 +971,33 @@ export function buildGuidance(
     }
   }
 
+  // Genuinely open. A question answerable by choosing a plan is not open —
+  // saying "no option has a finding either way" directly under a line listing
+  // which plans qualify is a contradiction.
   const openQuestions = separations
-    .filter((s) => s.aligned.length === 0 && s.conflicting.length === 0)
+    .filter((s) => s.aligned.length === 0 && s.conflicting.length === 0 && s.planRoutes.length === 0)
     .map((s) => s.criterion)
 
   // The most useful next question is the one that would resolve a live
   // difference: a criterion where someone is documented to conflict and
   // someone else is simply unknown. Failing that, an entirely open question.
+  // Two different things, previously conflated.
+  //
+  // nextQuestion points at what WE should research to break a tie — it may
+  // well be a criterion the visitor already chose, which is the point.
+  //
+  // suggestion is what to offer someone we have just told we cannot help:
+  // proposing the same question back at them is a loop, not a next step.
+  const asked = new Set(input.priorities)
   const fromDifference = matchedGroups.flatMap((g) => g.differences).map((d) => d.criterion)[0]
   const nextQuestion = fromDifference ?? openQuestions[0] ?? null
+  const suggestion =
+    criteriaIn(input.category ?? DEFAULT_CATEGORY).find(
+      (c) =>
+        !asked.has(c.id) &&
+        !c.informational &&
+        criterionCoverage(c.id, input.category).decided > 0,
+    ) ?? null
 
   return {
     separations,
@@ -911,7 +1006,16 @@ export function buildGuidance(
     matchedGroups: matchedGroups.filter((g) => g.members.length > 0),
     openQuestions,
     nextQuestion,
-    cannotDistinguish: separations.length > 0 && separations.every((s) => !s.separates &&
-      s.aligned.length === 0 && s.conflicting.length === 0),
+    suggestion,
+    // Not "nothing to act on" if a documented plan would settle it.
+    cannotDistinguish:
+      separations.length > 0 &&
+      separations.every(
+        (s) =>
+          !s.separates &&
+          s.aligned.length === 0 &&
+          s.conflicting.length === 0 &&
+          s.planRoutes.length === 0,
+      ),
   }
 }
