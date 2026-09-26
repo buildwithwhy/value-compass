@@ -1089,13 +1089,15 @@ export function RecommendView() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6">
-      <h1 className="text-2xl font-extrabold text-slate-900">
+      <h1 className="text-xl font-extrabold text-slate-900 sm:text-2xl">
         Find AI tools that fit your values
       </h1>
-      <p className="mt-1 max-w-3xl text-sm leading-relaxed text-slate-600">
-        Choose a type of tool, then see how the options match what matters to you. This compares
-        documented policies and relationships, not tested product quality.{' '}
-        <Link to="/about" className="text-teal-700 underline underline-offset-2">
+      <p className="mt-1 max-w-3xl text-sm leading-snug text-slate-600">
+        Choose a type of tool, then see how the options match what matters to you.{' '}
+        <span className="hidden sm:inline">
+          This compares documented policies and relationships, not tested product quality.{' '}
+        </span>
+        <Link to="/about" className="whitespace-nowrap text-teal-700 underline underline-offset-2">
           How this works
         </Link>
       </p>
@@ -1150,11 +1152,10 @@ export function RecommendView() {
       {!started && (
         <section className="mt-6">
           <SectionTitle>
-            {alternativesIn(category).length} options we have researched
+            {alternativesIn(category).length} options
           </SectionTitle>
           <p className="mb-3 max-w-3xl text-xs leading-snug text-slate-500">
-            Listed alphabetically, with no ordering or endorsement implied. Choose what matters to
-            you above to see documented reasons, concerns and unresolved questions for each.
+            Alphabetical, no ranking. Pick what matters to you below to compare them.
           </p>
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
             {alternativesIn(category).map((a) => (
