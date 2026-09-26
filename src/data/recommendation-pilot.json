@@ -1004,7 +1004,8 @@
       "categories": [
         "everyday_assistant",
         "app_builder"
-      ]
+      ],
+      "comparison": "no single person holding a voting majority"
     },
     {
       "id": "c_founder_bloc_majority_voting",
@@ -1019,7 +1020,8 @@
       "categories": [
         "everyday_assistant",
         "app_builder"
-      ]
+      ],
+      "comparison": "founders holding less than half the votes"
     },
     {
       "id": "c_board_election_rights",
@@ -1049,7 +1051,8 @@
       "categories": [
         "everyday_assistant",
         "app_builder"
-      ]
+      ],
+      "comparison": "a legal duty to weigh more than shareholder returns"
     },
     {
       "id": "c_commitment_continuity",
@@ -1063,7 +1066,8 @@
       "categories": [
         "everyday_assistant",
         "app_builder"
-      ]
+      ],
+      "comparison": "a record of keeping past public-benefit promises"
     },
     {
       "id": "c_content_export",
@@ -1076,7 +1080,8 @@
       "plain": "A way to get your chat history and account data out of the product.",
       "categories": [
         "everyday_assistant"
-      ]
+      ],
+      "comparison": "a documented way to download your conversations"
     },
     {
       "id": "c_account_transfer",
@@ -1089,7 +1094,8 @@
       "distinct_from": "Cross-service migration, which is about a different destination entirely.",
       "categories": [
         "everyday_assistant"
-      ]
+      ],
+      "comparison": "a way to move content to another account with them"
     },
     {
       "id": "c_service_migration",
@@ -1103,7 +1109,8 @@
       "requires_evidence_about": "Both the destination product and what actually has to transfer for the move to be useful.",
       "categories": [
         "everyday_assistant"
-      ]
+      ],
+      "comparison": "a way to move content to another company’s product"
     },
     {
       "id": "c_model_hosting",
@@ -1117,7 +1124,8 @@
       "nested": true,
       "categories": [
         "everyday_assistant"
-      ]
+      ],
+      "comparison": "a published model you could host yourself"
     },
     {
       "id": "c_training_default",
@@ -1130,7 +1138,8 @@
       "supported": true,
       "categories": [
         "everyday_assistant"
-      ]
+      ],
+      "comparison": "your conversations kept out of training unless you allow it"
     },
     {
       "id": "c_training_control",
@@ -1143,7 +1152,8 @@
       "supported": true,
       "categories": [
         "everyday_assistant"
-      ]
+      ],
+      "comparison": "a self-service way to stay out of training"
     },
     {
       "id": "c_ownership_shape",
@@ -1173,7 +1183,8 @@
       "categories": [
         "everyday_assistant",
         "app_builder"
-      ]
+      ],
+      "comparison": "a foundation or non-profit in control"
     },
     {
       "id": "c_public_purpose_stake",
@@ -1187,7 +1198,8 @@
       "categories": [
         "everyday_assistant",
         "app_builder"
-      ]
+      ],
+      "comparison": "a public-purpose body with a financial interest"
     },
     {
       "id": "c_parent_independence",
@@ -1201,7 +1213,8 @@
       "categories": [
         "everyday_assistant",
         "app_builder"
-      ]
+      ],
+      "comparison": "no larger commercial parent"
     },
     {
       "id": "c_code_export",
@@ -1214,7 +1227,8 @@
       "applies_to": "product",
       "does_not_establish": "That the running app moves with it. Databases, stored files, secrets, sign-in providers and hosting are separate, and are asked about separately.",
       "distinct_from": "Hosting the app elsewhere, which needs somewhere for the code to run.",
-      "supported": true
+      "supported": true,
+      "comparison": "a documented way to take your project code out"
     },
     {
       "id": "c_external_hosting",
@@ -1227,7 +1241,8 @@
       "applies_to": "product",
       "does_not_establish": "That migration is effortless or complete. What carries over — database records, stored files, secrets, authentication — is stated per finding.",
       "distinct_from": "Code export. Having the code is not the same as having somewhere it runs.",
-      "supported": true
+      "supported": true,
+      "comparison": "a documented way to host the app elsewhere"
     },
     {
       "id": "c_work_training_default",
@@ -1240,7 +1255,8 @@
       "applies_to": "product",
       "does_not_establish": "That training has or has not actually occurred. Permission in terms is evidence about permitted use, not a record of use.",
       "distinct_from": "Whether you can switch it off, which several providers allow even where the default is on.",
-      "supported": true
+      "supported": true,
+      "comparison": "your prompts and code kept out of training by default"
     },
     {
       "id": "c_work_training_control",
@@ -1253,7 +1269,8 @@
       "applies_to": "product",
       "does_not_establish": "That the default already satisfies you, or that the control reaches content already used or contributed by collaborators.",
       "distinct_from": "The default position, which is asked separately.",
-      "supported": true
+      "supported": true,
+      "comparison": "a self-service way to turn training off"
     },
     {
       "id": "c_backend_migration",
@@ -1266,7 +1283,8 @@
       "applies_to": "product",
       "does_not_establish": "That a move is quick or complete. Sign-in providers and live sessions usually need reconfiguring wherever you go.",
       "distinct_from": "Hosting the app elsewhere, which can be true while the data stays put.",
-      "supported": true
+      "supported": true,
+      "comparison": "a documented route for moving the database and services"
     }
   ],
   "assessments": [
@@ -3909,13 +3927,13 @@
       "claim_type": "company_statement",
       "source": "Bolt support — Netlify integration",
       "source_date": "retrieved 2026-09-25",
-      "scope": "Covers the app itself. Bolt notes Netlify “can’t host your database or a traditional backend”, so a full-stack app needs those services elsewhere.",
+      "scope": "Covers the app itself, by either route. Bolt notes Netlify “can’t host your database or a traditional backend”, so those services need somewhere else — asked separately.",
       "uncertainty": "Corrected. An earlier pass recorded this as undocumented after reading only the projects-and-files page; the Netlify page documents it.",
       "provenance": "automated_provisional",
       "status": "in_force",
       "source_url": "https://support.bolt.new/integrations/netlify",
-      "plain": "Yes — publish to Netlify through the built-in integration, or build and upload it yourself.",
-      "condition": "Only if you have not already published to Bolt hosting. Bolt states there is no going back: you would need a new, unpublished copy."
+      "plain": "Yes — publish to Netlify through Bolt, or build and deploy it manually yourself.",
+      "condition": "If you have already published to Bolt hosting, using the Netlify integration needs a new, unpublished copy. The manual route is not affected."
     },
     {
       "alternative": "v0",

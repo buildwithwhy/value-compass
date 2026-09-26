@@ -1483,7 +1483,7 @@ describe('relationship text agrees with the findings it sits beside', () => {
 // ---------------------------------------------------------------------------
 
 import { alternativesIn as inCat, criteriaIn, resolvedVerdict, categories as allCategories,
-         motivationsIn, motivationCriteria, unresolvedKind, answerLabel } from '../recommend'
+         motivationsIn, motivationCriteria, unresolvedKind, answerLabel, planAvailability, comparisonLines } from '../recommend'
 
 const BUILDERS = inCat('app_builder')
 const BF = ['fr_browser_build']
@@ -1835,5 +1835,135 @@ describe('the findings read like answers, not research notes', () => {
     const r = recommend({ category: 'app_builder', functional: [], priorities: [], requirements: [] })
     expect(r.confirmed).toHaveLength(4)
     for (const o of r.confirmed) expect(o.functionalGaps).toHaveLength(0)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// 17. The page must tell one story
+// ---------------------------------------------------------------------------
+
+describe('a confirmed match is never contradicted by a missing-evidence warning', () => {
+  const base = {
+    category: 'app_builder', functional: BF,
+    priorities: ['c_work_training_default'],
+    requirements: ['c_work_training_default'],
+    asOf: '2026-09-25',
+  }
+
+  it('warns about missing evidence only while nothing has resolved', () => {
+    const r = recommend(base)
+    expect(r.confirmed).toHaveLength(0)
+    expect(r.unassessableRequirements.map((c) => c.id)).toEqual(['c_work_training_default'])
+  })
+
+  it('drops the warning as soon as a chosen plan resolves it', () => {
+    // The reported bug: Lovable Business appeared under confirmed matches
+    // while the page still said nothing could meet the requirement.
+    const r = recommend({ ...base, plans: { lovable: 'business' } })
+    expect(r.confirmed.map((o) => o.alternative.id)).toEqual(['lovable'])
+    expect(r.unassessableRequirements).toHaveLength(0)
+    expect(r.blindCriteria).toHaveLength(0)
+  })
+
+  it('keeps the warning when the chosen plan does not qualify', () => {
+    const r = recommend({ ...base, plans: { lovable: 'free' } })
+    expect(r.confirmed).toHaveLength(0)
+    // Free is a documented no, so the requirement now excludes rather than
+    // being unassessable.
+    expect(r.excluded.map((o) => o.alternative.id)).toEqual(['lovable'])
+    expect(r.unassessableRequirements).toHaveLength(0)
+  })
+
+  it('returns to the unresolved state when the plan goes back to Not sure', () => {
+    const r = recommend({ ...base, plans: {} })
+    expect(r.confirmed).toHaveLength(0)
+    expect(r.excluded).toHaveLength(0)
+    expect(r.unassessableRequirements.map((c) => c.id)).toEqual(['c_work_training_default'])
+  })
+})
+
+describe('a deselected question stops counting', () => {
+  it('contributes nothing once its priority is removed', () => {
+    // Whatever the UI remembers, the engine must be handed a requirement that
+    // is still selected. This asserts the contract the view now upholds.
+    const stale = recommend({
+      category: 'app_builder', functional: BF,
+      priorities: ['c_external_hosting'],
+      requirements: ['c_work_training_default'], // left behind by a deselect
+      asOf: '2026-09-25',
+    })
+    const clean = recommend({
+      category: 'app_builder', functional: BF,
+      priorities: ['c_external_hosting'], requirements: [], asOf: '2026-09-25',
+    })
+    // The stale requirement is not in priorities, so it must not filter.
+    expect(stale.confirmed.map((o) => o.alternative.id))
+      .toEqual(clean.confirmed.map((o) => o.alternative.id))
+  })
+})
+
+describe('known failures are not reported as unknowns', () => {
+  it('splits plans into qualifying, failing and unknown', () => {
+    const lov = planAvailability('lovable', 'c_work_training_default')!
+    expect(lov.qualifying.map((p) => p.id)).toEqual(['business', 'enterprise'])
+    expect(lov.failing.map((p) => p.id)).toEqual(['free', 'pro'])
+    expect(lov.unknown).toHaveLength(0)
+
+    const rep = planAvailability('replit', 'c_work_training_default')!
+    expect(rep.qualifying.map((p) => p.id)).toEqual(['enterprise'])
+    expect(rep.failing.map((p) => p.id)).toEqual(['pro'])
+    expect(rep.unknown.map((p) => p.id)).toEqual(['starter', 'core'])
+  })
+
+  it('keeps the separate question of whether you can turn training off', () => {
+    // Failing the default question does not mean opting out is impossible.
+    expect(resolvedVerdict('lovable', 'c_work_training_default', 'free', '2026-09-25').verdict)
+      .toBe('fails')
+    expect(assessmentFor('lovable', 'c_work_training_control')?.verdict).toBe('meets')
+  })
+})
+
+describe('the summary explains the comparison instead of repeating labels', () => {
+  it('says so plainly when all of them do the same thing', () => {
+    const input = {
+      category: 'app_builder', functional: BF,
+      priorities: ['c_external_hosting', 'c_backend_migration'], requirements: [],
+    }
+    const g = buildGuidance(recommend(input), input)
+    const lines = comparisonLines(g.separations, inCat('app_builder').length).map((l) => l.line)
+    expect(lines[0]).toBe('All 4 have a documented way to host the app elsewhere.')
+    expect(lines[1]).toMatch(/^Lovable and Replit have a documented route for moving the database/)
+    expect(lines[1]).toMatch(/haven’t confirmed it for Bolt and v0/)
+  })
+
+  it('updates when the findings or plans change', () => {
+    const input = {
+      category: 'app_builder', functional: BF,
+      priorities: ['c_work_training_default'], requirements: [],
+      plans: { lovable: 'business' }, asOf: '2026-09-25',
+    }
+    const g = buildGuidance(recommend(input), input)
+    const [line] = comparisonLines(g.separations, inCat('app_builder').length)
+    expect(line.line).toMatch(/^Lovable has your prompts and code kept out of training by default/)
+  })
+
+  it('gives every selected question a phrase that reads as a sentence', () => {
+    for (const c of criteriaIn('app_builder')) {
+      if (c.informational) continue
+      expect(c.comparison, c.id).toBeTruthy()
+      expect(c.comparison!.startsWith('I ')).toBe(false)
+      // Noun phrase, so one have/has switch covers singular and plural.
+      expect(c.comparison!).not.toMatch(/^(let|keep|document|describe|run|are|have) /)
+    }
+  })
+})
+
+describe('Bolt’s hosting restriction applies to the route it belongs to', () => {
+  it('does not present the integration limit as a bar on hosting elsewhere', () => {
+    const a = assessmentFor('bolt', 'c_external_hosting')!
+    expect(a.verdict).toBe('meets')
+    expect(a.condition).toMatch(/Netlify integration/i)
+    expect(a.condition).toMatch(/manual route is not affected/i)
+    expect(a.plain).toMatch(/manually/i)
   })
 })

@@ -109,6 +109,9 @@ export interface PilotCriterion {
    */
   /** Categories this question applies to. */
   categories?: string[]
+  /** Third-person phrase for the comparison summary, e.g. "let you take a
+   *  copy of your project code". Authored so the synthesis reads as English. */
+  comparison?: string
   informational?: boolean
   /**
    * Supporting evidence rather than a headline question. Still selectable and
@@ -298,12 +301,18 @@ export function unresolvedKind(altId: string, critId: string): UnresolvedKind {
 export function planAvailability(
   altId: string,
   critId: string,
-): { qualifying: PilotPlan[]; other: PilotPlan[] } | null {
+): { qualifying: PilotPlan[]; failing: PilotPlan[]; unknown: PilotPlan[] } | null {
   const alt = alternativeById.get(altId)
   const a = assessmentFor(altId, critId)
   if (!alt?.plans?.length || !a?.by_plan) return null
-  const qualifying = alt.plans.filter((p) => a.by_plan![p.id]?.verdict === 'meets')
-  return { qualifying, other: alt.plans.filter((p) => !qualifying.includes(p)) }
+  const at = (p: PilotPlan) => a.by_plan![p.id]?.verdict
+  // A documented opt-out requirement is a NO to "not used unless I opt in",
+  // not an unknown. Calling it unconfirmed hid an answer we have.
+  return {
+    qualifying: alt.plans.filter((p) => at(p) === 'meets'),
+    failing: alt.plans.filter((p) => at(p) === 'fails'),
+    unknown: alt.plans.filter((p) => at(p) === undefined || at(p) === 'unconfirmed'),
+  }
 }
 
 /**
@@ -582,10 +591,20 @@ export function recommend(input: RecommendationInput): RecommendationResult {
     }
   })
 
+  // A criterion is only "blind" if nothing in THIS run resolved to a verdict.
+  // Asking the raw records ignored the plan the visitor chose, so selecting
+  // Lovable Business could put it under confirmed matches while the page still
+  // warned that nothing could meet it.
+  const decided = new Set<string>()
+  for (const o of outcomes) {
+    for (const row of [...o.met, ...o.failed, ...o.supportingPriorities, ...o.tradeoffs]) {
+      decided.add(row.criterion.id)
+    }
+  }
   const blindCriteria = input.priorities
     .map((id) => criterionById.get(id))
     .filter((c): c is PilotCriterion => !!c)
-    .filter((c) => !criterionIsAssessable(c.id))
+    .filter((c) => !decided.has(c.id))
 
   const unassessableRequirements = blindCriteria.filter((c) => input.requirements.includes(c.id))
 
@@ -794,7 +813,12 @@ export interface PreferenceSummary {
    * Showing these is the difference between "we found nothing" and "we found
    * something, and here is what it would take".
    */
-  planRoutes: { alternative: PilotAlternative; plans: PilotPlan[] }[]
+  planRoutes: {
+    alternative: PilotAlternative
+    plans: PilotPlan[]
+    failing: PilotPlan[]
+    unknown: PilotPlan[]
+  }[]
   /**
    * True where the criterion has a documented finding on BOTH sides. Only then
    * does the evidence point anywhere: alignment against conflict is a reason to
@@ -829,7 +853,15 @@ export function summarisePreferences(
         unresolved,
         unresolvedKinds: [...new Set(unresolved.map((a) => unresolvedKind(a.id, criterion.id)))],
         planRoutes: unresolved
-          .map((alt) => ({ alternative: alt, plans: planAvailability(alt.id, criterion.id)?.qualifying ?? [] }))
+          .map((alt) => {
+            const pa = planAvailability(alt.id, criterion.id)
+            return {
+              alternative: alt,
+              plans: pa?.qualifying ?? [],
+              failing: pa?.failing ?? [],
+              unknown: pa?.unknown ?? [],
+            }
+          })
           .filter((x) => x.plans.length > 0),
         separates: aligned.length > 0 && conflicting.length > 0,
       }
@@ -901,6 +933,51 @@ export interface Guidance {
   /** True where no selected criterion has any documented finding at all. */
   cannotDistinguish: boolean
 }
+
+/**
+ * One line per question, describing how the options actually differ.
+ *
+ * Replaces a list that repeated every selected criterion label against every
+ * product — the same facts the cards already carry, three times over.
+ */
+export function comparisonLines(
+  separations: PreferenceSummary[],
+  total: number,
+): { criterion: PilotCriterion; line: string }[] {
+  const names = (xs: { product: string }[]) =>
+    xs.length <= 1
+      ? (xs[0]?.product ?? '')
+      : `${xs.slice(0, -1).map((x) => x.product).join(', ')} and ${xs[xs.length - 1].product}`
+
+  // One agreement point, so a single product does not read as "Lovable keep".
+  const have = (n: number) => (n === 1 ? 'has' : 'have')
+  const dont = (n: number) => (n === 1 ? 'does not' : 'do not')
+
+  return separations.map((s) => {
+    const phrase = s.criterion.comparison ?? s.criterion.label.toLowerCase()
+    const yes = s.aligned
+    const no = s.conflicting
+    let line: string
+
+    if (yes.length === total) {
+      line = `All ${total} have ${phrase}.`
+    } else if (yes.length > 0 && no.length > 0) {
+      line = `${names(yes)} ${have(yes.length)} ${phrase}; ${names(no)} ${dont(no.length)}.`
+    } else if (yes.length > 0) {
+      line = `${names(yes)} ${have(yes.length)} ${phrase}. We haven’t confirmed it for ${names(s.unresolved)}.`
+    } else if (no.length === total) {
+      line = `None of them ${have(total)} ${phrase}.`
+    } else if (no.length > 0) {
+      line = `${names(no)} ${dont(no.length)} ${phrase}. We haven’t confirmed it either way for ${names(s.unresolved)}.`
+    } else if (s.planRoutes.length > 0) {
+      line = `Whether they ${have(2)} ${phrase} depends on the plan.`
+    } else {
+      line = `We haven’t confirmed whether any of them ${have(2)} ${phrase}.`
+    }
+    return { criterion: s.criterion, line }
+  })
+}
+
 
 const sameIds = (a: PilotCriterion[], b: PilotCriterion[]) =>
   a.length === b.length && a.every((c, i) => c.id === b[i].id)

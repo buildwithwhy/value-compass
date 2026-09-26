@@ -16,9 +16,9 @@ import {
   makerInDirectory,
   motivationBlurb,
   motivationCoverage,
-  motivations,
   recommend,
   buildGuidance,
+  comparisonLines,
   verifiedCapabilities,
   type AlternativeOutcome,
   type CriterionOutcome,
@@ -94,17 +94,28 @@ function EvidenceRow({
 
       {answer && <p className="mt-1 text-sm leading-snug text-slate-800">{answer}</p>}
 
-      {/* A qualification that changes the decision stays in the open. */}
-      {condition && (
+      {/* A qualification that changes the decision stays in the open — unless
+          the chosen plan has already settled it, in which case repeating
+          "depends on your plan" is noise. */}
+      {condition && !perPlan && (
         <p className="mt-1 text-xs leading-snug text-amber-800">{condition}</p>
       )}
 
-      {/* What you could do about it, where a plan would answer the question. */}
-      {avail && avail.qualifying.length > 0 && !perPlan && (
+      {/* What qualifies, what does not, and what we do not know. A documented
+          opt-out requirement is a no, not an unknown. */}
+      {avail && !perPlan && (avail.qualifying.length > 0 || avail.failing.length > 0) && (
         <p className="mt-1 text-xs leading-snug text-slate-600">
-          Available on{' '}
-          <strong>{avail.qualifying.map((p) => p.label).join(' and ')}</strong>
-          {avail.other.length > 0 && <> — not confirmed on {avail.other.map((p) => p.label).join(', ')}</>}.
+          {avail.qualifying.length > 0 && (
+            <>
+              Yes on <strong>{avail.qualifying.map((p) => p.label).join(' or ')}</strong>.{' '}
+            </>
+          )}
+          {avail.failing.length > 0 && (
+            <>No on {avail.failing.map((p) => p.label).join(' or ')}. </>
+          )}
+          {avail.unknown.length > 0 && (
+            <>Not confirmed for {avail.unknown.map((p) => p.label).join(' or ')}.</>
+          )}
         </p>
       )}
 
@@ -376,12 +387,10 @@ function PlanPicker({
 
 function OutcomeCard({
   o,
-  showRelationships,
   plan,
   onPlan,
 }: {
   o: AlternativeOutcome
-  showRelationships: boolean
   plan?: string
   onPlan?: (p: string | undefined) => void
 }) {
@@ -409,7 +418,8 @@ function OutcomeCard({
       </div>
       <ProductFacts alt={o.alternative} />
       {onPlan && <PlanPicker alt={o.alternative} value={plan} onChange={onPlan} />}
-      {showRelationships && <RelationshipSummary alt={o.alternative} />}
+      {/* Who you are paying stays reachable while comparing anything else. */}
+      <RelationshipSummary alt={o.alternative} />
 
       {o.functionalGaps.length > 0 && (
         <p className="mt-2 rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-xs leading-snug text-amber-900">
@@ -712,7 +722,13 @@ function SeparationRow({ sm }: { sm: PreferenceSummary }) {
  * documented on exactly the same criteria it says plainly that an unknown does
  * not make one of them better.
  */
-function ResultSummary({ guidance, hasRequirements }: { guidance: Guidance; hasRequirements: boolean }) {
+function ResultSummary({
+  guidance,
+  poolSize,
+}: {
+  guidance: Guidance
+  poolSize: number
+}) {
   const g = guidance
   if (g.separations.length === 0) return null
 
@@ -744,80 +760,32 @@ function ResultSummary({ guidance, hasRequirements }: { guidance: Guidance; hasR
         </div>
       ) : (
         <>
-          {g.considered.length > 0 && (
-            <div className="mt-3 border-t border-slate-100 pt-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                What fits, and why
-              </h3>
-              <ul className="mt-1.5 space-y-1.5">
-                {g.considered.map((n) => (
-                  <li key={n.alternative.id} className="text-xs leading-relaxed text-slate-700">
-                    <strong className="text-slate-900">{n.alternative.product}</strong> — meets{' '}
-                    {quoted(n.alignsOn.map((c) => c.label))}.
-                    {n.conflictsOn.length > 0 && (
-                      <span className="text-rose-800">
-                        {' '}
-                        Doesn’t meet {quoted(n.conflictsOn.map((c) => c.label))} — a real
-                        trade-off, not a disqualification.
-                      </span>
-                    )}
-                    {n.unknownOn.length > 0 && (
-                      <span className="text-slate-500">
-                        {' '}
-                        Not confirmed on {quoted(n.unknownOn.map((c) => c.label))}.
-                      </span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-              {(g.unaligned.conflicted.length > 0 ||
-                g.unaligned.unresolved.length > 0 ||
-                g.unaligned.mixed.length > 0) && (
-                <div className="mt-2 space-y-1 border-t border-slate-100 pt-2">
-                  {/* Why an option is not in the list above, generated from what
-                      the visitor actually picked. A documented conflict and an
-                      unresearched question are different answers and are not
-                      collapsed into one. */}
-                  {g.unaligned.conflicted.length > 0 && (
-                    <p className="text-[11px] leading-snug text-slate-500">
-                      <strong className="text-rose-800">Documented against</strong> on what you
-                      picked — {joinNames(g.unaligned.conflicted.map((n) => n.alternative.product))}
-                      .{' '}
-                      {hasRequirements
-                        ? 'Where you made that a must-have, they are ruled out below.'
-                        : 'These are preferences, so they stay available; the conflict is on each card.'}
-                    </p>
-                  )}
-                  {g.unaligned.mixed.length > 0 && (
-                    <p className="text-[11px] leading-snug text-slate-500">
-                      <strong className="text-slate-700">Part documented against, part
-                      unresolved</strong> —{' '}
-                      {joinNames(g.unaligned.mixed.map((n) => n.alternative.product))}. Each card
-                      says which is which.
-                    </p>
-                  )}
-                  {g.unaligned.unresolved.length > 0 && (
-                    <p className="text-[11px] leading-snug text-slate-500">
-                      <strong className="text-slate-700">Not confirmed</strong> on what you picked
-                      — {joinNames(g.unaligned.unresolved.map((n) => n.alternative.product))}.{' '}
-                      {(() => {
-                        const kinds = new Set(
-                          g.unaligned.unresolved.flatMap((n) => n.unknownKinds),
-                        )
-                        if (kinds.size === 1 && kinds.has('unresearched'))
-                          return 'We haven’t confirmed this for them yet.'
-                        if (kinds.size === 1 && kinds.has('conditional'))
-                          return 'It depends on the plan, the region, or a policy date. Each card says which.'
-                        if (kinds.size === 1 && kinds.has('conflicting'))
-                          return 'The published policies give conflicting answers.'
-                        return 'Each card says whether that is a plan, a date, or something we haven’t established.'
-                      })()}
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
+          {/* One synthesis of how the options differ, generated from the
+              current findings and the plans chosen. The cards carry the
+              detail; repeating every label against every product here was
+              the same facts three times over. */}
+          <div className="mt-3 border-t border-slate-100 pt-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+              How they compare
+            </h3>
+            <ul className="mt-1.5 space-y-1">
+              {comparisonLines(g.separations, poolSize).map((l) => (
+                <li key={l.criterion.id} className="text-xs leading-relaxed text-slate-700">
+                  {l.line}
+                </li>
+              ))}
+            </ul>
+            {g.considered.some((n) => n.conflictsOn.length > 0) && (
+              <p className="mt-1.5 text-xs leading-relaxed text-slate-600">
+                {joinNames(
+                  g.considered
+                    .filter((n) => n.conflictsOn.length > 0)
+                    .map((n) => n.alternative.product),
+                )}{' '}
+                match some of what you picked and not others — the trade-off is on each card.
+              </p>
+            )}
+          </div>
 
           {g.matchedGroups
             .filter((grp) => grp.differences.length > 0)
@@ -1076,14 +1044,21 @@ export function RecommendView() {
   )
   const result = useMemo(() => recommend(input), [input])
   const guidance = useMemo(() => buildGuidance(result, input), [result, input])
+  const poolSize = alternativesIn(category).length
 
-  // The relationship block answers the ownership question, so it appears when
-  // the visitor has actually asked it.
-  const ownershipIds = new Set(motivations.find((m) => m.id === 'm_power')?.criterionIds ?? [])
-  const showRelationships = [...priorities, ...requirements].some((id) => ownershipIds.has(id))
 
   const toggle = (list: string[], set: (v: string[]) => void, id: string) =>
     set(list.includes(id) ? list.filter((x) => x !== id) : [...list, id])
+
+  // Unticking a question must take its must-have with it. Leaving the
+  // requirement behind kept filtering results by something no longer on screen.
+  const togglePriority = (id: string) => {
+    const on = priorities.includes(id)
+    update({
+      priorities: on ? priorities.filter((x) => x !== id) : [...priorities, id],
+      requirements: on ? requirements.filter((x) => x !== id) : requirements,
+    })
+  }
 
   const started = priorities.length > 0
 
@@ -1211,7 +1186,7 @@ export function RecommendView() {
               category={category}
               priorities={priorities}
               requirements={requirements}
-              onTogglePriority={(id) => toggle(priorities, setPriorities, id)}
+              onTogglePriority={(id) => togglePriority(id)}
               onToggleRequirement={(id) => toggle(requirements, setRequirements, id)}
             />
           ))}
@@ -1221,7 +1196,10 @@ export function RecommendView() {
       {/* Step 3 — results */}
       {started && (
         <section className="mt-6 space-y-6">
-          <ResultSummary guidance={guidance} hasRequirements={result.hasRequirements} />
+          <ResultSummary
+            guidance={guidance}
+            poolSize={poolSize}
+          />
 
           {result.unassessableRequirements.length > 0 && (
             <div className="rounded-xl border-2 border-amber-400 bg-amber-50 p-4">
@@ -1308,7 +1286,6 @@ export function RecommendView() {
                   <OutcomeCard
                     key={o.alternative.id}
                     o={o}
-                    showRelationships={showRelationships}
                     plan={plans[o.alternative.id]}
                     onPlan={(p) => setPlan(o.alternative.id, p)}
                   />
@@ -1331,7 +1308,6 @@ export function RecommendView() {
                   <OutcomeCard
                     key={o.alternative.id}
                     o={o}
-                    showRelationships={showRelationships}
                     plan={plans[o.alternative.id]}
                     onPlan={(p) => setPlan(o.alternative.id, p)}
                   />
@@ -1351,7 +1327,6 @@ export function RecommendView() {
                   <OutcomeCard
                     key={o.alternative.id}
                     o={o}
-                    showRelationships={showRelationships}
                     plan={plans[o.alternative.id]}
                     onPlan={(p) => setPlan(o.alternative.id, p)}
                   />
