@@ -1,15 +1,10 @@
 import { Link } from 'react-router-dom'
 import { backersFor } from '../lib/data'
+import { factsByTheme, factsFor, gapsFor, productsFor, THEMES } from '../lib/companyFacts'
 import { TIER_COLORS, TIER_LABELS } from '../lib/colors'
-import { makerCoverage } from '../lib/evidence'
 import type { Maker } from '../lib/types'
-import { AxisDetail } from './AxisDetail'
-import { ConfidenceLegend } from './ConfidenceBadge'
-import { EvidenceLegend } from './EvidenceBadge'
 import { FunderCard, isDeepPocket } from './FunderCard'
-import { PolarityLegend } from './PolarityLegend'
 import { Chip, SectionTitle, Tag } from './ui'
-import { ValueRadar } from './ValueRadar'
 import { CapitalLensPanel } from './CapitalLensPanel'
 import { BackerReputation, CapitalFindings, CapitalProfileCard } from './CapitalProfile'
 
@@ -25,7 +20,11 @@ export function MakerDetail({
   const sortedBackers = [...backers].sort(
     (a, b) => Number(isDeepPocket(b.funder)) - Number(isDeepPocket(a.funder)),
   )
-  const cov = makerCoverage(maker)
+
+  const facts = factsFor(maker.id)
+  const byTheme = factsByTheme(maker.id)
+  const gaps = gapsFor(maker.id)
+  const products = productsFor(maker.id)
 
   return (
     <div className="space-y-6">
@@ -64,22 +63,26 @@ export function MakerDetail({
         )}
       </div>
 
-      {/* Switching — the counterfactual entry point */}
+      {/* Switching is a comparison with the current product named. */}
+      {products.length > 0 && (
       <Link
-        to={`/switch/${encodeURIComponent(maker.id)}`}
+        to={`/compare?category=${products[0].category}&from=${products[0].id}&products=${products[0].id}`}
         className="flex items-center justify-between gap-3 rounded-lg border border-teal-200 bg-teal-50/60 px-3 py-2.5 hover:bg-teal-50"
       >
         <span className="text-sm leading-snug text-teal-900">
-          <span className="font-semibold">What would switching away from {maker.name} change?</span>{' '}
+          <span className="font-semibold">
+            Considering a switch away from {products[0].product}?
+          </span>{' '}
           <span className="text-teal-700">
-            See what moves on the priorities you set, and which funding relationships are
-            recorded for each.
+            Compare it with the alternatives on the questions you care about. Choosing another
+            tool is not the same as moving to it.
           </span>
         </span>
         <span aria-hidden className="shrink-0 text-teal-700">
           →
         </span>
       </Link>
+      )}
 
       {/* Tension hook — open question, not a verdict */}
       {maker.tension_hook && (
@@ -94,37 +97,84 @@ export function MakerDetail({
         </div>
       )}
 
-      {/* Radar */}
+      {/* What we know, by the question it answers.
+
+          The radar and the axis-by-axis list were both driven by 0-4 scores
+          the rubric never defined a way to combine. The facts underneath them
+          are sound and are shown directly instead. */}
       <div>
-        <SectionTitle>Value Compass</SectionTitle>
-        <PolarityLegend className="mb-2" />
-        {cov.total - cov.notEstablished < 3 && (
-          <p className="mb-2 rounded-md border border-slate-300 bg-white px-3 py-2 text-xs leading-snug text-slate-600">
-            Only {cov.total - cov.notEstablished} of {cov.total} axes have a score to show for{' '}
-            {maker.name}, so there is no meaningful shape here. What is known is in the axis list
-            below; the rest is simply not published.
+        <SectionTitle>What we know</SectionTitle>
+        {facts.length === 0 ? (
+          <p className="rounded-md border border-dashed border-slate-300 bg-white px-3 py-3 text-xs leading-snug text-slate-600">
+            We have not established anything about {maker.name} to this standard yet. The
+            ownership and funding picture below is what we hold.
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {(['money', 'conduct', 'data'] as const).map((t) =>
+              byTheme[t].length === 0 ? null : (
+                <div key={t}>
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                    {THEMES[t].label}
+                  </p>
+                  <p className="text-[11px] text-slate-500">{THEMES[t].question}</p>
+                  <ul className="mt-1.5 space-y-2">
+                    {byTheme[t].map((f) => (
+                      <li
+                        key={f.topic + f.fact.slice(0, 24)}
+                        className="rounded-md border border-slate-200 bg-white p-2.5"
+                      >
+                        <p className="text-sm leading-snug text-slate-800">{f.fact}</p>
+                        {f.scope && (
+                          <p className="mt-1 text-[11px] leading-snug text-amber-800">{f.scope}</p>
+                        )}
+                        <p className="mt-1 text-[11px] text-slate-400">
+                          {f.date && <>{f.date} · </>}
+                          {f.measured && <>published measurement · </>}
+                          {f.sources.slice(0, 2).map((u, i) => (
+                            <span key={u}>
+                              {i > 0 && ' · '}
+                              <a
+                                href={u}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-teal-700 underline underline-offset-2"
+                              >
+                                source
+                              </a>
+                            </span>
+                          ))}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ),
+            )}
+          </div>
+        )}
+        {gaps.length > 0 && (
+          <p className="mt-2 text-[11px] leading-snug text-slate-500">
+            Not researched yet: {gaps.join('; ')}. An absence here is a gap in our work, not a
+            clean record.
           </p>
         )}
-        <ValueRadar series={[{ maker, color: TIER_COLORS[maker.tier] }]} height={300} />
-        <div className="mt-1 space-y-1.5">
-          <EvidenceLegend />
-          <ConfidenceLegend />
-        </div>
-      </div>
-
-      {/* Axis breakdown */}
-      <div>
-        <SectionTitle>Axis-by-axis</SectionTitle>
-        <p className="mb-2 text-xs leading-snug text-slate-500">
-          Of the {cov.total} axis assessments for {maker.name},{' '}
-          <span className="font-semibold text-slate-700">{cov.sourced}</span> carry a source about{' '}
-          {maker.name}, <span className="font-semibold text-slate-700">{cov.unsourced}</span> have no
-          source attached yet,{' '}
-          <span className="font-semibold text-slate-700">{cov.contextual}</span> reason from context,
-          and for <span className="font-semibold text-slate-700">{cov.notEstablished}</span> our
-          research has established nothing — so no score is shown for those.
-        </p>
-        <AxisDetail maker={maker} />
+        {products.length > 0 && (
+          <p className="mt-2 text-xs text-slate-700">
+            Compare its products:{' '}
+            {products.map((p, i) => (
+              <span key={p.id}>
+                {i > 0 && ', '}
+                <Link
+                  to={`/compare?category=${p.category}&products=${p.id}`}
+                  className="text-teal-700 underline underline-offset-2"
+                >
+                  {p.product}
+                </Link>
+              </span>
+            ))}
+          </p>
+        )}
       </div>
 
       {/* Funder picture */}

@@ -1,6 +1,7 @@
 import { Suspense, lazy } from 'react'
-import { Link, Route, Routes } from 'react-router-dom'
+import { Link, Navigate, Route, Routes, useParams } from 'react-router-dom'
 import { PrioritiesProvider } from './lib/prioritiesContext'
+import { alternativeById } from './lib/recommend'
 import { Header } from './components/Header'
 
 // Route-level code splitting: the force-graph (Graph) and Recharts (Browse,
@@ -11,14 +12,24 @@ const GraphView = lazy(() => import('./pages/GraphView').then((m) => ({ default:
 const BrowseView = lazy(() => import('./pages/BrowseView').then((m) => ({ default: m.BrowseView })))
 const MakerPage = lazy(() => import('./pages/MakerPage').then((m) => ({ default: m.MakerPage })))
 const CompareView = lazy(() => import('./pages/CompareView').then((m) => ({ default: m.CompareView })))
-const PrioritiesView = lazy(() =>
-  import('./pages/PrioritiesView').then((m) => ({ default: m.PrioritiesView })),
-)
-const SwitchView = lazy(() => import('./pages/SwitchView').then((m) => ({ default: m.SwitchView })))
 const RecommendView = lazy(() =>
   import('./pages/RecommendView').then((m) => ({ default: m.RecommendView })),
 )
 const AboutView = lazy(() => import('./pages/AboutView').then((m) => ({ default: m.AboutView })))
+
+/** /switch/:from[/:to] becomes a comparison with :from marked as current. */
+function SwitchRedirect() {
+  const { from, to } = useParams()
+  const alt = from ? alternativeById.get(from) : undefined
+  if (!alt) return <Navigate to="/compare" replace />
+  const products = [from, to].filter(Boolean).join(',')
+  return (
+    <Navigate
+      to={`/compare?category=${alt.category}&from=${from}&products=${products}`}
+      replace
+    />
+  )
+}
 
 function RouteFallback() {
   return (
@@ -42,12 +53,16 @@ export default function App() {
               <Route path="/browse" element={<BrowseView />} />
               <Route path="/maker/:id" element={<MakerPage />} />
               <Route path="/compare" element={<CompareView />} />
-              <Route path="/priorities" element={<PrioritiesView />} />
+              {/* Retired: the axis-weighting journey could not separate makers.
+                  Its entry points now lead to the concrete questions. */}
+              <Route path="/priorities" element={<Navigate to="/recommend" replace />} />
               <Route path="/recommend" element={<RecommendView />} />
               <Route path="/recommend/:category" element={<RecommendView />} />
-              <Route path="/switch" element={<SwitchView />} />
-              <Route path="/switch/:from" element={<SwitchView />} />
-              <Route path="/switch/:from/:to" element={<SwitchView />} />
+              {/* Switching is a comparison with your current tool named, not a
+                  separate engine. Old links keep working. */}
+              <Route path="/switch" element={<Navigate to="/compare" replace />} />
+              <Route path="/switch/:from" element={<SwitchRedirect />} />
+              <Route path="/switch/:from/:to" element={<SwitchRedirect />} />
               <Route path="/about" element={<AboutView />} />
               <Route path="/about/working-draft" element={<AboutView draft />} />
               <Route path="*" element={<HomeView />} />
@@ -55,13 +70,18 @@ export default function App() {
           </Suspense>
         </main>
         <footer className="border-t border-slate-200 bg-white px-4 py-3 text-center text-xs leading-relaxed text-slate-500">
-          Value Compass — what the companies behind AI tools own, take money from, and have put on
-          the record. Scores are our assessments against a{' '}
+          <span className="mb-1 block">
+            Value Compass — what the companies behind AI tools own, take money from, and have put
+            on the record. We publish documented findings with their scope and sources; where our
+            research has established nothing, we say so rather than guess.
+          </span>
           <Link to="/about" className="underline underline-offset-2 hover:text-slate-700">
-            published rubric
+            How we decide what counts
           </Link>
-          ; funders are context and are never scored; where our research has established nothing, no
-          score is shown.
+          {' · '}
+          <Link to="/graph" className="underline underline-offset-2 hover:text-slate-700">
+            Ownership graph
+          </Link>
         </footer>
       </div>
     </PrioritiesProvider>

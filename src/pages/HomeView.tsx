@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { funders, makers, makersMeta } from '../lib/data'
+import { makers, makersMeta } from '../lib/data'
 import { coverageFor, evidenceSummary } from '../lib/evidence'
 import { TIER_COLORS } from '../lib/colors'
 import { StatementKinds } from '../components/EvidenceBadge'
+import { alternativesIn, categories, DEFAULT_CATEGORY } from '../lib/recommend'
 
 const FRESHNESS = (makersMeta as unknown as { last_freshness_review?: string })
   .last_freshness_review
@@ -105,62 +106,65 @@ export function HomeView() {
       {/* Introduction */}
       <section className="max-w-3xl">
         <h1 className="text-3xl font-extrabold leading-tight text-slate-900 sm:text-4xl">
-          See what your AI choices support.
+          Find AI tools that fit your values.
         </h1>
         <p className="mt-3 text-base leading-relaxed text-slate-600 sm:text-lg">
-          Explore the companies, funding relationships, and documented practices behind AI tools.
-          Compare what matters to you, inspect the evidence, and understand the trade-offs.
+          Pick a kind of tool, say what matters to you, and see what the evidence actually
+          supports — who owns each product, what happens to your data and work, and what you
+          would have to do about it.
         </p>
+        <div className="mt-5 flex flex-wrap gap-2">
+          <Link
+            to="/recommend"
+            className="rounded-md bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-800"
+          >
+            Find an AI tool
+          </Link>
+          <Link
+            to="/compare"
+            className="rounded-md border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            Compare tools
+          </Link>
+          <Link
+            to="/browse"
+            className="rounded-md border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            Explore companies
+          </Link>
+        </div>
       </section>
 
-      {/* Starting points */}
-      <section className="mt-8 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+      {/* The categories, so the journey starts on the homepage itself. */}
+      <section className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {categories.map((c) => (
+          <RouteCard
+            key={c.id}
+            to={c.id === DEFAULT_CATEGORY ? '/recommend' : `/recommend/${c.id}`}
+            title={c.label}
+            body={`${alternativesIn(c.id).length} researched, most recently on ${c.researched_on}. ${c.definition}`}
+            cta="See the options"
+          />
+        ))}
+      </section>
+
+      <section className="mt-4 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
         <MakerFinder />
       </section>
 
-      <section className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <RouteCard
-          to="/browse"
-          title="Browse every maker"
-          body={`All ${makers.length} makers, scored on five axes, with the reasoning and sources behind each score.`}
-          cta="Open the matrix"
-        />
-        <RouteCard
-          to="/compare"
-          title="Compare alternatives"
-          body="Put two to four side by side: where they differ, what backs the difference, and where the evidence is too thin to call."
-          cta="Start comparing"
-        />
-        <RouteCard
-          to="/graph"
-          title="Follow the ownership"
-          body={`Who owns and funds whom, across ${makers.length} makers and ${funders.length} funder nodes — including the backers several of them share.`}
-          cta="Open the graph"
-        />
-      </section>
-
-      {/* Priorities + switching — the personalised path */}
       <section className="mt-4 rounded-xl border border-teal-200 bg-teal-50/60 p-4 sm:p-5">
-        <h2 className="text-lg font-bold text-teal-900">Or start from what you care about</h2>
+        <h2 className="text-lg font-bold text-teal-900">Already using something?</h2>
         <p className="mt-1 max-w-3xl text-sm leading-relaxed text-slate-700">
-          Say which of the five axes matter to you and where the money comes from. Browse and the
-          comparisons reorder around that, and you can ask what switching from one tool to another
-          would actually change. Nothing is switched on for you, and none of it is a recommendation.
+          Put your current tool alongside the alternatives and see what actually changes on the
+          questions you care about. Choosing something else is not the same as moving to it — the
+          comparison says which moves are documented and which are not.
         </p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          <Link
-            to="/priorities"
-            className="rounded-md bg-teal-700 px-3.5 py-2 text-sm font-semibold text-white hover:bg-teal-800"
-          >
-            Set your priorities
-          </Link>
-          <Link
-            to="/switch"
-            className="rounded-md border border-teal-300 bg-white px-3.5 py-2 text-sm font-semibold text-teal-800 hover:bg-teal-50"
-          >
-            What would switching change?
-          </Link>
-        </div>
+        <Link
+          to="/compare"
+          className="mt-3 inline-block rounded-md bg-teal-700 px-3.5 py-2 text-sm font-semibold text-white hover:bg-teal-800"
+        >
+          Considering a switch?
+        </Link>
       </section>
 
       {/* What you are reading */}
