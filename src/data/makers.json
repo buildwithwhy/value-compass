@@ -1472,7 +1472,7 @@
       "name": "StackBlitz (Bolt)",
       "tier": "tool",
       "category": "Web app builder",
-      "jurisdiction": "Not established in this pass. Identified as Bolt's operator by its own privacy policy.",
+      "jurisdiction": "Not researched",
       "vc_independent": "Privately held. A 2022 seed round was announced; no current cap table is established.",
       "products_models": [
         "Bolt (bolt.new)",
@@ -1484,7 +1484,7 @@
         "GV (announced 2022 seed)",
         "Tom Preston-Werner (announced 2022 seed)"
       ],
-      "structure": "Not established in this pass.",
+      "structure": "Privately held. Identified as Bolt's operator by Bolt's own privacy policy.",
       "stated_values": "Publishes an open-source fund reporting $82.2K in direct maintainer sponsorship during 2025 and announcing an expanded monthly programme for 2026.",
       "tension_hook": "Funds independent open-source maintainers while announcing that customer content will be used for model development and dataset licensing from October 2026 outside the EEA, UK and Switzerland.",
       "axes": {
@@ -1525,7 +1525,7 @@
       "name": "Vercel (v0)",
       "tier": "tool",
       "category": "Web app builder",
-      "jurisdiction": "Not established in this pass.",
+      "jurisdiction": "Not researched",
       "vc_independent": "Privately held. A September 2025 Series F was announced alongside a tender offer.",
       "products_models": [
         "v0 (v0.app)",
@@ -1536,7 +1536,7 @@
         "Accel (announced Series F co-lead, 2025-09-30)",
         "GIC (announced Series F co-lead, 2025-09-30)"
       ],
-      "structure": "Not established in this pass.",
+      "structure": "",
       "stated_values": "Publishes a portfolio of open-source projects it maintains or contributes to, including Next.js and the AI SDK.",
       "tension_hook": "Maintains widely used open-source software while its own AI policy and the v0 pricing page describe training defaults using two different sets of plan labels.",
       "axes": {
@@ -1597,6 +1597,116 @@
       "structure": "Swiss for-profit company whose primary shareholder is a non-profit foundation bound by Swiss law to its stated purpose.",
       "stated_values": "Privacy by default; funded by subscriptions rather than advertising.",
       "tension_hook": "A for-profit business under foundation control — the foundation decides, and receives 1% of revenue, but Proton does not publish what that amounts to.",
+      "axes": {
+        "transparency": {
+          "score": null,
+          "confidence": "C",
+          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
+          "sources": []
+        },
+        "culture_esg": {
+          "score": null,
+          "confidence": "C",
+          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
+          "sources": []
+        },
+        "labour_integrity": {
+          "score": null,
+          "confidence": "C",
+          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
+          "sources": []
+        },
+        "wealth_dispersion": {
+          "score": null,
+          "confidence": "C",
+          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
+          "sources": []
+        },
+        "public_sharing": {
+          "score": null,
+          "confidence": "C",
+          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
+          "sources": []
+        }
+      }
+    },
+    {
+      "id": "Alibaba",
+      "name": "Alibaba Group",
+      "tier": "platform",
+      "category": "Cloud and commerce",
+      "jurisdiction": "Cayman Islands incorporation, headquartered in Hangzhou, China",
+      "vc_independent": "Publicly traded. No venture backer holds it.",
+      "products_models": [
+        "Qwen",
+        "Alibaba Cloud",
+        "Taobao",
+        "Tmall"
+      ],
+      "founders": [
+        "Jack Ma",
+        "Joseph Tsai"
+      ],
+      "lead_backers": [
+        "SoftBank Group (long-standing large shareholder)"
+      ],
+      "structure": "Alibaba Group Holding Limited, a Cayman Islands company listed on the New York Stock Exchange (BABA) and the Hong Kong Stock Exchange (9988).",
+      "stated_values": "Not researched.",
+      "tension_hook": "A listed company answerable to public shareholders, operating Qwen from China — two different sets of obligations on the same product.",
+      "axes": {
+        "transparency": {
+          "score": null,
+          "confidence": "C",
+          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
+          "sources": []
+        },
+        "culture_esg": {
+          "score": null,
+          "confidence": "C",
+          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
+          "sources": []
+        },
+        "labour_integrity": {
+          "score": null,
+          "confidence": "C",
+          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
+          "sources": []
+        },
+        "wealth_dispersion": {
+          "score": null,
+          "confidence": "C",
+          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
+          "sources": []
+        },
+        "public_sharing": {
+          "score": null,
+          "confidence": "C",
+          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
+          "sources": []
+        }
+      }
+    },
+    {
+      "id": "DuckDuckGo",
+      "name": "DuckDuckGo",
+      "tier": "tool",
+      "category": "Privacy tools",
+      "jurisdiction": "United States (Duck Duck Go, Inc., Paoli, Pennsylvania)",
+      "vc_independent": "Venture-backed. Self-funded by its founder until a Series A led by Union Square Ventures in October 2011.",
+      "products_models": [
+        "Duck.ai",
+        "DuckDuckGo Search",
+        "DuckDuckGo Browser"
+      ],
+      "founders": [
+        "Gabriel Weinberg"
+      ],
+      "lead_backers": [
+        "Union Square Ventures (led the October 2011 Series A)"
+      ],
+      "structure": "Privately held US company. Duck Duck Go, Inc.",
+      "stated_values": "Search and browsing without tracking; revenue from advertising and, since April 2024, subscriptions.",
+      "tension_hook": "A privacy company whose AI chat runs on models built by OpenAI, Anthropic and Mistral — its own privacy terms sit in front of someone else's model.",
       "axes": {
         "transparency": {
           "score": null,

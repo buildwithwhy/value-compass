@@ -700,8 +700,11 @@ describe('the pilot and the maker directory agree', () => {
   })
 
   it('marks operators with no directory page instead of implying one', () => {
+    // Alibaba and DuckDuckGo were the last two operators whose evidence was
+    // stranded on a product record with no company page to carry it. Every
+    // operator we compare now has one.
     const outside = ASSISTANTS.filter((a) => !a.maker_in_directory).map((a) => a.id)
-    expect(outside.sort()).toEqual(['duckai', 'qwen_chat'])
+    expect(outside).toEqual([])
     for (const a of alternatives) {
       expect(a.maker_in_directory).toBe(makerInDirectory(a.product_provider.maker_id))
     }

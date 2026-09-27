@@ -108,6 +108,28 @@
     },
 
     {
+      "maker": "DuckDuckGo",
+      "group": "money",
+      "headline": "Venture-backed, and paid by advertising as well as subscriptions",
+      "detail": "Duck Duck Go, Inc. is a privately held US company, self-funded by founder Gabriel Weinberg until a Series A led by Union Square Ventures in October 2011. It earns revenue by serving advertising primarily from the Yahoo-Bing search alliance network, and since April 2024 also from subscription fees.",
+      "status": "reported",
+      "date": "2024-04",
+      "sources": ["https://en.wikipedia.org/wiki/DuckDuckGo"],
+      "matters_for": "Whether a privacy-positioned product is paid for by you or by advertisers.",
+      "does_not_settle": "It does not establish the split between advertising and subscription revenue, or what Union Square Ventures now holds."
+    },
+    {
+      "maker": "Alibaba",
+      "group": "money",
+      "headline": "Publicly listed, with SoftBank a long-standing large shareholder",
+      "detail": "Qwen is built by Alibaba Group Holding Limited, a Cayman Islands company listed on the New York Stock Exchange as BABA and on the Hong Kong Stock Exchange as 9988. Its shareholders are therefore public investors rather than venture funds. SoftBank Group has been a large shareholder since its early investment in the company, reported at around 11.9% in early 2024.",
+      "status": "reported",
+      "date": "2024",
+      "sources": ["https://en.wikipedia.org/wiki/Alibaba_Group"],
+      "matters_for": "Who ultimately owns the company behind the product, and who it answers to.",
+      "does_not_settle": "We have taken the shareholding figure from an encyclopaedia summary rather than from Alibaba's own 20-F, so treat the percentage as approximate. It also does not establish who controls board appointments."
+    },
+    {
       "maker": "Lovable",
       "group": "money",
       "headline": "Three announced rounds, most recently at a $13.3bn valuation",

@@ -9,7 +9,7 @@ A record can pass the first and fail the second; the fact is preserved either wa
 
 **Provenance: every row is automated and provisional** — produced by reading the recorded rationale against the rubric, not by a human re-reading the sources. 0 rows are human-reviewed.
 
-8 of 90 assessments are decision-eligible. 11 establish a fact that is preserved while the surrounding score is not.
+8 of 115 assessments are decision-eligible. 11 establish a fact that is preserved while the surrounding score is not.
 
 | Maker / axis | Score | Fact the source establishes | Source date | Clauses not carried | Applicable rule | Justifies whole score? | Provenance |
 |---|---|---|---|---|---|---|---|

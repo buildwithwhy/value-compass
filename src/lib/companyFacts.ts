@@ -157,13 +157,15 @@ function carriedOverFacts(makerId: string): CompanyFact[] {
       (id) => assessmentFor(p.id, id)?.verdict !== 'unconfirmed',
     ),
   )
-  if (m?.structure && m.structure !== 'Not established in this pass.' && !hasControlFinding) {
+  if (m?.structure && !hasControlFinding) {
     out.push({
       maker: makerId,
       theme: 'money',
       topic: 'Who makes the decisions',
       headline: 'How the company is structured',
       fact: m.structure,
+      limitation:
+        'A summary of the corporate form. It does not establish who holds voting control or how the board is appointed.',
       sources: [],
       measured: false,
     })
