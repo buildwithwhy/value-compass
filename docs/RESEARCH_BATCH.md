@@ -44,6 +44,8 @@ Lovable · Replit · StackBlitz · Vercel
 | Replit | done | done | done | done | Investors and subprocessors held |
 | StackBlitz | done | done | done | done | Open-source fund already held |
 | Vercel | done | done | done | done | Series F and OSS portfolio already held |
+| Alibaba | done | partial | — | — | Added late: operates Qwen but had no directory record. Listing and shareholding researched; board control not established |
+| DuckDuckGo | done | partial | — | — | Added late: operates Duck.ai but had no directory record. Funding and revenue model researched |
 
 ---
 
@@ -56,7 +58,16 @@ against products or as `lead_backers` and never reached the company profiles, wh
 profiles said nothing was established while the same page listed investors.
 
 **Newly researched in this batch.** Group D across all ten, and group C for the companies
-where it was missing.
+where it was missing. Group A for Lovable, Alibaba and DuckDuckGo.
+
+**Operators found to have no directory record at all.** Proton, Alibaba and DuckDuckGo each
+operate a product in the comparison but had no company page, so their evidence sat on the
+product record with nothing to carry it. All three now have records. A test asserts that every
+operator in the comparison has one, so this cannot recur silently.
+
+**Dropped in verification.** A search summary asserted an April 2026 Lovable source-code
+exposure and a "VibeScamming" finding. Neither appears in the cited source, so neither is
+published.
 
 ---
 
