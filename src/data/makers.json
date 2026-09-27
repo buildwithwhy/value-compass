@@ -1596,7 +1596,7 @@
       ],
       "structure": "Swiss for-profit company whose primary shareholder is a non-profit foundation bound by Swiss law to its stated purpose.",
       "stated_values": "Privacy by default; funded by subscriptions rather than advertising.",
-      "tension_hook": "A for-profit business under foundation control — the foundation decides, and receives 1% of revenue, but Proton does not publish what that amounts to.",
+      "tension_hook": "A for-profit business under foundation control — the foundation decides, and receives 1% of revenue whenever financial conditions allow, but Proton does not publish what that has amounted to in any year.",
       "axes": {
         "transparency": {
           "score": null,
@@ -1628,7 +1628,8 @@
           "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
           "sources": []
         }
-      }
+      },
+      "backers_relation": "shareholding"
     },
     {
       "id": "Alibaba",
@@ -1684,7 +1685,8 @@
           "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
           "sources": []
         }
-      }
+      },
+      "backers_relation": "shareholding"
     },
     {
       "id": "DuckDuckGo",

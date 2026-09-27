@@ -109,9 +109,15 @@ export interface PilotCriterion {
    */
   /** Categories this question applies to. */
   categories?: string[]
-  /** Third-person phrase for the comparison summary, e.g. "let you take a
-   *  copy of your project code". Authored so the synthesis reads as English. */
+  /**
+   * A bare verb phrase, third person, e.g. "let you download your
+   * conversations". The summary uses it without an auxiliary — gluing whole
+   * criterion labels together with "have" produced "Claude, Duck.ai and Lumo
+   * have your conversations kept out of training."
+   */
   comparison?: string
+  /** A compact noun phrase for "Yes to ..." on a card. */
+  short?: string
   informational?: boolean
   /**
    * Supporting evidence rather than a headline question. Still selectable and
@@ -154,6 +160,13 @@ export interface Assessment {
   source_date: string | null
   scope: string | null
   uncertainty: string
+  /**
+   * Why this is unresolved, recorded rather than inferred from the prose.
+   * `uncertainty` is a free-text note that routinely discusses conflicts in
+   * order to rule them out, so matching /conflict/ against it mislabelled
+   * findings as "Published policies disagree" when they said the opposite.
+   */
+  uncertainty_kind?: 'sources_conflict'
   provenance: string
   source_url?: string
   /** The practical answer, in the words a person choosing a tool would use. */
@@ -291,7 +304,7 @@ export function unresolvedKind(altId: string, critId: string): UnresolvedKind {
   const a = assessmentFor(altId, critId)
   if (!a) return 'unresearched'
   if (a.effective_from || a.regions_excluded || a.by_plan) return 'conditional'
-  if (/conflict/i.test(a.uncertainty ?? '')) return 'conflicting'
+  if (a.uncertainty_kind === 'sources_conflict') return 'conflicting'
   return 'unresearched'
 }
 
@@ -336,7 +349,10 @@ export function answerLabel(altId: string, critId: string, verdict: Verdict): An
   const a = assessmentFor(altId, critId)
   if (a?.effective_from) return 'Takes effect later'
   if (a?.by_plan) return 'Depends on your plan'
-  if (/conflict|disagree/i.test(a?.uncertainty ?? '')) return 'Published policies disagree'
+  // Read the recorded kind, never the prose. Matching /conflict/ against the
+  // free-text note labelled Claude's stake finding "Published policies
+  // disagree" on the strength of a sentence saying it is NOT a conflict.
+  if (a?.uncertainty_kind === 'sources_conflict') return 'Published policies disagree'
   return 'Not confirmed'
 }
 
@@ -494,6 +510,8 @@ export interface RecommendationInput {
   priorities: string[]
   /** Subset of priorities the user has explicitly made hard requirements. */
   requirements: string[]
+  /** Topics to surface findings on. Never filters, never scores. */
+  interests?: string[]
 }
 
 export interface RecommendationResult {
@@ -949,8 +967,8 @@ export function comparisonLines(
       ? (xs[0]?.product ?? '')
       : `${xs.slice(0, -1).map((x) => x.product).join(', ')} and ${xs[xs.length - 1].product}`
 
-  // One agreement point, so a single product does not read as "Lovable keep".
-  const have = (n: number) => (n === 1 ? 'has' : 'have')
+  // `comparison` is a bare verb phrase, so the subject only needs the right
+  // form of the negative; the positive takes the verb directly.
   const dont = (n: number) => (n === 1 ? 'does not' : 'do not')
 
   return separations.map((s) => {
@@ -964,20 +982,25 @@ export function comparisonLines(
     const whole =
       total === 2 ? 'Both' : total === 3 ? 'All three' : total === 4 ? 'All four' : `All ${total}`
 
+    // Naming eleven unconfirmed products in a summary line is a list, not a
+    // sentence. The count carries it; the cards carry the detail.
+    const others = (xs: { product: string }[]) =>
+      xs.length > 3 ? `${xs.length} other options` : names(xs)
+
     if (yes.length === total) {
-      line = `${whole} have ${phrase}.`
+      line = `${whole} ${phrase}.`
     } else if (yes.length > 0 && no.length > 0) {
-      line = `${names(yes)} ${have(yes.length)} ${phrase}; ${names(no)} ${dont(no.length)}.`
+      line = `${names(yes)} ${phrase}; ${names(no)} ${dont(no.length)}.`
     } else if (yes.length > 0) {
-      line = `${names(yes)} ${have(yes.length)} ${phrase}. We haven’t confirmed it for ${names(s.unresolved)}.`
+      line = `${names(yes)} ${phrase}. We haven’t confirmed this for ${others(s.unresolved)}.`
     } else if (no.length === total) {
-      line = `None of them ${have(total)} ${phrase}.`
+      line = `None of them ${phrase}.`
     } else if (no.length > 0) {
-      line = `${names(no)} ${dont(no.length)} ${phrase}. We haven’t confirmed it either way for ${names(s.unresolved)}.`
+      line = `${names(no)} ${dont(no.length)} ${phrase}. We haven’t confirmed this either way for ${others(s.unresolved)}.`
     } else if (s.planRoutes.length > 0) {
-      line = `Whether you get ${phrase} depends on the plan.`
+      line = `Whether they ${phrase} depends on the plan.`
     } else {
-      line = `We haven’t confirmed whether any of them ${have(2)} ${phrase}.`
+      line = `We haven’t confirmed whether any of them ${phrase}.`
     }
     return { criterion: s.criterion, line }
   })
@@ -1099,5 +1122,330 @@ export function buildGuidance(
           s.conflicting.length === 0 &&
           s.planRoutes.length === 0,
       ),
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Advice — what to actually do, across all selected preferences together.
+//
+// `summarisePreferences` reports each criterion on its own; a visitor then has
+// to intersect those lists in their head to find the option that satisfies the
+// combination. This does that intersection.
+//
+// The rules, kept explicit because every one of them is a place this could
+// mislead:
+//
+//   - A confirmed failure of a HARD requirement removes an option from the
+//     recommended set. A soft conflict never does; it becomes a stated
+//     compromise.
+//   - An unknown is neither a pass nor a fail. It cannot make an option lead,
+//     and it cannot push one into the compromise group.
+//   - Leading is earned by confirmed support for EVERY evaluable selected
+//     criterion — not by a count of positive findings, and not by weights.
+//     There are no weights: preferences are not interchangeable points.
+//   - Prominence rests on that option's own positive evidence. It says
+//     nothing about whether an unconfirmed option is worse.
+// ---------------------------------------------------------------------------
+
+export interface PlanRoute {
+  criterion: PilotCriterion
+  qualifying: PilotPlan[]
+  failing: PilotPlan[]
+}
+
+export interface AdviceOption {
+  alternative: PilotAlternative
+  /** Confirmed to meet, among the selected criteria. */
+  meetsOn: PilotCriterion[]
+  /** Confirmed to fail. A compromise if soft; disqualifying if a requirement. */
+  failsOn: PilotCriterion[]
+  /** No eligible evidence either way. */
+  unknownOn: PilotCriterion[]
+  /** Selected criteria this option could meet on a plan not currently chosen. */
+  planRoutes: PlanRoute[]
+  /** The plan the visitor has chosen, where they have chosen one. */
+  chosenPlan?: PilotPlan
+  /** Capabilities asked for that we could not confirm. */
+  functionalGaps: { id: string; label: string }[]
+  /** Hard requirements among failsOn — the only basis for removal. */
+  brokenRequirements: PilotCriterion[]
+}
+
+export type AdviceKind =
+  | 'nothing_selected'
+  | 'fully_confirmed'
+  | 'partly_confirmed'
+  | 'none_confirmed'
+  /** Answerable, but only once the visitor picks a plan. Not a research gap. */
+  | 'plan_dependent'
+  | 'nothing_evaluable'
+
+export interface Advice {
+  kind: AdviceKind
+  /** Confirmed on every evaluable selected criterion. Shown first. */
+  lead: AdviceOption[]
+  /** One sentence saying what to do and why. */
+  headline: string
+  /** Material conditions attached to the lead options. */
+  conditions: string[]
+  /** Confirmed to fall short on something selected. Kept, with the compromise named. */
+  compromises: AdviceOption[]
+  /** Nothing against them; something selected is unconfirmed. */
+  needConfirmation: AdviceOption[]
+  /** Removed: confirmed failure of a hard requirement. */
+  ruledOut: AdviceOption[]
+  /** Selected criteria some option has a verdict on. */
+  evaluable: PilotCriterion[]
+  /** Selected criteria with no verdict for anyone — the advice cannot cover these. */
+  unevaluable: PilotCriterion[]
+  /**
+   * A trade-off worth asking about, offered only where the answer would
+   * change which options lead.
+   */
+  tradeoff: { criterion: PilotCriterion; supporting: PilotAlternative[]; costing: PilotAlternative[] } | null
+  /** What the advice does NOT cover, named specifically. */
+  scopeNote: string | null
+  /**
+   * Topics the visitor asked to read. The recommendation is NOT based on
+   * them — no finding here is scored — so the scope is stated outright.
+   */
+  interestScope: string | null
+  /** Everything with no bearing either way. Still in the catalogue. */
+  rest: AdviceOption[]
+}
+
+/** The compact noun phrase, never the full criterion statement. */
+function critNames(cs: PilotCriterion[]): { product: string }[] {
+  return cs.map((c) => ({ product: c.short ?? c.label.toLowerCase() }))
+}
+
+function nameList(xs: { product: string }[]): string {
+  if (xs.length === 0) return ''
+  if (xs.length === 1) return xs[0].product
+  return `${xs.slice(0, -1).map((x) => x.product).join(', ')} and ${xs[xs.length - 1].product}`
+}
+
+/** "both preferences", "all three preferences", "the preference" — no bare counts. */
+function countPhrase(n: number, noun: string): string {
+  if (n === 1) return `the ${noun} you selected`
+  if (n === 2) return `both ${noun}s you selected`
+  if (n === 3) return `all three ${noun}s you selected`
+  return `all ${n} ${noun}s you selected`
+}
+
+export function buildAdvice(input: RecommendationInput, result?: RecommendationResult): Advice {
+  void result
+  const category = input.category ?? DEFAULT_CATEGORY
+  const chosen = input.priorities
+    .map((id) => criterionById.get(id))
+    .filter((c): c is PilotCriterion => !!c && !c.informational)
+
+  const empty = (kind: AdviceKind, headline: string): Advice => ({
+    kind,
+    lead: [],
+    headline,
+    conditions: [],
+    compromises: [],
+    needConfirmation: [],
+    ruledOut: [],
+    evaluable: [],
+    unevaluable: chosen,
+    tradeoff: null,
+    scopeNote: null,
+    interestScope: null,
+    rest: [],
+  })
+
+  if (chosen.length === 0 && input.functional.length === 0) {
+    return empty('nothing_selected', 'Choose what matters to you, or browse every option.')
+  }
+
+  const options: AdviceOption[] = alternativesIn(category).map((alt) => {
+    const meetsOn: PilotCriterion[] = []
+    const failsOn: PilotCriterion[] = []
+    const unknownOn: PilotCriterion[] = []
+    const planRoutes: PlanRoute[] = []
+
+    for (const c of chosen) {
+      const v = resolvedVerdict(alt.id, c.id, input.plans?.[alt.id], input.asOf).verdict
+      if (v === 'meets') meetsOn.push(c)
+      else if (v === 'fails') failsOn.push(c)
+      else {
+        unknownOn.push(c)
+        // A question answerable by choosing a plan is not an unknown about the
+        // product; it is a choice the visitor has not made yet. Only offered
+        // where they have NOT already picked a plan.
+        if (!input.plans?.[alt.id]) {
+          const pa = planAvailability(alt.id, c.id)
+          if (pa && pa.qualifying.length > 0) {
+            planRoutes.push({ criterion: c, qualifying: pa.qualifying, failing: pa.failing })
+          }
+        }
+      }
+    }
+
+    const functionalGaps = input.functional
+      .filter((reqId) => functionalState(alt, reqId) === 'unknown')
+      .map((reqId) => ({
+        id: reqId,
+        label: functionalRequirements.find((f) => f.id === reqId)?.label ?? reqId,
+      }))
+
+    return {
+      alternative: alt,
+      meetsOn,
+      failsOn,
+      unknownOn,
+      planRoutes,
+      chosenPlan: alt.plans?.find((p) => p.id === input.plans?.[alt.id]),
+      functionalGaps,
+      brokenRequirements: failsOn.filter((c) => input.requirements.includes(c.id)),
+    }
+  })
+
+  // Evaluable = someone in this category has a verdict on it. A criterion no
+  // option can be judged on cannot make anything lead or trail, so it is held
+  // out of the test and reported separately.
+  const evaluable = chosen.filter((c) =>
+    options.some((o) => o.meetsOn.concat(o.failsOn).some((x) => x.id === c.id)),
+  )
+  const unevaluable = chosen.filter((c) => !evaluable.some((e) => e.id === c.id))
+
+  const byName = (a: AdviceOption, b: AdviceOption) =>
+    a.alternative.product.localeCompare(b.alternative.product)
+
+  // Only a broken HARD requirement removes an option.
+  const ruledOut = options.filter((o) => o.brokenRequirements.length > 0).sort(byName)
+  const live = options.filter((o) => o.brokenRequirements.length === 0)
+
+  const coversAllEvaluable = (o: AdviceOption) =>
+    evaluable.every((c) => o.meetsOn.some((m) => m.id === c.id))
+
+  const lead =
+    evaluable.length === 0
+      ? [] // nothing to be confirmed against, so nothing can lead
+      : live
+          .filter(
+            (o) =>
+              coversAllEvaluable(o) && o.failsOn.length === 0 && o.functionalGaps.length === 0,
+          )
+          .sort(byName)
+  const leadIds = new Set(lead.map((o) => o.alternative.id))
+  const remaining = live.filter((o) => !leadIds.has(o.alternative.id))
+
+  // A confirmed shortfall is a compromise to state, not a reason to hide it.
+  const compromises = remaining.filter((o) => o.failsOn.length > 0).sort(byName)
+  const needConfirmation = remaining
+    .filter((o) => o.failsOn.length === 0 && o.meetsOn.length > 0)
+    .sort(byName)
+  const rest = remaining
+    .filter((o) => o.failsOn.length === 0 && o.meetsOn.length === 0)
+    .sort(byName)
+
+  // Conditions the lead options carry, so a recommendation never hides the
+  // plan, region or start date it depends on.
+  const conditions: string[] = []
+  for (const o of lead) {
+    if (o.chosenPlan) {
+      conditions.push(`This is for ${o.alternative.product} on ${o.chosenPlan.label}, the plan you picked.`)
+    }
+    for (const c of o.meetsOn) {
+      const a = assessmentFor(o.alternative.id, c.id)
+      if (a?.regions_excluded?.length) {
+        conditions.push(
+          `${o.alternative.product}: this does not apply in ${a.regions_excluded.join(', ')}.`,
+        )
+      }
+      if (a?.effective_from) {
+        conditions.push(`${o.alternative.product}: this takes effect from ${a.effective_from}.`)
+      }
+    }
+  }
+
+  // A trade-off question earns its place only if answering it would move an
+  // option into or out of the lead. Asking otherwise is busywork.
+  let tradeoff: Advice['tradeoff'] = null
+  if (lead.length === 0) {
+    const candidates = evaluable
+      .map((c) => ({
+        criterion: c,
+        supporting: options.filter((o) => o.meetsOn.some((x) => x.id === c.id)).map((o) => o.alternative),
+        costing: options.filter((o) => o.failsOn.some((x) => x.id === c.id)).map((o) => o.alternative),
+      }))
+      .filter((x) => x.supporting.length > 0 && x.costing.length > 0)
+    tradeoff = candidates[0] ?? null
+  }
+
+  // A question the visitor can settle by choosing a plan is not a gap in our
+  // research, and saying "we have not researched this" in front of a list of
+  // qualifying plans is a contradiction.
+  const planDependent = options.filter((o) => o.planRoutes.length > 0)
+
+  let kind: AdviceKind
+  let headline: string
+  if (evaluable.length === 0 && planDependent.length > 0) {
+    kind = 'plan_dependent'
+    headline = `This depends on the plan. ${nameList(
+      planDependent.map((o) => o.alternative),
+    )} ${planDependent.length === 1 ? 'has a plan' : 'have plans'} that qualify — pick one to see where you stand.`
+  } else if (evaluable.length === 0) {
+    kind = 'nothing_evaluable'
+    headline =
+      chosen.length === 0
+        ? 'Nothing here can be settled from what we have researched.'
+        : `We have not researched ${countPhrase(chosen.length, 'preference')} for any option in this group, so we cannot narrow the field on that basis.`
+  } else if (lead.length > 0 && evaluable.length === chosen.length) {
+    kind = 'fully_confirmed'
+    const only = lead.length === 1 && remaining.length + ruledOut.length > 0
+    headline =
+      lead.length === 1
+        ? `Start by looking at ${lead[0].alternative.product}.${
+            only
+              ? ` Among the options we have researched, it is the only one with confirmed support for ${countPhrase(evaluable.length, 'preference')}.`
+              : ''
+          }`
+        : `Start by looking at ${nameList(lead.map((o) => o.alternative))}. Each has confirmed support for ${countPhrase(evaluable.length, 'preference')}.`
+  } else if (lead.length > 0) {
+    kind = 'partly_confirmed'
+    headline = `${
+      lead.length === 1
+        ? `Start by looking at ${lead[0].alternative.product}. It has`
+        : `Start by looking at ${nameList(lead.map((o) => o.alternative))}. Each has`
+    } confirmed support for everything we can check here. We have not researched ${nameList(
+      critNames(unevaluable),
+    )} for this group.`
+  } else {
+    kind = 'none_confirmed'
+    headline = `No option has confirmed support for ${countPhrase(evaluable.length, 'preference')}.`
+  }
+
+  // State the limit of the advice rather than letting silence imply coverage.
+  const scopeNote =
+    unevaluable.length > 0 &&
+      kind !== 'nothing_evaluable' &&
+      kind !== 'plan_dependent' &&
+      kind !== 'partly_confirmed'
+      ? `Checked against ${nameList(critNames(evaluable))}. Not checked against ${nameList(
+          critNames(unevaluable),
+        )}.`
+      : null
+
+  return {
+    kind,
+    lead,
+    headline,
+    conditions: [...new Set(conditions)],
+    compromises,
+    needConfirmation,
+    ruledOut,
+    evaluable,
+    unevaluable,
+    tradeoff,
+    scopeNote,
+    interestScope:
+      (input.interests?.length ?? 0) > 0 && lead.length > 0
+        ? `This is based on the preferences you ticked. The topics you asked to read are shown on each option for you to judge — they are not scored, and nothing here has been recommended for having a clean record on them.`
+        : null,
+    rest,
   }
 }

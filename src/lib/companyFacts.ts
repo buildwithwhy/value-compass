@@ -132,21 +132,25 @@ const GROUP_TOPIC: Record<string, string> = {
 function carriedOverFacts(makerId: string): CompanyFact[] {
   const out: CompanyFact[] = []
   const m = makers.find((x) => x.id === makerId) as
-    | { lead_backers?: string[]; structure?: string }
+    | { lead_backers?: string[]; structure?: string; backers_relation?: string }
     | undefined
 
   const hasResearchedMoney = research.some(
     (r) => r.maker === makerId && r.group === 'money',
   )
   if (m?.lead_backers?.length && !hasResearchedMoney) {
+    const shareholding = m.backers_relation === 'shareholding'
     out.push({
       maker: makerId,
       theme: 'money',
       topic: 'Who has invested',
-      headline: 'Investors named in its funding announcements',
+      headline: shareholding
+        ? 'Who holds the shares'
+        : 'Investors named in its funding announcements',
       fact: m.lead_backers.join('; ') + '.',
-      limitation:
-        'Announced participation only. It does not establish ownership percentages, voting control, or that any part of a subscription reaches these investors.',
+      limitation: shareholding
+        ? 'Identifies the holder. It does not establish the size of the holding, the voting rights attached to it, or what the holder receives.'
+        : 'Announced participation only. It does not establish ownership percentages, voting control, or that any part of a subscription reaches these investors.',
       sources: [],
       measured: false,
     })
@@ -292,4 +296,78 @@ export function gapsFor(makerId: string): string[] {
   if (!topics.has('How it has treated people')) gaps.push('how it has treated workers and creators')
   if (!topics.has('What it gives back')) gaps.push('what it contributes beyond its own products')
   return gaps
+}
+
+// ---------------------------------------------------------------------------
+// Interests — topics a visitor wants to LOOK AT before deciding.
+//
+// Deliberately not criteria. "I care how workers are treated" has no yes/no
+// answer we could honestly compute, and turning it into one would produce an
+// "ethical company" badge awarded for the absence of a finding. Selecting an
+// interest surfaces what we actually hold on the recommended options, and
+// says where we hold nothing.
+//
+// Two rules this must not break:
+//   - Finding no incident is not a good record. It is an absence of research.
+//   - Counting incidents ranks scrutiny, not conduct. Big companies attract
+//     more of both. So nothing here counts, scores or orders by volume.
+// ---------------------------------------------------------------------------
+
+export interface Interest {
+  id: string
+  label: string
+  /** What ticking this actually does. */
+  blurb: string
+  /** The claim it must not be read as. */
+  does_not_establish: string
+  groups: string[]
+}
+
+export const INTERESTS: Interest[] = [
+  {
+    id: 'worker_creator_treatment',
+    label: 'How it has treated workers and creators',
+    blurb:
+      'Shows what we have on record about data workers, contractors and the use of people’s creative work — the issue, its status, the company’s response, and what happened next.',
+    does_not_establish:
+      'This surfaces findings for you to read. It is not a score, and an option with nothing recorded has not been cleared — it may simply be less scrutinised.',
+    groups: ['conduct'],
+  },
+  {
+    id: 'open_source_contribution',
+    label: 'What it contributes beyond its own products',
+    blurb:
+      'Shows contributions we can support, labelled by what they actually are: maintaining software, paying maintainers, making grants, or committing a share of revenue.',
+    does_not_establish:
+      'A pledge, a payment already made and an ongoing commitment are different things, and each finding says which it is.',
+    groups: ['contribution'],
+  },
+  {
+    id: 'community_effects',
+    label: 'Effects on local communities',
+    blurb:
+      'Data-centre siting, water and energy use, and local employment effects.',
+    does_not_establish:
+      'We have not researched this for the companies in this pilot, so selecting it will report a gap rather than findings.',
+    groups: ['community'],
+  },
+]
+
+export const interestById = new Map(INTERESTS.map((i) => [i.id, i]))
+
+/** What we hold for one company on one interest. Empty means we have not looked. */
+export function findingsForInterest(interestId: string, makerId: string): CompanyFact[] {
+  const interest = interestById.get(interestId)
+  if (!interest) return []
+  const GROUP_TOPICS: Record<string, string> = {
+    conduct: 'How it has treated people',
+    contribution: 'What it gives back',
+  }
+  const topics = new Set(interest.groups.map((g) => GROUP_TOPICS[g]).filter(Boolean))
+  return factsFor(makerId).filter((f) => topics.has(f.topic))
+}
+
+/** True where we hold nothing at all on this interest, for any of these makers. */
+export function interestIsUnresearched(interestId: string, makerIds: string[]): boolean {
+  return makerIds.every((id) => findingsForInterest(interestId, id).length === 0)
 }

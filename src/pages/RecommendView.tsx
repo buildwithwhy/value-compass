@@ -6,6 +6,7 @@ import {
   categories,
   criterionById,
   criterionCoverage,
+  functionalRequirements,
   functionalIn,
   motivationCriteria,
   motivationsIn,
@@ -27,7 +28,10 @@ import {
   type PilotAlternative,
   type PilotPlan,
   type PreferenceSummary,
+  buildAdvice,
 } from '../lib/recommend'
+import { INTERESTS } from '../lib/companyFacts'
+import { AdvicePanel } from '../components/AdvicePanel'
 import { SectionTitle } from '../components/ui'
 
 // ---------------------------------------------------------------------------
@@ -775,16 +779,17 @@ function ResultSummary({
                 </li>
               ))}
             </ul>
-            {g.considered.some((n) => n.conflictsOn.length > 0) && (
-              <p className="mt-1.5 text-xs leading-relaxed text-slate-600">
-                {joinNames(
-                  g.considered
-                    .filter((n) => n.conflictsOn.length > 0)
-                    .map((n) => n.alternative.product),
-                )}{' '}
-                match some of what you picked and not others — the trade-off is on each card.
-              </p>
-            )}
+            {(() => {
+              const mixed = g.considered.filter((n) => n.conflictsOn.length > 0)
+              if (mixed.length === 0) return null
+              return (
+                <p className="mt-1.5 text-xs leading-relaxed text-slate-600">
+                  {joinNames(mixed.map((n) => n.alternative.product))}{' '}
+                  {mixed.length === 1 ? 'meets' : 'meet'} some of what you picked but not all of
+                  it. Each card names which.
+                </p>
+              )
+            })()}
           </div>
 
           {g.matchedGroups
@@ -878,10 +883,12 @@ function MotivationSection({
   // questions have SOME evidence, which is a different and weaker claim.
   const coverageText =
     cov.documented === 0
-      ? 'No evidence yet'
-      : cov.documented === cov.total
-        ? `Some evidence for all ${cov.total} question${cov.total === 1 ? '' : 's'}`
-        : `Some evidence for ${cov.documented} of ${cov.total} questions`
+      ? 'Nothing researched yet'
+      : cov.total === 1
+        ? 'We have a finding on this'
+        : cov.documented === cov.total
+          ? 'We have findings on all of these'
+          : `We have findings on ${cov.documented} of these ${cov.total}`
 
   return (
     // Open when the user already has something selected inside, so reorganising
@@ -998,6 +1005,8 @@ function MotivationSection({
 }
 
 type Picks = {
+  /** Topics to inspect. Not criteria — they surface findings, never a verdict. */
+  interests: string[]
   functional: string[]
   priorities: string[]
   requirements: string[]
@@ -1007,6 +1016,7 @@ type Picks = {
 const emptyPicks = (): Picks => ({
   // Nothing preselected: a filter the visitor did not choose is not theirs.
   functional: [],
+  interests: [],
   priorities: [],
   requirements: [],
   plans: {},
@@ -1025,10 +1035,11 @@ export function RecommendView() {
     [category]: emptyPicks(),
   }))
   const picks = byCategory[category] ?? emptyPicks()
-  const { functional, priorities, requirements, plans } = picks
+  const { functional, interests, priorities, requirements, plans } = picks
   const update = (patch: Partial<Picks>) =>
     setByCategory((prev) => ({ ...prev, [category]: { ...picks, ...patch } }))
   const setFunctional = (v: string[]) => update({ functional: v })
+  const setInterests = (v: string[]) => update({ interests: v })
   const setPriorities = (v: string[]) => update({ priorities: v })
   const setRequirements = (v: string[]) => update({ requirements: v })
   const setPlan = (altId: string, plan: string | undefined) => {
@@ -1038,12 +1049,17 @@ export function RecommendView() {
     update({ plans: next })
   }
 
+  // The catalogue is available on demand rather than in the way, and results
+  // appear only once the visitor asks for them.
+  const [submitted, setSubmitted] = useState(false)
+
   const input = useMemo(
-    () => ({ category, functional, priorities, requirements, plans }),
-    [category, functional, priorities, requirements, plans],
+    () => ({ category, functional, interests, priorities, requirements, plans }),
+    [category, functional, interests, priorities, requirements, plans],
   )
   const result = useMemo(() => recommend(input), [input])
   const guidance = useMemo(() => buildGuidance(result, input), [result, input])
+  const advice = useMemo(() => buildAdvice(input), [input])
   const poolSize = alternativesIn(category).length
 
 
@@ -1060,7 +1076,6 @@ export function RecommendView() {
     })
   }
 
-  const started = priorities.length > 0
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6">
@@ -1087,7 +1102,10 @@ export function RecommendView() {
               type="button"
               role="tab"
               aria-selected={active}
-              onClick={() => navigate(c.id === DEFAULT_CATEGORY ? '/recommend' : `/recommend/${c.id}`)}
+              onClick={() => {
+                setSubmitted(false)
+                navigate(c.id === DEFAULT_CATEGORY ? '/recommend' : `/recommend/${c.id}`)
+              }}
               className={`rounded-full border px-3.5 py-1.5 text-sm font-semibold ${
                 active
                   ? 'border-teal-400 bg-teal-100 text-teal-900'
@@ -1124,83 +1142,216 @@ export function RecommendView() {
         )}
       </p>
 
-      {!started && (
-        <section className="mt-6">
-          <SectionTitle>
-            {alternativesIn(category).length} options
-          </SectionTitle>
-          <p className="mb-3 max-w-3xl text-xs leading-snug text-slate-500">
-            Alphabetical, no ranking. Pick what matters to you below to compare them.
-          </p>
+      {/* The catalogue stays one click away rather than standing between the
+          visitor and the first question. Thirteen cards ahead of the questions
+          made discovery a scrolling obstacle, especially on a phone. */}
+      <details className="mt-3">
+        <summary className="inline-block cursor-pointer text-xs font-medium text-teal-700 underline underline-offset-2">
+          {poolSize} {poolSize === 1 ? 'option' : 'options'} covered — see them all
+        </summary>
+        <div className="mt-2">
+          <p className="mb-2 text-xs text-slate-500">Alphabetical. No ranking.</p>
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
             {alternativesIn(category).map((a) => (
               <DiscoveryCard key={a.id} alt={a} />
             ))}
           </div>
-        </section>
-      )}
-
-      {/* Step 1 — function */}
-      <details className="mt-4 rounded-xl border border-slate-200 bg-white p-4">
-        <summary className="cursor-pointer text-sm font-semibold text-slate-700">
-          Narrow by what it needs to do
-        </summary>
-        <div className="mt-3">
-        <div className="flex flex-wrap gap-2">
-          {functionalIn(category).map((f) => (
-            <button
-              key={f.id}
-              type="button"
-              onClick={() => toggle(functional, setFunctional, f.id)}
-              aria-pressed={functional.includes(f.id)}
-              className={`rounded-full border px-3 py-1 text-xs font-medium ${
-                functional.includes(f.id)
-                  ? 'border-teal-400 bg-teal-100 text-teal-800'
-                  : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50'
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
-        <p className="mt-2 text-xs leading-snug text-slate-500">
-          Where we have not confirmed a capability with the provider, we say so rather than assume
-          it.
-        </p>
         </div>
       </details>
 
-      {/* Step 2 — priorities */}
-      <section className="mt-4 rounded-xl border border-slate-200 bg-white p-4">
-        <SectionTitle>What matters to you</SectionTitle>
-        <p className="mb-3 text-xs leading-snug text-slate-500">
-          Start from a question you care about, then tick the specific things we can actually
-          check. Add <strong>must have</strong> to rule out options we have evidence against.
-          Opening a question selects nothing on its own.
-        </p>
-        <div className="space-y-2">
-          {motivationsIn(category).map((m) => (
-            <MotivationSection
-              key={m.id}
-              m={m}
-              category={category}
-              priorities={priorities}
-              requirements={requirements}
-              onTogglePriority={(id) => togglePriority(id)}
-              onToggleRequirement={(id) => toggle(requirements, setRequirements, id)}
-            />
-          ))}
-        </div>
-      </section>
+      {!submitted ? (
+        <>
+          {/* Step 1 — what matters. First thing on the page after the category. */}
+          <section className="mt-4 rounded-xl border border-slate-200 bg-white p-4">
+            <SectionTitle>What matters to you</SectionTitle>
+            <p className="mb-3 text-xs leading-snug text-slate-500">
+              Pick anything you care about. Add <strong>must have</strong> to rule out options we
+              have evidence against. Opening a question selects nothing on its own.
+            </p>
+            <div className="space-y-2">
+              {motivationsIn(category).map((m) => (
+                <MotivationSection
+                  key={m.id}
+                  m={m}
+                  category={category}
+                  priorities={priorities}
+                  requirements={requirements}
+                  onTogglePriority={(id) => togglePriority(id)}
+                  onToggleRequirement={(id) => toggle(requirements, setRequirements, id)}
+                />
+              ))}
+            </div>
+          </section>
 
-      {/* Step 3 — results */}
-      {started && (
-        <section className="mt-6 space-y-6">
-          <ResultSummary
-            guidance={guidance}
-            poolSize={poolSize}
+          {/* Step 2 — topics to read rather than filter on. Kept visually
+              distinct from the criteria above, because a broad concern about
+              worker treatment is not a yes/no test and must never become one. */}
+          <section className="mt-4 rounded-xl border border-slate-200 bg-white p-4">
+            <SectionTitle>Topics you want to look at</SectionTitle>
+            <p className="mb-3 text-xs leading-snug text-slate-500">
+              These do not filter anything. Ticking one shows what we have on record for the
+              options we recommend, so you can read it here instead of hunting through profiles.
+            </p>
+            <div className="space-y-2">
+              {INTERESTS.map((i) => {
+                const on = interests.includes(i.id)
+                return (
+                  <label
+                    key={i.id}
+                    className={`flex cursor-pointer gap-2.5 rounded-lg border p-3 ${
+                      on ? 'border-teal-400 bg-teal-50' : 'border-slate-200 bg-white hover:bg-slate-50'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={on}
+                      onChange={() => toggle(interests, setInterests, i.id)}
+                      className="mt-0.5 h-4 w-4 accent-teal-600"
+                    />
+                    <span>
+                      <span className="block text-sm font-semibold text-slate-800">{i.label}</span>
+                      <span className="mt-0.5 block text-xs leading-snug text-slate-600">
+                        {i.blurb}
+                      </span>
+                      <span className="mt-0.5 block text-[11px] leading-snug text-slate-500">
+                        {i.does_not_establish}
+                      </span>
+                    </span>
+                  </label>
+                )
+              })}
+            </div>
+          </section>
+
+      {/* Step 1 — function */}
+        <details className="mt-4 rounded-xl border border-slate-200 bg-white p-4">
+          <summary className="cursor-pointer text-sm font-semibold text-slate-700">
+            Narrow by what it needs to do
+          </summary>
+          <div className="mt-3">
+          <div className="flex flex-wrap gap-2">
+            {functionalIn(category).map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => toggle(functional, setFunctional, f.id)}
+                aria-pressed={functional.includes(f.id)}
+                className={`rounded-full border px-3 py-1 text-xs font-medium ${
+                  functional.includes(f.id)
+                    ? 'border-teal-400 bg-teal-100 text-teal-800'
+                    : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+          <p className="mt-2 text-xs leading-snug text-slate-500">
+            Where we have not confirmed a capability with the provider, we say so rather than assume
+            it.
+          </p>
+          </div>
+        </details>
+
+          {/* Step 4 — ask for the answer. Nothing is selected on the visitor's
+              behalf, so with an empty selection this invites rather than
+              pretends. */}
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setSubmitted(true)}
+              disabled={priorities.length === 0 && interests.length === 0 && functional.length === 0}
+              className="rounded-full bg-teal-700 px-5 py-2 text-sm font-bold text-white hover:bg-teal-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+            >
+              Show my options
+            </button>
+            {priorities.length === 0 && interests.length === 0 && functional.length === 0 ? (
+              <p className="text-xs text-slate-500">
+                Pick something above to get advice, or{' '}
+                <Link to="/browse" className="text-teal-700 underline underline-offset-2">
+                  browse every option
+                </Link>
+                .
+              </p>
+            ) : (
+              <p className="text-xs text-slate-500">
+                {priorities.length > 0 && (
+                  <>
+                    {priorities.length} {priorities.length === 1 ? 'preference' : 'preferences'}
+                    {requirements.length > 0 && <>, {requirements.length} must-have</>}
+                  </>
+                )}
+                {interests.length > 0 && (
+                  <>
+                    {priorities.length > 0 && ' · '}
+                    {interests.length} topic{interests.length === 1 ? '' : 's'} to read
+                  </>
+                )}
+              </p>
+            )}
+          </div>
+        </>
+      ) : (
+        <section className="mt-5 space-y-5">
+          {/* What was asked, and a way back to change it. */}
+          <div className="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <div className="min-w-0">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                You asked for
+              </p>
+              <ul className="mt-1 flex flex-wrap gap-1.5">
+                {priorities.map((id) => {
+                  const c = criteria.find((x) => x.id === id)
+                  if (!c) return null
+                  return (
+                    <li
+                      key={id}
+                      className="rounded-full border border-slate-300 bg-white px-2.5 py-0.5 text-xs text-slate-700"
+                    >
+                      {c.label}
+                      {requirements.includes(id) && (
+                        <span className="ml-1 font-bold text-teal-800">· must have</span>
+                      )}
+                    </li>
+                  )
+                })}
+                {interests.map((id) => (
+                  <li
+                    key={id}
+                    className="rounded-full border border-dashed border-slate-300 bg-white px-2.5 py-0.5 text-xs text-slate-600"
+                  >
+                    reading: {INTERESTS.find((i) => i.id === id)?.label}
+                  </li>
+                ))}
+                {functional.map((id) => (
+                  <li
+                    key={id}
+                    className="rounded-full border border-slate-300 bg-white px-2.5 py-0.5 text-xs text-slate-600"
+                  >
+                    {functionalRequirements.find((f) => f.id === id)?.label ?? id}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSubmitted(false)}
+              className="shrink-0 rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+            >
+              Edit priorities
+            </button>
+          </div>
+
+          <AdvicePanel
+            advice={advice}
+            interests={interests}
+            onCompare={(ids) =>
+              navigate(`/compare?category=${category}&products=${ids.join(',')}`)
+            }
           />
 
+          {/* A must-have we cannot check anywhere is kept as a must-have, and
+              the limitation is stated rather than quietly downgraded. */}
           {result.unassessableRequirements.length > 0 && (
             <div className="rounded-xl border-2 border-amber-400 bg-amber-50 p-4">
               <p className="text-sm font-semibold text-amber-900">
@@ -1214,12 +1365,6 @@ export function RecommendView() {
                   <li key={c.id}>{c.label}</li>
                 ))}
               </ul>
-              <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-amber-800">
-                We have kept{' '}
-                {result.unassessableRequirements.length === 1 ? 'it' : 'them'} as must-haves, so
-                nothing is shown as meeting{' '}
-                {result.unassessableRequirements.length === 1 ? 'it' : 'them'}.
-              </p>
               <div className="mt-2 flex flex-wrap gap-2">
                 <button
                   type="button"
@@ -1249,99 +1394,39 @@ export function RecommendView() {
             </div>
           )}
 
-          <div>
-            <SectionTitle>
-              {result.hasRequirements
-                ? `Meets your confirmed requirements (${result.confirmed.length})`
-                : `Options to consider (${result.confirmed.length})`}
-            </SectionTitle>
-            <p className="mb-2 max-w-3xl text-xs leading-snug text-slate-500">
-              {result.hasRequirements ? (
-                <>
-                  These meet everything you marked must-have. That is a starting point, not a
-                  recommendation — the reasons and trade-offs on each card are what to judge.
-                </>
-              ) : (
-                <>
-                  All {alternativesIn(category).length} options, with what we found for and against each on
-                  what you picked.
-                </>
-              )}
-            </p>
-            <p className="mb-2 text-[11px] text-slate-400">Alphabetical within each group.</p>
-            {result.noConfirmedMatch ? (
-              <div className="rounded-xl border-2 border-dashed border-slate-300 bg-white p-5">
-                <p className="text-sm font-semibold text-slate-800">
-                  No confirmed match among the researched options
-                </p>
-                <p className="mt-1 max-w-2xl text-sm leading-relaxed text-slate-600">
-                  No option here can be confirmed against everything you asked for. That reflects
-                  what we have researched, not a judgement on the products. Each option below shows
-                  what is missing.
-                </p>
+          {/* The criterion-by-criterion detail stays available, underneath the
+              advice rather than in place of it. */}
+          {guidance.separations.length > 0 && (
+            <details className="rounded-xl border border-slate-200 bg-white p-4">
+              <summary className="cursor-pointer text-sm font-semibold text-slate-700">
+                Question by question, across every option
+              </summary>
+              <div className="mt-3">
+                <ResultSummary guidance={guidance} poolSize={poolSize} />
               </div>
-            ) : (
-              <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-                {result.confirmed.map((o) => (
-                  <OutcomeCard
-                    key={o.alternative.id}
-                    o={o}
-                    plan={plans[o.alternative.id]}
-                    onPlan={(p) => setPlan(o.alternative.id, p)}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-
-          {result.notConfirmed.length > 0 && (
-            <div>
-              <SectionTitle>
-                Requirement not confirmed ({result.notConfirmed.length})
-              </SectionTitle>
-              <p className="mb-2 max-w-3xl text-xs leading-snug text-slate-500">
-                We could not check something you marked must-have. Not ruled out, not confirmed —
-                each card says what is missing.
-              </p>
-              <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-                {result.notConfirmed.map((o) => (
-                  <OutcomeCard
-                    key={o.alternative.id}
-                    o={o}
-                    plan={plans[o.alternative.id]}
-                    onPlan={(p) => setPlan(o.alternative.id, p)}
-                  />
-                ))}
-              </div>
-            </div>
+            </details>
           )}
 
-          {result.excluded.length > 0 && (
-            <div>
-              <SectionTitle>Ruled out on evidence ({result.excluded.length})</SectionTitle>
-              <p className="mb-2 max-w-3xl text-xs leading-snug text-slate-500">
-                We have evidence these do not meet something you marked must-have.
-              </p>
-              <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-                {result.excluded.map((o) => (
-                  <OutcomeCard
-                    key={o.alternative.id}
-                    o={o}
-                    plan={plans[o.alternative.id]}
-                    onPlan={(p) => setPlan(o.alternative.id, p)}
-                  />
-                ))}
-              </div>
+          <details className="rounded-xl border border-slate-200 bg-white p-4">
+            <summary className="cursor-pointer text-sm font-semibold text-slate-700">
+              Every option with its full evidence
+            </summary>
+            <div className="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-2">
+              {[...result.confirmed, ...result.notConfirmed, ...result.excluded].map((o) => (
+                <OutcomeCard
+                  key={o.alternative.id}
+                  o={o}
+                  plan={plans[o.alternative.id]}
+                  onPlan={(p) => setPlan(o.alternative.id, p)}
+                />
+              ))}
             </div>
-          )}
+          </details>
 
           <p className="text-xs leading-relaxed text-slate-500">
-            {alternativesIn(category).length} products in this category, researched most recently
-            on {categoryDef.researched_on}. Cards show only the capabilities that differ from what
-            every option here already does. Tags say a product does something, never how well —
-            nothing here has been tested or compared for quality — and a tag we have not verified
-            is simply absent rather than denied. An asterisk marks one confirmed only from
-            secondary sources.{' '}
+            {poolSize} products in this category, researched most recently on{' '}
+            {categoryDef.researched_on}. We compare documented policies and relationships, not
+            tested product quality.{' '}
             <Link to="/about" className="text-teal-700 underline underline-offset-2">
               How this works
             </Link>

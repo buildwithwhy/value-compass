@@ -201,12 +201,13 @@ export function MakerDetail({
         )}
       </div>
 
-      {/* Funder picture */}
-      <div>
-        <SectionTitle>
-          Investors we can trace ({backers.length})
-        </SectionTitle>
-        {sortedBackers.length > 0 ? (
+      {/* The ownership graph only plots investors that back more than one
+          company. Where it has no node for this maker, the Lead backers list
+          below is the answer — heading the section "Investors we can trace (0)"
+          stated the graph's scope as though it were a gap in what we know. */}
+      {sortedBackers.length > 0 && (
+        <div>
+          <SectionTitle>Investors we can trace ({backers.length})</SectionTitle>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {sortedBackers.map(({ funder, ownsOutright }) => (
               <FunderCard
@@ -218,13 +219,8 @@ export function MakerDetail({
               />
             ))}
           </div>
-        ) : (
-          <p className="text-sm text-slate-500">
-            Its backers are listed below rather than shown here — the ownership graph only plots
-            investors that back more than one company.
-          </p>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Where the money comes from. The toggle-driven "capital lens" that
           used to sit here reported match counts and phrases like

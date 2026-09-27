@@ -1005,7 +1005,8 @@
         "everyday_assistant",
         "app_builder"
       ],
-      "comparison": "no single person holding a voting majority"
+      "comparison": "spread voting control beyond any single person",
+      "short": "no one person holding a voting majority"
     },
     {
       "id": "c_founder_bloc_majority_voting",
@@ -1021,7 +1022,8 @@
         "everyday_assistant",
         "app_builder"
       ],
-      "comparison": "founders holding less than half the votes"
+      "comparison": "keep the founders below half the votes",
+      "short": "founders below half the votes"
     },
     {
       "id": "c_board_election_rights",
@@ -1052,7 +1054,8 @@
         "everyday_assistant",
         "app_builder"
       ],
-      "comparison": "a legal duty to weigh more than shareholder returns"
+      "comparison": "carry a legal duty to weigh more than shareholder returns",
+      "short": "a legal duty beyond shareholder returns"
     },
     {
       "id": "c_commitment_continuity",
@@ -1067,7 +1070,8 @@
         "everyday_assistant",
         "app_builder"
       ],
-      "comparison": "a record of keeping past public-benefit promises"
+      "comparison": "have kept their past public-benefit promises",
+      "short": "a record of keeping promises"
     },
     {
       "id": "c_content_export",
@@ -1081,7 +1085,8 @@
       "categories": [
         "everyday_assistant"
       ],
-      "comparison": "a way to download your conversations"
+      "comparison": "let you download your conversations",
+      "short": "downloading your conversations"
     },
     {
       "id": "c_account_transfer",
@@ -1095,7 +1100,8 @@
       "categories": [
         "everyday_assistant"
       ],
-      "comparison": "a way to move content to another account with them"
+      "comparison": "let you move your content to another account with them",
+      "short": "moving content to another account"
     },
     {
       "id": "c_service_migration",
@@ -1110,7 +1116,8 @@
       "categories": [
         "everyday_assistant"
       ],
-      "comparison": "a way to move content to another company’s product"
+      "comparison": "let you move your content to a different company's product",
+      "short": "moving content to another company"
     },
     {
       "id": "c_model_hosting",
@@ -1125,7 +1132,8 @@
       "categories": [
         "everyday_assistant"
       ],
-      "comparison": "a published model you could host yourself"
+      "comparison": "publish a model you could run yourself",
+      "short": "a model you could run yourself"
     },
     {
       "id": "c_training_default",
@@ -1139,7 +1147,8 @@
       "categories": [
         "everyday_assistant"
       ],
-      "comparison": "your conversations kept out of training unless you allow it"
+      "comparison": "keep your conversations out of training unless you allow it",
+      "short": "conversations kept out of training"
     },
     {
       "id": "c_training_control",
@@ -1153,7 +1162,8 @@
       "categories": [
         "everyday_assistant"
       ],
-      "comparison": "a self-service way to stay out of training"
+      "comparison": "let you opt out of training yourself",
+      "short": "opting out of training yourself"
     },
     {
       "id": "c_ownership_shape",
@@ -1184,7 +1194,8 @@
         "everyday_assistant",
         "app_builder"
       ],
-      "comparison": "a foundation or non-profit in control"
+      "comparison": "are controlled by a foundation or non-profit",
+      "short": "foundation or non-profit control"
     },
     {
       "id": "c_public_purpose_stake",
@@ -1199,7 +1210,8 @@
         "everyday_assistant",
         "app_builder"
       ],
-      "comparison": "a public-purpose body with a financial interest"
+      "comparison": "give a public-purpose body a financial interest",
+      "short": "a public-purpose body with a financial stake"
     },
     {
       "id": "c_parent_independence",
@@ -1214,7 +1226,8 @@
         "everyday_assistant",
         "app_builder"
       ],
-      "comparison": "no larger commercial parent"
+      "comparison": "operate without a larger commercial parent",
+      "short": "no larger commercial parent"
     },
     {
       "id": "c_code_export",
@@ -1228,7 +1241,8 @@
       "does_not_establish": "That the running app moves with it. Databases, stored files, secrets, sign-in providers and hosting are separate, and are asked about separately.",
       "distinct_from": "Hosting the app elsewhere, which needs somewhere for the code to run.",
       "supported": true,
-      "comparison": "a way to take your project code out"
+      "comparison": "let you take a copy of your project code out",
+      "short": "taking your project code out"
     },
     {
       "id": "c_external_hosting",
@@ -1242,7 +1256,8 @@
       "does_not_establish": "That migration is effortless or complete. What carries over — database records, stored files, secrets, authentication — is stated per finding.",
       "distinct_from": "Code export. Having the code is not the same as having somewhere it runs.",
       "supported": true,
-      "comparison": "a way to host the app elsewhere"
+      "comparison": "document a way to host your app elsewhere",
+      "short": "hosting your app elsewhere"
     },
     {
       "id": "c_work_training_default",
@@ -1256,7 +1271,8 @@
       "does_not_establish": "That training has or has not actually occurred. Permission in terms is evidence about permitted use, not a record of use.",
       "distinct_from": "Whether you can switch it off, which several providers allow even where the default is on.",
       "supported": true,
-      "comparison": "your prompts and code kept out of training by default"
+      "comparison": "keep your prompts and code out of training by default",
+      "short": "prompts and code kept out of training"
     },
     {
       "id": "c_work_training_control",
@@ -1270,7 +1286,8 @@
       "does_not_establish": "That the default already satisfies you, or that the control reaches content already used or contributed by collaborators.",
       "distinct_from": "The default position, which is asked separately.",
       "supported": true,
-      "comparison": "a self-service way to turn training off"
+      "comparison": "let you turn training off in a setting",
+      "short": "turning training off"
     },
     {
       "id": "c_backend_migration",
@@ -1284,7 +1301,8 @@
       "does_not_establish": "That a move is quick or complete. Sign-in providers and live sessions usually need reconfiguring wherever you go.",
       "distinct_from": "Hosting the app elsewhere, which can be true while the data stays put.",
       "supported": true,
-      "comparison": "a route for moving the database and services"
+      "comparison": "document a route for moving the database and services",
+      "short": "moving the database and services"
     }
   ],
   "assessments": [
@@ -4017,7 +4035,8 @@
         }
       },
       "plain": "Enterprise content is not used for training. On Pro it is used unless you turn it off, and Starter and Core are not covered by the documentation we read.",
-      "condition": "Depends which plan you are on."
+      "condition": "Depends which plan you are on.",
+      "uncertainty_kind": "sources_conflict"
     },
     {
       "alternative": "bolt",
@@ -4073,7 +4092,8 @@
         }
       },
       "plain": "Business and Enterprise exclude your content by default. For Free and Plus the published pages disagree, so we have not settled it.",
-      "condition": "Depends which plan you are on, and two official pages conflict."
+      "condition": "Depends which plan you are on, and two official pages conflict.",
+      "uncertainty_kind": "sources_conflict"
     },
     {
       "alternative": "lovable",

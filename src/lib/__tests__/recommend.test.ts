@@ -1934,9 +1934,9 @@ describe('the summary explains the comparison instead of repeating labels', () =
     }
     const g = buildGuidance(recommend(input), input)
     const lines = comparisonLines(g.separations, inCat('app_builder').length).map((l) => l.line)
-    expect(lines[0]).toBe('All four have a way to host the app elsewhere.')
-    expect(lines[1]).toMatch(/^Lovable and Replit have a route for moving the database/)
-    expect(lines[1]).toMatch(/haven’t confirmed it for Bolt and v0/)
+    expect(lines[0]).toBe('All four document a way to host your app elsewhere.')
+    expect(lines[1]).toMatch(/^Lovable and Replit document a route for moving the database/)
+    expect(lines[1]).toMatch(/haven’t confirmed this for Bolt and v0/)
   })
 
   it('updates when the findings or plans change', () => {
@@ -1947,16 +1947,20 @@ describe('the summary explains the comparison instead of repeating labels', () =
     }
     const g = buildGuidance(recommend(input), input)
     const [line] = comparisonLines(g.separations, inCat('app_builder').length)
-    expect(line.line).toMatch(/^Lovable has your prompts and code kept out of training by default/)
+    expect(line.line).toMatch(/^Lovable keeps? your prompts and code out of training by default/)
   })
 
   it('gives every selected question a phrase that reads as a sentence', () => {
-    for (const c of criteriaIn('app_builder')) {
-      if (c.informational) continue
-      expect(c.comparison, c.id).toBeTruthy()
-      expect(c.comparison!.startsWith('I ')).toBe(false)
-      // Noun phrase, so one have/has switch covers singular and plural.
-      expect(c.comparison!).not.toMatch(/^(let|keep|document|describe|run|are|have) /)
+    // `comparison` is now a bare verb phrase so the template needs no
+    // auxiliary: gluing "have" in front of a noun phrase produced
+    // "Claude, Duck.ai and Lumo have your conversations kept out of training."
+    for (const c of criteria) {
+      if (c.informational || !c.comparison) continue
+      expect(c.comparison.startsWith('I '), c.id).toBe(false)
+      expect(c.comparison, c.id).toMatch(/^(let|keep|document|publish|operate|carry|give|spread|have kept|are) /)
+      expect(c.short, c.id).toBeTruthy()
+      // The short form is a noun phrase: it follows "Yes to ...".
+      expect(c.short!, c.id).not.toMatch(/^(let|keep|document|publish|operate) /)
     }
   })
 })
