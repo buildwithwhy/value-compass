@@ -135,7 +135,7 @@ function FindingList({
             {f.detail && <span> — {f.detail}</span>}
             {f.recordedValue && f.state === 'unknown' && (
               <span className="ml-1.5 rounded border border-dashed border-slate-400 bg-white px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
-                recorded as “{f.recordedValue}”, unsupported
+not sourced
               </span>
             )}
             {f.attribution && (

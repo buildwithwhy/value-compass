@@ -2,7 +2,7 @@
   "_meta": {
     "title": "Value Compass - Scored Maker Dataset",
     "version": "v3",
-    "count": 20,
+    "count": 21,
     "polarity": "ALL axes scored 0-4 where HIGHER = more pro-social (more transparent, better culture/ESG, more labour & supply-chain integrity, more dispersed ownership, more public wealth-sharing). A high-scoring maker draws a large polygon on the compass.",
     "scale": {
       "0": "worst-in-class / extractive / opaque",
@@ -1568,6 +1568,64 @@
           "score": null,
           "confidence": "C",
           "note": "Not scored. Added for the app-builder recommendation category with narrow sourced findings only; no axis assessment has been carried out.",
+          "sources": []
+        }
+      }
+    },
+    {
+      "id": "Proton",
+      "name": "Proton",
+      "tier": "tool",
+      "category": "Privacy tools",
+      "jurisdiction": "Switzerland (Proton AG, Geneva)",
+      "vc_independent": "Majority-owned by the non-profit Proton Foundation since June 2024.",
+      "products_models": [
+        "Lumo",
+        "Proton Mail",
+        "Proton VPN",
+        "Proton Drive",
+        "Proton Pass"
+      ],
+      "founders": [
+        "Andy Yen",
+        "Jason Stockman",
+        "Dingchao Lu"
+      ],
+      "lead_backers": [
+        "Proton Foundation (primary shareholder, endowed by the founders)"
+      ],
+      "structure": "Swiss for-profit company whose primary shareholder is a non-profit foundation bound by Swiss law to its stated purpose.",
+      "stated_values": "Privacy by default; funded by subscriptions rather than advertising.",
+      "tension_hook": "A for-profit business under foundation control — the foundation decides, and receives 1% of revenue, but Proton does not publish what that amounts to.",
+      "axes": {
+        "transparency": {
+          "score": null,
+          "confidence": "C",
+          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
+          "sources": []
+        },
+        "culture_esg": {
+          "score": null,
+          "confidence": "C",
+          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
+          "sources": []
+        },
+        "labour_integrity": {
+          "score": null,
+          "confidence": "C",
+          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
+          "sources": []
+        },
+        "wealth_dispersion": {
+          "score": null,
+          "confidence": "C",
+          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
+          "sources": []
+        },
+        "public_sharing": {
+          "score": null,
+          "confidence": "C",
+          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
           "sources": []
         }
       }

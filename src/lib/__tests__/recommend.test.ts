@@ -701,7 +701,7 @@ describe('the pilot and the maker directory agree', () => {
 
   it('marks operators with no directory page instead of implying one', () => {
     const outside = ASSISTANTS.filter((a) => !a.maker_in_directory).map((a) => a.id)
-    expect(outside.sort()).toEqual(['duckai', 'lumo', 'qwen_chat'])
+    expect(outside.sort()).toEqual(['duckai', 'qwen_chat'])
     for (const a of alternatives) {
       expect(a.maker_in_directory).toBe(makerInDirectory(a.product_provider.maker_id))
     }
@@ -1931,8 +1931,8 @@ describe('the summary explains the comparison instead of repeating labels', () =
     }
     const g = buildGuidance(recommend(input), input)
     const lines = comparisonLines(g.separations, inCat('app_builder').length).map((l) => l.line)
-    expect(lines[0]).toBe('All 4 have a documented way to host the app elsewhere.')
-    expect(lines[1]).toMatch(/^Lovable and Replit have a documented route for moving the database/)
+    expect(lines[0]).toBe('All four have a way to host the app elsewhere.')
+    expect(lines[1]).toMatch(/^Lovable and Replit have a route for moving the database/)
     expect(lines[1]).toMatch(/haven’t confirmed it for Bolt and v0/)
   })
 

@@ -159,7 +159,7 @@ const FMTI_ENTRIES = Object.fromEntries(
         claim_support: 'establishes_fact',
         supported_fact: `${maker} scored ${score}/100 on the 2025 Foundation Model Transparency Index.`,
         source_date: FMTI_DATE,
-        source_scope: `Stanford assesses DEVELOPER transparency, including organisational practices, conducted against the developer's then-flagship model (${flagship}). It is not exclusively a model score, and it is not a score of any current consumer product.`,
+        source_scope: `Stanford scores how much a developer discloses about its practices, assessed against its flagship model at the time (${flagship}). It is not a rating of any current consumer product.`,
         unsupported_clauses: [],
         scoring_rule: FMTI_RULE,
         justifies_whole: true,

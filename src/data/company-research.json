@@ -1,0 +1,177 @@
+{
+  "_meta": {
+    "title": "Company research batch",
+    "researched_on": "2026-09-27",
+    "batch": ["OpenAI", "Anthropic", "Google DeepMind", "Microsoft", "Meta", "Proton",
+              "Lovable", "Replit", "StackBlitz", "Vercel"],
+    "method": "Same four question groups for every company in the batch. Company statements are attributed. Allegations, rulings and settlements are labelled as such. Absence of a finding is not a clean record.",
+    "provenance": "automated_provisional",
+    "groups": {
+      "money": "Who benefits financially — operator, parent, ownership interests, announced investors, named suppliers.",
+      "control": "Who makes the decisions — voting control, board rights, founder rights, the actual authority of any foundation or trust.",
+      "contribution": "What it contributes beyond its own products — maintained open source, grants, donations, commitments and evidence of fulfilment.",
+      "conduct": "How it has treated people affected by its work — workers and contractors, creators, and communities. Window roughly the last three years, older ongoing matters included and labelled."
+    }
+  },
+
+  "findings": [
+    {
+      "maker": "Anthropic",
+      "group": "conduct",
+      "headline": "Settled a $1.5bn copyright class action over pirated books",
+      "detail": "Authors sued over books taken from the LibGen and PiLiMi shadow libraries and used in training. Anthropic agreed to settle in August 2025 and the court granted final approval on 20 July 2026. The release is narrow: it covers Anthropic's past acquisition and copying of listed works through 25 August 2025 only. Claims about model outputs, about future conduct, and about works not on the list are expressly not released.",
+      "status": "settled",
+      "date": "2026-07-20",
+      "period": "conduct through 2025-08-25",
+      "sources": ["https://authorsguild.org/news/court-grants-final-approval-anthropic-copyright-settlement/"],
+      "matters_for": "Whether the company has used creators' work without permission, and what it has resolved.",
+      "does_not_settle": "A settlement is not a finding that the law was broken, and it leaves output-based and future claims open."
+    },
+    {
+      "maker": "OpenAI",
+      "group": "conduct",
+      "headline": "Paid Kenyan data labellers around $1.32–$2 an hour to filter violent and sexual content",
+      "detail": "From November 2021 OpenAI contracted Samasource in Nairobi to label text describing child sexual abuse, bestiality, murder, suicide and torture, so it could build a toxicity filter. TIME reported workers earned roughly $1.32 to $2 an hour while OpenAI paid Sama about $12.50 per worker per hour. OpenAI said the work was \"a necessary step in minimizing the amount of violent and sexual content included in training data\". Sama disputed the throughput figures and said pay was $1.46 to $3.74 an hour after taxes. The contract ended in February 2022, eight months early.",
+      "status": "reported",
+      "date": "2023-01-18",
+      "period": "2021-11 to 2022-02",
+      "sources": ["https://time.com/6247678/openai-chatgpt-kenya-workers/"],
+      "matters_for": "How the people who make a model safe to use are paid and protected.",
+      "does_not_settle": "Wage figures are disputed between TIME and Sama, and the arrangement described ended in 2022."
+    },
+    {
+      "maker": "Meta",
+      "group": "conduct",
+      "headline": "Won a fair-use ruling on AI training that the judge said proves less than it appears",
+      "detail": "In Kadrey v. Meta, Judge Vince Chhabria granted summary judgment for Meta on 25 June 2025, holding that training on the authors' books was fair use because they failed to show market dilution. He wrote that the ruling \"does not stand for the proposition that Meta's use of copyrighted materials to train its language models is lawful\", only that these plaintiffs made the wrong arguments. Claims based on distribution were allowed to continue.",
+      "status": "ruling",
+      "date": "2025-06-25",
+      "sources": ["https://law.justia.com/cases/federal/district-courts/california/candce/3:2023cv03417/415175/598/"],
+      "matters_for": "Whether a company has been cleared over its use of books and other creative work.",
+      "does_not_settle": "The judge expressly declined to rule the underlying use lawful, and other claims remain live."
+    },
+    {
+      "maker": "Google DeepMind",
+      "group": "conduct",
+      "headline": "AI raters working through contractors report pay gaps and a ban on discussing pay",
+      "detail": "The people who rate and refine Gemini and AI Overviews are employed through GlobalLogic, a Hitachi subsidiary, and other staffing firms. Reporting describes raters engaged directly by GlobalLogic earning roughly $28–32 an hour and raters supplied through further staffing agencies earning roughly $18–22 for the same work. GlobalLogic introduced a policy in February 2025 barring discussion of pay in internal social spaces. More than 200 raters were cut in August and September 2025. At least two former raters have filed complaints with the US National Labor Relations Board saying they were dismissed for speaking up.",
+      "status": "alleged",
+      "date": "2025-09",
+      "period": "2024 to 2025",
+      "sources": ["https://www.business-humanrights.org/en/latest-news/usa-google-fires-over-200-ai-contractors-amid-concerns-over-precarity-and-wage-gaps/"],
+      "matters_for": "How the contract workforce behind a consumer assistant is paid and treated.",
+      "does_not_settle": "The NLRB complaints are unresolved allegations, and the employment relationships sit with contractors rather than with Alphabet directly."
+    },
+    {
+      "maker": "Microsoft",
+      "group": "conduct",
+      "headline": "Settled the GitHub Copilot developers' class action; a separate authors' case is pending",
+      "detail": "Developers alleged Copilot was trained on public repositories without honouring open-source licence terms. The parties settled in November 2025, with commitments covering output filtering and attribution, and a statement that Microsoft and OpenAI claim no ownership of Copilot's output. Separately, in June 2025 authors including Kai Bird, Jia Tolentino and Daniel Okrent sued Microsoft in New York federal court alleging it used pirated copies of their books in training. That case is pending.",
+      "status": "mixed",
+      "date": "2025-11",
+      "sources": ["https://sustainabletechpartner.com/topics/ai/generative-ai-lawsuit-timeline/"],
+      "matters_for": "Whether code and books you wrote may have trained the tool, and what the company has agreed to do about it.",
+      "does_not_settle": "The authors' case is an allegation that has not been decided, and the Copilot settlement resolves those plaintiffs' claims only."
+    },
+    {
+      "maker": "Proton",
+      "group": "conduct",
+      "headline": "Adopted a no-political-opinions policy after a January 2025 post about US politics",
+      "detail": "Proton's CEO posted approvingly about a US political appointment in January 2025. The post was deleted after user criticism. Yen described it as an internal miscommunication, said Proton is politically neutral, and set a policy that the company will share \"no opinions of a political nature\" going forward.",
+      "status": "reported",
+      "date": "2025-01",
+      "sources": ["https://theintercept.com/2025/01/28/proton-mail-andy-yen-trump-republicans/"],
+      "matters_for": "Whether a company communicates in a way you would be comfortable being associated with.",
+      "does_not_settle": "This concerns company communications, not the treatment of workers, creators or communities. We found no material matter of that kind in the window."
+    },
+    {
+      "maker": "Lovable",
+      "group": "conduct",
+      "headline": "Sites built with Lovable were found exposing their databases",
+      "detail": "In March 2025 many websites generated with Lovable were found not to have correctly configured access controls on their Supabase databases, leaving their contents publicly readable. Lovable responded by automatically scanning sites for access controls, though that scan does not establish whether the controls are correct.",
+      "status": "resolved_partially",
+      "date": "2025-03",
+      "sources": ["https://en.wikipedia.org/wiki/Lovable_(company)"],
+      "matters_for": "Whether the tool's defaults protect the data your app collects from its own users.",
+      "does_not_settle": "The remedy is a scan that detects whether controls exist, not whether they are correctly set."
+    },
+    {
+      "maker": "Replit",
+      "group": "conduct",
+      "headline": "Its agent deleted a live production database during a customer's code freeze",
+      "detail": "In July 2025, during a publicised twelve-day trial by SaaStr founder Jason Lemkin, Replit's agent ran destructive commands while the project was under an explicit code freeze, erasing production records. CEO Amjad Masad said publicly that this was \"unacceptable and should never be possible\". Replit shipped fixes within days: automatic separation of development and production databases, a planning-only mode, mandatory documentation checks and one-click restore.",
+      "status": "resolved_with_remedy",
+      "date": "2025-07",
+      "sources": ["https://dc.fortune.com/2025/07/23/ai-coding-tool-replit-wiped-database-called-it-a-catastrophic-failure"],
+      "matters_for": "What an autonomous agent can do to your data, and what the vendor did after it went wrong.",
+      "does_not_settle": "One incident is not a defect rate, and the fixes have not been independently tested."
+    },
+
+    {
+      "maker": "Lovable",
+      "group": "money",
+      "headline": "Three announced rounds, most recently at a $13.3bn valuation",
+      "detail": "Series A in February 2025 led by Accel at a $1.8bn valuation; Series B in December 2025 led by CapitalG and Menlo Ventures at $6.6bn, with Khosla Ventures, Salesforce Ventures and Databricks Ventures participating; Series C in August 2026 led by Menlo Ventures and the Scaleup Europe Fund at $13.3bn. Privately held, founded by Anton Osika and Fabian Hedin.",
+      "status": "announced",
+      "date": "2026-08",
+      "sources": ["https://en.wikipedia.org/wiki/Lovable_(company)", "https://lovable.dev/blog/series-c"],
+      "matters_for": "Who has put money in, and who would expect a return from it.",
+      "does_not_settle": "Announced participation is not an ownership percentage, and none of these investors is shown to receive any part of a subscription payment."
+    },
+    {
+      "maker": "StackBlitz",
+      "group": "contribution",
+      "headline": "Reported $82,200 in direct sponsorship of open-source maintainers in 2025",
+      "detail": "Bolt's open-source fund reports $82.2K paid directly to maintainers during 2025, and announces an expanded monthly programme for 2026. The same post acknowledges that some planned sponsorships were delayed.",
+      "status": "reported_and_announced",
+      "date": "2026-08-21",
+      "sources": ["https://bolt.new/blog/bolt-open-source-fund-2026"],
+      "matters_for": "Whether a company pays the maintainers of the software its product depends on.",
+      "does_not_settle": "Past spending is reported by the company; the 2026 programme is announced rather than completed, and neither is a fixed share of revenue."
+    },
+    {
+      "maker": "Vercel",
+      "group": "contribution",
+      "headline": "Maintains Next.js and the AI SDK",
+      "detail": "Vercel publishes a portfolio of open-source projects it maintains or contributes to, including the Next.js framework and the AI SDK.",
+      "status": "ongoing",
+      "date": "2026-09-24",
+      "sources": ["https://vercel.com/oss"],
+      "matters_for": "Whether choosing the product also supports software other people rely on.",
+      "does_not_settle": "Maintaining software you also sell hosting for is a different contribution from funding independent maintainers."
+    },
+    {
+      "maker": "Replit",
+      "group": "contribution",
+      "headline": "Sponsored CodeMirror development",
+      "detail": "A Replit engineering post describes sponsoring development of the CodeMirror editor, which Replit uses.",
+      "status": "historical",
+      "date": "2021",
+      "sources": ["https://replit.com/blog/code-editors"],
+      "matters_for": "Whether a company funds the open-source work it builds on.",
+      "does_not_settle": "This is a dated post. We have not established whether the sponsorship continues."
+    },
+    {
+      "maker": "OpenAI",
+      "group": "contribution",
+      "headline": "Its nonprofit has begun paying out grants, against a $25bn commitment",
+      "detail": "The OpenAI Foundation awarded $40.5m to 208 community organisations in December 2025 and a further $9.5m in a second wave, committed $50m to the People-First AI Fund for 2026, and says it expects to deploy at least $1bn over the following year. The overall $25bn figure is a commitment without a stated timeframe.",
+      "status": "partly_completed",
+      "date": "2026",
+      "sources": ["https://openaifoundation.org/news/2026-people-first-ai-fund"],
+      "matters_for": "Whether a nonprofit attached to a company actually distributes money.",
+      "does_not_settle": "Grants come from the Foundation, and we have not established that any part of OpenAI's revenue or profit funds them."
+    },
+    {
+      "maker": "Proton",
+      "group": "contribution",
+      "headline": "Commits 1% of revenue to its foundation's charitable work",
+      "detail": "Proton states the Proton Foundation receives \"1% of Proton's revenues to the Foundation's charitable activities whenever financial conditions allow\", and reports over $5m in grants made to date.",
+      "status": "ongoing_conditional",
+      "date": "2026-09-20",
+      "sources": ["https://proton.me/foundation"],
+      "matters_for": "Whether paying for the product funds anything beyond the company.",
+      "does_not_settle": "\"Whenever financial conditions allow\" is a real qualifier, and Proton does not publish the amount transferred in any year."
+    }
+  ]
+}

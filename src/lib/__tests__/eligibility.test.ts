@@ -385,12 +385,12 @@ describe('unequal coverage is not presented as a definitive ordering', () => {
 
   it('scopes an FMTI score as developer transparency, not a current product score', () => {
     const ev = axisEvidenceFor('Anthropic', 'transparency')
-    expect(ev.source_scope).toMatch(/DEVELOPER transparency/)
-    expect(ev.source_scope).toMatch(/organisational practices/)
+    expect(ev.source_scope).toMatch(/how much a developer discloses/i)
+    expect(ev.source_scope).toMatch(/Claude 4/)
     // Names the flagship the assessment was run against, without reducing the
     // score to a model score.
     expect(ev.source_scope).toMatch(/Claude 4/)
-    expect(ev.source_scope).toMatch(/not a score of any current consumer product/)
+    expect(ev.source_scope).toMatch(/not a rating of any current consumer product/i)
   })
 
   it('reports a uniform ordering as uniform', () => {

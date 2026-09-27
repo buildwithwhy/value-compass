@@ -84,12 +84,15 @@ function CompanyCard({ id }: { id: string }) {
             <ul className="mt-1 space-y-1.5">
               {byTheme[t].map((f) => (
                 <li key={f.topic + f.fact.slice(0, 20)} className="text-xs leading-relaxed text-slate-700">
-                  {f.fact}
-                  {f.scope && (
-                    <span className="block text-[11px] leading-snug text-slate-500">{f.scope}</span>
+                  {f.headline ? <span className="font-semibold">{f.headline}. </span> : null}
+                  {f.headline ? f.fact.split('. ')[0] + '.' : f.fact}
+                  {(f.limitation ?? f.scope) && (
+                    <span className="block text-[11px] leading-snug text-slate-500">
+                      {f.limitation ?? f.scope}
+                    </span>
                   )}
                   <span className="mt-0.5 block text-[11px] text-slate-400">
-                    {f.date && <>{f.date} · </>}
+                    {(f.period ?? f.date) && <>{f.period ?? f.date} · </>}
                     {f.sources.slice(0, 2).map((s, i) => (
                       <span key={s}>
                         {i > 0 && ' · '}

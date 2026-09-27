@@ -655,7 +655,7 @@
         "fr_mobile": "verified_official_documentation",
         "fr_free_entry": "verified_official_documentation"
       },
-      "maker_in_directory": false,
+      "maker_in_directory": true,
       "relationships": {
         "pays": "Proton AG, a Swiss company",
         "free_tier": "A limited free tier exists; paid plans bill Proton AG.",
@@ -1081,7 +1081,7 @@
       "categories": [
         "everyday_assistant"
       ],
-      "comparison": "a documented way to download your conversations"
+      "comparison": "a way to download your conversations"
     },
     {
       "id": "c_account_transfer",
@@ -1228,7 +1228,7 @@
       "does_not_establish": "That the running app moves with it. Databases, stored files, secrets, sign-in providers and hosting are separate, and are asked about separately.",
       "distinct_from": "Hosting the app elsewhere, which needs somewhere for the code to run.",
       "supported": true,
-      "comparison": "a documented way to take your project code out"
+      "comparison": "a way to take your project code out"
     },
     {
       "id": "c_external_hosting",
@@ -1242,7 +1242,7 @@
       "does_not_establish": "That migration is effortless or complete. What carries over — database records, stored files, secrets, authentication — is stated per finding.",
       "distinct_from": "Code export. Having the code is not the same as having somewhere it runs.",
       "supported": true,
-      "comparison": "a documented way to host the app elsewhere"
+      "comparison": "a way to host the app elsewhere"
     },
     {
       "id": "c_work_training_default",
@@ -1284,7 +1284,7 @@
       "does_not_establish": "That a move is quick or complete. Sign-in providers and live sessions usually need reconfiguring wherever you go.",
       "distinct_from": "Hosting the app elsewhere, which can be true while the data stays put.",
       "supported": true,
-      "comparison": "a documented route for moving the database and services"
+      "comparison": "a route for moving the database and services"
     }
   ],
   "assessments": [

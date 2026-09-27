@@ -1,13 +1,8 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { makers, makersMeta } from '../lib/data'
-import { coverageFor, evidenceSummary } from '../lib/evidence'
+import { makers } from '../lib/data'
 import { TIER_COLORS } from '../lib/colors'
-import { StatementKinds } from '../components/EvidenceBadge'
 import { alternativesIn, categories, DEFAULT_CATEGORY } from '../lib/recommend'
-
-const FRESHNESS = (makersMeta as unknown as { last_freshness_review?: string })
-  .last_freshness_review
 
 /** Quick jump to a maker — the shortest path from "I use this tool" to its page. */
 function MakerFinder() {
@@ -99,7 +94,6 @@ function RouteCard({
 }
 
 export function HomeView() {
-  const cov = useMemo(() => coverageFor(), [])
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:py-12">
@@ -167,66 +161,78 @@ export function HomeView() {
         </Link>
       </section>
 
-      {/* What you are reading */}
+      {/* What you can find out — real findings from the research, each
+          labelled with its scope. Nothing here is invented for display. */}
       <section className="mt-10">
-        <h2 className="text-lg font-bold text-slate-900">What you are reading</h2>
+        <h2 className="text-lg font-bold text-slate-900">What you can find out</h2>
         <p className="mt-1 max-w-3xl text-sm leading-relaxed text-slate-600">
-          A site like this is only useful if you can tell a fact from an opinion from a gap. Every
-          claim here is one of four things, and it is always labelled.
+          Examples from what we have researched, with the limits that come with them.
         </p>
-        <StatementKinds className="mt-4" />
-        <p className="mt-3 max-w-3xl text-sm leading-relaxed text-slate-600">
-          The one we care about most is the third.{' '}
-          <strong className="text-slate-800">
-            “We looked and it is bad” and “nobody will say” are different findings.
-          </strong>{' '}
-          Where a company simply has not published something, we show no score rather than a low one
-          — undisclosed is not evidence of bad practice.{' '}
+
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div className="rounded-xl border border-slate-200 bg-white p-4">
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+              What happens to your work
+            </p>
+            <p className="mt-1.5 text-sm leading-snug text-slate-800">
+              On Lovable, Business and Enterprise keep your content out of model training by
+              default. On Free and Pro it is used unless you turn it off.
+            </p>
+            <Link
+              to="/recommend/app_builder"
+              className="mt-2 inline-block text-xs text-teal-700 underline underline-offset-2"
+            >
+              Compare app builders
+            </Link>
+          </div>
+
+          <div className="rounded-xl border border-slate-200 bg-white p-4">
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+              Who owns and controls it
+            </p>
+            <p className="mt-1.5 text-sm leading-snug text-slate-800">
+              Anthropic’s Long-Term Benefit Trust has appointed a majority of the board since
+              April 2026 — and holds stock carrying no economic rights.
+            </p>
+            <Link
+              to="/maker/Anthropic"
+              className="mt-2 inline-block text-xs text-teal-700 underline underline-offset-2"
+            >
+              Read the profile
+            </Link>
+          </div>
+
+          <div className="rounded-xl border border-slate-200 bg-white p-4">
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+              How people have been treated
+            </p>
+            <p className="mt-1.5 text-sm leading-snug text-slate-800">
+              OpenAI paid Sama about $12.50 an hour per worker to label violent content in Kenya.
+              TIME reported the labellers earned roughly $1.32 to $2; Sama disputes the figures.
+            </p>
+            <Link
+              to="/maker/OpenAI"
+              className="mt-2 inline-block text-xs text-teal-700 underline underline-offset-2"
+            >
+              Read the profile
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="mt-8 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+        <h2 className="text-base font-bold text-slate-900">How to read what we publish</h2>
+        <p className="mt-1 max-w-3xl text-sm leading-relaxed text-slate-600">
+          Every finding names its source and the scope it covers. Where the answer depends on your
+          plan, your region or a policy that has not started yet, we say which — and where we have
+          not researched something, we say that rather than treat it as a mark against a product.
+          We compare documented policies and relationships, not how well a tool works.{' '}
           <Link to="/about" className="text-teal-700 underline underline-offset-2">
-            Read the full methodology
+            How we decide what counts
           </Link>
-          .
         </p>
       </section>
 
-      {/* Honest coverage */}
-      <section className="mt-8 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500">
-          How complete this is today
-        </h2>
-        <dl className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {[
-            { n: cov.sourced, label: 'carry a source about the maker', tone: 'text-emerald-700' },
-            { n: cov.unsourced, label: 'have no source attached yet', tone: 'text-slate-700' },
-            { n: cov.contextual, label: 'reason from context', tone: 'text-amber-700' },
-            { n: cov.notEstablished, label: 'show no score — not established in our research', tone: 'text-slate-500' },
-          ].map((s) => (
-            <div key={s.label}>
-              <dt className={`text-2xl font-extrabold ${s.tone}`}>{s.n}</dt>
-              <dd className="mt-0.5 text-xs leading-snug text-slate-600">{s.label}</dd>
-            </div>
-          ))}
-        </dl>
-        <p className="mt-3 border-t border-slate-200 pt-3 text-xs leading-relaxed text-slate-500">
-          Out of {cov.total} axis assessments across {makers.length} makers. These counts are
-          generated from the dataset, not asserted — and they are not where we want them yet. Gaps
-          are shown on the pages they affect rather than summarised away.{' '}
-          {evidenceSummary.funders_with_unverified_associations} of{' '}
-          {evidenceSummary.funders_with_associations} funders with recorded associations carry no
-          source for them, and are marked unverified.
-          {FRESHNESS && (
-            <>
-              {' '}
-              Last freshness review: {FRESHNESS.split(':')[0]}.
-            </>
-          )}
-        </p>
-      </section>
-
-      <p className="mt-8 text-sm text-slate-500">
-        Value Compass is an independent public-interest project. It does not rank products by
-        quality, and it does not tell you what to use.
-      </p>
     </div>
   )
 }

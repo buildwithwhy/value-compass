@@ -5,8 +5,7 @@ import { TIER_COLORS, TIER_LABELS } from '../lib/colors'
 import type { Maker } from '../lib/types'
 import { FunderCard, isDeepPocket } from './FunderCard'
 import { Chip, SectionTitle, Tag } from './ui'
-import { CapitalLensPanel } from './CapitalLensPanel'
-import { BackerReputation, CapitalFindings, CapitalProfileCard } from './CapitalProfile'
+import { BackerReputation, CapitalProfileCard } from './CapitalProfile'
 
 export function MakerDetail({
   maker,
@@ -106,8 +105,8 @@ export function MakerDetail({
         <SectionTitle>What we know</SectionTitle>
         {facts.length === 0 ? (
           <p className="rounded-md border border-dashed border-slate-300 bg-white px-3 py-3 text-xs leading-snug text-slate-600">
-            We have not established anything about {maker.name} to this standard yet. The
-            ownership and funding picture below is what we hold.
+            We haven’t researched {maker.name} yet. What we hold on its funding and ownership is
+            below.
           </p>
         ) : (
           <div className="space-y-3">
@@ -124,27 +123,52 @@ export function MakerDetail({
                         key={f.topic + f.fact.slice(0, 24)}
                         className="rounded-md border border-slate-200 bg-white p-2.5"
                       >
-                        <p className="text-sm leading-snug text-slate-800">{f.fact}</p>
-                        {f.scope && (
-                          <p className="mt-1 text-[11px] leading-snug text-amber-800">{f.scope}</p>
+                        {f.headline && (
+                          <p className="text-sm font-semibold leading-snug text-slate-900">
+                            {f.headline}
+                          </p>
                         )}
-                        <p className="mt-1 text-[11px] text-slate-400">
-                          {f.date && <>{f.date} · </>}
-                          {f.measured && <>published measurement · </>}
-                          {f.sources.slice(0, 2).map((u, i) => (
-                            <span key={u}>
-                              {i > 0 && ' · '}
-                              <a
-                                href={u}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-teal-700 underline underline-offset-2"
-                              >
-                                source
-                              </a>
-                            </span>
-                          ))}
+                        <p className={`text-sm leading-snug text-slate-800 ${f.headline ? 'mt-1' : ''}`}>
+                          {f.fact}
                         </p>
+                        {f.matters && (
+                          <p className="mt-1 text-[11px] leading-snug text-slate-600">
+                            Why it might matter: {f.matters}
+                          </p>
+                        )}
+                        {(f.limitation ?? f.scope) && (
+                          <p className="mt-1 text-[11px] leading-snug text-amber-800">
+                            {f.limitation ?? f.scope}
+                          </p>
+                        )}
+                        {(f.date || f.period || f.sources.length > 0) && (
+                          <p className="mt-1 text-[11px] text-slate-400">
+                            {[
+                              f.period ?? f.date,
+                              f.measured ? 'published measurement' : null,
+                            ]
+                              .filter(Boolean)
+                              .join(' · ')}
+                            {f.sources.length > 0 && (
+                              <>
+                                {(f.period ?? f.date ?? f.measured) && ' · '}
+                                {f.sources.slice(0, 2).map((u, i) => (
+                                  <span key={u}>
+                                    {i > 0 && ' · '}
+                                    <a
+                                      href={u}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="text-teal-700 underline underline-offset-2"
+                                    >
+                                      source
+                                    </a>
+                                  </span>
+                                ))}
+                              </>
+                            )}
+                          </p>
+                        )}
                       </li>
                     ))}
                   </ul>
@@ -180,7 +204,7 @@ export function MakerDetail({
       {/* Funder picture */}
       <div>
         <SectionTitle>
-          Funder picture — who holds a stake in {maker.name} ({backers.length})
+          Investors we can trace ({backers.length})
         </SectionTitle>
         {sortedBackers.length > 0 ? (
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -195,37 +219,22 @@ export function MakerDetail({
             ))}
           </div>
         ) : (
-          <p className="text-sm italic text-slate-400">
-            No funder node in the dataset backs this maker (boutique/single-maker backers are
-            edge-only and not modeled as nodes).
+          <p className="text-sm text-slate-500">
+            Its backers are listed below rather than shown here — the ownership graph only plots
+            investors that back more than one company.
           </p>
         )}
       </div>
 
-      {/* Capital character — deliberately separate from the conduct radar.
-          Factual profile (neutral) + the user-configurable Capital Lens. */}
+      {/* Where the money comes from. The toggle-driven "capital lens" that
+          used to sit here reported match counts and phrases like
+          'recorded as "no", unsupported' — research bookkeeping, not
+          something a reader can use. The facts it was built on are shown
+          plainly instead. */}
       {maker.capital_profile && (
-        <div className="rounded-xl border-2 border-dashed border-teal-200 bg-teal-50/30 p-4">
-          <div className="mb-1 flex items-center gap-2">
-            <h3 className="text-sm font-extrabold uppercase tracking-wider text-teal-800">
-              Capital character
-            </h3>
-            <span className="rounded-full bg-teal-100 px-2 py-0.5 text-[10px] font-bold uppercase text-teal-700">
-              a filter you set · not a 6th score
-            </span>
-          </div>
-          <p className="mb-3 text-xs leading-snug text-teal-700">
-            Where the money comes from, kept separate from the five scored axes above. The facts are
-            the same for everyone; which of them count as concerns is yours to set.
-          </p>
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-            <CapitalLensPanel compact />
-            <CapitalFindings maker={maker} onOpenFunder={onOpenFunder} />
-          </div>
-          <div className="mt-3">
-            <SectionTitle>Factual capital profile</SectionTitle>
-            <CapitalProfileCard maker={maker} />
-          </div>
+        <div>
+          <SectionTitle>Where the money comes from</SectionTitle>
+          <CapitalProfileCard maker={maker} />
           <div className="mt-3">
             <BackerReputation maker={maker} onOpenFunder={onOpenFunder} />
           </div>

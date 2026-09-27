@@ -959,8 +959,13 @@ export function comparisonLines(
     const no = s.conflicting
     let line: string
 
+    // "All 2 have..." reads as machinery. Small counts get words, and a whole
+    // set gets "Both" or "All four" rather than a number.
+    const whole =
+      total === 2 ? 'Both' : total === 3 ? 'All three' : total === 4 ? 'All four' : `All ${total}`
+
     if (yes.length === total) {
-      line = `All ${total} have ${phrase}.`
+      line = `${whole} have ${phrase}.`
     } else if (yes.length > 0 && no.length > 0) {
       line = `${names(yes)} ${have(yes.length)} ${phrase}; ${names(no)} ${dont(no.length)}.`
     } else if (yes.length > 0) {
@@ -970,7 +975,7 @@ export function comparisonLines(
     } else if (no.length > 0) {
       line = `${names(no)} ${dont(no.length)} ${phrase}. We haven’t confirmed it either way for ${names(s.unresolved)}.`
     } else if (s.planRoutes.length > 0) {
-      line = `Whether they ${have(2)} ${phrase} depends on the plan.`
+      line = `Whether you get ${phrase} depends on the plan.`
     } else {
       line = `We haven’t confirmed whether any of them ${have(2)} ${phrase}.`
     }
