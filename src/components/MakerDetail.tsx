@@ -12,7 +12,7 @@ export function MakerDetail({
   onOpenFunder,
 }: {
   maker: Maker
-  onOpenFunder?: (name: string) => void
+  onOpenFunder?: (id: string) => void
 }) {
   const backers = backersFor(maker.id)
   // Deep-pocket strategics first.

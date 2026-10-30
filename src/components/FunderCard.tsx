@@ -121,7 +121,7 @@ export function FunderCard({
   funder: Funder
   makerId?: string
   ownsOutright?: boolean
-  onOpen?: (name: string) => void
+  onOpen?: (id: string) => void
   highlightShared?: boolean
 }) {
   const bucket = parentBucket(funder.parent_type)
@@ -135,7 +135,7 @@ export function FunderCard({
       <div className="flex items-start justify-between gap-2">
         <button
           type="button"
-          onClick={onOpen ? () => onOpen(funder.name) : undefined}
+          onClick={onOpen ? () => onOpen(funder.id) : undefined}
           className={`text-left font-semibold text-slate-800 ${
             onOpen ? 'hover:text-teal-700 hover:underline' : ''
           }`}

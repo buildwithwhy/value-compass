@@ -46,6 +46,8 @@ export interface CapitalProfile {
 
 export interface Maker {
   id: string
+  /** URL-safe stable coordinate ("Google DeepMind" → "google-deepmind"); `id` stays the join key, `name` the display field. */
+  slug: string
   name: string
   tier: Tier
   category?: string
@@ -62,6 +64,8 @@ export interface Maker {
 }
 
 export interface Funder {
+  /** URL-safe stable coordinate; `name` is display-only and never a join key. */
+  id: string
   name: string
   parent_type: string
   rolled_up_vehicles?: string[]
@@ -230,7 +234,7 @@ export type ParentBucket =
 export type GraphNodeKind = 'maker' | 'funder'
 
 export interface GraphNode {
-  id: string // namespaced: "maker:<id>" or "funder:<name>"
+  id: string // namespaced: "maker:<id>" or "funder:<id>"
   kind: GraphNodeKind
   label: string
   // maker fields

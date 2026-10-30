@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import makersRaw from '../data/makers.json'
+import { makerPath } from '../lib/data'
 import {
   companiesWithSomethingToSay,
   factsByTheme,
@@ -46,7 +47,7 @@ function CompanyCard({ id }: { id: string }) {
     <article className="rounded-xl border border-slate-200 bg-white p-4">
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <h3 className="text-base font-bold text-slate-900">
-          <Link to={`/maker/${encodeURIComponent(id)}`} className="hover:underline">
+          <Link to={makerPath(id)} className="hover:underline">
             {m.name}
           </Link>
         </h3>

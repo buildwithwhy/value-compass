@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { makerPath } from '../lib/data'
 import {
   alternativeById,
   alternativesIn,
@@ -392,7 +393,7 @@ export function CompareView() {
                   <p className="text-[11px] text-slate-500">
                     {makerInDirectory(p.product_provider.maker_id) ? (
                       <Link
-                        to={`/maker/${encodeURIComponent(p.product_provider.maker_id)}`}
+                        to={makerPath(p.product_provider.maker_id)}
                         className="text-teal-700 hover:underline"
                       >
                         {p.product_provider.maker_id}
