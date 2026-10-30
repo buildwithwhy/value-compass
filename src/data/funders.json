@@ -2,9 +2,10 @@
   "_meta": {
     "title": "Value Compass — Important Funder Nodes (parent-rolled-up)",
     "version": "v3",
-    "companion_to": "value_compass_makers.json (18 makers)",
+    "count": 35,
+    "companion_to": "makers.json (23 makers)",
     "rollup_rule": "Named investment vehicles are collapsed to their ultimate parent. Children listed under 'rolled_up_vehicles'. HongShan (ex-Sequoia China) treated as a SEPARATE parent since the 2023 legal split.",
-    "inclusion_rule": "Included if (a) deep-pocket strategic (hyperscaler / sovereign / index manager / major strategic corporate), OR (b) backs 2+ of the 18 makers, OR (c) is a controlling/defining backer of a maker. Single-maker boutique VCs are intentionally excluded here and live as edge-only data. NOTE (v3): the rule is applied by BEHAVIOUR, not entity type - an individual angel qualifies if they meet (a)/(b)/(c). NFDG (Nat Friedman & Daniel Gross) is included because it backs 2+ makers. Other angels (Bezos, Iger, Lutkin, Field, Shaq, etc.) touch only one of the 18 and remain edge-only in each maker's lead_backers.",
+    "inclusion_rule": "Included if (a) deep-pocket strategic (hyperscaler / sovereign / index manager / major strategic corporate), OR (b) backs 2+ of the 23 makers, OR (c) is a controlling/defining backer of a maker. Single-maker boutique VCs are intentionally excluded here and live as edge-only data. NOTE (v3): the rule is applied by BEHAVIOUR, not entity type - an individual angel qualifies if they meet (a)/(b)/(c). NFDG (Nat Friedman & Daniel Gross) is included because it backs 2+ makers. Other angels (Bezos, Iger, Lutkin, Field, Shaq, etc.) touch only one maker and remain edge-only in each maker's lead_backers.",
     "maker_universe": [
       "Anthropic",
       "OpenAI",
@@ -26,8 +27,8 @@
       "Moonshot"
     ],
     "field_notes": {
-      "makers_backed": "Which of the 18 makers this parent has an equity/strategic stake in (rolled up across all its vehicles).",
-      "maker_count": "Count of the 18 backed. The concentration metric.",
+      "makers_backed": "Which of the 23 makers this parent has an equity/strategic stake in (rolled up across all its vehicles).",
+      "maker_count": "Count of makers backed. The concentration metric.",
       "flag": "Why this node matters for a power-concentration / value-axis read."
     },
     "pass_b_added": "Each funder now carries key_people and a brief also_funds portfolio summary (what else they back + a stat). Funders remain UNSCORED context per your decision.",
@@ -773,7 +774,7 @@
         "Daniel Gross (ex-Apple AI, ex-SSI CEO; now at Meta)"
       ],
       "also_funds": "Joint ~$1.1B fund (reportedly 4x'd in two years). Beyond the two makers it backs here it has held Coinbase, Figma, CoreWeave, Character.ai, and Ilya Sutskever's SSI. In mid-2025 Meta hired both partners to co-lead Meta Superintelligence Labs and bought a stake (up to ~49%) in NFDG's holdings; the fund stopped making new investments.",
-      "flag": "INDIVIDUAL-ANGEL node that meets the inclusion rule via test (b): backs 2 of the 18 (Perplexity, ElevenLabs). Note: Meta's 2025 buyout of NFDG holdings gives Meta indirect minority exposure to both - another Meta concentration tentacle.",
+      "flag": "INDIVIDUAL-ANGEL node that meets the inclusion rule via test (b): backs 2 of the 23 makers (Perplexity, ElevenLabs). Note: Meta's 2025 buyout of NFDG holdings gives Meta indirect minority exposure to both - another Meta concentration tentacle.",
       "portfolio_sources": [
         "https://www.cnbc.com/2025/06/19/meta-tried-to-buy-safe-superintelligence-hired-ceo-daniel-gross.html",
         "https://www.datacenterdynamics.com/en/news/meta-in-talks-to-partially-acquire-vc-fund-nfdg-hire-nat-friedman-and-daniel-gross-for-ai-shakeup/"

@@ -1,6 +1,6 @@
 # Value Compass — Measurement Rubric (v1, design draft)
 
-**Purpose:** Define the five normative axes and a scoring rubric *before* gathering evidence, so scoring is consistent and defensible. This is the "what" layer for the 18 makers.
+**Purpose:** Define the five normative axes and a scoring rubric *before* gathering evidence, so scoring is consistent and defensible. This is the "what" layer for the maker directory.
 
 **Status:** Design draft for your sign-off. Section 7 lists the open decisions to confirm before the evidence pass.
 
