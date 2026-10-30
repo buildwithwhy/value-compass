@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { makerPath } from '../lib/data'
 import type { Advice, AdviceOption, PilotCriterion } from '../lib/recommend'
 import { makerInDirectory } from '../lib/recommend'
 import { findingsForInterest, interestById } from '../lib/companyFacts'
@@ -19,7 +20,7 @@ function productLink(o: AdviceOption) {
   const id = o.alternative.product_provider.maker_id
   return makerInDirectory(id) ? (
     <Link
-      to={`/maker/${encodeURIComponent(id)}`}
+      to={makerPath(id)}
       className="text-xs text-teal-700 underline underline-offset-2"
     >
       Who is behind it

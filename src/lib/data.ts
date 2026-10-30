@@ -61,14 +61,31 @@ export const AXIS_ABBR: Record<AxisKey, string> = {
 const makerById = new Map<string, Maker>()
 for (const m of makers) makerById.set(m.id, m)
 
-const funderByName = new Map<string, Funder>()
-for (const f of funders) funderByName.set(f.name, f)
+const makerBySlug = new Map<string, Maker>()
+for (const m of makers) makerBySlug.set(m.slug, m)
+
+const funderById = new Map<string, Funder>()
+for (const f of funders) funderById.set(f.id, f)
 
 export function getMaker(id: string | undefined): Maker | undefined {
   return id ? makerById.get(id) : undefined
 }
-export function getFunder(name: string | undefined): Funder | undefined {
-  return name ? funderByName.get(name) : undefined
+export function getMakerBySlug(slug: string | undefined): Maker | undefined {
+  return slug ? makerBySlug.get(slug) : undefined
+}
+export function getFunder(id: string | undefined): Funder | undefined {
+  return id ? funderById.get(id) : undefined
+}
+
+/**
+ * Canonical maker URL path: always the slug, never the raw id (which can
+ * contain spaces). Accepts either a maker id or a slug so call sites holding
+ * a `maker_id` reference can link without a second lookup. Unknown refs fall
+ * back to the encoded id — callers normally guard with makerInDirectory.
+ */
+export function makerPath(ref: string): string {
+  const m = makerBySlug.get(ref) ?? makerById.get(ref)
+  return m ? `/maker/${m.slug}` : `/maker/${encodeURIComponent(ref)}`
 }
 
 // ---- Parent-type normalization --------------------------------------------
@@ -113,7 +130,7 @@ for (const f of funders) {
     if (!makerById.has(mid)) continue
     const arr = backersByMakerId.get(mid) ?? []
     // If already present via makers_backed, upgrade to ownsOutright.
-    const existing = arr.find((b) => b.funder.name === f.name)
+    const existing = arr.find((b) => b.funder.id === f.id)
     if (existing) existing.ownsOutright = true
     else arr.push({ funder: f, ownsOutright: true })
     backersByMakerId.set(mid, arr)
@@ -134,10 +151,10 @@ const MAKER_PREFIX = 'maker:'
 const FUNDER_PREFIX = 'funder:'
 
 export const makerNodeId = (id: string) => MAKER_PREFIX + id
-export const funderNodeId = (name: string) => FUNDER_PREFIX + name
+export const funderNodeId = (id: string) => FUNDER_PREFIX + id
 
-// Detect dual-role entities: a funder whose name resolves to a maker, either
-// directly by id/name or via owns_outright.
+// Detect dual-role entities: a funder that IS a maker (id ↔ slug join), or
+// one that owns a maker outright.
 function detectDualRole(): {
   funderIsDual: Set<string>
   makerIsDual: Set<string>
@@ -148,14 +165,9 @@ function detectDualRole(): {
   const sameEntityLinks: GraphLink[] = []
 
   for (const f of funders) {
-    // Try to pair this funder with a maker node.
-    let pairedMakerId: string | undefined
-
-    // (a) funder name equals a maker id or display name (e.g. Microsoft).
-    const byId = makers.find((m) => m.id === f.name)
-    const byName = makers.find((m) => m.name === f.name)
-    if (byId) pairedMakerId = byId.id
-    else if (byName) pairedMakerId = byName.id
+    // A funder whose id equals a maker's slug IS that maker (Microsoft,
+    // Alibaba) — the id-based dual-role join.
+    const pairedMakerId = makers.find((m) => m.slug === f.id)?.id
 
     // (b) owns_outright → maker (e.g. Alphabet/Google → Google DeepMind).
     const owned = (f.owns_outright ?? []).filter((id) => makerById.has(id))
@@ -165,11 +177,11 @@ function detectDualRole(): {
     for (const o of owned) targets.add(o)
 
     if (targets.size > 0) {
-      funderIsDual.add(f.name)
+      funderIsDual.add(f.id)
       for (const mid of targets) {
         makerIsDual.add(mid)
         sameEntityLinks.push({
-          source: funderNodeId(f.name),
+          source: funderNodeId(f.id),
           target: makerNodeId(mid),
           kind: 'same_entity',
         })
@@ -179,7 +191,7 @@ function detectDualRole(): {
 
   // Alibaba runs Qwen in-house (no separate maker node) — tag it as dual-role
   // for the badge even though there's no pair link to draw.
-  if (funderByName.has('Alibaba')) funderIsDual.add('Alibaba')
+  if (funderById.has('alibaba')) funderIsDual.add('alibaba')
 
   return { funderIsDual, makerIsDual, sameEntityLinks }
 }
@@ -207,7 +219,7 @@ export function buildGraph(): GraphData {
   // --- funder→maker edges (backs + owns_outright) ---
   let resolvedEdgeCount = 0
   for (const f of funders) {
-    const fid = funderNodeId(f.name)
+    const fid = funderNodeId(f.id)
     const seen = new Set<string>() // avoid double edge if id in both arrays
     for (const mid of f.makers_backed ?? []) {
       if (!makerById.has(mid)) {
@@ -243,7 +255,7 @@ export function buildGraph(): GraphData {
   // --- index-manager meta-node: owns_economically → funder (or maker) nodes ---
   for (const f of funders) {
     if (!f.owns_economically) continue
-    const fid = funderNodeId(f.name)
+    const fid = funderNodeId(f.id)
     for (const targetRaw of f.owns_economically) {
       const targetNodeId = resolveOwnsEconomicallyTarget(targetRaw)
       if (!targetNodeId) {
@@ -279,7 +291,7 @@ export function buildGraph(): GraphData {
 
   // --- build funder nodes ---
   for (const f of funders) {
-    const nid = funderNodeId(f.name)
+    const nid = funderNodeId(f.id)
     const bucket = parentBucket(f.parent_type)
     nodes.push({
       id: nid,
@@ -289,7 +301,7 @@ export function buildGraph(): GraphData {
       parentBucket: bucket,
       degree: degree.get(nid) ?? 0,
       size: 0,
-      isDualRole: funderIsDual.has(f.name),
+      isDualRole: funderIsDual.has(f.id),
       isMetaNode: bucket === 'index_manager',
     })
   }
@@ -311,17 +323,24 @@ export function buildGraph(): GraphData {
 }
 
 // Resolve an owns_economically string ("Alphabet/Google", "Microsoft", "Meta")
-// to a graph node id. Prefer an existing funder node, fall back to a maker.
+// to a graph node id. Exact coordinate match first (funder id, maker slug),
+// then the display-name heuristics — the strings predate the ids.
 function resolveOwnsEconomicallyTarget(raw: string): string | null {
   const norm = raw.trim().toLowerCase().replace(/\s+/g, '')
+  for (const f of funders) {
+    if (f.id === norm) return funderNodeId(f.id)
+  }
+  for (const m of makers) {
+    if (m.slug === norm) return makerNodeId(m.id)
+  }
   // funder match (normalize spaces & slashes, e.g. "Alphabet / Google")
   for (const f of funders) {
-    if (f.name.toLowerCase().replace(/\s+/g, '') === norm) return funderNodeId(f.name)
+    if (f.name.toLowerCase().replace(/\s+/g, '') === norm) return funderNodeId(f.id)
   }
   // partial funder match (handles "Alphabet/Google" vs "Alphabet / Google")
   for (const f of funders) {
     const fn = f.name.toLowerCase().replace(/\s+/g, '')
-    if (fn.includes(norm) || norm.includes(fn.split('/')[0])) return funderNodeId(f.name)
+    if (fn.includes(norm) || norm.includes(fn.split('/')[0])) return funderNodeId(f.id)
   }
   // maker match (e.g. "Meta")
   for (const m of makers) {

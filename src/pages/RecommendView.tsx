@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { makerPath } from '../lib/data'
 import {
   criteria,
   alternativesIn,
@@ -284,7 +285,7 @@ function DiscoveryCard({ alt }: { alt: PilotAlternative }) {
             <>
               {' · '}
               <Link
-                to={`/maker/${encodeURIComponent(alt.product_provider.maker_id)}`}
+                to={makerPath(alt.product_provider.maker_id)}
                 className="text-teal-700 hover:underline"
               >
                 who they are
@@ -409,7 +410,7 @@ function OutcomeCard({
             are not in the directory, and a dead link would imply otherwise. */}
         {makerInDirectory(o.alternative.product_provider.maker_id) ? (
           <Link
-            to={`/maker/${encodeURIComponent(o.alternative.product_provider.maker_id)}`}
+            to={makerPath(o.alternative.product_provider.maker_id)}
             className="text-xs text-teal-700 hover:underline"
           >
             {o.alternative.product_provider.maker_id} ↗

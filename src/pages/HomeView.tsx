@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { makers } from '../lib/data'
+import { makerPath, makers } from '../lib/data'
 import { TIER_COLORS } from '../lib/colors'
 import { alternativesIn, categories, DEFAULT_CATEGORY } from '../lib/recommend'
 
@@ -30,7 +30,7 @@ function MakerFinder() {
         value={q}
         onChange={(e) => setQ(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' && matches[0]) navigate(`/maker/${encodeURIComponent(matches[0].id)}`)
+          if (e.key === 'Enter' && matches[0]) navigate(makerPath(matches[0].id))
         }}
         placeholder="Claude, ChatGPT, Cursor, Canva…"
         className="mt-1.5 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-teal-500"
@@ -49,7 +49,7 @@ function MakerFinder() {
             matches.map((m) => (
               <li key={m.id}>
                 <Link
-                  to={`/maker/${encodeURIComponent(m.id)}`}
+                  to={makerPath(m.id)}
                   className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-slate-100"
                 >
                   <span
@@ -195,7 +195,7 @@ export function HomeView() {
               April 2026 — and holds stock carrying no economic rights.
             </p>
             <Link
-              to="/maker/Anthropic"
+              to="/maker/anthropic"
               className="mt-2 inline-block text-xs text-teal-700 underline underline-offset-2"
             >
               Read the profile
@@ -211,7 +211,7 @@ export function HomeView() {
               TIME reported the labellers earned roughly $1.32 to $2; Sama disputes the figures.
             </p>
             <Link
-              to="/maker/OpenAI"
+              to="/maker/openai"
               className="mt-2 inline-block text-xs text-teal-700 underline underline-offset-2"
             >
               Read the profile

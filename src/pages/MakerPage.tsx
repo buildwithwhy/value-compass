@@ -1,15 +1,18 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { getFunder, getMaker } from '../lib/data'
+import { getFunder, getMaker, getMakerBySlug } from '../lib/data'
 import { MakerDetail } from '../components/MakerDetail'
 import { Drawer } from '../components/Drawer'
 import { FunderDetail } from '../components/FunderCard'
 
 export function MakerPage() {
   const { id } = useParams<{ id: string }>()
-  const maker = getMaker(id ? decodeURIComponent(id) : undefined)
-  const [funderName, setFunderName] = useState<string | null>(null)
-  const funder = getFunder(funderName ?? undefined)
+  // Canonical URLs carry the slug; ids (the pre-slug display-name routes) keep
+  // resolving until the routing migration adds real redirects (D4).
+  const ref = id ? decodeURIComponent(id) : undefined
+  const maker = getMakerBySlug(ref) ?? getMaker(ref)
+  const [funderId, setFunderId] = useState<string | null>(null)
+  const funder = getFunder(funderId ?? undefined)
 
   if (!maker) {
     return (
@@ -27,14 +30,14 @@ export function MakerPage() {
       <Link to="/browse" className="mb-3 inline-block text-sm text-teal-700 hover:underline">
         ← All makers
       </Link>
-      <MakerDetail maker={maker} onOpenFunder={setFunderName} />
+      <MakerDetail maker={maker} onOpenFunder={setFunderId} />
 
       <Drawer
         open={funder != null}
-        onClose={() => setFunderName(null)}
+        onClose={() => setFunderId(null)}
         title={<span className="text-lg font-bold text-slate-900">{funder?.name}</span>}
       >
-        {funder && <FunderDetail funder={funder} onOpenMaker={() => setFunderName(null)} />}
+        {funder && <FunderDetail funder={funder} onOpenMaker={() => setFunderId(null)} />}
       </Drawer>
     </div>
   )

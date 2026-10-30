@@ -113,7 +113,7 @@ function FindingList({
   state: keyof typeof STATE_STYLE
   items: AttributeFinding[]
   maker: Maker
-  onOpenFunder?: (name: string) => void
+  onOpenFunder?: (id: string) => void
 }) {
   if (items.length === 0) return null
   const s = STATE_STYLE[state]
@@ -155,7 +155,7 @@ not sourced
                     {onOpenFunder ? (
                       <button
                         type="button"
-                        onClick={() => onOpenFunder(b.name)}
+                        onClick={() => onOpenFunder(b.id)}
                         className="font-semibold underline decoration-amber-400 underline-offset-2"
                       >
                         {b.name} ↗
@@ -316,7 +316,7 @@ export function BackerReputation({
   onOpenFunder,
 }: {
   maker: Maker
-  onOpenFunder?: (name: string) => void
+  onOpenFunder?: (id: string) => void
 }) {
   const backers: Funder[] = backersFor(maker.id)
     .map((b) => b.funder)
@@ -359,7 +359,7 @@ export function BackerReputation({
                 {onOpenFunder ? (
                   <button
                     type="button"
-                    onClick={() => onOpenFunder(f.name)}
+                    onClick={() => onOpenFunder(f.id)}
                     className="text-teal-700 underline decoration-teal-300 underline-offset-2 hover:text-teal-900"
                     title={`Open ${f.name}`}
                   >

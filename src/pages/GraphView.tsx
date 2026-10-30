@@ -21,7 +21,7 @@ const LABELLED_TOP_N = 15
 
 type Selection =
   | { kind: 'maker'; id: string }
-  | { kind: 'funder'; name: string }
+  | { kind: 'funder'; id: string }
   | null
 
 export function GraphView() {
@@ -171,7 +171,7 @@ export function GraphView() {
 
   function openNode(n: GraphNode) {
     if (n.kind === 'maker') setSelection({ kind: 'maker', id: n.maker!.id })
-    else setSelection({ kind: 'funder', name: n.funder!.name })
+    else setSelection({ kind: 'funder', id: n.funder!.id })
   }
 
   // ---- node canvas drawing ----
@@ -483,12 +483,12 @@ export function GraphView() {
         {selection?.kind === 'maker' && (
           <MakerDetailById
             id={selection.id}
-            onOpenFunder={(name) => setSelection({ kind: 'funder', name })}
+            onOpenFunder={(id) => setSelection({ kind: 'funder', id })}
           />
         )}
         {selection?.kind === 'funder' && (
-          <FunderDetailByName
-            name={selection.name}
+          <FunderDetailById
+            id={selection.id}
             onOpenMaker={(id) => setSelection({ kind: 'maker', id })}
           />
         )}
@@ -522,8 +522,8 @@ function MakerDetailById({ id, onOpenFunder }: { id: string; onOpenFunder: (n: s
   return <MakerDetail maker={m} onOpenFunder={onOpenFunder} />
 }
 
-function FunderDetailByName({ name, onOpenMaker }: { name: string; onOpenMaker: (id: string) => void }) {
-  const f = getFunder(name)
+function FunderDetailById({ id, onOpenMaker }: { id: string; onOpenMaker: (id: string) => void }) {
+  const f = getFunder(id)
   if (!f) return <p className="text-sm text-slate-500">Funder not found.</p>
   return (
     <div>
