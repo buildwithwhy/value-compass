@@ -45,7 +45,7 @@ npm test                          # regression checks for the evidence rules
 - **`react-force-graph-2d`** — the knowledge-graph landing view.
 - **Recharts (`RadarChart`)** — the 5-axis Value Compass radar.
 - **`react-markdown` + `remark-gfm`** — renders the methodology rubric on the About page.
-- **`react-router-dom`** (HashRouter) — client-side routing, no server config needed.
+- **`react-router-dom`** (BrowserRouter; a `404.html` copy of the SPA shell keeps direct loads of deep links working on the static host) — client-side routing, no server config needed.
 
 ## Data
 

@@ -16,6 +16,9 @@ const RecommendView = lazy(() =>
   import('./pages/RecommendView').then((m) => ({ default: m.RecommendView })),
 )
 const AboutView = lazy(() => import('./pages/AboutView').then((m) => ({ default: m.AboutView })))
+const NotFoundPage = lazy(() =>
+  import('./pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage })),
+)
 
 /** /switch/:from[/:to] becomes a comparison with :from marked as current. */
 function SwitchRedirect() {
@@ -65,7 +68,7 @@ export default function App() {
               <Route path="/switch/:from/:to" element={<SwitchRedirect />} />
               <Route path="/about" element={<AboutView />} />
               <Route path="/about/working-draft" element={<AboutView draft />} />
-              <Route path="*" element={<HomeView />} />
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Suspense>
         </main>
