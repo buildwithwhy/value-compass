@@ -14,6 +14,7 @@ import {
   EXAMPLE_WEIGHTS,
   hasPriorities,
   type AxisWeight,
+  type AxisWeights,
   type Priorities,
 } from './priorities'
 import type { AxisKey } from './types'
@@ -38,6 +39,13 @@ interface PrioritiesContextValue {
    */
   applyExample: (opts: { axes?: boolean; capital?: boolean }) => void
   clear: () => void
+  /**
+   * Install a shared selection — parsed from a link's query params — as the
+   * visitor's own, replacing both halves at once. Landing on a shared link is
+   * a choice the visitor made (they opened it), so this marks the state
+   * custom rather than preserving whatever was here before.
+   */
+  applyShared: (next: { weights: AxisWeights; capital: LensConfig }) => void
 }
 
 const Ctx = createContext<PrioritiesContextValue | null>(null)
@@ -116,6 +124,10 @@ export function PrioritiesProvider({ children }: { children: ReactNode }) {
   }, [])
   const clear = useCallback(() => setPriorities(EMPTY), [])
 
+  const applyShared = useCallback((next: { weights: AxisWeights; capital: LensConfig }) => {
+    setPriorities({ mode: 'custom', weights: next.weights, capital: next.capital })
+  }, [])
+
   const value = useMemo(
     () => ({
       priorities,
@@ -124,8 +136,9 @@ export function PrioritiesProvider({ children }: { children: ReactNode }) {
       setCapitalKey,
       applyExample,
       clear,
+      applyShared,
     }),
-    [priorities, setAxisWeight, setCapitalKey, applyExample, clear],
+    [priorities, setAxisWeight, setCapitalKey, applyExample, clear, applyShared],
   )
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

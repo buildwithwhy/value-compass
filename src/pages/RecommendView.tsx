@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
-import { makerPath } from '../lib/data'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { makerPath, AXIS_KEYS, AXIS_LABELS } from '../lib/data'
 import {
   criteria,
   alternativesIn,
@@ -32,7 +32,16 @@ import {
   buildAdvice,
 } from '../lib/recommend'
 import { INTERESTS } from '../lib/companyFacts'
+import { hasPriorities, AXIS_WEIGHT_LABELS, type Priorities } from '../lib/priorities'
+import { usePriorities } from '../lib/prioritiesContext'
+import { usePrioritiesUrlSync } from '../lib/prioritiesUrlSync'
+import {
+  prioritizeAdvice,
+  prioritizeAlternatives,
+  type PrioritizedGroup,
+} from '../lib/priorityOrdering'
 import { AdvicePanel } from '../components/AdvicePanel'
+import { PrioritiesPanel } from '../components/PrioritiesPanel'
 import { SectionTitle } from '../components/ui'
 
 // ---------------------------------------------------------------------------
@@ -1023,9 +1032,76 @@ const emptyPicks = (): Picks => ({
   plans: {},
 })
 
+/**
+ * What the axis priorities did to this list, stated rather than implied by
+ * position. Three honest states: a real ordering, with a caveat when the
+ * placed options were not all measured on the same axes; nothing placeable;
+ * and the unplaced rest — missing evidence, not a bad result.
+ */
+function PriorityOrderingNote({
+  priorities,
+  groups,
+}: {
+  priorities: Priorities
+  groups: (PrioritizedGroup<AlternativeOutcome> | null)[]
+}) {
+  const axesOn = AXIS_KEYS.filter((a) => priorities.weights[a] > 0)
+  const capitalOn = Object.values(priorities.capital).filter(Boolean).length
+  const placedCount = groups.reduce((s, g) => s + (g?.placed.length ?? 0), 0)
+  const unplacedCount = groups.reduce((s, g) => s + (g?.unplaced.length ?? 0), 0)
+  const uniform = groups.every((g) => g == null || g.integrity.uniform)
+
+  // What was asked about, in one line. Capital never enters the axis average
+  // — it only breaks ties — and the note says so when it is on.
+  const asked = [
+    axesOn.length > 0 ? axesOn.map((a) => AXIS_LABELS[a]).join(', ') : null,
+    capitalOn > 0 ? `capital attributes (${capitalOn} on, tie-breaks only)` : null,
+  ]
+    .filter(Boolean)
+    .join('; ')
+
+  return (
+    <div className="rounded-xl border border-teal-200 bg-teal-50/60 p-3">
+      <p className="text-xs font-bold uppercase tracking-wider text-teal-900">
+        Ordered by your priorities
+      </p>
+      {placedCount > 0 ? (
+        <p className="mt-1 text-xs leading-relaxed text-slate-700">
+          Prioritised: {asked}. Options whose operator has enough evidence-backed scoring on those
+          axes read strongest-first
+          {uniform ? (
+            '.'
+          ) : (
+            <> — but they were not all scored on the same axes, so treat the order as indicative and read the per-axis detail on each card.</>
+          )}
+        </p>
+      ) : (
+        <p className="mt-1 text-xs leading-relaxed text-slate-700">
+          Prioritised: {asked}. No option here has enough evidence-backed scoring on those axes to
+          be placed in an order, so this list is not claiming a winner — it roughly follows how
+          much of what you asked about is on record.
+        </p>
+      )}
+      {placedCount > 0 && unplacedCount > 0 && (
+        <p className="mt-1 text-xs leading-relaxed text-slate-600">
+          {unplacedCount} option{unplacedCount === 1 ? ' is' : 's are'} listed after the ordered
+          ones because we could not place {unplacedCount === 1 ? 'it' : 'them'} on your priorities
+          — that is missing evidence, not a poor result.
+        </p>
+      )}
+    </div>
+  )
+}
+
 export function RecommendView() {
   const { category: slug } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
+  // Axis priorities are global state (maker pages read the same object),
+  // mirrored into this page's URL so the selection survives a refresh and a
+  // link can carry it to someone else.
+  const { priorities: axisPriorities } = usePriorities()
+  usePrioritiesUrlSync()
   const category =
     categories.find((c) => c.id === slug)?.id ?? DEFAULT_CATEGORY
   const categoryDef = categories.find((c) => c.id === category)!
@@ -1062,6 +1138,36 @@ export function RecommendView() {
   const guidance = useMemo(() => buildGuidance(result, input), [result, input])
   const advice = useMemo(() => buildAdvice(input), [input])
   const poolSize = alternativesIn(category).length
+
+  // Axis priorities reorder the shown results through the shared engine —
+  // buckets and membership are untouched, position only. A null group means
+  // "nothing to order here", which falls back to the alphabetical default.
+  const confirmedGroup = useMemo(
+    () => prioritizeAlternatives(result.confirmed, axisPriorities),
+    [result, axisPriorities],
+  )
+  const notConfirmedGroup = useMemo(
+    () => prioritizeAlternatives(result.notConfirmed, axisPriorities),
+    [result, axisPriorities],
+  )
+  const orderedAdvice = useMemo(
+    () => prioritizeAdvice(advice, axisPriorities) ?? advice,
+    [advice, axisPriorities],
+  )
+  const prioritiesActive = hasPriorities(axisPriorities)
+  const prioritisedAxes = AXIS_KEYS.filter((a) => axisPriorities.weights[a] > 0)
+  const capitalOnCount = Object.values(axisPriorities.capital).filter(Boolean).length
+
+  // Ordered part first, then what could not be placed, then what evidence
+  // ruled out. Each bucket's internal order follows the priorities; the
+  // default without them stays alphabetical.
+  const outcomeCards = [
+    ...(confirmedGroup ? confirmedGroup.placed : result.confirmed),
+    ...(confirmedGroup?.unplaced ?? []),
+    ...(notConfirmedGroup ? notConfirmedGroup.placed : result.notConfirmed),
+    ...(notConfirmedGroup?.unplaced ?? []),
+    ...result.excluded,
+  ]
 
 
   const toggle = (list: string[], set: (v: string[]) => void, id: string) =>
@@ -1105,7 +1211,14 @@ export function RecommendView() {
               aria-selected={active}
               onClick={() => {
                 setSubmitted(false)
-                navigate(c.id === DEFAULT_CATEGORY ? '/recommend' : `/recommend/${c.id}`)
+                // Axis priorities live in the query string and are
+                // category-independent — carry them across the switch so the
+                // address bar never shows a state the page has dropped.
+                navigate(
+                  c.id === DEFAULT_CATEGORY
+                    ? { pathname: '/recommend', search: location.search }
+                    : { pathname: `/recommend/${c.id}`, search: location.search },
+                )
               }}
               className={`rounded-full border px-3.5 py-1.5 text-sm font-semibold ${
                 active
@@ -1182,6 +1295,20 @@ export function RecommendView() {
                 />
               ))}
             </div>
+          </section>
+
+          {/* Step 1b — the coarse layer: the five axes Value Compass scores.
+              The questions above drive the advice; this orders the results
+              once they are shown. Optional — the questions work without it. */}
+          <section className="mt-4 rounded-xl border border-slate-200 bg-white p-4">
+            <SectionTitle>Priorities by axis</SectionTitle>
+            <p className="mb-3 text-xs leading-snug text-slate-500">
+              Optional, and broader than the questions above: these are the five axes Value
+              Compass scores for every maker. Set how much each matters and the results are
+              ordered by it. Your selection is kept in the address bar, so you can share the
+              link as-is.
+            </p>
+            <PrioritiesPanel compact />
           </section>
 
           {/* Step 2 — topics to read rather than filter on. Kept visually
@@ -1261,12 +1388,20 @@ export function RecommendView() {
             <button
               type="button"
               onClick={() => setSubmitted(true)}
-              disabled={priorities.length === 0 && interests.length === 0 && functional.length === 0}
+              disabled={
+                priorities.length === 0 &&
+                interests.length === 0 &&
+                functional.length === 0 &&
+                !prioritiesActive
+              }
               className="rounded-full bg-teal-700 px-5 py-2 text-sm font-bold text-white hover:bg-teal-800 disabled:cursor-not-allowed disabled:bg-slate-300"
             >
               Show my options
             </button>
-            {priorities.length === 0 && interests.length === 0 && functional.length === 0 ? (
+            {priorities.length === 0 &&
+            interests.length === 0 &&
+            functional.length === 0 &&
+            !prioritiesActive ? (
               <p className="text-xs text-slate-500">
                 Pick something above to get advice, or{' '}
                 <Link to="/browse" className="text-teal-700 underline underline-offset-2">
@@ -1276,6 +1411,14 @@ export function RecommendView() {
               </p>
             ) : (
               <p className="text-xs text-slate-500">
+                {prioritiesActive && (
+                  <>
+                    {prioritisedAxes.length} ax{prioritisedAxes.length === 1 ? 'is' : 'es'}{' '}
+                    prioritised
+                    {capitalOnCount > 0 && <>, {capitalOnCount} capital attr</>}
+                    {(priorities.length > 0 || interests.length > 0) && ' · '}
+                  </>
+                )}
                 {priorities.length > 0 && (
                   <>
                     {priorities.length} {priorities.length === 1 ? 'preference' : 'preferences'}
@@ -1301,6 +1444,19 @@ export function RecommendView() {
                 You asked for
               </p>
               <ul className="mt-1 flex flex-wrap gap-1.5">
+                {prioritisedAxes.map((a) => (
+                  <li
+                    key={a}
+                    className="rounded-full border border-teal-300 bg-teal-50 px-2.5 py-0.5 text-xs font-medium text-teal-900"
+                  >
+                    {AXIS_LABELS[a]}: {AXIS_WEIGHT_LABELS[axisPriorities.weights[a]]}
+                  </li>
+                ))}
+                {capitalOnCount > 0 && (
+                  <li className="rounded-full border border-dashed border-teal-300 bg-teal-50 px-2.5 py-0.5 text-xs font-medium text-teal-900">
+                    capital lens: {capitalOnCount} attribute{capitalOnCount === 1 ? '' : 's'} on
+                  </li>
+                )}
                 {priorities.map((id) => {
                   const c = criteria.find((x) => x.id === id)
                   if (!c) return null
@@ -1343,8 +1499,17 @@ export function RecommendView() {
             </button>
           </div>
 
+          {/* What the axis priorities did to everything below, said in the
+              open — position alone would state it silently. */}
+          {prioritiesActive && (
+            <PriorityOrderingNote
+              priorities={axisPriorities}
+              groups={[confirmedGroup, notConfirmedGroup]}
+            />
+          )}
+
           <AdvicePanel
-            advice={advice}
+            advice={orderedAdvice}
             interests={interests}
             onCompare={(ids) =>
               navigate(`/compare?category=${category}&products=${ids.join(',')}`)
@@ -1413,7 +1578,7 @@ export function RecommendView() {
               Every option with its full evidence
             </summary>
             <div className="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-2">
-              {[...result.confirmed, ...result.notConfirmed, ...result.excluded].map((o) => (
+              {outcomeCards.map((o) => (
                 <OutcomeCard
                   key={o.alternative.id}
                   o={o}
