@@ -1,6 +1,6 @@
 # 🧭 Value Compass
 
-**See what your AI choices support.** A local, runnable web app showing the companies behind AI tools, who owns and funds them, and what has been documented about their practices — 18 makers scored on 5 normative value axes, and the network of 34 funder nodes whose capital flows into them.
+**See what your AI choices support.** A local, runnable web app showing the companies behind AI tools, who owns and funds them, and what has been documented about their practices — 23 makers scored on 5 normative value axes, and the network of 35 funder nodes whose capital flows into them.
 
 The project's intent is to ask **open questions, not deliver verdicts**: every maker carries a "worth probing" tension hook, every score carries a visible confidence flag and evidence basis, and funders are shown as *context, never scored*.
 
@@ -38,6 +38,33 @@ After editing `makers.json` or `funders.json`, rebuild the derived evidence laye
 node scripts/build-evidence.mjs   # rewrites src/data/evidence.json + prints a summary
 npm test                          # regression checks for the evidence rules
 ```
+
+## Live site
+
+**https://buildwithwhy.github.io/value-compass/** — deployed automatically to GitHub
+Pages on every merge to `main` by
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) (typecheck → tests →
+build → deploy, then a post-deploy smoke test of the whole surface).
+
+The machine-readable v1 export rides along on the deployed site:
+[`api/v1/index.json`](https://buildwithwhy.github.io/value-compass/api/v1/index.json)
+serves the manifest with CORS open (`Access-Control-Allow-Origin: *`), alongside
+[`llms.txt`](https://buildwithwhy.github.io/value-compass/llms.txt) and
+[`sitemap.xml`](https://buildwithwhy.github.io/value-compass/sitemap.xml).
+
+Three deployment facts worth knowing:
+
+- The Pages project site serves the app under `/value-compass/`, so the deploy build
+  runs `npm run build:pages` (which sets `BASE_PATH`; see `vite.config.ts`). A custom
+  domain would serve at the root and drop it. The sitemap base (`SITE_URL` in
+  `scripts/export-api.mjs`) already points at the Pages URL.
+- Every canonical route ships as a real `index.html` (`scripts/emit-routes.mjs`,
+  derived from the maker/funder/category data), so sitemap URLs answer **200**;
+  unknown paths answer **404** with the SPA shell as the body (`404.html`), so the
+  app still boots and renders its own 404 view.
+- GitHub Pages ignores `public/_headers` (a Cloudflare/Netlify convention — kept for
+  hosts that honor it). The deployed site's CORS header comes from the Pages
+  platform itself, and the deploy workflow asserts it on every release.
 
 ## Tech stack
 
