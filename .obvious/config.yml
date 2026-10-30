@@ -1,0 +1,9 @@
+# Repo policy for obvious automation
+repo: buildwithwhy/value-compass
+defaultBranch: main
+merge:
+  method: squash
+  allowMergeCommit: true
+  allowSquash: true
+  allowRebase: true
+  deleteBranchOnMerge: false
