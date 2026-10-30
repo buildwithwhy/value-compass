@@ -1,18 +1,15 @@
-import { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import { getFunder, getMaker, getMakerBySlug } from '../lib/data'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { getMaker, getMakerBySlug } from '../lib/data'
 import { MakerDetail } from '../components/MakerDetail'
-import { Drawer } from '../components/Drawer'
-import { FunderDetail } from '../components/FunderCard'
+import { funderPath } from '../lib/routes'
 
 export function MakerPage() {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   // Canonical URLs carry the slug; ids (the pre-slug display-name routes) keep
   // resolving until the routing migration adds real redirects (D4).
   const ref = id ? decodeURIComponent(id) : undefined
   const maker = getMakerBySlug(ref) ?? getMaker(ref)
-  const [funderId, setFunderId] = useState<string | null>(null)
-  const funder = getFunder(funderId ?? undefined)
 
   if (!maker) {
     return (
@@ -30,15 +27,9 @@ export function MakerPage() {
       <Link to="/browse" className="mb-3 inline-block text-sm text-teal-700 hover:underline">
         ← All makers
       </Link>
-      <MakerDetail maker={maker} onOpenFunder={setFunderId} />
-
-      <Drawer
-        open={funder != null}
-        onClose={() => setFunderId(null)}
-        title={<span className="text-lg font-bold text-slate-900">{funder?.name}</span>}
-      >
-        {funder && <FunderDetail funder={funder} onOpenMaker={() => setFunderId(null)} />}
-      </Drawer>
+      {/* Funder references navigate to the funder's own page — the detail
+          surface is URL-addressable here rather than drawer-bound. */}
+      <MakerDetail maker={maker} onOpenFunder={(funderId) => navigate(funderPath(funderId))} />
     </div>
   )
 }

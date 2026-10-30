@@ -1,4 +1,5 @@
-import { getMaker, makers, parentBucket } from '../lib/data'
+import { Link } from 'react-router-dom'
+import { getMaker, makerPath, makers, parentBucket } from '../lib/data'
 import { DEEP_POCKET_BUCKETS, PARENT_COLORS, PARENT_LABELS } from '../lib/colors'
 import {
   associationsAreUnverified,
@@ -300,13 +301,24 @@ export function FunderDetail({
               const owns = (funder.owns_outright ?? []).includes(id)
               return (
                 <li key={id} className="flex flex-wrap items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={onOpenMaker ? () => onOpenMaker(id) : undefined}
-                    className="rounded-full border border-slate-300 bg-white px-2.5 py-0.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
-                  >
-                    {m ? m.name : id}
-                  </button>
+                  {onOpenMaker ? (
+                    // Drawer context: switch the panel in place.
+                    <button
+                      type="button"
+                      onClick={() => onOpenMaker(id)}
+                      className="rounded-full border border-slate-300 bg-white px-2.5 py-0.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                    >
+                      {m ? m.name : id}
+                    </button>
+                  ) : (
+                    // Page context: a real link to the maker's canonical slug page.
+                    <Link
+                      to={makerPath(id)}
+                      className="rounded-full border border-slate-300 bg-white px-2.5 py-0.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                    >
+                      {m ? m.name : id}
+                    </Link>
+                  )}
                   <RelationshipChips funderName={funder.name} makerId={id} ownsOutright={owns} />
                 </li>
               )

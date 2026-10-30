@@ -11,3 +11,12 @@ export function legacyHashToPath(hash: string): string | null {
   if (!hash.startsWith('#/')) return null
   return hash.slice(1).replace(/^\/{2,}/, '/')
 }
+
+/**
+ * Canonical funder URL path. Funder ids are the URL-safe slug coordinate
+ * (unique, lowercase-hyphenated); names are display-only and may contain
+ * " / " or parentheses, so they are never routed on. Encoding stays defensive.
+ */
+export function funderPath(id: string): string {
+  return `/funder/${encodeURIComponent(id)}`
+}
