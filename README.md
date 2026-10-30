@@ -22,7 +22,7 @@ Then open the URL Vite prints (e.g. `http://localhost:5173/`).
 On startup the app loads and sanity-checks the data files and logs the counts to the browser console:
 
 ```
-🧭 Value Compass data  makers: 18  ·  funders: 34  ·  resolved funder→maker edges: 89
+🧭 Value Compass data  makers: 23  ·  funders: 35  ·  resolved funder→maker edges: 94
 ```
 
 Other scripts:
@@ -53,8 +53,8 @@ All data lives in **`src/data/`** and is imported statically — nothing is fetc
 
 | File | What it is |
 |---|---|
-| `src/data/makers.json` | 18 AI makers, each scored on the 5 value axes + a factual `capital_profile`. |
-| `src/data/funders.json` | 34 funder nodes with cross-holdings into the makers; many carry `notable_for` association tags. |
+| `src/data/makers.json` | 23 AI makers, each scored on the 5 value axes + a factual `capital_profile`. |
+| `src/data/funders.json` | 35 funder nodes with cross-holdings into the makers; many carry `notable_for` association tags. |
 | `src/data/methodology.md` | The published methodology, rendered as the About page. |
 | `src/data/rubric.md` | The original internal design draft. Kept for the record, rendered only at `/about/working-draft` behind a banner saying what it is — it is **not** the published methodology. |
 | `src/data/evidence.json` | **Derived, do not hand-edit.** Regenerate with `node scripts/build-evidence.mjs`. |

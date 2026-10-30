@@ -2,7 +2,7 @@
   "_meta": {
     "title": "Value Compass - Scored Maker Dataset",
     "version": "v3",
-    "count": 21,
+    "count": 23,
     "polarity": "ALL axes scored 0-4 where HIGHER = more pro-social (more transparent, better culture/ESG, more labour & supply-chain integrity, more dispersed ownership, more public wealth-sharing). A high-scoring maker draws a large polygon on the compass.",
     "scale": {
       "0": "worst-in-class / extractive / opaque",

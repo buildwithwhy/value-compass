@@ -4,7 +4,7 @@
 // hide elements gracefully (per the build prompt) instead of crashing.
 // ---------------------------------------------------------------------------
 
-export type Tier = 'frontier' | 'tool' | 'frontier_and_funder'
+export type Tier = 'frontier' | 'tool' | 'frontier_and_funder' | 'platform'
 export type Confidence = 'A' | 'B' | 'C'
 export const AXIS_KEYS = [
   'transparency',
