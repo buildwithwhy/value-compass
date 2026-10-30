@@ -15,7 +15,7 @@ Everything on this site is one of four things, and the interface says which:
 | **Sourced fact** | Who owns what, who invested, what a company has committed to — with a link to where it came from. |
 | **ValueCompass assessment** | Our reading of those facts against the rubric below. A judgement, labelled as one. |
 | **Not established** | Our research has not established it. We say so, and show no score — a gap in our record, not a finding about the company. |
-| **Your priorities** | What you tell us matters to you — across the five axes and the capital attributes. Nothing is switched on for you by default. |
+| **Your priorities** | What you tell us matters to you — across the six axes and the capital attributes. Nothing is switched on for you by default. |
 
 The distinction that matters most is the third. **"We looked and it is bad" and "we have
 not established it" are different findings.** Treating them the same is the easiest way
@@ -29,10 +29,11 @@ because the gap is in our record, not necessarily in the company's conduct.
 
 ---
 
-## The five axes
+## The six axes
 
-Every maker is scored 0–4 on five axes. They are oriented so that a higher number always
-means more disclosure, more dispersed ownership, or stronger commitments to share value.
+Every maker is scored 0–4 on six axes. They are oriented so that a higher number always
+means more disclosure, more dispersed ownership, stronger commitments to share value, or
+more open releases.
 
 | Axis | A higher score means |
 |---|---|
@@ -41,6 +42,32 @@ means more disclosure, more dispersed ownership, or stronger commitments to shar
 | **Labour & supply-chain integrity** | Data workers, moderators and creators are treated and compensated fairly. |
 | **Wealth dispersion** | Ownership and control are spread more widely, rather than concentrated in a founder or a few large backers. |
 | **Public wealth-sharing** | Binding structures and broad access that share value with the public, rather than stated intent alone. |
+| **Open weights / source availability** | Model weights or substantial product source code are released openly, under permissive license terms. |
+
+Open weights is deliberately **not** a transparency measure. Stanford's 2025 transparency
+index scored Alibaba 26/100 despite its Apache-2.0 Qwen releases: shipping weights and
+documenting how a system is built are different acts. Read the two axes separately.
+
+### The open-weights scale (draft, pending rubric adoption)
+
+The other axes score sub-indicators, and transparency anchors to the FMTI bands.
+The open-weights axis instead records the license terms of what a maker actually
+releases:
+
+| Score | Meaning (draft) |
+|---|---|
+| 4 | Weights under a permissive OSI-style license (Apache/MIT) |
+| 3 | Weights with conditions (community license, modified MIT, non-commercial CC) |
+| 2 | No own weights, but substantial open product/client/tool code |
+| 1 | No weights; peripheral open-source artifacts only (SDKs, samples) |
+| 0 | No weights and no meaningful source found (scoped to a research pass) |
+| n/a | Not established |
+
+Scores on this axis are recorded with their sources, but they are
+**decision-ineligible**: no rubric rule has adopted the draft scale yet, so these scores
+cannot move a comparison marker or an ordering — the same rule that keeps the other
+four axes out of orderings. They become ranking-eligible when the rubric adopts the
+scale as a rule.
 
 ### The 0–4 scale
 
@@ -57,7 +84,7 @@ precision, and a scale that implies it would be false precision.
 
 ### What the compass shape means
 
-A wider polygon means higher scores on these five axes under this rubric. It is **not** an
+A wider polygon means higher scores on these axes under this rubric. It is **not** an
 overall verdict on a company, and it says nothing about whether a product is any good. A
 gap in the polygon is an axis with no score shown — missing, not zero.
 
@@ -159,7 +186,7 @@ Three things this map deliberately does not claim:
 2. **A connection is not harm.** Who funds a company can shape its incentives; that is a reason to look, not a finding.
 3. **A stake is not a claim on your subscription.** Nothing here traces what you pay into any investor's pocket.
 
-**Funders are never scored.** The five axes are built for makers — a venture fund has no
+**Funders are never scored.** The axes are built for makers — a venture fund has no
 data-labelling supply chain. Funders appear as context, with what they also fund and who
 runs them.
 
@@ -211,7 +238,7 @@ it will never count against a maker in a recommendation.
 
 ## Priorities, and what they are allowed to do
 
-You can tell the site which of the five axes matter to you, and how much — **not a
+You can tell the site which of the six axes matter to you, and how much — **not a
 priority**, **matters**, or **matters a lot**. Three levels, not a slider, for the same
 reason the scores are 0–4 and not 0–100: a continuous weight would imply precision the
 underlying assessments cannot carry.

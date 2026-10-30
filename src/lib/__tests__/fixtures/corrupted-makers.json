@@ -42,6 +42,12 @@
           "confidence": "C",
           "note": "Not scored. Insufficient evidence.",
           "sources": "not-an-array"
+        },
+        "open_weights": {
+          "score": "n/a",
+          "confidence": "C",
+          "note": "Not scored. Fixture entry — the axis is present and well-formed.",
+          "sources": []
         }
       }
     },
@@ -62,7 +68,8 @@
         "culture_esg": { "score": 1, "confidence": "C", "note": "Thin evidence", "sources": ["https://example.com/thin"] },
         "labour_integrity": { "score": 1, "confidence": "C", "note": "Thin evidence", "sources": ["https://example.com/thin"] },
         "wealth_dispersion": { "score": 1, "confidence": "C", "note": "Thin evidence", "sources": ["https://example.com/thin"] },
-        "public_sharing": { "score": 1, "confidence": "C", "note": "Thin evidence", "sources": ["https://example.com/thin"] }
+        "public_sharing": { "score": 1, "confidence": "C", "note": "Thin evidence", "sources": ["https://example.com/thin"] },
+        "open_weights": { "score": "n/a", "confidence": "C", "note": "Not scored. Fixture entry — the axis is present and well-formed.", "sources": [] }
       }
     }
   ],

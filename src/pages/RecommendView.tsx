@@ -1297,13 +1297,13 @@ export function RecommendView() {
             </div>
           </section>
 
-          {/* Step 1b — the coarse layer: the five axes Value Compass scores.
+          {/* Step 1b — the coarse layer: the six axes Value Compass scores.
               The questions above drive the advice; this orders the results
               once they are shown. Optional — the questions work without it. */}
           <section className="mt-4 rounded-xl border border-slate-200 bg-white p-4">
             <SectionTitle>Priorities by axis</SectionTitle>
             <p className="mb-3 text-xs leading-snug text-slate-500">
-              Optional, and broader than the questions above: these are the five axes Value
+              Optional, and broader than the questions above: these are the six axes Value
               Compass scores for every maker. Set how much each matters and the results are
               ordered by it. Your selection is kept in the address bar, so you can share the
               link as-is.

@@ -18,6 +18,8 @@ const AXIS_BLURB: Record<(typeof AXIS_KEYS)[number], string> = {
   labour_integrity: 'How data workers, moderators and creators are treated and paid.',
   wealth_dispersion: 'How widely ownership and control are spread.',
   public_sharing: 'Binding commitments and access that share value with the public.',
+  open_weights:
+    'Whether model weights or substantial product source code are released, and under what license terms — a separate question from transparency.',
 }
 
 const WEIGHTS: AxisWeight[] = [0, 1, 2]

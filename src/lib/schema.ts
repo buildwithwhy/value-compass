@@ -90,7 +90,7 @@ export function validateAxisEntry(
   return problems
 }
 
-/** One maker record: required fields present with correct types, all five axes valid.
+/** One maker record: required fields present with correct types, all six axes valid.
  *
  * Non-emptiness of string/array content is a separate concern (see
  * findEmptyRequiredFields): the dataset carries waived legacy gaps, and

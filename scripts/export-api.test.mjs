@@ -632,7 +632,14 @@ describe('real-data schema invariants (src/data/*.json)', () => {
 
   it('the emitted schemas derive their vocabulary from the real dataset', () => {
     expect(real.defs.Maker.properties.axes.required).toEqual(
-      ['culture_esg', 'labour_integrity', 'public_sharing', 'transparency', 'wealth_dispersion'],
+      [
+        'culture_esg',
+        'labour_integrity',
+        'open_weights',
+        'public_sharing',
+        'transparency',
+        'wealth_dispersion',
+      ],
     )
     expect(real.defs.AxisScore.properties.basis.enum).toEqual(
       expect.arrayContaining(['contextual', 'not_established', 'sourced', 'unsourced', null]),

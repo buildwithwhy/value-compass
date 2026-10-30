@@ -16,7 +16,7 @@ import { SectionTitle } from '../components/ui'
 // ---------------------------------------------------------------------------
 // Explore companies.
 //
-// Replaces the score matrix. The five 0-4 axis scores are still in the data
+// Replaces the score matrix. The 0-4 axis scores are still in the data
 // and still drive nothing: the rubric never defined how sub-indicators
 // combine, so "3/4 versus 2/4" asserted a comparison the evidence could not
 // carry. What is left is what was always underneath — sourced facts, with

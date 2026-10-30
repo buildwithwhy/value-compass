@@ -98,7 +98,7 @@ function CustomTooltip({ active, payload, scale }: any) {
 
 /**
  * Value Compass radar. One polygon per maker, plotting its scores under the
- * published rubric — a wider shape means higher scores on these five axes, not
+ * published rubric — a wider shape means higher scores on these axes, not
  * a verdict on the company. Axes with no score shown become gaps, never zeros.
  */
 export function ValueRadar({

@@ -15,9 +15,9 @@ export function PolarityLegend({ className = '' }: { className?: string }) {
         <Link to="/about" className="text-teal-700 underline underline-offset-2 hover:text-teal-900">
           published rubric
         </Link>
-        , oriented so a higher number means more disclosure, more dispersed ownership, and stronger
-        commitments to share value. A wider shape means{' '}
-        <span className="font-semibold">higher scores on these five axes</span> — it is not an
+        , oriented so a higher number means more disclosure, more dispersed ownership, stronger
+        commitments to share value, and more open releases. A wider shape means{' '}
+        <span className="font-semibold">higher scores on these axes</span> — it is not an
         overall verdict on the company, and it says nothing about product quality.
       </p>
       <p className="mt-1 leading-snug text-slate-500">
