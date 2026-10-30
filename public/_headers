@@ -1,0 +1,11 @@
+# Open CORS for the machine-readable export (GET-only, no auth).
+# Served at the publish root; see scripts/export-api.mjs for the payloads.
+/api/*
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+
+/llms.txt
+  Access-Control-Allow-Origin: *
+
+/sitemap.xml
+  Access-Control-Allow-Origin: *
