@@ -37,6 +37,7 @@
   "funders": [
     {
       "name": "Nvidia",
+      "id": "nvidia",
       "parent_type": "strategic_corporate (chipmaker)",
       "rolled_up_vehicles": [
         "Nvidia corporate balance sheet",
@@ -74,6 +75,7 @@
     },
     {
       "name": "Andreessen Horowitz (a16z)",
+      "id": "andreessen-horowitz",
       "parent_type": "venture_growth",
       "rolled_up_vehicles": [
         "a16z funds",
@@ -115,6 +117,7 @@
     },
     {
       "name": "Alphabet / Google",
+      "id": "alphabet-google",
       "parent_type": "hyperscaler",
       "rolled_up_vehicles": [
         "Alphabet balance sheet",
@@ -143,6 +146,7 @@
     },
     {
       "name": "Accel",
+      "id": "accel",
       "parent_type": "venture_growth",
       "rolled_up_vehicles": [
         "Accel funds"
@@ -165,6 +169,7 @@
     },
     {
       "name": "Coatue",
+      "id": "coatue",
       "parent_type": "crossover",
       "rolled_up_vehicles": [
         "Coatue Management"
@@ -184,6 +189,7 @@
     },
     {
       "name": "Sequoia Capital (US)",
+      "id": "sequoia-capital",
       "parent_type": "venture_growth",
       "rolled_up_vehicles": [
         "Sequoia Capital (US/Europe)"
@@ -205,6 +211,7 @@
     },
     {
       "name": "DST Global",
+      "id": "dst-global",
       "parent_type": "venture_growth",
       "rolled_up_vehicles": [
         "DST Global funds"
@@ -224,6 +231,7 @@
     },
     {
       "name": "Fidelity",
+      "id": "fidelity",
       "parent_type": "crossover (asset manager)",
       "rolled_up_vehicles": [
         "Fidelity Management & Research",
@@ -244,6 +252,7 @@
     },
     {
       "name": "Lightspeed Venture Partners",
+      "id": "lightspeed-venture-partners",
       "parent_type": "venture_growth",
       "rolled_up_vehicles": [
         "Lightspeed funds"
@@ -264,6 +273,7 @@
     },
     {
       "name": "MGX",
+      "id": "mgx",
       "parent_type": "sovereign_wealth (UAE / Abu Dhabi)",
       "rolled_up_vehicles": [
         "MGX",
@@ -297,6 +307,7 @@
     },
     {
       "name": "Qatar Investment Authority (QIA)",
+      "id": "qatar-investment-authority",
       "parent_type": "sovereign_wealth (Qatar)",
       "rolled_up_vehicles": [
         "QIA"
@@ -318,6 +329,7 @@
     },
     {
       "name": "T. Rowe Price",
+      "id": "t-rowe-price",
       "parent_type": "crossover (asset manager)",
       "rolled_up_vehicles": [
         "T. Rowe Price funds"
@@ -336,6 +348,7 @@
     },
     {
       "name": "Databricks (Databricks Ventures)",
+      "id": "databricks",
       "parent_type": "strategic_corporate",
       "rolled_up_vehicles": [
         "Databricks Ventures"
@@ -354,6 +367,7 @@
     },
     {
       "name": "Microsoft",
+      "id": "microsoft",
       "parent_type": "hyperscaler (also a MAKER, node #8)",
       "rolled_up_vehicles": [
         "Microsoft balance sheet",
@@ -374,6 +388,7 @@
     },
     {
       "name": "SoftBank",
+      "id": "softbank",
       "parent_type": "strategic_conglomerate / megafund (Japan)",
       "rolled_up_vehicles": [
         "SoftBank Group",
@@ -400,6 +415,7 @@
     },
     {
       "name": "Thrive Capital",
+      "id": "thrive-capital",
       "parent_type": "venture_growth",
       "rolled_up_vehicles": [
         "Thrive Capital (Josh Kushner)"
@@ -423,6 +439,7 @@
     },
     {
       "name": "ICONIQ",
+      "id": "iconiq",
       "parent_type": "venture_growth / multi-family office",
       "rolled_up_vehicles": [
         "ICONIQ Growth"
@@ -441,6 +458,7 @@
     },
     {
       "name": "General Catalyst",
+      "id": "general-catalyst",
       "parent_type": "venture_growth",
       "rolled_up_vehicles": [
         "General Catalyst funds"
@@ -457,6 +475,7 @@
     },
     {
       "name": "Khosla Ventures",
+      "id": "khosla-ventures",
       "parent_type": "venture_growth",
       "rolled_up_vehicles": [
         "Khosla Ventures funds"
@@ -478,6 +497,7 @@
     },
     {
       "name": "Founders Fund",
+      "id": "founders-fund",
       "parent_type": "venture_growth",
       "rolled_up_vehicles": [
         "Founders Fund"
@@ -501,6 +521,7 @@
     },
     {
       "name": "Tiger Global",
+      "id": "tiger-global",
       "parent_type": "crossover",
       "rolled_up_vehicles": [
         "Tiger Global Management"
@@ -519,6 +540,7 @@
     },
     {
       "name": "Tencent",
+      "id": "tencent",
       "parent_type": "strategic_corporate (China)",
       "rolled_up_vehicles": [
         "Tencent Holdings",
@@ -540,6 +562,7 @@
     },
     {
       "name": "Salesforce (Salesforce Ventures)",
+      "id": "salesforce",
       "parent_type": "strategic_corporate",
       "rolled_up_vehicles": [
         "Salesforce Ventures"
@@ -556,6 +579,7 @@
     },
     {
       "name": "Amazon",
+      "id": "amazon",
       "parent_type": "hyperscaler",
       "rolled_up_vehicles": [
         "Amazon balance sheet",
@@ -579,6 +603,7 @@
     },
     {
       "name": "Saudi PIF / Humain",
+      "id": "saudi-pif-humain",
       "parent_type": "sovereign_wealth (Saudi Arabia)",
       "rolled_up_vehicles": [
         "Public Investment Fund",
@@ -601,6 +626,7 @@
     },
     {
       "name": "GIC",
+      "id": "gic",
       "parent_type": "sovereign_wealth (Singapore)",
       "rolled_up_vehicles": [
         "GIC"
@@ -618,6 +644,7 @@
     },
     {
       "name": "Temasek",
+      "id": "temasek",
       "parent_type": "sovereign_wealth (Singapore)",
       "rolled_up_vehicles": [
         "Temasek Holdings"
@@ -633,6 +660,7 @@
     },
     {
       "name": "ASML",
+      "id": "asml",
       "parent_type": "strategic_corporate (Netherlands, lithography)",
       "rolled_up_vehicles": [
         "ASML Holding"
@@ -652,6 +680,7 @@
     },
     {
       "name": "High-Flyer",
+      "id": "high-flyer",
       "parent_type": "hedge_fund_parent (China)",
       "rolled_up_vehicles": [
         "High-Flyer (Zhejiang quant fund)"
@@ -671,6 +700,7 @@
     },
     {
       "name": "Alibaba",
+      "id": "alibaba",
       "parent_type": "strategic_corporate (China)",
       "rolled_up_vehicles": [
         "Alibaba Group",
@@ -692,6 +722,7 @@
     },
     {
       "name": "HongShan (ex-Sequoia China)",
+      "id": "hongshan",
       "parent_type": "venture_growth (China)",
       "rolled_up_vehicles": [
         "HongShan"
@@ -711,6 +742,7 @@
     },
     {
       "name": "AMD",
+      "id": "amd",
       "parent_type": "strategic_corporate (chipmaker)",
       "rolled_up_vehicles": [
         "AMD Ventures"
@@ -728,6 +760,7 @@
     },
     {
       "name": "Index managers (Vanguard / BlackRock / State Street)",
+      "id": "index-managers",
       "parent_type": "index_manager (META-NODE)",
       "rolled_up_vehicles": [
         "Vanguard",
@@ -758,6 +791,7 @@
     },
     {
       "name": "NFDG (Nat Friedman & Daniel Gross)",
+      "id": "nfdg",
       "parent_type": "venture_growth (angel-founded; partially absorbed into Meta, 2025)",
       "rolled_up_vehicles": [
         "NFDG",
@@ -782,6 +816,7 @@
     },
     {
       "name": "Proton Foundation",
+      "id": "proton-foundation",
       "parent_type": "nonprofit_foundation (Switzerland)",
       "rolled_up_vehicles": [
         "Proton Foundation"
