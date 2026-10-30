@@ -23,8 +23,15 @@ function spa404Fallback(): Plugin {
   }
 }
 
+// Deployment base: '/' for local/dev/preview builds. The GitHub Pages project
+// site serves the app under /value-compass/, so `npm run build:pages` sets
+// BASE_PATH for that build. Vite rewrites built asset URLs with it, and the
+// router reads the same value through import.meta.env.BASE_URL.
+const basePath = process.env.BASE_PATH || '/'
+
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: basePath,
   plugins: [react(), spa404Fallback()],
   server: {
     port: 5173,

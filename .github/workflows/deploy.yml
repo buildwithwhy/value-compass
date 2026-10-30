@@ -1,0 +1,138 @@
+# Deploys the built site — SPA shell, per-route shells, and the public/api/v1
+# export — to GitHub Pages on every merge to main. Static hosting end to end:
+# no server config, and the export rides along with the app it documents.
+#
+# CORS: GitHub Pages does not honor the repo's public/_headers file (a
+# Cloudflare/Netlify convention; kept for hosts that do honor it). The Pages
+# platform itself serves every response with `Access-Control-Allow-Origin: *`,
+# which is exactly the export's contract (GET-only, no auth) — so the deploy
+# job asserts that header on the deployed manifest instead of trusting the
+# ignored file, and fails loudly if the platform ever stops providing it.
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    # Never deploy from a non-main ref (workflow_dispatch can be run on any
+    # branch; only merges to main publish).
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Self-enable Pages on the first deploy (the repo's Pages site does not
+      # exist yet; this creates it with a GitHub-Actions build source via the
+      # workflow's pages:write token — the app integration's own token cannot).
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run test
+
+      # The Pages project site serves the app under /value-compass/ — the same
+      # base the export's sitemap/catalog point at (SITE_URL default in
+      # scripts/export-api.mjs).
+      - run: npm run build:pages
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Smoke-test the deployed surface
+        run: |
+          set -euo pipefail
+          BASE="${{ steps.deployment.outputs.page_url }}"
+          BASE="${BASE%/}"
+          echo "Deployed to $BASE"
+
+          # Root serves the app.
+          code=$(curl -s -o /dev/null -w '%{http_code}' "$BASE")
+          [ "$code" = 200 ] || { echo "::error::root answered $code"; exit 1; }
+          echo "root: 200"
+
+          # CORS contract for the machine-readable export (Pages ignores
+          # _headers; the platform serves the header, and this asserts it).
+          headers=$(curl -fsS -D - -o /dev/null "$BASE/api/v1/index.json")
+          echo "$headers" | grep -qi 'access-control-allow-origin: \*' || {
+            echo "::error::/api/v1/index.json served without Access-Control-Allow-Origin: *; headers:"
+            echo "$headers"
+            exit 1
+          }
+          echo "api/v1/index.json: CORS ok"
+
+          # All four exported JSON payloads parse.
+          for f in makers funders evidence index; do
+            curl -fsS "$BASE/api/v1/$f.json" | jq -e . >/dev/null || {
+              echo "::error::/api/v1/$f.json is not valid JSON"; exit 1
+            }
+          done
+          echo "api/v1/*.json: valid"
+
+          # Discovery files resolve.
+          for f in llms.txt sitemap.xml; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/$f")
+            [ "$code" = 200 ] || { echo "::error::$f answered $code"; exit 1; }
+          done
+          echo "llms.txt + sitemap.xml: 200"
+
+          # App routes beyond the sitemap: shipped as real files, answering 200.
+          for route in compare recommend; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/$route/")
+            [ "$code" = 200 ] || { echo "::error::/$route answered $code"; exit 1; }
+          done
+          echo "/compare + /recommend: 200"
+
+          # Every sitemap URL answers 200 — each canonical route ships as a
+          # real index.html (scripts/emit-routes.mjs).
+          non200=$(curl -fsS "$BASE/sitemap.xml" \
+            | grep -o '<loc>[^<]*</loc>' | sed -e 's|<loc>||' -e 's|</loc>||' \
+            | while read -r url; do
+                c=$(curl -s -o /dev/null -w '%{http_code}' "$url")
+                [ "$c" = 200 ] || echo "$url -> $c"
+              done)
+          if [ -n "${non200}" ]; then
+            echo "::error::sitemap URLs not answering 200:"
+            echo "$non200"
+            exit 1
+          fi
+          echo "sitemap: every URL answers 200"
+
+          # Genuinely unknown paths answer 404 — carrying the SPA shell so the
+          # app still boots and renders its own 404 view.
+          code=$(curl -s -o /dev/null -w '%{http_code}' "$BASE/no-such-path-should-404")
+          [ "$code" = 404 ] || { echo "::error::unknown path answered $code, expected 404"; exit 1; }
+          curl -s "$BASE/no-such-path-should-404" | grep -q '<div id="root">' || {
+            echo "::error::404 response does not carry the SPA shell"; exit 1
+          }
+          echo "404 fallback: ok"

@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && node scripts/export-api.mjs && vite build",
+    "build": "tsc -b && node scripts/export-api.mjs && vite build && node scripts/emit-routes.mjs",
+    "build:pages": "BASE_PATH=/value-compass/ npm run build",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest"
