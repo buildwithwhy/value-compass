@@ -1508,28 +1508,39 @@
       "tension_hook": "Funds independent open-source maintainers while announcing that customer content will be used for model development and dataset licensing from October 2026 outside the EEA, UK and Switzerland.",
       "axes": {
         "transparency": {
-          "score": null,
-          "confidence": "C",
-          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) established no finding for StackBlitz on this axis; our record holds little public information here, and absence of findings is not a clean record.",
-          "sources": []
+          "score": 2,
+          "confidence": "B",
+          "note": "Publishes unusually detailed product-data disclosures: a Model training setting that is on by default except for accounts based in the EU, UK, or Switzerland (off by default there), applying to content submitted on or after 7 October 2026, with Enterprise/Team customers under an MSA or DPA excluded from training (\"A new Model training setting in your account settings lets you choose whether Bolt can use your projects and chats to train AI models. It's on by default, except for accounts based in the EU, UK, or Switzerland, where it's off by default\" — verified verbatim 2026-10-30). Bolt Forge (announced 2026-09-14) turns opt-in coding sessions into de-identified datasets \"Bolt.new licenses to AI developers, starting with Arcee AI\"; switching off Forge does not delete previously collected data — users must request removal. Scoring caveat: this is product-level disclosure — StackBlitz is not a foundation-model developer, and the axis's model-building sub-indicators (data provenance, labour, compute) have nothing on record because the company builds no model.",
+          "sources": [
+            "https://support.bolt.new/release-notes",
+            "https://bolt.new/blog/what-is-bolt-forge",
+            "https://bolt.new/platform/security"
+          ]
         },
         "culture_esg": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) established no finding for StackBlitz on this axis; our record holds little public information here, and absence of findings is not a clean record.",
+          "note": "Not scored. No credible dated evidence of layoffs, workplace-review aggregates, environmental disclosure or governance issues was found in the 2026-10-30 research pass; absence of findings is not a clean record (research gap).",
           "sources": []
         },
         "labour_integrity": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) established no data-worker or creator finding for StackBlitz; the announced October 2026 use of customer content for model development and dataset licensing (see tension hook) is a stated future policy whose consent and compensation terms are not established. Absence of findings is not a clean record.",
-          "sources": []
+          "note": "Not scored. The relevant record is user-contributed data labour, not vendor labour: Bolt's Model training setting is opt-out by default for most accounts (on by default except EU/UK/CH), and Bolt Forge opt-in sessions go into datasets licensed to AI developers (\"the allocation is the payment\" — extra usage, with no cash compensation or revenue share documented) (2026-09/10, verified 2026-10-30). A third-party trust assessment reads the terms as granting \"a worldwide, non-exclusive, royalty-free, sublicensable, and transferable license\" over model-development content — third-party interpretation; check the primary terms before legal use. No conventional data-labour vendors, wages or litigation were found; the axis stays not established.",
+          "sources": [
+            "https://support.bolt.new/release-notes",
+            "https://bolt.new/blog/what-is-bolt-forge",
+            "https://verifywise.ai/ai-trust-index/bolt-new"
+          ]
         },
         "wealth_dispersion": {
-          "score": null,
+          "score": 2,
           "confidence": "C",
-          "note": "Not scored. The record establishes only an announced 2022 seed round and no current cap table (see vc_independent); backer concentration, employee equity breadth and pay dispersion are not established, and the rubric states no rule for combining announced participation into a 0–4 score.",
-          "sources": []
+          "note": "A $105.5M Series B was announced 2025-01-22, led by Emergence and GV with participation from Madrona, The Chainsmokers (Mantis), Conviction and others (company announcement, verified 2026-10-30); Bloomberg (2025-01-21) reported talks at a ~$700M valuation. Any Founders Fund participation is not confirmed by this pass. The full cap table, earlier rounds and employee-equity breadth are not established.",
+          "sources": [
+            "https://www.linkedin.com/posts/boltdotnew_today-were-announcing-1055m-in-funding-activity-7287877373394313216-i7Vx",
+            "https://www.bloomberg.com/news/articles/2025-01-21/ai-speech-to-code-startup-stackblitz-is-in-talks-for-a-700-million-valuation"
+          ]
         },
         "public_sharing": {
           "score": 2,
@@ -1575,28 +1586,39 @@
       "tension_hook": "Maintains widely used open-source software while its own AI policy and the v0 pricing page describe training defaults using two different sets of plan labels.",
       "axes": {
         "transparency": {
-          "score": null,
+          "score": 2,
           "confidence": "C",
-          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) established no finding for Vercel on this axis; our record holds little public information here, and absence of findings is not a clean record.",
-          "sources": []
+          "note": "Vercel publishes a documented account of v0's training data: \"v0 was trained on a large corpus of data from various sources, including third parties listed in Vercel's AI Policy\", with v0 Enterprise content and opted-out customers excluded, prompt/content download offered, and the caveat that \"if any or your inputs and outputs were used to train existing v0 models, those models will not be updated\" (docs FAQ, last updated 2026-03-17; verified verbatim 2026-10-30). Set against this, an anonymous employee review alleges layoffs were kept quiet internally (Glassdoor, 2023-01-06). Vercel is not a foundation-model developer — no FMTI anchor; manual score.",
+          "sources": [
+            "https://v0.app/docs/faqs",
+            "https://www.glassdoor.com/Reviews/Employee-Review-Vercel-E6510369-RVW72393509.htm"
+          ]
         },
         "culture_esg": {
-          "score": null,
+          "score": 2,
           "confidence": "C",
-          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) established no finding for Vercel on this axis; our record holds little public information here, and absence of findings is not a clean record.",
-          "sources": []
+          "note": "Layoffs around early 2023 are supported only by an anonymous 2023-01-06 Glassdoor review (\"Was laid off with some of my colleagues and it seems to be kept quiet throughout the whole company\"); no company announcement or WARN-verified headcount data was found for 2022-2024, so no yearly layoff sequence is asserted. Anonymous culture signals are mixed and unquantified: \"It's celebrated to be working on weekends and late nights\"; one review calls the environment \"cultish\". Perception signals from a single source — fragile; a second source would move this either way.",
+          "sources": [
+            "https://www.glassdoor.com/Reviews/Employee-Review-Vercel-E6510369-RVW72393509.htm"
+          ]
         },
         "labour_integrity": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) established no data-worker or creator finding for Vercel; the inconsistent training-default labels between its AI policy and the v0 pricing page (see tension hook) concern customer-content training defaults, and no consent or compensation finding is established. Absence of findings is not a clean record.",
-          "sources": []
+          "note": "Not scored. The relevant record is customer-content training terms, not vendor labour: v0 \"may use user-generated prompts and/or content as inputs to models and learning systems from third-party providers to improve our products\", with Enterprise content excluded and opt-outs not retroactive (docs FAQ, verified verbatim 2026-10-30); no compensation to users whose content improves models is documented. No data-labour vendors or litigation were found; the axis stays not established.",
+          "sources": [
+            "https://v0.app/docs/faqs"
+          ]
         },
         "wealth_dispersion": {
-          "score": null,
+          "score": 2,
           "confidence": "C",
-          "note": "Not scored. The record establishes an announced September 2025 Series F and tender offer (see vc_independent) but no cap-table concentration, employee-equity breadth or pay-dispersion data; the rubric states no rule for combining announced participation into a 0–4 score.",
-          "sources": []
+          "note": "Reported financing: Series E of $250M at a $3.25B post-money valuation (May 2024, Accel-led); Series F of $300M at $9.3B (September 2025, co-led by Accel and GIC), reportedly including a ~$300M tender offer providing liquidity to early investors, employees and former employees; ~$863M disclosed total. No reliable public evidence that the founder holds majority voting control or super-voting shares — third-party synthesis, verify against filings (research pass 2026-10-30).",
+          "sources": [
+            "https://valueaddvc.com/pulse/company/vercel",
+            "https://www.forbes.com/companies/vercel/",
+            "https://aiwiki.ai/wiki/vercel"
+          ]
         },
         "public_sharing": {
           "score": 2,
@@ -1724,38 +1746,50 @@
       "tension_hook": "A listed company answerable to public shareholders, operating Qwen from China — two different sets of obligations on the same product.",
       "axes": {
         "transparency": {
-          "score": null,
-          "confidence": "C",
-          "note": "Not scored. rubric.md §1 records that the 2025 Stanford FMTI included Alibaba among the developers it scored, but no verified FMTI value for Alibaba is transcribed in this dataset's anchor table (scripts/build-evidence.mjs FMTI_2025), so the §1 band mapping cannot be applied; the FMTI index page is carried as the pointer.",
+          "score": 1,
+          "confidence": "A",
+          "note": "Stanford FMTI 2025 scored Alibaba 26/100 — one of four developers scored for the first time (\"This includes two Chinese companies (DeepSeek, Alibaba) both of whom score poorly (at 32 and 26) despite releasing open-weight models\", verified verbatim 2026-10-30). Under the band mapping in _meta.key_anchors.transparency (1 = 13-29), 26 maps to 1. The FMTI company report (run against the Qwen 3 technical report) scores data-acquisition methods 0 — \"The developer does not make methods for acquiring pretraining data adequately clear\" — and awards 0 to training energy, carbon-emissions and water disclosure. Open weights do not make transparency: this is the rubric §1 warning, confirmed with numbers.",
           "sources": [
-            "https://crfm.stanford.edu/fmti/December-2025/index.html"
+            "https://crfm.stanford.edu/fmti/December-2025/index.html",
+            "https://crfm.stanford.edu/fmti/December-2025/company-reports/Alibaba_FinalReport_FMTI2025.html"
           ]
         },
         "culture_esg": {
-          "score": null,
-          "confidence": "C",
-          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) recorded no culture, labour or contribution findings for Alibaba — its group C and D questions were not researched for this late addition; our record holds little public information here, and absence of findings is not a clean record.",
-          "sources": []
+          "score": 2,
+          "confidence": "B",
+          "note": "Corporate commitments on record: in December 2021 Alibaba announced Scope 1 and 2 carbon neutrality by 2030, a 50% Scope 3 carbon-intensity reduction by 2030 (vs 2020), carbon-neutral Alibaba Cloud across Scopes 1-3 by 2030, and a \"Scope 3+\" aim to facilitate 1.5 gigatons of ecosystem decarbonization by 2035. Set against that, FMTI 2025 found no energy, carbon or water reporting for AI model training (company report scores 0 on all three) and describes a governance advisory board whose deployment recommendations are nonbinding. Independent verification of the Scope 3 accounting is not established; current working-hour practices were not researched in this pass (see labour_integrity).",
+          "sources": [
+            "https://www.alibabagroup.com/en-US/document-1489333791666208768",
+            "https://crfm.stanford.edu/fmti/December-2025/company-reports/Alibaba_FinalReport_FMTI2025.html"
+          ]
         },
         "labour_integrity": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) recorded no culture, labour or contribution findings for Alibaba — its group C and D questions were not researched for this late addition; our record holds little public information here, and absence of findings is not a clean record.",
-          "sources": []
+          "note": "Not scored. The 2026-10-30 research pass found no sourced, dated evidence on the pay, terms or subcontracting of data workers in the Qwen training pipeline, and no labour litigation involving Alibaba's AI data labelling was located either. The FMTI 2025 company report scores data-laborer practices 0 and data-acquisition methods 0, which establishes that the supply chain is undisclosed — under the rubric that is nondisclosure, not a documented condition, so no score is entered (research gap).",
+          "sources": [
+            "https://crfm.stanford.edu/fmti/December-2025/company-reports/Alibaba_FinalReport_FMTI2025.html"
+          ]
         },
         "wealth_dispersion": {
-          "score": null,
+          "score": 2,
           "confidence": "C",
-          "note": "Not scored. The record establishes the public listing (NYSE: BABA; HKEX: 9988) and SoftBank as a long-standing large shareholder (c. 11.9% reported in early 2024, approximate), but top-3 backer concentration, employee equity breadth and pay dispersion are not established, board control is not established, and the rubric states no rule for combining backer concentration into a 0–4 score.",
+          "note": "Widely held public company (NYSE: BABA; HKEX: 9988) with an internal Alibaba Partnership that nominates a substantial portion of board candidates — founder influence through nomination rights rather than majority economic ownership (structure as reported 2018). Current Ma/Tsai stakes, partnership composition and the final terms and timing of SoftBank's exit are not established from filings (research pass 2026-10-30) — industry-typical dispersion is the interim read, pending a current exchange filing.",
           "sources": [
-            "https://en.wikipedia.org/wiki/Alibaba_Group"
+            "https://www.bbc.com/news/business-45468409"
           ]
         },
         "public_sharing": {
-          "score": null,
+          "score": 2,
           "confidence": "C",
-          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) recorded no culture, labour or contribution findings for Alibaba — its group C and D questions were not researched for this late addition; our record holds little public information here, and absence of findings is not a clean record.",
-          "sources": []
+          "note": "The Jack Ma Foundation (founded 15 December 2014; education, entrepreneurship, women's leadership, medical support, environment) and the Alibaba Foundation (December 2011, funded with a stated percentage of Alibaba's annual income) are on record. Rural-education giving: the Rural Teacher Initiative selected 100 teachers/year at 100,000 yuan each (UN, 2016); a $30M 10-year rural-teaching pledge (BBC, 2018); company-reported totals of at least $75M pledged and $300M+ distributed or pledged (Forbes Kazakhstan, 2020 — not independently verified). Caution: most headline figures attach to the Jack Ma Foundation personally, not to Alibaba Group as maker. Qwen's open-weight releases are a public-interest output. No binding wealth-sharing structure (no trust/PBC/windfall clause) is on record.",
+          "sources": [
+            "https://www.jackmafoundation.org.cn/about/",
+            "https://www.ansa.it/sito/notizie/economia/business_wire/news/2020-03-29_1291935927.html",
+            "https://www.un.org/sustainabledevelopment/blog/2016/08/jack-ma-quality-rural-education-key-for-china/",
+            "https://www.bbc.com/news/business-45468409",
+            "https://forbes.kz/articles/jack_ma_outlines_bold_vision_for_his_philanthropy_foundation_1"
+          ]
         }
       },
       "backers_relation": "shareholding",
@@ -1794,36 +1828,48 @@
       "tension_hook": "A privacy company whose AI chat runs on models built by OpenAI, Anthropic and Mistral — its own privacy terms sit in front of someone else's model.",
       "axes": {
         "transparency": {
-          "score": null,
-          "confidence": "C",
-          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) recorded no disclosure, conduct or contribution findings for DuckDuckGo — its group C and D questions were not researched for this late addition; our record holds little public information here, and absence of findings is not a clean record.",
-          "sources": []
+          "score": 3,
+          "confidence": "B",
+          "note": "Duck.ai names its model providers (OpenAI, Anthropic, Mistral, Azure, and open models such as gpt-oss-120b and Gemma hosted via Tinfoil), shows the active model to users, and publishes retention/training rules per provider: \"By default, Duck.ai does not record or store any of your chats, and your conversations are not used to train chat models by DuckDuckGo or the underlying model providers (for example, Open AI and Anthropic)\" (verified verbatim 2026-10-30). Exceptions are documented: optional feedback can store a conversation; Sync & Backup stores chats end-to-end encrypted; OpenAI/Anthropic may hold chats in short-term memory (up to 1 hour, never written to disk) or retain where required by law; output-removal requests route to the provider. Caveats: safeguards rest partly on private provider agreements that are not published for inspection, and DuckDuckGo is not a foundation-model developer — no FMTI anchor, so this is a manual score on the rubric's six sub-indicators.",
+          "sources": [
+            "https://start.duckduckgo.com/duckduckgo-help-pages/duckai/ai-chat-privacy",
+            "https://start.duckduckgo.com/duckduckgo-help-pages/r-legal/privacy-rights"
+          ]
         },
         "culture_esg": {
-          "score": null,
+          "score": 2,
           "confidence": "C",
-          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) recorded no disclosure, conduct or contribution findings for DuckDuckGo — its group C and D questions were not researched for this late addition; our record holds little public information here, and absence of findings is not a clean record.",
-          "sources": []
+          "note": "Company reporting describes a deliberately lean hiring culture: \"never in the company history, we were forced to do any group layoffs\" and a stated 95% employee retention rate (Duck Tales ep. 12, 2025-12-10 — self-reported, not independently verified, and silent on individual role eliminations). The 2026-10-30 pass found no environmental disclosure to credit the environmental sub-indicator.",
+          "sources": [
+            "https://insideduckduckgo.substack.com/p/duck-tales-hiring-at-duckduckgo-and"
+          ]
         },
         "labour_integrity": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) recorded no disclosure, conduct or contribution findings for DuckDuckGo — its group C and D questions were not researched for this late addition; our record holds little public information here, and absence of findings is not a clean record.",
-          "sources": []
+          "note": "Not scored. DuckDuckGo trains no frontier model in-house — Duck.ai serves third-party models under contract (OpenAI, Anthropic, Mistral, Azure, Tinfoil-hosted open models) — so no data-labour or moderation supply chain of its own is on record; no labour litigation was found in the 2026-10-30 pass. Structural note, not a scored finding (research gap).",
+          "sources": [
+            "https://start.duckduckgo.com/duckduckgo-help-pages/duckai/ai-chat-privacy"
+          ]
         },
         "wealth_dispersion": {
-          "score": null,
+          "score": 2,
           "confidence": "C",
-          "note": "Not scored. The record establishes venture backing (Union Square Ventures led the October 2011 Series A) and an advertising- plus subscription-revenue model, but what Union Square Ventures now holds is not established; backer concentration, employee equity breadth and pay dispersion are not established, and the rubric states no rule for combining backer history into a 0–4 score.",
+          "note": "Bootstrapped until Union Square Ventures led the October 2011 Series A — a $3-5M range per contemporaneous reporting, with angel participation and a USV managing partner joining the board — so the folklore that DuckDuckGo took no outside investment is false as a general claim. No further rounds were found in the 2026-10-30 pass. What USV or founder Gabriel Weinberg hold today is not established: the company is private and no current cap table is public.",
           "sources": [
-            "https://en.wikipedia.org/wiki/DuckDuckGo"
+            "https://techcrunch.com/2011/10/13/union-square-ventures-invests-in-alternative-search-engine-duckduckgo/",
+            "https://www.wsj.com/articles/DJFVW00020111013e7adt704c",
+            "https://www.usv.com/writing/2011/10/duck-duck-go/"
           ]
         },
         "public_sharing": {
-          "score": null,
+          "score": 2,
           "confidence": "C",
-          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) recorded no disclosure, conduct or contribution findings for DuckDuckGo — its group C and D questions were not researched for this late addition; our record holds little public information here, and absence of findings is not a clean record.",
-          "sources": []
+          "note": "Company-reported giving: duckduckgo.com/donations itemizes \"over $9,050,000\" donated since 2011 to privacy, open-source, tech-journalism and data-rights organizations (\"over a million dollars to, I think this year it was something like 29 different organizations\" — company podcast ep. 13, 2025-12-10). Self-reported and not audited, though itemized by organization and year; no binding structure (no trust/PBC/windfall clause) is on record.",
+          "sources": [
+            "https://duckduckgo.com/donations",
+            "https://insideduckduckgo.substack.com/p/duck-tales-duckduckgo-donations-why"
+          ]
         }
       },
       "capital_profile": {
