@@ -280,6 +280,198 @@ const CLAIM_REVIEW = {
       'Reviewed 2026-09-17 against the cited source. Three problems, and the aggregation question is the least of them. (1) The source calls this a pledge; §5 explicitly weights pledges below binding structures, and 4 is defined as the binding tier. (2) The access clause that a 4 also requires is not in the source at all. (3) The commitment is five years old with no evidence of execution on the page beyond a $10M pilot donation. The supported fact is preserved and dated. No replacement score is proposed — the correct next step is a human re-score against §5, not an automated one.',
   }),
 
+  // ---- Backfill from the 2026-10-30 research pass (art_zYCpqJCa) --------
+  // Quotes below were verified verbatim against the primary URLs on
+  // 2026-10-30; figures without a primary filing are dated as reported.
+  'Alibaba/transparency': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      'Alibaba scored 26/100 on the 2025 Foundation Model Transparency Index — "This includes two Chinese companies (DeepSeek, Alibaba) both of whom score poorly (at 32 and 26) despite releasing open-weight models."',
+    source_date: FMTI_DATE,
+    source_scope:
+      'Stanford scores how much a developer discloses about its practices; the Alibaba company report draws on the Qwen 3 technical report as the most relevant document. It is not a rating of any current consumer product.',
+    unsupported_clauses: [],
+    scoring_rule: FMTI_RULE,
+    justifies_whole: true,
+    justification_note:
+      'Verified 2026-10-30 from the FMTI index text and the Alibaba company report. 26 falls in band 1 (13–29). Read it as evidence about the organisation as assessed in December 2025, not about what a Qwen product does today.',
+  }),
+  'Alibaba/culture_esg': R({
+    claim_support: 'partial',
+    supported_fact:
+      'In December 2021 Alibaba announced Scope 1 and 2 carbon neutrality by 2030, a 50% Scope 3 carbon-intensity reduction by 2030, and a 1.5-gigaton "Scope 3+" ecosystem aim by 2035.',
+    source_date: '2021-12-17 (the announcement date)',
+    unsupported_clauses: [
+      '"independent verification of the Scope 3 accounting" — not established',
+      '"current working-hour practices" — not researched this pass',
+    ],
+    scoring_rule: NO_RULE,
+    justifies_whole: false,
+    justification_note:
+      'The targets are dated and sourced; execution and verification are not. FMTI 2025 found no energy, carbon or water disclosure for AI training, which sits in the environmental sub-indicator.',
+  }),
+  'Alibaba/wealth_dispersion': R({
+    claim_support: 'partial',
+    supported_fact:
+      'Alibaba is a widely held public company (NYSE: BABA; HKEX: 9988) whose internal Alibaba Partnership nominates a substantial portion of board candidates.',
+    source_date: '2018-09-10 (reporting on the founder’s role; structure as of that date)',
+    unsupported_clauses: [
+      'Sub-indicator — current Ma/Tsai stakes',
+      'Sub-indicator — partnership composition',
+      'Sub-indicator — SoftBank exit terms',
+    ],
+    scoring_rule: NO_RULE,
+    justifies_whole: false,
+    justification_note:
+      'Broad public float and partnership nomination rights are evidenced; the cap-table specifics a firmer score would rest on need a current exchange filing.',
+  }),
+  'Alibaba/public_sharing': R({
+    claim_support: 'partial',
+    supported_fact:
+      'The Jack Ma Foundation was founded on 15 December 2014 and the Alibaba Foundation (December 2011) is funded with a stated percentage of Alibaba’s annual income; rural-education giving is documented from 2016 onward.',
+    source_date: '2014-12-15 (foundation founding); giving documented 2016-2020',
+    unsupported_clauses: [
+      '"$300M+ distributed or pledged" — company-reported figures attaching to Jack Ma personally, not Alibaba Group',
+      'any binding wealth-sharing structure',
+    ],
+    scoring_rule: NO_RULE,
+    justifies_whole: false,
+    justification_note:
+      'Recurring funded philanthropy and open-weight releases are evidenced; no binding structure is on record, and the rubric states no rule combining the sub-indicators.',
+  }),
+  'DuckDuckGo/transparency': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      '"By default, Duck.ai does not record or store any of your chats, and your conversations are not used to train chat models by DuckDuckGo or the underlying model providers (for example, Open AI and Anthropic)." — with provider terms (zero data retention, training prohibition) and their limited, documented exceptions published per provider.',
+    source_date: 'help page current as retrieved 2026-10-30',
+    source_scope:
+      'This documents the Duck.ai product’s data handling, not the transparency of a model developer — DuckDuckGo is not a foundation-model developer and has no FMTI anchor.',
+    unsupported_clauses: [
+      '"safeguards depend on private provider agreements, which are not published for inspection"',
+    ],
+    scoring_rule: NO_RULE,
+    justifies_whole: false,
+    justification_note:
+      'The disclosure practices are directly documented; the manual 3 rests on the rubric’s six sub-indicators read together, and the rubric states no rule combining them.',
+  }),
+  'DuckDuckGo/culture_esg': R({
+    claim_support: 'partial',
+    supported_fact:
+      '"never in the company history, we were forced to do any group layoffs" and a stated 95% retention rate — company-reported.',
+    source_date: '2025-12-10 (episode 12 of the company podcast)',
+    unsupported_clauses: [
+      '"independent verification" — self-reported only',
+      '"individual role eliminations" — the claim is silent on them',
+      '"environmental practices" — none found this pass',
+    ],
+    scoring_rule: NO_RULE,
+    justifies_whole: false,
+    justification_note:
+      'The no-group-layoffs and retention claims are sourced but company-reported; the remaining sub-indicators have no evidence.',
+  }),
+  'DuckDuckGo/wealth_dispersion': R({
+    claim_support: 'partial',
+    supported_fact:
+      'Union Square Ventures led DuckDuckGo’s October 2011 Series A (a $3-5M range per contemporaneous reporting); the folklore of never taking outside investment is false as a general claim.',
+    source_date: '2011-10-13 and 2011-10-14 (contemporaneous reporting)',
+    unsupported_clauses: [
+      'Sub-indicator — current Weinberg stake',
+      'Sub-indicator — voting control',
+      'Sub-indicator — board composition today',
+    ],
+    scoring_rule: NO_RULE,
+    justifies_whole: false,
+    justification_note:
+      'The 2011 round is documented; the company is private and no current cap table is public, so concentration today is not established.',
+  }),
+  'DuckDuckGo/public_sharing': R({
+    claim_support: 'partial',
+    supported_fact:
+      'duckduckgo.com/donations itemizes "over $9,050,000" donated since 2011 ("over a million dollars to, I think this year it was something like 29 different organizations" — company podcast ep. 13, 2025-12-10).',
+    source_date: 'donations page retrieved 2026-10-30; episode 2025-12-10',
+    unsupported_clauses: [
+      '"audited totals" — self-reported, not audited',
+      'any binding wealth-sharing structure',
+    ],
+    scoring_rule: NO_RULE,
+    justifies_whole: false,
+    justification_note:
+      'Recurring, itemized giving is evidenced at company level; no binding structure is on record, and the rubric states no rule combining the sub-indicators.',
+  }),
+  'StackBlitz/transparency': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      '"A new Model training setting in your account settings lets you choose whether Bolt can use your projects and chats to train AI models. It’s on by default, except for accounts based in the EU, UK, or Switzerland, where it’s off by default" (release notes); Bolt Forge sessions "go into datasets Bolt.new licenses to AI developers, starting with Arcee AI" (2026-09-14).',
+    source_date: '2026-09-14 and the Sep 21 - Oct 4 2026 release-notes week',
+    source_scope:
+      'Product data-use disclosure. StackBlitz is not a foundation-model developer; the rubric’s transparency axis targets model-building disclosure, which is why this does not score above 2.',
+    unsupported_clauses: [],
+    scoring_rule: NO_RULE,
+    justifies_whole: false,
+    justification_note:
+      'Above-norm product-level disclosure; the model-building sub-indicators have nothing on record because the company builds no model, and no rule combines the sub-indicators.',
+  }),
+  'StackBlitz/wealth_dispersion': R({
+    claim_support: 'partial',
+    supported_fact:
+      'A $105.5M Series B led by Emergence and GV was announced on 2025-01-22; Bloomberg reported talks at a ~$700M valuation (2025-01-21).',
+    source_date: '2025-01-21 and 2025-01-22 (as reported; no primary filing retrieved)',
+    unsupported_clauses: [
+      'Sub-indicator — full cap table',
+      'Sub-indicator — employee-equity breadth',
+      'Sub-indicator — pay dispersion',
+    ],
+    scoring_rule: NO_RULE,
+    justifies_whole: false,
+    justification_note:
+      'The announced round is sourced; concentration and dispersion measures a 0-4 would rest on are not established.',
+  }),
+  'Vercel/transparency': R({
+    claim_support: 'partial',
+    supported_fact:
+      '"v0 was trained on a large corpus of data from various sources, including third parties listed in Vercel’s AI Policy", with Enterprise content and opted-out customers excluded and opt-outs not retroactive (v0 docs FAQ).',
+    source_date: 'docs FAQ last updated 2026-03-17; retrieved 2026-10-30',
+    source_scope:
+      'Product data-use documentation. Vercel is not a foundation-model developer and has no FMTI anchor.',
+    unsupported_clauses: [
+      '"internal transparency" — a single anonymous 2023-01-06 Glassdoor review alleges quiet layoffs',
+    ],
+    scoring_rule: NO_RULE,
+    justifies_whole: false,
+    justification_note:
+      'The public product-data documentation is directly sourced; the internal-transparency clause rests on one anonymous review, and no rule combines the sub-indicators.',
+  }),
+  'Vercel/culture_esg': R({
+    claim_support: 'partial',
+    supported_fact:
+      'An anonymous Glassdoor review dated 2023-01-06 reports a layoff: "Was laid off with some of my colleagues and it seems to be kept quiet throughout the whole company."',
+    source_date: '2023-01-06 (anonymous review)',
+    unsupported_clauses: [
+      '"company announcement" — none found',
+      '"WARN-verified headcount data" — not found for 2022-2024',
+      '"quantified culture signals" — anonymous and unquantified',
+    ],
+    scoring_rule: NO_RULE,
+    justifies_whole: false,
+    justification_note:
+      'Single anonymous source; deliberately fragile. A second source would move this either way, so the score is recorded at industry-typical with C confidence and the fragility named.',
+  }),
+  'Vercel/wealth_dispersion': R({
+    claim_support: 'partial',
+    supported_fact:
+      'Series E of $250M at a $3.25B post-money valuation (May 2024, Accel-led) and Series F of $300M at $9.3B (September 2025, Accel and GIC co-led) are on record as reported, the latter reportedly including a ~$300M tender offer.',
+    source_date: '2024-05 and 2025-09 (as reported; no primary filing retrieved)',
+    unsupported_clauses: [
+      'Sub-indicator — founder voting control (third-party synthesis only)',
+      'Sub-indicator — employee-equity breadth',
+      'Sub-indicator — pay dispersion',
+    ],
+    scoring_rule: NO_RULE,
+    justifies_whole: false,
+    justification_note:
+      'The reported rounds and tender-offer liquidity are sourced; the concentration measures a firmer score would rest on are not established.',
+  }),
+
   // ---- Partial claim support ---------------------------------------------
   // The source covers one clause of a multi-clause rationale. Where a narrow
   // fact is nonetheless established, it is preserved.

@@ -349,7 +349,10 @@ describe('unequal coverage is not presented as a definitive ordering', () => {
     const { placed } = orderByPriorities(makers, transparencyOnly)
     // All eight FMTI-scored makers joined this set on 2026-09-17, when the
     // official labelled chart was inspected and every value transcribed.
+    // Alibaba joined on 2026-10-30, when its FMTI 2025 company report (26/100)
+    // was transcribed — the ninth rule-backed transparency score.
     expect(placed.map((p) => p.maker.id).sort()).toEqual([
+      'Alibaba',
       'Anthropic',
       'DeepSeek',
       'Google DeepMind',
@@ -359,6 +362,17 @@ describe('unequal coverage is not presented as a definitive ordering', () => {
       'OpenAI',
       'xAI',
     ])
+  })
+
+  it('admits Alibaba once its FMTI company-report value is transcribed', () => {
+    // The Alibaba score was read off the FMTI 2025 pages on 2026-10-30 — a
+    // different retrieval path from the 2026-09-17 chart transcription, so it
+    // carries its own date.
+    const ev = axisEvidenceFor('Alibaba', 'transparency')
+    expect(ev.supported_fact).toContain('26/100')
+    expect(ev.justifies_whole).toBe(true)
+    expect(ev.decision_eligible).toBe(true)
+    expect(ev.justification_note).toMatch(/2026-10-30/)
   })
 
   it('admits a score once the value its rule consumes is transcribed', () => {
