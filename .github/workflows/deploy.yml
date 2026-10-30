@@ -34,6 +34,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Self-enable Pages on the first deploy (the repo's Pages site does not
+      # exist yet; this creates it with a GitHub-Actions build source via the
+      # workflow's pages:write token — the app integration's own token cannot).
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
