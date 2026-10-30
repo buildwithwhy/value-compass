@@ -92,6 +92,33 @@ Re-run it after any data edit; the classification rules live at the top of the s
 
 Funder→maker edges are built **by matching `funders[].makers_backed` / `owns_outright` to `makers[].id`** — never on display name. An edge whose target doesn't resolve to a maker `id` logs a `console.warn` rather than crashing. With the current data, all **89** edges resolve cleanly.
 
+## Reusing this data
+
+This repository mixes three kinds of content, and they are licensed differently:
+
+1. **Value Compass's own work** — the axis scores, rationales, notes, tension
+   hooks, confidence flags, and evidence classifications in `src/data/` (and the
+   derived `evidence.json`) — is licensed **CC BY 4.0**. See [LICENSE](LICENSE).
+   You may reuse, adapt, and republish it for any purpose, including
+   commercially, provided you credit "Value Compass
+   (buildwithwhy/value-compass)", link the license, and indicate changes you
+   made. The planned machine-readable export under `/api/v1/` will carry this
+   license in its manifest so it travels with the data.
+
+2. **Sourced facts about third parties** — funding relationships, ownership
+   records, and practices as reported by the sources cited in each maker's
+   `sources[]` — are facts, and facts are free to use; the *collection and
+   arrangement* of them here is Value Compass's work, covered by the CC BY 4.0
+   above. When reusing, cite the original sources rather than Value Compass as
+   the origin of the underlying claims.
+
+3. **Verbatim quotations from third parties** — quoted passages appearing in
+   `relationships` entries and in linked sources — remain the property of their
+   original publishers. They are included **attribution-only**, with links to
+   the originals, and are not licensed for reuse under this repository's terms.
+   If you want to republish a quotation, link to or license it from its
+   original publisher.
+
 ## The five axes (all 0–4, higher = better)
 
 | Axis | Higher score means |
