@@ -11,11 +11,15 @@ const HomeView = lazy(() => import('./pages/HomeView').then((m) => ({ default: m
 const GraphView = lazy(() => import('./pages/GraphView').then((m) => ({ default: m.GraphView })))
 const BrowseView = lazy(() => import('./pages/BrowseView').then((m) => ({ default: m.BrowseView })))
 const MakerPage = lazy(() => import('./pages/MakerPage').then((m) => ({ default: m.MakerPage })))
+const FunderPage = lazy(() => import('./pages/FunderPage').then((m) => ({ default: m.FunderPage })))
 const CompareView = lazy(() => import('./pages/CompareView').then((m) => ({ default: m.CompareView })))
 const RecommendView = lazy(() =>
   import('./pages/RecommendView').then((m) => ({ default: m.RecommendView })),
 )
 const AboutView = lazy(() => import('./pages/AboutView').then((m) => ({ default: m.AboutView })))
+const NotFoundPage = lazy(() =>
+  import('./pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage })),
+)
 
 /** /switch/:from[/:to] becomes a comparison with :from marked as current. */
 function SwitchRedirect() {
@@ -52,6 +56,7 @@ export default function App() {
               <Route path="/graph" element={<GraphView />} />
               <Route path="/browse" element={<BrowseView />} />
               <Route path="/maker/:id" element={<MakerPage />} />
+              <Route path="/funder/:slug" element={<FunderPage />} />
               <Route path="/compare" element={<CompareView />} />
               {/* Retired: the axis-weighting journey could not separate makers.
                   Its entry points now lead to the concrete questions. */}
@@ -65,7 +70,7 @@ export default function App() {
               <Route path="/switch/:from/:to" element={<SwitchRedirect />} />
               <Route path="/about" element={<AboutView />} />
               <Route path="/about/working-draft" element={<AboutView draft />} />
-              <Route path="*" element={<HomeView />} />
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Suspense>
         </main>

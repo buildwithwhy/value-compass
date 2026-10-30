@@ -1,27 +1,25 @@
-import { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import { getFunder, getMaker, getMakerBySlug } from '../lib/data'
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
+import { getMaker, getMakerBySlug } from '../lib/data'
 import { MakerDetail } from '../components/MakerDetail'
-import { Drawer } from '../components/Drawer'
-import { FunderDetail } from '../components/FunderCard'
+import { funderPath } from '../lib/routes'
+import { NotFoundPage } from './NotFoundPage'
 
 export function MakerPage() {
   const { id } = useParams<{ id: string }>()
-  // Canonical URLs carry the slug; ids (the pre-slug display-name routes) keep
-  // resolving until the routing migration adds real redirects (D4).
+  const navigate = useNavigate()
   const ref = id ? decodeURIComponent(id) : undefined
-  const maker = getMakerBySlug(ref) ?? getMaker(ref)
-  const [funderId, setFunderId] = useState<string | null>(null)
-  const funder = getFunder(funderId ?? undefined)
-
+  // Canonical URLs carry the slug. A legacy display-name id (`/maker/Anthropic`)
+  // redirects to its slug so old links converge on one address; anything else
+  // is a real 404, not the homepage.
+  const maker = getMakerBySlug(ref)
   if (!maker) {
+    const legacy = getMaker(ref)
+    if (legacy) return <Navigate to={`/maker/${legacy.slug}`} replace />
     return (
-      <div className="mx-auto max-w-3xl px-4 py-10 text-center">
-        <p className="text-slate-600">Maker “{id}” not found.</p>
-        <Link to="/browse" className="text-teal-700 hover:underline">
-          ← Back to browse
-        </Link>
-      </div>
+      <NotFoundPage
+        title="Maker not found"
+        message={`No maker “${id}” is recorded in the directory.`}
+      />
     )
   }
 
@@ -30,15 +28,9 @@ export function MakerPage() {
       <Link to="/browse" className="mb-3 inline-block text-sm text-teal-700 hover:underline">
         ← All makers
       </Link>
-      <MakerDetail maker={maker} onOpenFunder={setFunderId} />
-
-      <Drawer
-        open={funder != null}
-        onClose={() => setFunderId(null)}
-        title={<span className="text-lg font-bold text-slate-900">{funder?.name}</span>}
-      >
-        {funder && <FunderDetail funder={funder} onOpenMaker={() => setFunderId(null)} />}
-      </Drawer>
+      {/* Funder references navigate to the funder's own page — the detail
+          surface is URL-addressable here rather than drawer-bound. */}
+      <MakerDetail maker={maker} onOpenFunder={(funderId) => navigate(funderPath(funderId))} />
     </div>
   )
 }
