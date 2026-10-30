@@ -163,6 +163,22 @@ describe('guards fail on a deliberately corrupted fixture', () => {
     )
   })
 
+  it('detects a missing axis, including the newest one', () => {
+    // validateMaker walks AXIS_KEYS, so a future seventh axis is covered by
+    // the same loop; this pins the behaviour for the sixth.
+    const deDuplicated = badMakers.map((m, i) =>
+      i === 0 ? m : { ...m, slug: `bad-maker-two-${i}` },
+    )
+    const { open_weights: _omitted, ...axesWithoutNewAxis } = deDuplicated[1].axes
+    const record = { ...deDuplicated[1], axes: axesWithoutNewAxis } as unknown as Parameters<
+      typeof validateMaker
+    >[0]
+    const problems = validateMaker(record)
+    expect(problems).toContainEqual(
+      expect.stringContaining('axis "open_weights" is missing'),
+    )
+  })
+
   it('detects a dangling funder portfolio edge', () => {
     const problems = validateFunder(badFunders[0], badMakerIds)
     expect(problems).toContainEqual(

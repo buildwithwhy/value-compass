@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { makers, makersMeta, methodologyMarkdown, rubricMarkdown } from '../lib/data'
+import { AXIS_KEYS } from '../lib/types'
 import { coverageFor, evidenceMeta, evidenceSummary } from '../lib/evidence'
 import { ConfidenceLegend } from '../components/ConfidenceBadge'
 import { EvidenceLegend, StatementKinds } from '../components/EvidenceBadge'
@@ -28,7 +29,7 @@ function CoverageTable() {
           ))}
           <tr className="border-t-2 border-slate-200">
             <td className="py-1.5 pr-3 font-semibold text-slate-700">
-              Total axis assessments ({makers.length} makers × 5 axes)
+              Total axis assessments ({makers.length} makers × {AXIS_KEYS.length} axes)
             </td>
             <td className="py-1.5 text-right font-extrabold text-slate-900">{cov.total}</td>
           </tr>
@@ -145,8 +146,11 @@ export function AboutView({ draft = false }: { draft?: boolean }) {
       <div className="mt-8 rounded-xl border border-slate-200 bg-slate-50 p-4">
         <h2 className="text-sm font-bold text-slate-700">Where the rubric came from</h2>
         <p className="mt-1 text-sm leading-snug text-slate-600">
-          The five axes were worked out in an internal design document before any evidence was
-          gathered. It is kept unedited, and marked as a working draft rather than as methodology.
+          The first five axes were worked out in an internal design document before any evidence
+          was gathered. It is kept unedited, and marked as a working draft rather than as
+          methodology. A sixth axis, open weights / source availability, was added later from a
+          research pack whose draft scale is recorded in the data but not yet adopted as a rubric
+          rule.
         </p>
         <Link
           to="/about/working-draft"

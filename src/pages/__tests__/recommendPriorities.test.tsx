@@ -50,9 +50,12 @@ describe('axis priorities in the tool finder', () => {
     expect(screen.getByTestId('search').textContent).toBe('')
     const submit = screen.getByRole('button', { name: 'Show my options' })
     expect(submit).toHaveProperty('disabled', true)
-    // The panel is reachable: its five axis rows are on the page.
+    // The panel is reachable: its six axis rows are on the page.
     expect(
       screen.getByRole('radiogroup', { name: 'How much Transparency matters to you' }),
+    ).toBeTruthy()
+    expect(
+      screen.getByRole('radiogroup', { name: 'How much Open weights / source availability matters to you' }),
     ).toBeTruthy()
   })
 

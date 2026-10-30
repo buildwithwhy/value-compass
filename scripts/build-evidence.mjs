@@ -129,6 +129,8 @@ const NO_RULE =
   'None. The rubric lists sub-indicators for this axis but states no rule for combining them into a 0–4 score.'
 const FMTI_RULE =
   'rubric.md §1 — "External anchor: Stanford FMTI 2025 (use directly where it exists) … Map FMTI/100 → 0–4", with bands in makers.json _meta.key_anchors.transparency.'
+const OPEN_WEIGHTS_RULE =
+  'No adopted rule. The 2026-10-30 research pack (art_zYCpqJCa Part B) proposes a whole-axis draft scale, recorded in makers.json _meta.key_anchors.open_weights, keyed on the license terms of released weights and code. rubric.md does not carry it yet, so draft-scale scores stay decision-ineligible until the team adopts the scale as a rubric rule.'
 const FMTI_DATE = '2025-12-11 (the 2025 Foundation Model Transparency Index)'
 const NOT_STATED = 'not stated in record'
 
@@ -470,6 +472,189 @@ const CLAIM_REVIEW = {
     justifies_whole: false,
     justification_note:
       'The reported rounds and tender-offer liquidity are sourced; the concentration measures a firmer score would rest on are not established.',
+  }),
+
+  // ---- Open-weights axis (2026-10-30 research pack, Part B) ---------------
+  // Scored entries: the license/release fact is directly verified against the
+  // primary source, but the 0-4 applies the pack's DRAFT whole-axis scale, so
+  // every score stays decision-ineligible until the rubric adopts it. Unscored
+  // entries for this axis live in the makers.json notes, not here.
+  'OpenAI/open_weights': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      'OpenAI has published gpt-oss-120b and gpt-oss-20b as open-weight reasoning models available under the Apache 2.0 license and the gpt-oss usage policy (model card).',
+    source_date: '2025-08-05 (the model card date; re-verified 2026-10-30)',
+    unsupported_clauses: [
+      'Sub-indicator — flagship GPT-5-class models remain closed',
+      'Sub-indicator — peripheral open-source inventory (SDKs)',
+    ],
+    scoring_rule: OPEN_WEIGHTS_RULE,
+    justifies_whole: false,
+    justification_note:
+      'The gpt-oss release terms are direct. The 0–4 applies the draft open-weights scale, so the score is recorded but stays decision-ineligible until the scale is adopted.',
+  }),
+  'Google DeepMind/open_weights': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      "Google DeepMind publishes AlphaFold 2's source code under the Apache 2.0 license (repository created 2021-06-17) and its model parameters under CC BY 4.0; the Gemma family is distributed under the Gemma Terms of Use.",
+    source_date: '2021-06-17 (repository creation; re-verified 2026-10-30)',
+    unsupported_clauses: [
+      'Sub-indicator — Gemini models remain closed',
+      'Sub-indicator — how much of the current product line has open artifacts',
+    ],
+    scoring_rule: OPEN_WEIGHTS_RULE,
+    justifies_whole: false,
+    justification_note:
+      'The AlphaFold license split (code Apache 2.0, parameters CC BY 4.0) and the conditional Gemma terms are direct. The 0–4 applies the draft scale — decision-ineligible until adopted.',
+  }),
+  'xAI/open_weights': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      'The xAI Grok-1 repository states: "The code and associated Grok-1 weights in this release are licensed under the Apache 2.0 license." (2024-03-17).',
+    source_date: '2024-03-17 (repository creation; re-verified 2026-10-30)',
+    unsupported_clauses: [
+      "Sub-indicator — Grok 2.5's reported August 2025 weight publication: primary license text not verified in this pass",
+      'Sub-indicator — flagship Grok models remain closed',
+    ],
+    scoring_rule: OPEN_WEIGHTS_RULE,
+    justifies_whole: false,
+    justification_note:
+      'Grok-1\'s Apache 2.0 terms are direct; the one-off character of the release and the unverified Grok 2.5 license are why the draft-scale score stays below 4 and decision-ineligible.',
+  }),
+  'Meta/open_weights': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      "The Llama 4 Community License (effective 2025-04-05) grants a limited, non-transferable license to the Llama 4 weights with 'Built with Llama' attribution and a naming requirement for derivatives; above 700M monthly active users a separate Meta license is required.",
+    source_date: '2025-04-05 (license effective date; re-verified 2026-10-30)',
+    unsupported_clauses: [
+      "Sub-indicator — the dataset's recorded April 2026 closed-weight 'Muse Spark' pivot, which this pass could not verify",
+    ],
+    scoring_rule: OPEN_WEIGHTS_RULE,
+    justifies_whole: false,
+    justification_note:
+      'The Llama 4 Community License text is direct, including its conditionality. The 0–4 applies the draft scale — decision-ineligible until adopted; the pivot record stays unscored.',
+  }),
+  'Mistral/open_weights': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      "Mistral's help center states: 'Most of our open-source models are released under the Apache 2.0 license', with certain models under a modified MIT license whose condition applies to companies above $20M monthly revenue (retrieved 2026-10-30).",
+    source_date: 'help page dated 2026-08-12, retrieved 2026-10-30',
+    unsupported_clauses: [
+      'Sub-indicator — per-checkpoint license sweep across the full model list',
+    ],
+    scoring_rule: OPEN_WEIGHTS_RULE,
+    justifies_whole: false,
+    justification_note:
+      'The Apache 2.0 default and the modified-MIT revenue condition are direct from Mistral\'s own help center. The 0–4 applies the draft scale — decision-ineligible until adopted.',
+  }),
+  'DeepSeek/open_weights': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      'DeepSeek\'s R1 release notice states: "Code and models are released under the MIT License: Distill & commercialize freely!" (2025-01-20, following V3 on 2024-12-26).',
+    source_date: '2025-01-20 (the release notice date; re-verified 2026-10-30)',
+    unsupported_clauses: [
+      'Sub-indicator — per-checkpoint license sweep across the full model list',
+    ],
+    scoring_rule: OPEN_WEIGHTS_RULE,
+    justifies_whole: false,
+    justification_note:
+      'The MIT license statement is direct from the release notice. The 0–4 applies the draft open-weights scale — decision-ineligible until adopted.',
+  }),
+  'Microsoft/open_weights': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      "Microsoft Research's January 2025 document states: 'Phi-4 model weights are currently available on Huggingface and Azure AI Foundry under an MIT License.'",
+    source_date: 'January 2025 (the document date; re-verified 2026-10-30)',
+    unsupported_clauses: [
+      'Sub-indicator — MAI models: no open-weight move established in this pass',
+      'Sub-indicator — Copilot products remain closed',
+    ],
+    scoring_rule: OPEN_WEIGHTS_RULE,
+    justifies_whole: false,
+    justification_note:
+      'The Phi-4 MIT license statement is direct. The 0–4 applies the draft scale — decision-ineligible until adopted; MAI availability stays a research gap.',
+  }),
+  'Replit/open_weights': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      'The Replit GitHub organization lists 121 public repositories (including MIT-licensed tooling such as kaboom, clui and upm); the replit-agent organization lists 0 public repositories.',
+    source_date: 'org pages retrieved 2026-10-30',
+    unsupported_clauses: [
+      'Sub-indicator — whether any Replit model weights are published',
+      'Sub-indicator — license sweep across the remaining public repos',
+    ],
+    scoring_rule: OPEN_WEIGHTS_RULE,
+    justifies_whole: false,
+    justification_note:
+      'The repository counts and tooling licenses are direct from the two org pages. The 0–4 applies the draft scale — decision-ineligible until adopted.',
+  }),
+  'Moonshot/open_weights': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      'The Kimi K2 license text reads: "Modified MIT License" — the sole modification requires prominently displaying "Kimi K2" in commercial products above 100M monthly active users or US$20M monthly revenue.',
+    source_date: 'LICENSE text retrieved 2026-10-30',
+    unsupported_clauses: [
+      'Sub-indicator — license sweep beyond the K2 family',
+    ],
+    scoring_rule: OPEN_WEIGHTS_RULE,
+    justifies_whole: false,
+    justification_note:
+      "The Modified MIT terms are direct from the LICENSE text. The 0–4 applies the draft scale — decision-ineligible until adopted.",
+  }),
+  'StackBlitz/open_weights': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      "The bolt.diy README describes it as 'the official open source version of Bolt.new', published under the MIT license; StackBlitz's Terms of Service govern Bolt and WebContainers as proprietary hosted services.",
+    source_date: 'README and Terms retrieved 2026-10-30 (Terms published 2026-09-14)',
+    unsupported_clauses: [
+      'Sub-indicator — no model weights: StackBlitz is not a model developer',
+      'Sub-indicator — WebContainer API commercial-license terms in detail',
+    ],
+    scoring_rule: OPEN_WEIGHTS_RULE,
+    justifies_whole: false,
+    justification_note:
+      'bolt.diy\'s MIT license and the proprietary hosted-product terms are direct. The 0–4 applies the draft scale — decision-ineligible until adopted.',
+  }),
+  'Vercel/open_weights': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      "Vercel's own materials describe the AI SDK as 'a free open-source library' built and maintained by Vercel, while v0 is documented as a hosted product without published source.",
+    source_date: 'pages retrieved 2026-10-30',
+    unsupported_clauses: [
+      'Sub-indicator — no model weights: Vercel is not a model developer',
+      'Sub-indicator — license sweep across the remaining Vercel org repos',
+    ],
+    scoring_rule: OPEN_WEIGHTS_RULE,
+    justifies_whole: false,
+    justification_note:
+      'The open-source infrastructure libraries and the closed v0 product line are direct from Vercel\'s own pages. The 0–4 applies the draft scale — decision-ineligible until adopted.',
+  }),
+  'Alibaba/open_weights': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      "The AI Ownership Index records the Qwen family as open_weights, with 'Apache License 2.0 (mainstream Qwen3 sizes; verify per checkpoint)' and legacy Tongyi Qianwen checkpoints carrying a >100M-MAU trigger.",
+    source_date: 'retrieved 2026-10-30 (third-party index — not a primary license text)',
+    unsupported_clauses: [
+      'Sub-indicator — per-checkpoint license verification against primary Qwen license files',
+      'Sub-indicator — transparency: FMTI 2025 scores Alibaba 26/100 despite these releases (separate axis)',
+    ],
+    scoring_rule: OPEN_WEIGHTS_RULE,
+    justifies_whole: false,
+    justification_note:
+      "The Qwen licensing picture rests on a third-party index, flagged as such. The 0–4 applies the draft scale — decision-ineligible until adopted — and open weights remain a separate question from the FMTI-anchored transparency score.",
+  }),
+  'DuckDuckGo/open_weights': R({
+    claim_support: 'establishes_fact',
+    supported_fact:
+      "DuckDuckGo's help pages list Duck.ai's free models including 'gpt-oss-120b and Gemma 4 31B, hosted by Tinfoil.sh' — third-party open-weight models served, not released, by DuckDuckGo.",
+    source_date: 'help page retrieved 2026-10-30',
+    unsupported_clauses: [
+      'Sub-indicator — license sweep across the client/tooling repositories (e.g. AutoConsent)',
+    ],
+    scoring_rule: OPEN_WEIGHTS_RULE,
+    justifies_whole: false,
+    justification_note:
+      'Serving third-party open-weight models is direct from the help pages; it is not a weight release by DuckDuckGo. The 0–4 applies the draft scale — decision-ineligible until adopted.',
   }),
 
   // ---- Partial claim support ---------------------------------------------

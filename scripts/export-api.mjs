@@ -386,7 +386,7 @@ export function buildLlmsTxt(makersPayload, fundersPayload, evidencePayload, man
       .join('\n')
   return `# Value Compass
 
-> Evidence-aware scores for ${counts.makers} AI makers across five axes (transparency, culture/ESG, labour integrity, wealth dispersion, public sharing), with the funding network of ${counts.funders} funder nodes. Scores are 0–4 or null/'n/a'; higher = more pro-social. A score is only published where sources support it, and per-axis \`basis\` and \`claim_support\` verdicts say what each score rests on.
+> Evidence-aware scores for ${counts.makers} AI makers across six axes (transparency, culture/ESG, labour integrity, wealth dispersion, public sharing, open weights / source availability), with the funding network of ${counts.funders} funder nodes. Scores are 0–4 or null/'n/a'; higher = more pro-social. A score is only published where sources support it, and per-axis \`basis\` and \`claim_support\` verdicts say what each score rests on.
 
 A tool for evaluating AI makers through documented practices, ownership and funding relationships, and evidence-aware comparison. It distinguishes sourced facts, Value Compass assessments, research gaps, and insufficient evidence, and never names a universal winner.
 
@@ -449,7 +449,7 @@ export function buildCatalogJsonLd(makersPayload, fundersPayload, manifest, ctx)
         name: 'Value Compass',
         url: ctx.siteUrl,
         description:
-          'Evidence-aware scores for AI makers across five pro-social axes, with the funding network behind them.',
+          'Evidence-aware scores for AI makers across six pro-social axes, with the funding network behind them.',
         license: LICENSE_URL,
         dateModified: ctx.generatedAt,
         dataset: { '@id': `${ctx.siteUrl}api/${API_VERSION}/#makers-dataset` },
@@ -459,7 +459,7 @@ export function buildCatalogJsonLd(makersPayload, fundersPayload, manifest, ctx)
         '@id': `${ctx.siteUrl}api/${API_VERSION}/#makers-dataset`,
         name: 'Value Compass — scored makers and funders',
         description:
-          `${makersPayload.makers.length} AI makers scored 0–4 on five axes (transparency, culture/ESG, labour integrity, wealth dispersion, public sharing), with per-axis evidence verdicts and a ${fundersPayload.funders.length}-node funder network.`,
+          `${makersPayload.makers.length} AI makers scored 0–4 on six axes (transparency, culture/ESG, labour integrity, wealth dispersion, public sharing, open weights / source availability), with per-axis evidence verdicts and a ${fundersPayload.funders.length}-node funder network.`,
         license: LICENSE_URL,
         isAccessibleForFree: true,
         dateModified: ctx.generatedAt,
@@ -776,7 +776,7 @@ export function buildOpenApiDocument({ makersPayload, fundersPayload, evidencePa
     info: {
       title: 'Value Compass — open data API',
       version: API_VERSION,
-      summary: 'Evidence-aware scores for AI makers across five pro-social axes, with the funding network behind them.',
+      summary: 'Evidence-aware scores for AI makers across six pro-social axes, with the funding network behind them.',
       description:
         "Build-time static export of the Value Compass dataset: scored makers, funder nodes with id-joined capital relationships, and the evidence classification layer. Scores are 0–4 or null/'n/a' (higher = more pro-social); per-axis basis and claim_support verdicts say what each score rests on. Every payload carries generated_at and license; the manifest pins source_commit and a content_hash.",
       license: { name: LICENSE, url: LICENSE_URL },

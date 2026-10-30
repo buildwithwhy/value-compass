@@ -4,7 +4,7 @@ import { evaluateMaker, type LensConfig, type LensResult } from './lens'
 import type { AxisKey, Maker } from './types'
 
 // ---------------------------------------------------------------------------
-// Priorities — one model for "what matters to you", spanning the five scored
+// Priorities — one model for "what matters to you", spanning the scored
 // axes and the capital attributes.
 //
 // Two commitments shape everything here:
@@ -37,6 +37,7 @@ export const EMPTY_WEIGHTS: AxisWeights = {
   labour_integrity: 0,
   wealth_dispersion: 0,
   public_sharing: 0,
+  open_weights: 0,
 }
 
 /**
@@ -50,6 +51,10 @@ export const EXAMPLE_WEIGHTS: AxisWeights = {
   labour_integrity: 2,
   wealth_dispersion: 1,
   public_sharing: 1,
+  // Left at 0: the open-weights scale is a research-pack draft that no rubric
+  // rule has adopted yet, so no assessment on it can pass the evidence gate —
+  // weighting it in the example would only lower everyone's coverage.
+  open_weights: 0,
 }
 
 /**

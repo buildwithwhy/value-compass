@@ -22,7 +22,7 @@ import {
   priorityChanges,
   type Priorities,
 } from '../priorities'
-import type { AxisKey } from '../types'
+import { AXIS_KEYS, type AxisKey } from '../types'
 
 const maker = (id: string) => {
   const m = getMaker(id)
@@ -333,8 +333,8 @@ describe('unequal coverage is not presented as a definitive ordering', () => {
 
   it('places nobody under the example priorities on the current evidence', () => {
     // A consequence of the tightened rule, recorded so it cannot regress
-    // silently: with only the four FMTI-anchored transparency scores eligible,
-    // no maker reaches half the assigned weight across five criteria.
+    // silently: with only the FMTI-anchored transparency scores eligible,
+    // no maker reaches half the assigned weight across the criteria asked for.
     const { placed, unplaced } = orderByPriorities(makers, withExample)
     expect(placed).toHaveLength(0)
     expect(unplaced).toHaveLength(makers.length)
@@ -502,7 +502,7 @@ describe('unestablished records are not claims of non-disclosure', () => {
 
   it('keeps every unassessed maker in the dataset and searchable', () => {
     const cov = coverageFor()
-    expect(cov.total).toBe(makers.length * 5)
+    expect(cov.total).toBe(makers.length * AXIS_KEYS.length)
     expect(cov.eligible).toBeGreaterThan(0)
     expect(cov.eligible).toBeLessThan(cov.total)
   })

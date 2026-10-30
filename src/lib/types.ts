@@ -6,12 +6,16 @@
 
 export type Tier = 'frontier' | 'tool' | 'frontier_and_funder' | 'platform'
 export type Confidence = 'A' | 'B' | 'C'
+// `open_weights` is deliberately NOT a transparency measure: FMTI 2025 scored
+// Alibaba 26/100 despite Apache 2.0 Qwen releases, so UI copy must keep the
+// two apart (see makers.json _meta.key_anchors.open_weights).
 export const AXIS_KEYS = [
   'transparency',
   'culture_esg',
   'labour_integrity',
   'wealth_dispersion',
   'public_sharing',
+  'open_weights',
 ] as const
 export type AxisKey = (typeof AXIS_KEYS)[number]
 

@@ -1,9 +1,9 @@
 {
   "_meta": {
     "title": "Value Compass - Scored Maker Dataset",
-    "version": "v3",
+    "version": "v4",
     "count": 23,
-    "polarity": "ALL axes scored 0-4 where HIGHER = more pro-social (more transparent, better culture/ESG, more labour & supply-chain integrity, more dispersed ownership, more public wealth-sharing). A high-scoring maker draws a large polygon on the compass.",
+    "polarity": "ALL axes scored 0-4 where HIGHER = more pro-social (more transparent, better culture/ESG, more labour & supply-chain integrity, more dispersed ownership, more public wealth-sharing, more open weights and source availability). A high-scoring maker draws a large polygon on the compass.",
     "scale": {
       "0": "worst-in-class / extractive / opaque",
       "1": "below norm",
@@ -28,7 +28,8 @@
     "key_anchors": {
       "transparency": "Stanford FMTI 2025 (avg 40.69/100; IBM 95 high; xAI & Midjourney 14 low). 0-4 mapping: 0=<=12, 1=13-29, 2=30-49, 3=50-74, 4=>=75.",
       "environmental_note": "FMTI 2025 found 10 of 13 firms disclose NOTHING on energy/carbon/water - the environmental sub-indicator is near-zero sector-wide.",
-      "labour_benchmark": "Global-South data labelers commonly earn ~$1.50-2/hr; OpenAI/Sama Kenya is the canonical documented case."
+      "labour_benchmark": "Global-South data labelers commonly earn ~$1.50-2/hr; OpenAI/Sama Kenya is the canonical documented case.",
+      "open_weights": "DRAFT scale from the 2026-10-30 research pack (art_zYCpqJCa Part B), recorded for review: 4 = weights under a permissive OSI-style license (Apache/MIT); 3 = weights with conditions (community license, modified MIT, non-commercial CC); 2 = no own weights but substantial open product/client/tool code; 1 = no weights, peripheral open-source artifacts only; 0 = no weights and no meaningful source found (scoped to a research pass); n/a = not established. Independent of transparency BY DESIGN: FMTI 2025 scored Alibaba 26/100 despite Apache 2.0 Qwen releases — read the two axes separately. Scores on this axis are recorded against the draft scale and stay decision-ineligible until the rubric adopts the scale as a rule."
     },
     "products_note": "products_models are listed inside each maker node for filtering/comparison; they are NOT separate nodes.",
     "join_key": "Each maker has an 'id' (short name). funders[].makers_backed and owns_outright reference makers by this id. Join on id, NOT on display 'name'.",
@@ -106,6 +107,12 @@
           "sources": [
             "https://www.effectivealtruism.org/articles/cullen-okeefe-the-windfall-clause-sharing-the-benefits-of-advanced-ai"
           ]
+        },
+        "open_weights": {
+          "score": "n/a",
+          "confidence": "C",
+          "note": "Not scored. No public disclosure of an open-weight Claude release was located in the 2026-10-30 research pass — a scoped absence in our record, not a statement about the company. Research gap: the peripheral open-source inventory (SDKs and samples) that would separate the pack's provisional 1 from 0 was not verified.",
+          "sources": []
         }
       },
       "capital_profile": {
@@ -206,6 +213,14 @@
             "https://openai.com/index/evolving-our-structure/",
             "https://www.effectivealtruism.org/articles/cullen-okeefe-the-windfall-clause-sharing-the-benefits-of-advanced-ai"
           ]
+        },
+        "open_weights": {
+          "score": 3,
+          "confidence": "B",
+          "note": "gpt-oss-120b and gpt-oss-20b are open-weight reasoning models released 2025-08-05 under the Apache 2.0 license together with the gpt-oss usage policy (verified against the model card). The flagship GPT models remain closed, capping below 4.",
+          "sources": [
+            "https://openai.com/index/gpt-oss-model-card"
+          ]
         }
       },
       "capital_profile": {
@@ -293,6 +308,14 @@
           "confidence": "C",
           "note": "Open Gemma weights and Google.org philanthropy, but no AI-specific public-benefit/windfall structure.",
           "sources": []
+        },
+        "open_weights": {
+          "score": 3,
+          "confidence": "B",
+          "note": "AlphaFold 2's source code is published under Apache 2.0 (repository created 2021-06-17) with model parameters under CC BY 4.0; the Gemma family ships under the Gemma Terms of Use — contractual conditions rather than an OSI license — and Gemini stays closed.",
+          "sources": [
+            "https://github.com/google-deepmind/alphafold"
+          ]
         }
       },
       "capital_profile": {
@@ -373,6 +396,14 @@
           "confidence": "C",
           "note": "PBC in form only; no substantive public-sharing mechanism; Grok is paid/closed.",
           "sources": []
+        },
+        "open_weights": {
+          "score": 3,
+          "confidence": "C",
+          "note": "Grok-1's code and weights are licensed under Apache 2.0 (verified against the repository, 2024-03-17); flagship Grok models remain closed and the open move was one-off, capping below 4. Research gap: Grok 2.5's reported August 2025 weight publication — the primary license text was not verified in this pass.",
+          "sources": [
+            "https://github.com/xai-org/grok-1"
+          ]
         }
       },
       "capital_profile": {
@@ -455,6 +486,14 @@
           "sources": [
             "https://www.cnbc.com/2026/04/08/meta-debuts-first-major-ai-model-since-14-billion-deal-to-bring-in-alexandr-wang.html"
           ]
+        },
+        "open_weights": {
+          "score": 3,
+          "confidence": "B",
+          "note": "The Llama 4 family ships under the Llama Community License (effective 2025-04-05) — a limited, non-transferable grant with 'Built with Llama' attribution and a naming requirement for derivatives; above 700M monthly active users a separate Meta license is required. Research gap: the dataset's recorded April 2026 closed-weight 'Muse Spark' pivot could not be verified in this pass and is not scored here.",
+          "sources": [
+            "https://dev.meta.ai/llama/llama4/license"
+          ]
         }
       },
       "capital_profile": {
@@ -535,6 +574,14 @@
           "confidence": "C",
           "note": "Open-weight releases and a European public-interest/sovereignty framing; no profit pledge.",
           "sources": []
+        },
+        "open_weights": {
+          "score": 4,
+          "confidence": "B",
+          "note": "Most open models ship under Apache 2.0 (help center, retrieved 2026-10-30); certain models carry a modified MIT license under which companies above $20M monthly revenue need a commercial license or Mistral Studio. Recorded per model, not family-wide.",
+          "sources": [
+            "https://help.mistral.ai/en/articles/347393-under-which-license-are-mistral-s-open-models-available"
+          ]
         }
       },
       "capital_profile": {
@@ -615,6 +662,14 @@
           "sources": [
             "https://www.investing.com/news/stock-market-news/deepseek-nears-74-billion-funding-led-by-tencent-93CH-4723930"
           ]
+        },
+        "open_weights": {
+          "score": 4,
+          "confidence": "B",
+          "note": "DeepSeek-R1 (2025-01-20, following V3 on 2024-12-26) ships with code and models under the MIT License — 'Distill & commercialize freely!' per the release notice, verified 2026-10-30.",
+          "sources": [
+            "https://www.deepseek.com/en/news/deepseek-r1/"
+          ]
         }
       },
       "capital_profile": {
@@ -690,6 +745,14 @@
           "confidence": "B",
           "note": "Large corporate philanthropy and broad affordable access; no AI-specific public-benefit structure.",
           "sources": []
+        },
+        "open_weights": {
+          "score": 3,
+          "confidence": "B",
+          "note": "Phi-4 weights are released on Hugging Face and Azure AI Foundry under an MIT License (verified against the January 2025 Microsoft Research document). Research gap: no open-weight move is established for the MAI models, and Copilot stays closed, capping below 4.",
+          "sources": [
+            "https://www.microsoft.com/en-us/research/wp-content/uploads/2025/01/WEF-2025_Leave-Behind_Phi-4.pdf"
+          ]
         }
       },
       "capital_profile": {
@@ -769,6 +832,12 @@
           "confidence": "C",
           "note": "Free tier exists; no structural public-benefit commitment.",
           "sources": []
+        },
+        "open_weights": {
+          "score": "n/a",
+          "confidence": "C",
+          "note": "Not scored. No public disclosure of own open-weight models was located in the 2026-10-30 research pass; Sonar models are served through an API rather than downloadable as weights. Research gap: the peripheral open-source inventory that would separate the pack's provisional 1 from 0 was not verified.",
+          "sources": []
         }
       },
       "capital_profile": {
@@ -841,6 +910,12 @@
           "score": 1,
           "confidence": "C",
           "note": "Paid-only, closed, no open weights or public-benefit commitment.",
+          "sources": []
+        },
+        "open_weights": {
+          "score": "n/a",
+          "confidence": "C",
+          "note": "Not scored. No public disclosure of open-weight models or product source code was located in the 2026-10-30 research pass — the pack's provisional 0 is a scoped absence in our own record, with no primary URL to cite. Research gap: re-check against any future open-weight move before locking a score.",
           "sources": []
         }
       },
@@ -917,6 +992,12 @@
           "score": 1,
           "confidence": "C",
           "note": "Free tier; no structural public-benefit commitment.",
+          "sources": []
+        },
+        "open_weights": {
+          "score": "n/a",
+          "confidence": "C",
+          "note": "Not scored. No public disclosure of voice-model weights was located in the 2026-10-30 research pass; GitHub SDKs are presumed peripheral but the repository inventory was not verified, so the pack's provisional 1 stays unlocked (research gap).",
           "sources": []
         }
       },
@@ -999,6 +1080,12 @@
           "sources": [
             "https://www.pledge1percent.org/canva-raises-at-40-billion-valuation-its-founders-are-pledging/"
           ]
+        },
+        "open_weights": {
+          "score": "n/a",
+          "confidence": "C",
+          "note": "Not scored. No public disclosure of Magic Studio model weights or editor source was located in the 2026-10-30 research pass; a public GitHub presence exists but no verified open-source artifact was located (research gap).",
+          "sources": []
         }
       },
       "capital_profile": {
@@ -1072,6 +1159,12 @@
           "score": 1,
           "confidence": "C",
           "note": "Free tier; no structural public-benefit commitment.",
+          "sources": []
+        },
+        "open_weights": {
+          "score": "n/a",
+          "confidence": "C",
+          "note": "Not scored. The hosted product is closed; the pack records that the gpt-engineer predecessor was made open source before becoming Lovable, but the license text and repository continuity were not verified (research gap) — no score without a verifiable source.",
           "sources": []
         }
       },
@@ -1154,6 +1247,15 @@
           "confidence": "C",
           "note": "Education and free-access mission ('next billion creators'); no profit-sharing structure.",
           "sources": []
+        },
+        "open_weights": {
+          "score": 2,
+          "confidence": "B",
+          "note": "The Replit GitHub org carries 121 public repositories including MIT-licensed tooling (kaboom, clui, upm), while the Agent org holds no public repositories and no model weights are on offer — substantial tooling openness without weights or the flagship agent (verified against both org pages, 2026-10-30).",
+          "sources": [
+            "https://github.com/replit",
+            "https://github.com/replit-agent"
+          ]
         }
       },
       "capital_profile": {
@@ -1229,6 +1331,12 @@
           "score": 1,
           "confidence": "C",
           "note": "Free tier; no structural public-benefit commitment.",
+          "sources": []
+        },
+        "open_weights": {
+          "score": "n/a",
+          "confidence": "C",
+          "note": "Not scored. No public disclosure of model weights or product source code was located in the 2026-10-30 research pass — the pack's provisional 0 is a scoped absence in our own record (research gap: re-check before locking).",
           "sources": []
         }
       },
@@ -1306,6 +1414,12 @@
           "score": 1,
           "confidence": "C",
           "note": "Paid product; no structural public-benefit commitment.",
+          "sources": []
+        },
+        "open_weights": {
+          "score": "n/a",
+          "confidence": "C",
+          "note": "Not scored. The product is proprietary, and no public disclosure of model weights or application source was located in the 2026-10-30 research pass — the pack's provisional 0 is a scoped absence (research gap: re-check before locking).",
           "sources": []
         }
       },
@@ -1392,6 +1506,12 @@
           "sources": [
             "https://siliconangle.com/2026/04/24/ai-startups-cohere-aleph-alpha-merge-600m-new-funding/"
           ]
+        },
+        "open_weights": {
+          "score": "n/a",
+          "confidence": "C",
+          "note": "Not scored. The pack records the Aya family and Command R+ as available under non-commercial CC terms, but the exact CC-BY-NC variant was not verified and no primary license URL is on record (research gap) — no score without a verifiable source.",
+          "sources": []
         }
       },
       "capital_profile": {
@@ -1470,6 +1590,15 @@
           "confidence": "C",
           "note": "Open-weight Kimi releases plus free consumer access; no formal pledge.",
           "sources": []
+        },
+        "open_weights": {
+          "score": 3,
+          "confidence": "B",
+          "note": "Kimi K2 (2025-07-03) and K2 Thinking ship under the Modified MIT License — commercial products above 100M monthly active users or US$20M monthly revenue must prominently display 'Kimi K2' (verified against the LICENSE text, 2026-10-30).",
+          "sources": [
+            "https://github.com/moonshotai/Kimi-K2/blob/main/LICENSE",
+            "https://huggingface.co/moonshotai/Kimi-K2-Thinking/blob/main/LICENSE"
+          ]
         }
       },
       "capital_profile": {
@@ -1549,6 +1678,15 @@
           "sources": [
             "https://bolt.new/blog/bolt-open-source-fund-2026"
           ]
+        },
+        "open_weights": {
+          "score": 2,
+          "confidence": "B",
+          "note": "bolt.diy — the official open source version of Bolt.new — is published under the MIT license, while the hosted Bolt product and the WebContainers runtime stay proprietary (the WebContainer API needs a commercial license in production). No model weights.",
+          "sources": [
+            "https://github.com/stackblitz-labs/bolt.diy/blob/main/README.md",
+            "https://stackblitz.com/terms-of-service"
+          ]
         }
       },
       "capital_profile": {
@@ -1626,6 +1764,15 @@
           "note": "Publishes a portfolio of open-source projects it maintains or contributes to, including the Next.js framework and the AI SDK — software other businesses rely on; the record notes this is a different contribution from funding independent maintainers, and no structural public-benefit commitment is on record.",
           "sources": [
             "https://vercel.com/oss"
+          ]
+        },
+        "open_weights": {
+          "score": 2,
+          "confidence": "B",
+          "note": "Next.js, Turbopack and the AI SDK are open source — the AI SDK is 'a free open-source library' built and maintained by Vercel (verified 2026-10-30) — while v0 is a hosted, closed product and no model weights are published.",
+          "sources": [
+            "https://vercel.com/academy/ai-sdk",
+            "https://v0.app/docs/faqs"
           ]
         }
       },
@@ -1706,6 +1853,12 @@
           "sources": [
             "https://proton.me/foundation"
           ]
+        },
+        "open_weights": {
+          "score": "n/a",
+          "confidence": "C",
+          "note": "Not scored. The pack records client apps as open source and Lumo as serving third-party open-weight models hosted in the EU, but the specific repositories and the Lumo model list were not verified (research gap) — no score without a verifiable source.",
+          "sources": []
         }
       },
       "backers_relation": "shareholding",
@@ -1790,6 +1943,14 @@
             "https://www.bbc.com/news/business-45468409",
             "https://forbes.kz/articles/jack_ma_outlines_bold_vision_for_his_philanthropy_foundation_1"
           ]
+        },
+        "open_weights": {
+          "score": 4,
+          "confidence": "B",
+          "note": "Principal Qwen3 releases (from 2025-04-29) ship under Apache 2.0 with unconditional commercial use, while legacy Tongyi Qianwen checkpoints (e.g. Qwen2.5-72B) carry a >100M-MAU trigger and attribution requirement — recorded per checkpoint, not family-wide (third-party source, verified 2026-10-30). Openness here is not a transparency measure: FMTI 2025 scored Alibaba 26/100 despite these Apache 2.0 releases.",
+          "sources": [
+            "https://ownershipindex.ai/library/models/qwen/"
+          ]
         }
       },
       "backers_relation": "shareholding",
@@ -1869,6 +2030,14 @@
           "sources": [
             "https://duckduckgo.com/donations",
             "https://insideduckduckgo.substack.com/p/duck-tales-duckduckgo-donations-why"
+          ]
+        },
+        "open_weights": {
+          "score": 2,
+          "confidence": "C",
+          "note": "Duck.ai's free lineup includes open-weight third-party models (gpt-oss-120b, Gemma 4 31B) hosted by Tinfoil.sh (verified 2026-10-30), and client/tooling code is open source (e.g. AutoConsent) — but serving open models is not the same as releasing own weights, and DuckDuckGo trains no frontier model, so the score caps at 2.",
+          "sources": [
+            "https://start.duckduckgo.com/duckduckgo-help-pages/duckai/chat-models"
           ]
         }
       },

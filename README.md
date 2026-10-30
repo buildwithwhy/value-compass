@@ -1,10 +1,10 @@
 # 🧭 Value Compass
 
-**See what your AI choices support.** A local, runnable web app showing the companies behind AI tools, who owns and funds them, and what has been documented about their practices — 23 makers scored on 5 normative value axes, and the network of 35 funder nodes whose capital flows into them.
+**See what your AI choices support.** A local, runnable web app showing the companies behind AI tools, who owns and funds them, and what has been documented about their practices — 23 makers scored on 6 normative value axes, and the network of 35 funder nodes whose capital flows into them.
 
 The project's intent is to ask **open questions, not deliver verdicts**: every maker carries a "worth probing" tension hook, every score carries a visible confidence flag and evidence basis, and funders are shown as *context, never scored*.
 
-It also lets you say **what matters to you** — across the five axes and the capital attributes — and then orders and annotates itself around that, including a "what would switching change?" view. Nothing is ever switched on for you.
+It also lets you say **what matters to you** — across the six axes and the capital attributes — and then orders and annotates itself around that, including a "what would switching change?" view. Nothing is ever switched on for you.
 
 Above all it keeps four things apart — **sourced facts**, **ValueCompass assessments**, **what is not established**, and **the visitor's own priorities**. A score whose rationale establishes only that something is undisclosed is not shown: undisclosed is not evidence of bad practice. See [`docs/EVIDENCE_AUDIT.md`](docs/EVIDENCE_AUDIT.md) for what that changed and what still needs research.
 
@@ -83,7 +83,7 @@ Three deployment facts worth knowing:
 
 - **React + Vite + TypeScript**, **Tailwind CSS** — no backend; the JSON is imported statically.
 - **`react-force-graph-2d`** — the knowledge-graph landing view.
-- **Recharts (`RadarChart`)** — the 5-axis Value Compass radar.
+- **Recharts (`RadarChart`)** — the 6-axis Value Compass radar.
 - **`react-markdown` + `remark-gfm`** — renders the methodology rubric on the About page.
 - **`react-router-dom`** (BrowserRouter; a `404.html` copy of the SPA shell keeps direct loads of deep links working on the static host) — client-side routing, no server config needed.
 
@@ -104,7 +104,7 @@ re-run the evidence build.
 
 ### The evidence layer
 
-`scripts/build-evidence.mjs` adds no facts. For each of the 90 axis assessments it records
+`scripts/build-evidence.mjs` adds no facts. For each of the 138 axis assessments it records
 what the written rationale rests on, which of its cited sources are actually about that
 maker, and whether the score may be displayed or compared:
 
@@ -159,7 +159,7 @@ This repository mixes three kinds of content, and they are licensed differently:
    If you want to republish a quotation, link to or license it from its
    original publisher.
 
-## The five axes (all 0–4, higher = better)
+## The six axes (all 0–4, higher = better)
 
 | Axis | Higher score means |
 |---|---|
@@ -168,8 +168,11 @@ This repository mixes three kinds of content, and they are licensed differently:
 | Labour & supply-chain integrity | Data workers & creators treated/compensated fairly |
 | Wealth dispersion | Ownership & control more broadly dispersed (less concentrated) |
 | Public wealth-sharing | Binding structures + access that share value with the public |
+| Open weights / source availability | Model weights or substantial product source code released openly, under permissive license terms |
 
-**Polarity:** all axes are oriented so that a higher number means more disclosure, more dispersed ownership, or stronger commitments to share value. A **wider shape means higher scores on these five axes** — not an overall verdict on the company, and nothing about product quality. A persistent legend states this near every radar.
+**Polarity:** all axes are oriented so that a higher number means more disclosure, more dispersed ownership, stronger commitments to share value, or more open releases. A **wider shape means higher scores on these axes** — not an overall verdict on the company, and nothing about product quality. A persistent legend states this near every radar.
+
+Open weights is a separate question from transparency — a maker can ship Apache-2.0 weights and still document almost nothing (FMTI 2025 scored Alibaba 26/100 despite them). Its 0–4 scale is a recorded draft pending rubric adoption, so those scores stay **decision-ineligible**: they show in the data and exports but cannot move a comparison marker or an ordering. See the methodology for the draft scale.
 
 **Confidence (A/B/C) is always shown, never hidden:** **A** = solid, **B** = medium / hatched, **C** = hollow / outlined + a low-confidence marker. **Evidence basis** travels alongside it, answering the different question of what the assessment rests on. Anything with no score to show renders as a **gap, never as 0**.
 
@@ -177,25 +180,25 @@ This repository mixes three kinds of content, and they are licensed differently:
 
 0. **Landing page** (`/`) — a short introduction and three routes in: find a tool or maker (with a typeahead), compare alternatives, or follow the ownership. Plus a path through stated priorities, the four-kinds-of-statement explainer, and live evidence-coverage counts generated from the dataset.
 
-0b. **Priorities** (`/priorities`) — weight each of the five axes (*not a priority* / *matters* / *matters a lot*) and pick capital attributes, in one model. Three levels rather than a slider, for the same reason the scores are 0–4: a continuous weight would imply precision the assessments cannot carry. Each axis states how many of the 18 makers it can actually separate, so a dead-end priority is visible **before** it is chosen. Nothing is pre-selected; an example set is offered by name and labelled wherever it is in use.
+0b. **Priorities** (`/priorities`) — weight each of the six axes (*not a priority* / *matters* / *matters a lot*) and pick capital attributes, in one model. Three levels rather than a slider, for the same reason the scores are 0–4: a continuous weight would imply precision the assessments cannot carry. Each axis states how many of the 23 makers it can actually separate, so a dead-end priority is visible **before** it is chosen. Nothing is pre-selected; an example set is offered by name and labelled wherever it is in use.
 
 0c. **Switching** (`/switch/:from/:to`) — what changes if you move from one maker to another: the axes you prioritised, the backers you leave, the backers you take on, and the **backers you cannot escape** (a stake in both). A difference is only called when both sides are firm enough to compare; otherwise it is listed as something you cannot know, never rounded to "no change". Ends with every axis where at least one side has published nothing.
 
-1. **Ownership & funding graph** (`/graph`) — force-directed graph of all 18 makers + 34 funders.
+1. **Ownership & funding graph** (`/graph`) — force-directed graph of all 23 makers + 35 funders.
    - **Size by** Connections (degree, default), **Funder reach** (funders sized by how many of the 18 they back — Nvidia/a16z/Fidelity dominate, makers shrink to uniform dots), or **Uniform**. **Emphasize** Makers / Funders / Both dims the other class for a clean money-flow read. Labels follow the current sizing (largest ~15; rest on hover/zoom).
    - Makers colored by `tier`; funders by `parent_type` (hyperscaler / sovereign wealth / venture-growth / strategic corporate / crossover / index manager / hedge-fund parent / conglomerate).
    - Edges: funder→maker (`backs`); **`owns_outright`** drawn dashed; the **index-managers meta-node** linked to public hyperscalers via faint dotted **`owns_economically`** ("passive owners — deepest layer"); **dual-role entities** (Microsoft, Alphabet/Google↔DeepMind, Alibaba) get a distinct ring + a dotted "same entity" link.
    - Hover highlights a node's neighbors and dims the rest; click opens the detail panel. Filters above the graph (maker tier / jurisdiction / product / funder parent-type) + a search box. Collapses to a filterable list on small screens.
 
-2. **Browse + Maker detail** (`/browse`, `/maker/:id`) — a **sortable matrix heatmap** (18 makers × 5 axes, color-coded score cells that encode confidence: solid A / hatched B / outlined C, with a dash where nothing has been published; click any column header to sort, hover a cell for the reason) with a **polished card view** toggle (labeled axis bars + shared legend). Plus a per-maker page with: header (name, tier, category, jurisdiction, ownership tag, product chips, stated values); the **tension hook** as a "worth probing" open-question callout; the **Value Compass radar** with per-axis score, confidence badge, plain-English note and clickable sources; and the **funder picture** (reverse-lookup of every funder backing this maker, deep-pocket strategics flagged, plus the maker's own founders / lead backers / structure).
+2. **Browse + Maker detail** (`/browse`, `/maker/:id`) — a **sortable matrix heatmap** (23 makers × 6 axes, color-coded score cells that encode confidence: solid A / hatched B / outlined C, with a dash where nothing has been published; click any column header to sort, hover a cell for the reason) with a **polished card view** toggle (labeled axis bars + shared legend). Plus a per-maker page with: header (name, tier, category, jurisdiction, ownership tag, product chips, stated values); the **tension hook** as a "worth probing" open-question callout; the **Value Compass radar** with per-axis score, confidence badge, plain-English note and clickable sources; and the **funder picture** (reverse-lookup of every funder backing this maker, deep-pocket strategics flagged, plus the maker's own founders / lead backers / structure).
 
-2b. **Capital Lens** (on every maker detail + in Compare) — capital character is value-laden, so this is a **user-driven filter, not a sixth axis**, kept visually separate from the conduct compass.
+2b. **Capital Lens** (on every maker detail + in Compare) — capital character is value-laden, so this is a **user-driven filter, not a scored axis**, kept visually separate from the conduct compass.
    - The **factual capital profile** is always shown, neutral and unscored (`independence_type`, `founder_control`, `sovereign_state`, `big_tech_capital`, `competitor_entanglement`, `circular_vendor`, `index_held`).
    - The **Lens** is a toggle panel where you pick which attributes you want flagged — founder control, sovereign/state capital (with Gulf / Singapore / China-linked sub-toggles), Big Tech & competitor capital, circular vendor ties, backer associations, index concentration. **Everything starts off.** A named **ValueCompass example lens** is offered as a starting point and is banner-labelled wherever it is in use; touching any switch makes the lens yours. Choices persist in `localStorage` under a `v2` key that also records *whether* a lens was chosen.
    - A **"capital fit"** gauge appears only once a lens is chosen, counting how many attributes in that lens are absent from a maker's record. It always names whose lens it is, and it is not a rating of the company. Independent makers (e.g. Midjourney) top it under most lenses; the entangled frontier labs fall under a strict lens.
    - **Backer reputation** surfaces the `notable_for` associations of a maker's funders, each with its source link and a "v1 — factual association, not a judgment" caveat. Stated as fact, neutral valence.
 
-3. **Compare** (`/compare`) — select **2–4** makers (filterable by tier & product) to get an **overlaid radar**, a **side-by-side table** (5 axes + jurisdiction / ownership / products) where **each axis row expands to reveal the reason, the sources about that maker, and what is only background reading**, a **shared-backer picture with the stake type on each edge**, and — once a lens is chosen — a capital-fit row and ranking. Highest/lowest is only marked when **both** sides rest on evidence about the maker and carry confidence A or B; otherwise the row says the assessments are too uncertain to separate.
+3. **Compare** (`/compare`) — select **2–4** makers (filterable by tier & product) to get an **overlaid radar**, a **side-by-side table** (6 axes + jurisdiction / ownership / products) where **each axis row expands to reveal the reason, the sources about that maker, and what is only background reading**, a **shared-backer picture with the stake type on each edge**, and — once a lens is chosen — a capital-fit row and ranking. Highest/lowest is only marked when **both** sides rest on evidence about the maker and carry confidence A or B; otherwise the row says the assessments are too uncertain to separate.
 
 4. **About / Methodology** (`/about`) — the rubric rendered from `rubric.md`, plus a quick reference for polarity, the 0–4 scale anchors, the confidence flags, and how the Capital Lens differs from the scored axes.
 

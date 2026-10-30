@@ -28,9 +28,11 @@ import { SectionTitle } from '../components/ui'
 // dataset would drift from Recommend within a release, and the two pages
 // would start disagreeing about the same product.
 //
-// What changed: this page used to draw radar shapes from five 0-4 axis
+// What changed: this page used to draw radar shapes from 0-4 axis
 // scores. The rubric gives no rule for combining sub-indicators into those
 // scores, so the shapes asserted differences the evidence could not support.
+// The open-weights axis now carries recorded scores under a draft scale, but
+// the same rule applies: no adopted rubric rule, no shape.
 // ---------------------------------------------------------------------------
 
 const MAX = 4

@@ -36,6 +36,7 @@ export const AXIS_LABELS: Record<AxisKey, string> = {
   labour_integrity: 'Labour & supply-chain integrity',
   wealth_dispersion: 'Wealth dispersion',
   public_sharing: 'Public wealth-sharing',
+  open_weights: 'Open weights / source availability',
 }
 
 // Compact labels for tight UI (radar axis ticks, table headers).
@@ -45,6 +46,7 @@ export const AXIS_SHORT: Record<AxisKey, string> = {
   labour_integrity: 'Labour',
   wealth_dispersion: 'Wealth disp.',
   public_sharing: 'Public sharing',
+  open_weights: 'Open weights',
 }
 
 // Single readable word for very tight spots (card axis bars).
@@ -54,6 +56,7 @@ export const AXIS_ABBR: Record<AxisKey, string> = {
   labour_integrity: 'Labour',
   wealth_dispersion: 'Wealth',
   public_sharing: 'Public',
+  open_weights: 'Open wts.',
 }
 
 // ---- Lookups ---------------------------------------------------------------

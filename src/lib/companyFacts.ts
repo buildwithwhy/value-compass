@@ -6,7 +6,7 @@ import { alternatives, assessmentFor, type PilotAlternative } from './recommend'
 // ---------------------------------------------------------------------------
 // Company facts.
 //
-// The five-axis scores were never publishable: the rubric gives no rule for
+// The axis scores were never publishable: the rubric gives no rule for
 // combining sub-indicators, so a single sourced finding could not licence a
 // 0-4 verdict. The findings themselves are fine, and until now they were only
 // reachable through the score that could not carry them.
@@ -37,6 +37,7 @@ const AXIS_THEME: Record<string, FactTheme> = {
   public_sharing: 'conduct',
   culture_esg: 'conduct',
   labour_integrity: 'conduct',
+  open_weights: 'data',
 }
 
 const AXIS_LABEL: Record<string, string> = {
@@ -45,6 +46,7 @@ const AXIS_LABEL: Record<string, string> = {
   public_sharing: 'Commitments made and kept',
   culture_esg: 'How it has treated people',
   labour_integrity: 'How it has treated people',
+  open_weights: 'What it releases as open source',
 }
 
 export interface CompanyFact {
