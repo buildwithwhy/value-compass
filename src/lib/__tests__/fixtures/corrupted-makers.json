@@ -1,0 +1,90 @@
+{
+  "_comment": "Deliberately corrupted fixture — every violation is intentional and enumerated in schema-guards.test.ts. Used only to prove the validators fail; never imported by app code. Do not fix the errors here — that would make the guard tests pass vacuously.",
+  "makers": [
+    {
+      "id": "Bad Maker One",
+      "name": "Bad Maker One",
+      "slug": "not-safe!",
+      "tier": "frontier",
+      "vc_independent": "",
+      "products_models": ["BadGPT"],
+      "founders": "Dana Doe",
+      "structure": "Privately held",
+      "stated_values": "Whatever wins",
+      "tension_hook": "Says one thing, does another",
+      "axes": {
+        "transparency": {
+          "score": 7,
+          "confidence": "X",
+          "note": "",
+          "sources": []
+        },
+        "culture_esg": {
+          "score": null,
+          "confidence": "C",
+          "note": "Seems fine I guess",
+          "sources": []
+        },
+        "labour_integrity": {
+          "score": 2.5,
+          "confidence": "B",
+          "note": "Half points for effort",
+          "sources": ["   "]
+        },
+        "wealth_dispersion": {
+          "score": 3,
+          "confidence": "B",
+          "note": "Perfectly even ownership",
+          "sources": ["https://example.com/no-really"]
+        },
+        "public_sharing": {
+          "score": "n/a",
+          "confidence": "C",
+          "note": "Not scored. Insufficient evidence.",
+          "sources": "not-an-array"
+        }
+      }
+    },
+    {
+      "id": "Bad Maker Two",
+      "name": "Bad Maker Two",
+      "slug": "not-safe!",
+      "tier": "tool",
+      "jurisdiction": "Nowhere",
+      "vc_independent": "Independent",
+      "products_models": [],
+      "founders": [],
+      "structure": "Privately held",
+      "stated_values": "None stated",
+      "tension_hook": "None",
+      "axes": {
+        "transparency": { "score": 1, "confidence": "C", "note": "Thin evidence", "sources": ["https://example.com/thin"] },
+        "culture_esg": { "score": 1, "confidence": "C", "note": "Thin evidence", "sources": ["https://example.com/thin"] },
+        "labour_integrity": { "score": 1, "confidence": "C", "note": "Thin evidence", "sources": ["https://example.com/thin"] },
+        "wealth_dispersion": { "score": 1, "confidence": "C", "note": "Thin evidence", "sources": ["https://example.com/thin"] },
+        "public_sharing": { "score": 1, "confidence": "C", "note": "Thin evidence", "sources": ["https://example.com/thin"] }
+      }
+    }
+  ],
+  "funders": [
+    {
+      "name": "Bad Capital",
+      "id": "Not Safe Either",
+      "parent_type": "vc_firm",
+      "makers_backed": ["Bad Maker One", "Ghost Maker"],
+      "owns_outright": ["Bad Maker One"]
+    },
+    {
+      "name": "Duplicate Capital",
+      "id": "bad_capital",
+      "parent_type": "vc_firm",
+      "makers_backed": []
+    },
+    {
+      "name": "Slug Twin Capital",
+      "id": "bad_capital",
+      "parent_type": "vc_firm",
+      "makers_backed": []
+    }
+  ]
+}
