@@ -14,9 +14,20 @@
 //                          display names to ids — published as-is
 //   api/v1/index.json      manifest: version, generated_at, license,
 //                          source_commit, content_hash, counts
+//   api/v1/openapi.json    OpenAPI 3.1 description of every endpoint, with
+//                          each payload's JSON Schema in components.schemas
+//   api/v1/schemas/*.schema.json
+//                          the same schemas as standalone JSON Schema
+//                          (2020-12) files: makers, funders, evidence
 //   api/v1/catalog.jsonld  schema.org DataCatalog + Dataset for discovery
 //   llms.txt               human/LLM-readable index of the surface
 //   sitemap.xml            canonical routes for every maker and funder
+//
+// The OpenAPI document and the schemas are not hand-written: their controlled
+// vocabularies (axis keys, tiers, confidences, basis / claim_support,
+// relationship types and statuses) are read out of the normalized payloads the
+// export itself produces, so a vocabulary change rewrites the schemas in the
+// same build instead of drifting away from the data.
 //
 // Determinism: all payloads are serialized with deep-sorted keys and a single
 // generated_at input (the source commit's timestamp), so identical input
@@ -332,6 +343,12 @@ export function buildManifest(makersPayload, fundersPayload, evidencePayload, ct
       evidence: `/api/${API_VERSION}/evidence.json`,
       index: `/api/${API_VERSION}/index.json`,
       catalog: `/api/${API_VERSION}/catalog.jsonld`,
+      openapi: `/api/${API_VERSION}/openapi.json`,
+      schemas: {
+        makers: `/api/${API_VERSION}/schemas/makers.schema.json`,
+        funders: `/api/${API_VERSION}/schemas/funders.schema.json`,
+        evidence: `/api/${API_VERSION}/schemas/evidence.schema.json`,
+      },
     },
     note: "Scores are 0–4 or null/'n/a'; basis + claim_support per axis carry the evidence verdicts. Higher = more pro-social. See llms.txt.",
   }
@@ -395,6 +412,8 @@ ${vocab(evidencePayload._meta.claim_support)}
 - ${manifest.endpoints.funders} — ${counts.funders} funder nodes; joins reference maker ids, display names kept as fields.
 - ${manifest.endpoints.evidence} — the full evidence classification layer, re-keyed by id; ${counts.evidence_relationships} relationship records.
 - ${manifest.endpoints.catalog} — schema.org DataCatalog/Dataset JSON-LD.
+- ${manifest.endpoints.openapi} — OpenAPI 3.1 description of every endpoint above, with each payload's JSON Schema under components.schemas.
+- ${manifest.endpoints.schemas.makers}, ${manifest.endpoints.schemas.funders}, ${manifest.endpoints.schemas.evidence} — the same schemas as standalone JSON Schema (2020-12) files, generated from the data they describe.
 - ${ctx.siteUrl}sitemap.xml — canonical routes for every maker and funder.
 - ${ctx.siteUrl} — the app itself.
 
@@ -415,11 +434,11 @@ The scoring rubric and method are documented in the repository: src/data/rubric.
 }
 
 export function buildCatalogJsonLd(makersPayload, fundersPayload, manifest, ctx) {
-  const distribution = (path, name) => ({
+  const distribution = (path, name, encodingFormat = 'application/json') => ({
     '@type': 'DataDownload',
     name,
     contentUrl: `${ctx.siteUrl}${path.replace(/^\//, '')}`,
-    encodingFormat: 'application/json',
+    encodingFormat,
   })
   return {
     '@context': 'https://schema.org',
@@ -449,11 +468,327 @@ export function buildCatalogJsonLd(makersPayload, fundersPayload, manifest, ctx)
           distribution(manifest.endpoints.funders, 'funders.json'),
           distribution(manifest.endpoints.evidence, 'evidence.json'),
           distribution(manifest.endpoints.index, 'index.json'),
+          distribution(manifest.endpoints.openapi, 'openapi.json', 'application/openapi+json'),
+          distribution(manifest.endpoints.schemas.makers, 'makers.schema.json', 'application/schema+json'),
+          distribution(manifest.endpoints.schemas.funders, 'funders.schema.json', 'application/schema+json'),
+          distribution(manifest.endpoints.schemas.evidence, 'evidence.schema.json', 'application/schema+json'),
         ],
         variableMeasured:
           'score (0–4, higher = more pro-social), confidence, basis, claim_support per axis; funding relationships by type and status',
       },
     ],
+  }
+}
+
+// ---------------------------------------------------------------------------
+// JSON Schema / OpenAPI — generated, not hand-written.
+//
+// buildEntityDefs reads its controlled vocabularies out of the normalized
+// payloads the export itself produces (the same objects stableJson writes to
+// disk). A new basis term, tier, confidence grade, axis, or relationship type
+// therefore rewrites the schemas in the same build; a payload the schemas
+// cannot describe fails the test suite instead of shipping. Publishing-as-is
+// fields (capital_profile, axis_evidence record extras) stay permissive — the
+// schemas classify the controlled fields and do not over-promise the rest.
+// ---------------------------------------------------------------------------
+
+const ID_STRING = { type: 'string', pattern: URL_SAFE.source }
+const STRING_ARRAY = { type: 'array', items: { type: 'string' } }
+
+// `_meta` shape shared by every payload file; file-specific extras (counts,
+// rule texts, hashes) ride along as-is.
+const FILE_META_SCHEMA = {
+  type: 'object',
+  required: ['title', 'api_version', 'generated_at', 'license', 'license_url'],
+  properties: {
+    title: { type: 'string' },
+    api_version: { const: API_VERSION },
+    generated_at: { type: 'string', pattern: '^\\d{4}-\\d{2}-\\d{2}T' },
+    license: { const: LICENSE },
+    license_url: { const: LICENSE_URL },
+  },
+  additionalProperties: true,
+}
+
+function uniqueSorted(values) {
+  return [...new Set(values)].sort()
+}
+
+// A derived enum: the data's values plus null (every optional field exports
+// null where the source carries nothing).
+function enumWithNull(values) {
+  return { enum: [...uniqueSorted(values), null] }
+}
+
+export function buildEntityDefs({ makersPayload, fundersPayload, evidencePayload }) {
+  const makers = makersPayload.makers
+  // Axes every maker carries become required; an axis only some makers have
+  // is still described (and validated) via additionalProperties.
+  const axisKeys = uniqueSorted(makers.flatMap((m) => Object.keys(m.axes ?? {})))
+  const requiredAxisKeys = makers.length ? axisKeys.filter((axis) => makers.every((m) => axis in m.axes)) : []
+  const tiers = uniqueSorted(makers.map((m) => m.tier).filter((t) => t !== null))
+  const confidences = uniqueSorted(
+    makers.flatMap((m) => Object.values(m.axes ?? {}).map((a) => a.confidence).filter((c) => c !== null)),
+  )
+  const bases = Object.keys(evidencePayload._meta.bases ?? {}).sort()
+  const claimSupport = Object.keys(evidencePayload._meta.claim_support ?? {}).sort()
+  // Relationship vocabulary = the declared dictionary ∪ the values actually in
+  // use, so a record published as-is never fails its own schema.
+  const relationshipTypes = uniqueSorted([
+    ...Object.keys(evidencePayload.relationship_types ?? {}),
+    ...evidencePayload.relationships.map((r) => r.type),
+  ])
+  const relationshipStatuses = uniqueSorted([
+    ...Object.keys(evidencePayload.relationship_statuses ?? {}),
+    ...evidencePayload.relationships.map((r) => r.status),
+  ])
+
+  const joinEntryArray = (refsMustResolve) => ({
+    type: 'array',
+    items: refsMustResolve
+      ? { $ref: '#/$defs/JoinEntry' }
+      // owns_economically legitimately carries id: null public anchors.
+      : { anyOf: [{ $ref: '#/$defs/JoinEntry' }, { type: 'object', required: ['name'], properties: { id: { const: null }, name: { type: 'string' } }, additionalProperties: false }] },
+  })
+
+  const axisRef = { $ref: '#/$defs/AxisScore' }
+  const axisSchema = {
+    // Declared per known axis (the union) with the every-maker subset required;
+    // anything else is still validated via additionalProperties.
+    type: 'object',
+    required: requiredAxisKeys,
+    properties: Object.fromEntries(axisKeys.map((axis) => [axis, axisRef])),
+    additionalProperties: axisRef,
+  }
+
+  const optionalStringArray = { type: ['array', 'null'], items: { type: 'string' } }
+
+  return {
+    FileMeta: FILE_META_SCHEMA,
+    JoinEntry: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['id', 'name'],
+      properties: { id: { type: ['string', 'null'] }, name: { type: 'string' } },
+    },
+    AxisScore: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['score', 'confidence', 'note', 'sources', 'basis', 'claim_support'],
+      properties: {
+        score: { anyOf: [{ type: 'integer', minimum: 0, maximum: 4 }, { const: 'n/a' }, { type: 'null' }] },
+        confidence: enumWithNull(confidences),
+        note: { type: ['string', 'null'] },
+        sources: STRING_ARRAY,
+        basis: enumWithNull(bases),
+        claim_support: enumWithNull(claimSupport),
+      },
+    },
+    Maker: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['id', 'slug', 'name', 'tier', 'jurisdiction', 'vc_independent', 'products_models', 'founders', 'lead_backers', 'structure', 'stated_values', 'tension_hook', 'capital_profile', 'axes'],
+      properties: {
+        id: ID_STRING,
+        slug: ID_STRING,
+        name: { type: 'string' },
+        tier: enumWithNull(tiers),
+        jurisdiction: { type: ['string', 'null'] },
+        vc_independent: { type: ['string', 'null'] },
+        products_models: STRING_ARRAY,
+        founders: STRING_ARRAY,
+        lead_backers: STRING_ARRAY,
+        structure: { type: ['string', 'null'] },
+        stated_values: { type: ['string', 'null'] },
+        tension_hook: { type: ['string', 'null'] },
+        // Published as-is — its fields vary per maker.
+        capital_profile: { type: ['object', 'null'], additionalProperties: true },
+        axes: axisSchema,
+      },
+    },
+    Funder: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['id', 'name', 'parent_type', 'rolled_up_vehicles', 'makers_backed', 'maker_count', 'owns_outright', 'owns_economically', 'flag', 'key_people', 'also_funds', 'also_backs_outside_18', 'portfolio_sources', 'notable_for', 'reputation_sources'],
+      properties: {
+        id: ID_STRING,
+        name: { type: 'string' },
+        parent_type: { type: ['string', 'null'] },
+        rolled_up_vehicles: STRING_ARRAY,
+        makers_backed: joinEntryArray(true),
+        maker_count: { type: ['integer', 'null'] },
+        owns_outright: joinEntryArray(true),
+        owns_economically: joinEntryArray(false),
+        flag: { type: ['string', 'null'] },
+        key_people: STRING_ARRAY,
+        also_funds: { type: ['string', 'null'] },
+        also_backs_outside_18: optionalStringArray,
+        portfolio_sources: optionalStringArray,
+        notable_for: optionalStringArray,
+        reputation_sources: optionalStringArray,
+      },
+    },
+    Relationship: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['funder', 'maker', 'type', 'status', 'as_of', 'quote', 'quoted_from'],
+      properties: {
+        funder: { $ref: '#/$defs/JoinEntry' },
+        maker: { $ref: '#/$defs/JoinEntry' },
+        type: { enum: relationshipTypes },
+        status: { enum: relationshipStatuses },
+        as_of: { type: ['string', 'null'] },
+        quote: { type: ['string', 'null'] },
+        quoted_from: { type: ['string', 'null'] },
+      },
+    },
+    AxisEvidenceRecord: {
+      type: 'object',
+      additionalProperties: true,
+      required: ['basis', 'claim_support', 'decision_eligible'],
+      properties: {
+        basis: { enum: bases },
+        claim_support: { enum: claimSupport },
+        decision_eligible: { type: 'boolean' },
+      },
+    },
+    MakersFile: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['_meta', 'makers'],
+      properties: { _meta: { $ref: '#/$defs/FileMeta' }, makers: { type: 'array', items: { $ref: '#/$defs/Maker' } } },
+    },
+    FundersFile: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['_meta', 'funders'],
+      properties: { _meta: { $ref: '#/$defs/FileMeta' }, funders: { type: 'array', items: { $ref: '#/$defs/Funder' } } },
+    },
+    EvidenceFile: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['_meta', 'relationship_types', 'relationship_statuses', 'axis_evidence', 'funder_association_status', 'relationships'],
+      properties: {
+        _meta: { $ref: '#/$defs/FileMeta' },
+        relationship_types: { type: 'object', additionalProperties: { type: 'string' } },
+        relationship_statuses: { type: 'object', additionalProperties: { type: 'string' } },
+        axis_evidence: { type: 'object', additionalProperties: { type: 'object', additionalProperties: { $ref: '#/$defs/AxisEvidenceRecord' } } },
+        funder_association_status: { type: 'object', additionalProperties: { type: 'object', additionalProperties: true } },
+        relationships: { type: 'array', items: { $ref: '#/$defs/Relationship' } },
+        absence_evidence: { type: 'object', additionalProperties: true },
+        background_sources: { type: 'object', additionalProperties: { type: ['string', 'object'] } },
+      },
+    },
+    Manifest: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['_meta', 'endpoints', 'note'],
+      properties: {
+        _meta: { $ref: '#/$defs/FileMeta' },
+        endpoints: { type: 'object', additionalProperties: { type: ['string', 'object'] } },
+        note: { type: 'string' },
+      },
+    },
+  }
+}
+
+// Standalone schema files anchor refs at '#/$defs/…'; the OpenAPI document
+// re-anchors the very same defs at '#/components/schemas/…'. One definition
+// source, two views — they cannot disagree.
+function reanchorRefs(value, prefix) {
+  if (Array.isArray(value)) return value.map((v) => reanchorRefs(v, prefix))
+  if (value && typeof value === 'object') {
+    const out = {}
+    for (const [k, v] of Object.entries(value)) out[k] = k === '$ref' ? v.replace('#/$defs/', prefix) : reanchorRefs(v, prefix)
+    return out
+  }
+  return value
+}
+
+function standaloneSchema(title, description, properties, defs) {
+  return {
+    $schema: 'https://json-schema.org/draft/2020-12/schema',
+    title,
+    description,
+    type: 'object',
+    properties,
+    $defs: defs,
+  }
+}
+
+export function buildStandaloneSchemas(defs, { generatedAt, sourceCommit }) {
+  const description = (subject) =>
+    `JSON Schema (2020-12) for the Value Compass open-data payload. Generated ${generatedAt} from commit ${sourceCommit} by scripts/export-api.mjs — do not edit; vocabulary is derived from the data itself. ${subject} Licensed ${LICENSE} (${LICENSE_URL}).`
+  return {
+    'api/v1/schemas/makers.schema.json': stableJson(
+      standaloneSchema(
+        'Value Compass — makers payload schema',
+        description('Scores are 0–4, "n/a", or null; per-axis basis and claim_support carry the evidence verdicts.'),
+        { _meta: { $ref: '#/$defs/FileMeta' }, makers: { type: 'array', items: { $ref: '#/$defs/Maker' } } },
+        defs,
+      ),
+    ),
+    'api/v1/schemas/funders.schema.json': stableJson(
+      standaloneSchema(
+        'Value Compass — funders payload schema',
+        description('makers_backed / owns_outright reference maker ids (slugs); owns_economically may carry id: null public anchors.'),
+        { _meta: { $ref: '#/$defs/FileMeta' }, funders: { type: 'array', items: { $ref: '#/$defs/Funder' } } },
+        defs,
+      ),
+    ),
+    'api/v1/schemas/evidence.schema.json': stableJson(
+      standaloneSchema(
+        'Value Compass — evidence payload schema',
+        description('The evidence classification layer published as-is; basis, claim_support, and decision_eligible are the controlled fields.'),
+        {
+          _meta: { $ref: '#/$defs/FileMeta' },
+          relationship_types: { type: 'object', additionalProperties: { type: 'string' } },
+          relationship_statuses: { type: 'object', additionalProperties: { type: 'string' } },
+          axis_evidence: { type: 'object', additionalProperties: { type: 'object', additionalProperties: { $ref: '#/$defs/AxisEvidenceRecord' } } },
+          funder_association_status: { type: 'object', additionalProperties: { type: 'object', additionalProperties: true } },
+          relationships: { type: 'array', items: { $ref: '#/$defs/Relationship' } },
+          absence_evidence: { type: 'object', additionalProperties: true },
+          background_sources: { type: 'object', additionalProperties: { type: ['string', 'object'] } },
+        },
+        defs,
+      ),
+    ),
+  }
+}
+
+export function buildOpenApiDocument({ makersPayload, fundersPayload, evidencePayload, manifest, siteUrl, defs }) {
+  const componentSchemas = reanchorRefs(defs, '#/components/schemas/')
+  const get = (schemaName, summary) => ({
+    get: {
+      tags: ['open data'],
+      summary,
+      description: `Licensed ${LICENSE} (${LICENSE_URL}). GET-only, no auth, CORS open.`,
+      responses: {
+        '200': {
+          description: 'The payload, serialized with sorted keys.',
+          content: { 'application/json': { schema: { $ref: `#/components/schemas/${schemaName}` } } },
+        },
+      },
+    },
+  })
+  return {
+    openapi: '3.1.0',
+    info: {
+      title: 'Value Compass — open data API',
+      version: API_VERSION,
+      summary: 'Evidence-aware scores for AI makers across five pro-social axes, with the funding network behind them.',
+      description:
+        "Build-time static export of the Value Compass dataset: scored makers, funder nodes with id-joined capital relationships, and the evidence classification layer. Scores are 0–4 or null/'n/a' (higher = more pro-social); per-axis basis and claim_support verdicts say what each score rests on. Every payload carries generated_at and license; the manifest pins source_commit and a content_hash.",
+      license: { name: LICENSE, url: LICENSE_URL },
+    },
+    servers: [{ url: siteUrl }],
+    paths: {
+      [manifest.endpoints.makers]: get('MakersFile', `Scored makers (${manifest._meta.counts.makers})`),
+      [manifest.endpoints.funders]: get('FundersFile', `Funder nodes (${manifest._meta.counts.funders})`),
+      [manifest.endpoints.evidence]: get('EvidenceFile', `Evidence classification layer (${manifest._meta.counts.evidence_relationships} relationships)`),
+      [manifest.endpoints.index]: get('Manifest', 'Manifest: version, generated_at, license, source_commit, content_hash, counts'),
+    },
+    components: { schemas: componentSchemas },
   }
 }
 
@@ -495,12 +830,20 @@ export function buildExportPayloads({ makersFile, fundersFile, evidenceFile, gen
 
   fail(problems, 'funder→maker join integrity check failed (0 dangling edges required)')
 
+  // One def source feeds both the standalone schema files and the OpenAPI
+  // components — the two views cannot disagree.
+  const defs = buildEntityDefs({ makersPayload, fundersPayload, evidencePayload })
+  const schemaFiles = buildStandaloneSchemas(defs, { generatedAt, sourceCommit })
+  const openApi = buildOpenApiDocument({ makersPayload, fundersPayload, evidencePayload, manifest, siteUrl, defs })
+
   const files = {
     'api/v1/makers.json': stableJson(makersPayload),
     'api/v1/funders.json': stableJson(fundersPayload),
     'api/v1/evidence.json': stableJson(evidencePayload),
     'api/v1/index.json': stableJson(manifest),
     'api/v1/catalog.jsonld': stableJson(buildCatalogJsonLd(makersPayload, fundersPayload, manifest, { siteUrl })),
+    'api/v1/openapi.json': stableJson(openApi),
+    ...schemaFiles,
     'llms.txt': buildLlmsTxt(makersPayload, fundersPayload, evidencePayload, manifest, {
       generatedAt,
       sourceCommit,
@@ -508,7 +851,7 @@ export function buildExportPayloads({ makersFile, fundersFile, evidenceFile, gen
     }),
     'sitemap.xml': buildSitemap(makersPayload, fundersPayload, { generatedAt, siteUrl }),
   }
-  return { files, makersPayload, fundersPayload, evidencePayload, manifest }
+  return { files, makersPayload, fundersPayload, evidencePayload, manifest, defs }
 }
 
 // ---------------------------------------------------------------------------

@@ -51,6 +51,19 @@ The machine-readable v1 export rides along on the deployed site:
 serves the manifest with CORS open (`Access-Control-Allow-Origin: *`), alongside
 [`llms.txt`](https://buildwithwhy.github.io/value-compass/llms.txt) and
 [`sitemap.xml`](https://buildwithwhy.github.io/value-compass/sitemap.xml).
+The surface also documents itself:
+[`api/v1/openapi.json`](https://buildwithwhy.github.io/value-compass/api/v1/openapi.json)
+is an OpenAPI 3.1 description of every endpoint (each payload's JSON Schema under
+`components.schemas`), and
+[`api/v1/schemas/makers.schema.json`](https://buildwithwhy.github.io/value-compass/api/v1/schemas/makers.schema.json),
+[`funders.schema.json`](https://buildwithwhy.github.io/value-compass/api/v1/schemas/funders.schema.json),
+and
+[`evidence.schema.json`](https://buildwithwhy.github.io/value-compass/api/v1/schemas/evidence.schema.json)
+are the same schemas as standalone JSON Schema (2020-12) files. Both are generated
+by `scripts/export-api.mjs` from the normalized payloads themselves — controlled
+vocabularies (axes, tiers, confidences, basis / claim_support, relationship types
+and statuses) are read out of the data, so a vocabulary change rewrites the
+schemas in the same build instead of drifting away from what the API serves.
 
 Three deployment facts worth knowing:
 

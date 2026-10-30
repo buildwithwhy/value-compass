@@ -13,6 +13,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
+import { Ajv2020 } from 'ajv/dist/2020'
 import { buildExportPayloads, canonicalize, stableJson, sha256, LICENSE } from './export-api.mjs'
 
 const readSource = (p) => JSON.parse(readFileSync(fileURLToPath(new URL(p, import.meta.url)), 'utf8'))
@@ -121,6 +122,8 @@ const evidenceFile = {
       quoted_from: 'makers.json → Alpha Labs.lead_backers',
     },
   },
+  relationship_types: { equity_investment: 'Invested in a named funding round.', passive_economic: 'Passive economic exposure.' },
+  relationship_statuses: { completed: 'Completed.', announced: 'Announced, not closed.' },
   funder_association_status: { 'Beta Ventures': { associations_status: 'sourced' } },
   absence_evidence: {},
   background_sources: {},
@@ -414,8 +417,12 @@ describe('fixture export: sitemap, llms.txt, catalog', () => {
     const graph = catalog['@graph']
     expect(graph.find((n) => n['@type'] === 'DataCatalog')).toBeTruthy()
     const dataset = graph.find((n) => n['@type'] === 'Dataset')
-    expect(dataset.distribution).toHaveLength(4)
+    expect(dataset.distribution).toHaveLength(8)
     expect(dataset.distribution[0].contentUrl).toBe('https://example.org/value-compass/api/v1/makers.json')
+    const schemaDistributions = dataset.distribution.filter((d) => d.encodingFormat === 'application/schema+json')
+    expect(schemaDistributions).toHaveLength(3)
+    const openapiDistribution = dataset.distribution.find((d) => d.name === 'openapi.json')
+    expect(openapiDistribution.contentUrl).toBe('https://example.org/value-compass/api/v1/openapi.json')
   })
 })
 
@@ -496,4 +503,141 @@ describe('real-data invariants (src/data/*.json)', () => {
   })
 })
 
-// -- Real data ---------------------------------------------------------------
+// -- OpenAPI + JSON Schema ----------------------------------------------------
+
+// strict:true keeps compiling honest; allowUnionTypes permits the valid
+// 2020-12 union form `type: ['string', 'null']` the schemas use for optionals.
+const ajv = new Ajv2020({ strict: true, allowUnionTypes: true })
+const compileSchema = (schema) => ajv.compile(schema)
+const validates = (schema, data) => {
+  const v = compileSchema(schema)
+  return { ok: v(data), errors: v.errors }
+}
+
+const SCHEMA_PATHS = {
+  makers: 'api/v1/schemas/makers.schema.json',
+  funders: 'api/v1/schemas/funders.schema.json',
+  evidence: 'api/v1/schemas/evidence.schema.json',
+}
+
+describe('fixture export: OpenAPI + JSON Schema', () => {
+  it('each emitted schema validates its payload', () => {
+    const { files, makersPayload, fundersPayload, evidencePayload } = build()
+    const results = {
+      makers: validates(parseFile(files, SCHEMA_PATHS.makers), makersPayload),
+      funders: validates(parseFile(files, SCHEMA_PATHS.funders), fundersPayload),
+      evidence: validates(parseFile(files, SCHEMA_PATHS.evidence), evidencePayload),
+    }
+    for (const [name, r] of Object.entries(results)) {
+      if (!r.ok) throw new Error(`${name} payload fails its schema: ${JSON.stringify(r.errors, null, 2)}`)
+      expect(r.ok).toBe(true)
+    }
+  })
+
+  it('every schema compiles under strict JSON Schema 2020-12', () => {
+    const { files } = build()
+    for (const path of Object.values(SCHEMA_PATHS)) expect(() => compileSchema(parseFile(files, path))).not.toThrow()
+  })
+
+  it('openapi.json is 3.1.0 and describes every data endpoint with a resolvable schema ref', () => {
+    const { files, manifest } = build()
+    const doc = parseFile(files, 'api/v1/openapi.json')
+    expect(doc.openapi).toBe('3.1.0')
+    expect(doc.info.license.name).toBe('CC BY 4.0')
+    for (const [endpoint, schemaName] of [
+      ['makers', 'MakersFile'],
+      ['funders', 'FundersFile'],
+      ['evidence', 'EvidenceFile'],
+      ['index', 'Manifest'],
+    ]) {
+      const path = manifest.endpoints[endpoint]
+      const op = doc.paths[path]?.get
+      expect(op, `paths.${path}`).toBeTruthy()
+      const ref = op.responses['200'].content['application/json'].schema.$ref
+      expect(ref).toBe(`#/components/schemas/${schemaName}`)
+      expect(doc.components.schemas[schemaName], `component ${schemaName}`).toBeTruthy()
+    }
+    // Every internal $ref resolves to a declared component.
+    const refTargets = JSON.stringify(doc.components.schemas).match(/"#\/components\/schemas\/([A-Za-z]+)"/g) ?? []
+    for (const match of refTargets) {
+      const name = match.replace(/"#\/components\/schemas\/|\//g, '').replace(/"/g, '')
+      expect(doc.components.schemas[name], `ref ${name}`).toBeTruthy()
+    }
+  })
+
+  it('openapi components and standalone files share one def source — they cannot disagree', () => {
+    const { files } = build()
+    const makersSchema = parseFile(files, SCHEMA_PATHS.makers)
+    const doc = parseFile(files, 'api/v1/openapi.json')
+    const reanchored = JSON.parse(JSON.stringify(makersSchema.$defs).replaceAll('#/$defs/', '#/components/schemas/'))
+    for (const [name, def] of Object.entries(reanchored)) expect(doc.components.schemas[name]).toEqual(def)
+  })
+
+  it('vocabularies are derived from the data — a new term rewrites the schema in the same build', () => {
+    const { defs } = build()
+    expect(defs.Maker.properties.tier.enum).toContain('startup')
+    expect(defs.Maker.properties.tier.enum).toContain(null)
+    expect(defs.AxisScore.properties.basis.enum).toEqual(
+      expect.arrayContaining(['not_established', 'sourced', null]),
+    )
+    expect(defs.Maker.properties.axes.required).toEqual(['transparency']) // axes every fixture maker carries
+
+    const newVocab = {
+      ...evidenceFile,
+      _meta: { ...evidenceFile._meta, bases: { ...evidenceFile._meta.bases, mysterious: 'A new basis term.' } },
+    }
+    const { defs: rewritten } = build({ evidenceFile: newVocab })
+    expect(rewritten.AxisScore.properties.basis.enum).toContain('mysterious')
+  })
+
+  it('schema files stamp generation provenance and license in their description', () => {
+    const { files } = build()
+    for (const path of Object.values(SCHEMA_PATHS)) {
+      const schema = parseFile(files, path)
+      expect(schema.$schema).toBe('https://json-schema.org/draft/2020-12/schema')
+      expect(schema.description).toContain('CC BY 4.0')
+      expect(schema.description).toContain('do not edit')
+    }
+  })
+})
+
+describe('real-data schema invariants (src/data/*.json)', () => {
+  const real = buildExportPayloads({
+    makersFile: readSource('../src/data/makers.json'),
+    fundersFile: readSource('../src/data/funders.json'),
+    evidenceFile: readSource('../src/data/evidence.json'),
+    generatedAt: GENERATED_AT,
+    sourceCommit: SOURCE_COMMIT,
+    siteUrl: SITE_URL,
+  })
+
+  it('every real payload validates against its emitted schema', () => {
+    const checks = [
+      [SCHEMA_PATHS.makers, real.makersPayload],
+      [SCHEMA_PATHS.funders, real.fundersPayload],
+      [SCHEMA_PATHS.evidence, real.evidencePayload],
+    ]
+    for (const [path, payload] of checks) {
+      const result = validates(parseFile(real.files, path), payload)
+      if (!result.ok) throw new Error(`${path}: ${JSON.stringify(result.errors, null, 2)}`)
+      expect(result.ok).toBe(true)
+    }
+  })
+
+  it('the OpenAPI paths are exactly the manifest data endpoints', () => {
+    const doc = JSON.parse(real.files['api/v1/openapi.json'])
+    const { openapi: _openapi, schemas: _schemas, catalog: _catalog, ...dataEndpoints } = real.manifest.endpoints
+    expect(Object.keys(doc.paths).sort()).toEqual(Object.values(dataEndpoints).sort())
+  })
+
+  it('the emitted schemas derive their vocabulary from the real dataset', () => {
+    expect(real.defs.Maker.properties.axes.required).toEqual(
+      ['culture_esg', 'labour_integrity', 'public_sharing', 'transparency', 'wealth_dispersion'],
+    )
+    expect(real.defs.AxisScore.properties.basis.enum).toEqual(
+      expect.arrayContaining(['contextual', 'not_established', 'sourced', 'unsourced', null]),
+    )
+    expect(real.defs.Relationship.properties.type.enum).toContain('outright_ownership')
+    expect(real.defs.Relationship.properties.status.enum).toContain('contingent')
+  })
+})
