@@ -1,0 +1,2 @@
+Serve the built site as-is: this marker disables GitHub Pages Jekyll processing.
+See .github/workflows/deploy.yml.

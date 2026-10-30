@@ -20,3 +20,15 @@ export function legacyHashToPath(hash: string): string | null {
 export function funderPath(id: string): string {
   return `/funder/${encodeURIComponent(id)}`
 }
+
+/**
+ * Prefixes an in-app path with the deployment base (Vite's `base`, mirrored to
+ * the app as BASE_URL). Root deployments ('/') are untouched. window.history
+ * calls bypass the router's basename handling, so any raw path written there
+ * must be joined with the base first.
+ */
+export function withBasePath(base: string, path: string): string {
+  const suffix = path.startsWith('/') ? path : `/${path}`
+  if (base === '' || base === '/') return suffix
+  return `${base.replace(/\/+$/, '')}${suffix}`
+}
