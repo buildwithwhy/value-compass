@@ -7,6 +7,7 @@ import {
   buildGraph,
   getFunder,
   getMaker,
+  makers,
 } from '../lib/data'
 import { nodeColor, PARENT_LABELS } from '../lib/colors'
 import type { GraphLink, GraphNode, ParentBucket, Tier } from '../lib/types'
@@ -367,7 +368,7 @@ export function GraphView() {
         </button>
         <span className="text-xs text-slate-400">
           {sizeBy === 'funder_reach'
-            ? 'Funders sized by how many of the 18 they back.'
+            ? `Funders sized by how many of the ${makers.length} they back.`
             : sizeBy === 'uniform'
               ? 'All nodes equal size — read the network, not the weights.'
               : 'Nodes sized by number of connections.'}

@@ -5,12 +5,14 @@ export const TIER_COLORS: Record<Tier, string> = {
   frontier: '#7c3aed', // violet
   tool: '#0ea5e9', // sky
   frontier_and_funder: '#db2777', // pink (dual: Microsoft)
+  platform: '#059669', // emerald (Alibaba: platform/ecosystem maker)
 }
 
 export const TIER_LABELS: Record<Tier, string> = {
   frontier: 'Frontier lab',
   tool: 'Tool / model',
   frontier_and_funder: 'Frontier + funder',
+  platform: 'Platform',
 }
 
 // Funder parent-type colors (cool / earth family, distinct from maker hues).

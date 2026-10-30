@@ -18,12 +18,13 @@ import {
 // invented data) and join funder→maker strictly on `id`.
 // ---------------------------------------------------------------------------
 
-export const makersMeta = (makersRaw as any)._meta as MakersMeta
-export const makers = (makersRaw as any).makers as Maker[]
-export const funders = (fundersRaw as any).funders as Funder[]
-export const fundersMeta = (fundersRaw as any)._meta as Record<string, unknown>
-export const concentrationRanking = ((fundersRaw as any)
-  .concentration_ranking_among_18_makers ?? []) as { funder: string; count: number; note?: string }[]
+export const makersMeta = makersRaw._meta as MakersMeta
+export const makers = makersRaw.makers as Maker[]
+export const funders = fundersRaw.funders as Funder[]
+export const fundersMeta = fundersRaw._meta as Record<string, unknown>
+export const concentrationRanking = (
+  fundersRaw.concentration_ranking_among_18_makers ?? []
+) as { funder: string; count: number; note?: string }[]
 // methodologyMarkdown is the public methodology. rubricMarkdown is the original
 // internal design draft — kept for the record, and shown only on a page that
 // says what it is. It is not the site's published methodology.

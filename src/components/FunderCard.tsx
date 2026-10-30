@@ -1,4 +1,4 @@
-import { getMaker, parentBucket } from '../lib/data'
+import { getMaker, makers, parentBucket } from '../lib/data'
 import { DEEP_POCKET_BUCKETS, PARENT_COLORS, PARENT_LABELS } from '../lib/colors'
 import {
   associationsAreUnverified,
@@ -293,7 +293,7 @@ export function FunderDetail({
 
       {backed.length > 0 && (
         <div>
-          <SectionTitle>Holds a stake in {backed.length} of the 18 makers</SectionTitle>
+          <SectionTitle>Holds a stake in {backed.length} of the {makers.length} makers</SectionTitle>
           <ul className="space-y-1.5">
             {backed.map((id) => {
               const m = getMaker(id)
@@ -336,7 +336,7 @@ export function FunderDetail({
 
       {funder.also_backs_outside_18 && funder.also_backs_outside_18.length > 0 && (
         <div>
-          <SectionTitle>Also backs (outside the 18)</SectionTitle>
+          <SectionTitle>Also backs (outside the {makers.length})</SectionTitle>
           <p className="text-sm leading-snug text-slate-600">
             {funder.also_backs_outside_18.join(', ')}
           </p>
