@@ -22,26 +22,26 @@
     "summary": {
       "axis_records": 115,
       "by_basis": {
-        "sourced": 20,
-        "unsourced": 69,
+        "sourced": 29,
+        "unsourced": 59,
         "not_established": 21,
-        "contextual": 5
+        "contextual": 6
       },
       "withheld": 21,
       "decision_eligible": 8,
       "establishes_fact": 14,
       "claim_support_partial": 5,
-      "claim_support_unreviewed": 0,
+      "claim_support_unreviewed": 9,
       "facts_preserved_without_eligible_score": 11,
       "human_reviewed": 0,
-      "no_sources_at_all": 65,
+      "no_sources_at_all": 56,
       "background_only": 27,
-      "confidence_c": 80,
-      "recorded_na": 25,
+      "confidence_c": 79,
+      "recorded_na": 21,
       "funders_with_unverified_associations": 12,
       "funders_with_associations": 14,
       "absence_evidence_records": 0,
-      "funder_maker_edges": 89,
+      "funder_maker_edges": 94,
       "edges_with_transcribed_detail": 20
     }
   },
@@ -2193,20 +2193,22 @@
         "context_used": []
       },
       "public_sharing": {
-        "basis": "unsourced",
-        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "claim_support": "none",
+        "claim_support": "unreviewed",
         "supported_fact": null,
         "source_date": "not stated in record",
         "source_scope": null,
         "unsupported_clauses": [],
         "scoring_rule": "None. The rubric lists sub-indicators for this axis but states no rule for combining them into a 0–4 score.",
         "justifies_whole": false,
-        "justification_note": "No source about this maker to review.",
+        "justification_note": "A source about this maker is cited, but the fit between source and claim has not been reviewed.",
         "provenance": "automated_provisional",
         "decision_eligible": false,
-        "entity_sources": [],
+        "entity_sources": [
+          "https://bolt.new/blog/bolt-open-source-fund-2026"
+        ],
         "background_sources": [],
         "context_used": []
       }
@@ -2285,64 +2287,70 @@
         "context_used": []
       },
       "public_sharing": {
-        "basis": "unsourced",
-        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "claim_support": "none",
+        "claim_support": "unreviewed",
         "supported_fact": null,
         "source_date": "not stated in record",
         "source_scope": null,
         "unsupported_clauses": [],
         "scoring_rule": "None. The rubric lists sub-indicators for this axis but states no rule for combining them into a 0–4 score.",
         "justifies_whole": false,
-        "justification_note": "No source about this maker to review.",
+        "justification_note": "A source about this maker is cited, but the fit between source and claim has not been reviewed.",
         "provenance": "automated_provisional",
         "decision_eligible": false,
-        "entity_sources": [],
+        "entity_sources": [
+          "https://vercel.com/oss"
+        ],
         "background_sources": [],
         "context_used": []
       }
     },
     "Proton": {
       "transparency": {
-        "basis": "unsourced",
-        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "claim_support": "none",
+        "claim_support": "unreviewed",
         "supported_fact": null,
         "source_date": "not stated in record",
         "source_scope": null,
         "unsupported_clauses": [],
         "scoring_rule": "None. The rubric lists sub-indicators for this axis but states no rule for combining them into a 0–4 score.",
         "justifies_whole": false,
-        "justification_note": "No source about this maker to review.",
+        "justification_note": "A source about this maker is cited, but the fit between source and claim has not been reviewed.",
         "provenance": "automated_provisional",
         "decision_eligible": false,
-        "entity_sources": [],
+        "entity_sources": [
+          "https://proton.me/foundation"
+        ],
         "background_sources": [],
         "context_used": []
       },
       "culture_esg": {
-        "basis": "unsourced",
-        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "claim_support": "none",
+        "claim_support": "unreviewed",
         "supported_fact": null,
         "source_date": "not stated in record",
         "source_scope": null,
         "unsupported_clauses": [],
         "scoring_rule": "None. The rubric lists sub-indicators for this axis but states no rule for combining them into a 0–4 score.",
         "justifies_whole": false,
-        "justification_note": "No source about this maker to review.",
+        "justification_note": "A source about this maker is cited, but the fit between source and claim has not been reviewed.",
         "provenance": "automated_provisional",
         "decision_eligible": false,
-        "entity_sources": [],
+        "entity_sources": [
+          "https://theintercept.com/2025/01/28/proton-mail-andy-yen-trump-republicans/"
+        ],
         "background_sources": [],
         "context_used": []
       },
       "labour_integrity": {
-        "basis": "unsourced",
-        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "basis": "contextual",
+        "rule": "The rationale reasons from sits on top of another maker’s models rather than from evidence about this maker.",
         "withheld": false,
         "claim_support": "none",
         "supported_fact": null,
@@ -2356,61 +2364,69 @@
         "decision_eligible": false,
         "entity_sources": [],
         "background_sources": [],
-        "context_used": []
+        "context_used": [
+          "sits on top of another maker’s models"
+        ]
       },
       "wealth_dispersion": {
-        "basis": "unsourced",
-        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "claim_support": "none",
+        "claim_support": "unreviewed",
         "supported_fact": null,
         "source_date": "not stated in record",
         "source_scope": null,
         "unsupported_clauses": [],
         "scoring_rule": "None. The rubric lists sub-indicators for this axis but states no rule for combining them into a 0–4 score.",
         "justifies_whole": false,
-        "justification_note": "No source about this maker to review.",
+        "justification_note": "A source about this maker is cited, but the fit between source and claim has not been reviewed.",
         "provenance": "automated_provisional",
         "decision_eligible": false,
-        "entity_sources": [],
+        "entity_sources": [
+          "https://proton.me/foundation"
+        ],
         "background_sources": [],
         "context_used": []
       },
       "public_sharing": {
-        "basis": "unsourced",
-        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "claim_support": "none",
+        "claim_support": "unreviewed",
         "supported_fact": null,
         "source_date": "not stated in record",
         "source_scope": null,
         "unsupported_clauses": [],
         "scoring_rule": "None. The rubric lists sub-indicators for this axis but states no rule for combining them into a 0–4 score.",
         "justifies_whole": false,
-        "justification_note": "No source about this maker to review.",
+        "justification_note": "A source about this maker is cited, but the fit between source and claim has not been reviewed.",
         "provenance": "automated_provisional",
         "decision_eligible": false,
-        "entity_sources": [],
+        "entity_sources": [
+          "https://proton.me/foundation"
+        ],
         "background_sources": [],
         "context_used": []
       }
     },
     "Alibaba": {
       "transparency": {
-        "basis": "unsourced",
-        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "claim_support": "none",
+        "claim_support": "unreviewed",
         "supported_fact": null,
         "source_date": "not stated in record",
         "source_scope": null,
         "unsupported_clauses": [],
         "scoring_rule": "None. The rubric lists sub-indicators for this axis but states no rule for combining them into a 0–4 score.",
         "justifies_whole": false,
-        "justification_note": "No source about this maker to review.",
+        "justification_note": "A source about this maker is cited, but the fit between source and claim has not been reviewed.",
         "provenance": "automated_provisional",
         "decision_eligible": false,
-        "entity_sources": [],
+        "entity_sources": [
+          "https://crfm.stanford.edu/fmti/December-2025/index.html"
+        ],
         "background_sources": [],
         "context_used": []
       },
@@ -2451,20 +2467,22 @@
         "context_used": []
       },
       "wealth_dispersion": {
-        "basis": "unsourced",
-        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "claim_support": "none",
+        "claim_support": "unreviewed",
         "supported_fact": null,
         "source_date": "not stated in record",
         "source_scope": null,
         "unsupported_clauses": [],
         "scoring_rule": "None. The rubric lists sub-indicators for this axis but states no rule for combining them into a 0–4 score.",
         "justifies_whole": false,
-        "justification_note": "No source about this maker to review.",
+        "justification_note": "A source about this maker is cited, but the fit between source and claim has not been reviewed.",
         "provenance": "automated_provisional",
         "decision_eligible": false,
-        "entity_sources": [],
+        "entity_sources": [
+          "https://en.wikipedia.org/wiki/Alibaba_Group"
+        ],
         "background_sources": [],
         "context_used": []
       },
@@ -2543,20 +2561,22 @@
         "context_used": []
       },
       "wealth_dispersion": {
-        "basis": "unsourced",
-        "rule": "The rationale points at something on record, but no source about this maker is attached.",
+        "basis": "sourced",
+        "rule": "The rationale points at something on record and carries at least one source about this maker.",
         "withheld": false,
-        "claim_support": "none",
+        "claim_support": "unreviewed",
         "supported_fact": null,
         "source_date": "not stated in record",
         "source_scope": null,
         "unsupported_clauses": [],
         "scoring_rule": "None. The rubric lists sub-indicators for this axis but states no rule for combining them into a 0–4 score.",
         "justifies_whole": false,
-        "justification_note": "No source about this maker to review.",
+        "justification_note": "A source about this maker is cited, but the fit between source and claim has not been reviewed.",
         "provenance": "automated_provisional",
         "decision_eligible": false,
-        "entity_sources": [],
+        "entity_sources": [
+          "https://en.wikipedia.org/wiki/DuckDuckGo"
+        ],
         "background_sources": [],
         "context_used": []
       },

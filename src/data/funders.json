@@ -126,13 +126,14 @@
         "Anthropic",
         "Lovable",
         "Replit",
-        "Cursor"
+        "Cursor",
+        "StackBlitz"
       ],
-      "maker_count": 4,
+      "maker_count": 5,
       "owns_outright": [
         "Google DeepMind"
       ],
-      "flag": "Funds its own competitor (Anthropic ~14%, capped 15%, no votes/board) while owning DeepMind. Sits on both sides of the open/closed and competitor map.",
+      "flag": "Funds its own competitor (Anthropic ~14%, capped 15%, no votes/board) while owning DeepMind. Sits on both sides of the open/closed and competitor map. GV (a rolled-up vehicle) backed StackBlitz's announced 2022 seed.",
       "key_people": [
         "Sundar Pichai (CEO)",
         "CapitalG, GV, Gradient, Google AI Futures Fund (vehicles)"
@@ -149,10 +150,11 @@
         "Perplexity",
         "Lovable",
         "Gamma",
-        "Cursor"
+        "Cursor",
+        "Vercel"
       ],
-      "maker_count": 4,
-      "flag": "Dominant on the consumer/SMB tool layer (led Perplexity $14B, Lovable Series A, Gamma seed/A, co-led Cursor).",
+      "maker_count": 5,
+      "flag": "Dominant on the consumer/SMB tool layer (led Perplexity $14B, Lovable Series A, Gamma seed/A, co-led Cursor). Co-led Vercel's Series F (announced 2025-09-30).",
       "key_people": [
         "Rich Wong",
         "Sameer Gandhi",
@@ -378,10 +380,11 @@
       ],
       "makers_backed": [
         "OpenAI",
-        "Perplexity"
+        "Perplexity",
+        "Alibaba"
       ],
-      "maker_count": 2,
-      "flag": "OpenAI ~30% of SoftBank's portfolio after its $30B; S&P revised outlook to negative — single-bet liquidity-risk node.",
+      "maker_count": 3,
+      "flag": "OpenAI ~30% of SoftBank's portfolio after its $30B; S&P revised outlook to negative — single-bet liquidity-risk node. Long-standing large shareholder of Alibaba (c. 11.9% reported in early 2024, approximate).",
       "key_people": [
         "Masayoshi Son (Chairman/CEO)"
       ],
@@ -602,10 +605,11 @@
         "GIC"
       ],
       "makers_backed": [
-        "Anthropic"
+        "Anthropic",
+        "Vercel"
       ],
-      "maker_count": 1,
-      "flag": "Co-led Anthropic Series G.",
+      "maker_count": 2,
+      "flag": "Co-led Anthropic Series G. Co-led Vercel's Series F (announced 2025-09-30).",
       "key_people": [
         "Lim Chow Kiat (CEO)"
       ],
@@ -735,7 +739,8 @@
         "Alphabet/Google",
         "Amazon",
         "Nvidia",
-        "Meta"
+        "Meta",
+        "Alibaba"
       ],
       "maker_count": 0,
       "flag": "DEEPEST, LEAST-VISIBLE LAYER. Largest economic owners of every public anchor, so they sit beneath most private cap tables indirectly. Passive, but real via governance votes. Model as a meta-node behind the hyperscalers, not as a direct maker edge.",
@@ -772,6 +777,22 @@
       "portfolio_sources": [
         "https://www.cnbc.com/2025/06/19/meta-tried-to-buy-safe-superintelligence-hired-ceo-daniel-gross.html",
         "https://www.datacenterdynamics.com/en/news/meta-in-talks-to-partially-acquire-vc-fund-nfdg-hire-nat-friedman-and-daniel-gross-for-ai-shakeup/"
+      ]
+    },
+    {
+      "name": "Proton Foundation",
+      "parent_type": "nonprofit_foundation (Switzerland)",
+      "rolled_up_vehicles": [
+        "Proton Foundation"
+      ],
+      "makers_backed": [
+        "Proton"
+      ],
+      "maker_count": 1,
+      "flag": "Defining/controlling backer (inclusion rule (c)): majority shareholder of Proton since June 2024, endowed by the founders; receives 1% of Proton's revenues for charitable activities whenever financial conditions allow.",
+      "also_funds": "Swiss non-profit foundation bound by its stated purpose; over $5m in grants reported to date. No other maker stakes on record.",
+      "portfolio_sources": [
+        "https://proton.me/foundation"
       ]
     }
   ],

@@ -1491,33 +1491,47 @@
         "transparency": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. This operator was added for the app-builder recommendation category with narrow sourced findings only; no axis assessment has been carried out.",
+          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) established no finding for StackBlitz on this axis; our record holds little public information here, and absence of findings is not a clean record.",
           "sources": []
         },
         "culture_esg": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. This operator was added for the app-builder recommendation category with narrow sourced findings only; no axis assessment has been carried out.",
+          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) established no finding for StackBlitz on this axis; our record holds little public information here, and absence of findings is not a clean record.",
           "sources": []
         },
         "labour_integrity": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. This operator was added for the app-builder recommendation category with narrow sourced findings only; no axis assessment has been carried out.",
+          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) established no data-worker or creator finding for StackBlitz; the announced October 2026 use of customer content for model development and dataset licensing (see tension hook) is a stated future policy whose consent and compensation terms are not established. Absence of findings is not a clean record.",
           "sources": []
         },
         "wealth_dispersion": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. This operator was added for the app-builder recommendation category with narrow sourced findings only; no axis assessment has been carried out.",
+          "note": "Not scored. The record establishes only an announced 2022 seed round and no current cap table (see vc_independent); backer concentration, employee equity breadth and pay dispersion are not established, and the rubric states no rule for combining announced participation into a 0–4 score.",
           "sources": []
         },
         "public_sharing": {
-          "score": null,
+          "score": 2,
           "confidence": "C",
-          "note": "Not scored. This operator was added for the app-builder recommendation category with narrow sourced findings only; no axis assessment has been carried out.",
-          "sources": []
+          "note": "Reports $82,200 paid directly to open-source maintainers during 2025 through its open-source fund (company-reported), with an expanded monthly programme for 2026 announced rather than completed; neither is a fixed share of revenue nor a binding structure.",
+          "sources": [
+            "https://bolt.new/blog/bolt-open-source-fund-2026"
+          ]
         }
+      },
+      "capital_profile": {
+        "independence_type": "vc_backed",
+        "founder_control": false,
+        "sovereign_state": [],
+        "big_tech_capital": [
+          "Alphabet / Google"
+        ],
+        "competitor_entanglement": false,
+        "circular_vendor": [],
+        "index_held": false,
+        "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
       }
     },
     {
@@ -1543,33 +1557,47 @@
         "transparency": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. Added for the app-builder recommendation category with narrow sourced findings only; no axis assessment has been carried out.",
+          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) established no finding for Vercel on this axis; our record holds little public information here, and absence of findings is not a clean record.",
           "sources": []
         },
         "culture_esg": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. Added for the app-builder recommendation category with narrow sourced findings only; no axis assessment has been carried out.",
+          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) established no finding for Vercel on this axis; our record holds little public information here, and absence of findings is not a clean record.",
           "sources": []
         },
         "labour_integrity": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. Added for the app-builder recommendation category with narrow sourced findings only; no axis assessment has been carried out.",
+          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) established no data-worker or creator finding for Vercel; the inconsistent training-default labels between its AI policy and the v0 pricing page (see tension hook) concern customer-content training defaults, and no consent or compensation finding is established. Absence of findings is not a clean record.",
           "sources": []
         },
         "wealth_dispersion": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. Added for the app-builder recommendation category with narrow sourced findings only; no axis assessment has been carried out.",
+          "note": "Not scored. The record establishes an announced September 2025 Series F and tender offer (see vc_independent) but no cap-table concentration, employee-equity breadth or pay-dispersion data; the rubric states no rule for combining announced participation into a 0–4 score.",
           "sources": []
         },
         "public_sharing": {
-          "score": null,
+          "score": 2,
           "confidence": "C",
-          "note": "Not scored. Added for the app-builder recommendation category with narrow sourced findings only; no axis assessment has been carried out.",
-          "sources": []
+          "note": "Publishes a portfolio of open-source projects it maintains or contributes to, including the Next.js framework and the AI SDK — software other businesses rely on; the record notes this is a different contribution from funding independent maintainers, and no structural public-benefit commitment is on record.",
+          "sources": [
+            "https://vercel.com/oss"
+          ]
         }
+      },
+      "capital_profile": {
+        "independence_type": "vc_backed",
+        "founder_control": false,
+        "sovereign_state": [
+          "Singapore (GIC)"
+        ],
+        "big_tech_capital": [],
+        "competitor_entanglement": false,
+        "circular_vendor": [],
+        "index_held": false,
+        "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
       }
     },
     {
@@ -1601,35 +1629,53 @@
         "transparency": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
-          "sources": []
+          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) recorded no disclosure-practices finding for Proton; the Foundation's 1% revenue transfers are not published in any year (see tension hook), and no assessment of overall disclosure practices is on record. Absence of findings is not a clean record.",
+          "sources": [
+            "https://proton.me/foundation"
+          ]
         },
         "culture_esg": {
-          "score": null,
+          "score": 2,
           "confidence": "C",
-          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
-          "sources": []
+          "note": "The batch's only conduct finding: after the CEO's January 2025 post about US politics was deleted following criticism, Proton described the episode as an internal miscommunication and set a policy of sharing no opinions of a political nature. The finding concerns company communications rather than the treatment of workers; no workplace or environmental matter was found in the window, and absence of findings is not a clean record.",
+          "sources": [
+            "https://theintercept.com/2025/01/28/proton-mail-andy-yen-trump-republicans/"
+          ]
         },
         "labour_integrity": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
+          "note": "Not scored. Inherited exposure: Lumo runs on third-party frontier models whose upstream labour it does not control; the batch research (docs/RESEARCH_BATCH.md, 2026-09-27) established no direct data-worker or creator finding for Proton, and absence of findings is not a clean record.",
           "sources": []
         },
         "wealth_dispersion": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
-          "sources": []
+          "note": "Not scored. Majority ownership by the non-profit Proton Foundation is on record (see vc_independent), but backer concentration, employee equity breadth and pay dispersion are not established, and the rubric states no rule for combining ownership structure into a 0–4 score.",
+          "sources": [
+            "https://proton.me/foundation"
+          ]
         },
         "public_sharing": {
-          "score": null,
-          "confidence": "C",
-          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
-          "sources": []
+          "score": 3,
+          "confidence": "B",
+          "note": "Majority-owned by the non-profit Proton Foundation, which receives 1% of Proton's revenues for charitable activities whenever financial conditions allow, with over $5m in grants reported to date; the amounts transferred in any year are not published, and the commitment is conditional rather than binding.",
+          "sources": [
+            "https://proton.me/foundation"
+          ]
         }
       },
-      "backers_relation": "shareholding"
+      "backers_relation": "shareholding",
+      "capital_profile": {
+        "independence_type": "independent",
+        "founder_control": false,
+        "sovereign_state": [],
+        "big_tech_capital": [],
+        "competitor_entanglement": false,
+        "circular_vendor": [],
+        "index_held": false,
+        "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
+      }
     },
     {
       "id": "Alibaba",
@@ -1658,35 +1704,49 @@
         "transparency": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
-          "sources": []
+          "note": "Not scored. rubric.md §1 records that the 2025 Stanford FMTI included Alibaba among the developers it scored, but no verified FMTI value for Alibaba is transcribed in this dataset's anchor table (scripts/build-evidence.mjs FMTI_2025), so the §1 band mapping cannot be applied; the FMTI index page is carried as the pointer.",
+          "sources": [
+            "https://crfm.stanford.edu/fmti/December-2025/index.html"
+          ]
         },
         "culture_esg": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
+          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) recorded no culture, labour or contribution findings for Alibaba — its group C and D questions were not researched for this late addition; our record holds little public information here, and absence of findings is not a clean record.",
           "sources": []
         },
         "labour_integrity": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
+          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) recorded no culture, labour or contribution findings for Alibaba — its group C and D questions were not researched for this late addition; our record holds little public information here, and absence of findings is not a clean record.",
           "sources": []
         },
         "wealth_dispersion": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
-          "sources": []
+          "note": "Not scored. The record establishes the public listing (NYSE: BABA; HKEX: 9988) and SoftBank as a long-standing large shareholder (c. 11.9% reported in early 2024, approximate), but top-3 backer concentration, employee equity breadth and pay dispersion are not established, board control is not established, and the rubric states no rule for combining backer concentration into a 0–4 score.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/Alibaba_Group"
+          ]
         },
         "public_sharing": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
+          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) recorded no culture, labour or contribution findings for Alibaba — its group C and D questions were not researched for this late addition; our record holds little public information here, and absence of findings is not a clean record.",
           "sources": []
         }
       },
-      "backers_relation": "shareholding"
+      "backers_relation": "shareholding",
+      "capital_profile": {
+        "independence_type": "self_or_public",
+        "founder_control": false,
+        "sovereign_state": [],
+        "big_tech_capital": [],
+        "competitor_entanglement": false,
+        "circular_vendor": [],
+        "index_held": true,
+        "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens. A public parent is held by passive index funds; this is not an operational tie to a Big Tech owner."
+      }
     },
     {
       "id": "DuckDuckGo",
@@ -1713,33 +1773,45 @@
         "transparency": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
+          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) recorded no disclosure, conduct or contribution findings for DuckDuckGo — its group C and D questions were not researched for this late addition; our record holds little public information here, and absence of findings is not a clean record.",
           "sources": []
         },
         "culture_esg": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
+          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) recorded no disclosure, conduct or contribution findings for DuckDuckGo — its group C and D questions were not researched for this late addition; our record holds little public information here, and absence of findings is not a clean record.",
           "sources": []
         },
         "labour_integrity": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
+          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) recorded no disclosure, conduct or contribution findings for DuckDuckGo — its group C and D questions were not researched for this late addition; our record holds little public information here, and absence of findings is not a clean record.",
           "sources": []
         },
         "wealth_dispersion": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
-          "sources": []
+          "note": "Not scored. The record establishes venture backing (Union Square Ventures led the October 2011 Series A) and an advertising- plus subscription-revenue model, but what Union Square Ventures now holds is not established; backer concentration, employee equity breadth and pay dispersion are not established, and the rubric states no rule for combining backer history into a 0–4 score.",
+          "sources": [
+            "https://en.wikipedia.org/wiki/DuckDuckGo"
+          ]
         },
         "public_sharing": {
           "score": null,
           "confidence": "C",
-          "note": "Not scored. Added for the recommendation catalogue with narrow sourced findings only.",
+          "note": "Not scored. The batch research (docs/RESEARCH_BATCH.md, 2026-09-27) recorded no disclosure, conduct or contribution findings for DuckDuckGo — its group C and D questions were not researched for this late addition; our record holds little public information here, and absence of findings is not a clean record.",
           "sources": []
         }
+      },
+      "capital_profile": {
+        "independence_type": "vc_backed",
+        "founder_control": false,
+        "sovereign_state": [],
+        "big_tech_capital": [],
+        "competitor_entanglement": false,
+        "circular_vendor": [],
+        "index_held": false,
+        "note": "Factual capital attributes (objective). Whether any of these is a 'concern' is the user's call via the Capital Lens."
       }
     }
   ]
