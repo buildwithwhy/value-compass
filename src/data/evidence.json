@@ -17,7 +17,7 @@
       "unreviewed": "A source about this maker is cited, but the fit between source and claim has not been reviewed.",
       "none": "No source about this maker to review."
     },
-    "score_justification_rule": "A narrow fact justifies a whole 0–4 axis score only under a scoring rule that exists in the rubric. Transparency has one (the FMTI anchor and its band mapping). No other axis does: each lists sub-indicators and states no rule for combining them, so evidence for one sub-indicator cannot settle the axis. We do not write a rule after the fact to keep a score eligible.",
+    "score_justification_rule": "A narrow fact justifies a whole 0–4 axis score only under a scoring rule that exists in the rubric. Two axes have one: transparency (the FMTI anchor and its band mapping) and open weights (the adopted license-terms scale, rubric.md §6, adopted 2026-11-05). No other axis does: each lists sub-indicators and states no rule for combining them, so evidence for one sub-indicator cannot settle the axis. We do not write a rule after the fact to keep a score eligible.",
     "provenance_note": "Every classification here is automated_provisional: produced by reading the recorded rationale against the rubric, not by a human re-reading the sources. None is marked human-reviewed.",
     "summary": {
       "axis_records": 138,
@@ -28,11 +28,11 @@
         "contextual": 6
       },
       "withheld": 28,
-      "decision_eligible": 9,
+      "decision_eligible": 22,
       "establishes_fact": 30,
       "claim_support_partial": 15,
       "claim_support_unreviewed": 10,
-      "facts_preserved_without_eligible_score": 36,
+      "facts_preserved_without_eligible_score": 23,
       "human_reviewed": 0,
       "no_sources_at_all": 52,
       "background_only": 27,
@@ -357,11 +357,11 @@
           "Sub-indicator — flagship GPT-5-class models remain closed",
           "Sub-indicator — peripheral open-source inventory (SDKs)"
         ],
-        "scoring_rule": "No adopted rule. The 2026-10-30 research pack (art_zYCpqJCa Part B) proposes a whole-axis draft scale, recorded in makers.json _meta.key_anchors.open_weights, keyed on the license terms of released weights and code. rubric.md does not carry it yet, so draft-scale scores stay decision-ineligible until the team adopts the scale as a rubric rule.",
-        "justifies_whole": false,
-        "justification_note": "The gpt-oss release terms are direct. The 0–4 applies the draft open-weights scale, so the score is recorded but stays decision-ineligible until the scale is adopted.",
+        "scoring_rule": "rubric.md §6 — the adopted open-weights whole-axis rule (adopted 2026-11-05 from research pack art_zYCpqJCa Part B): a source about the maker establishing what it releases and under which license terms justifies the full 0–4, read directly off the adopted scale recorded in makers.json _meta.key_anchors.open_weights.",
+        "justifies_whole": true,
+        "justification_note": "The gpt-oss release terms are direct. Under the adopted open-weights scale (rubric.md §6) the verified Apache 2.0 terms justify the whole score; the closed flagship GPT line, carried in unsupported_clauses, is why the scale lands at 3 rather than 4.",
         "provenance": "automated_provisional",
-        "decision_eligible": false,
+        "decision_eligible": true,
         "entity_sources": [
           "https://openai.com/index/gpt-oss-model-card"
         ],
@@ -494,11 +494,11 @@
           "Sub-indicator — Gemini models remain closed",
           "Sub-indicator — how much of the current product line has open artifacts"
         ],
-        "scoring_rule": "No adopted rule. The 2026-10-30 research pack (art_zYCpqJCa Part B) proposes a whole-axis draft scale, recorded in makers.json _meta.key_anchors.open_weights, keyed on the license terms of released weights and code. rubric.md does not carry it yet, so draft-scale scores stay decision-ineligible until the team adopts the scale as a rubric rule.",
-        "justifies_whole": false,
-        "justification_note": "The AlphaFold license split (code Apache 2.0, parameters CC BY 4.0) and the conditional Gemma terms are direct. The 0–4 applies the draft scale — decision-ineligible until adopted.",
+        "scoring_rule": "rubric.md §6 — the adopted open-weights whole-axis rule (adopted 2026-11-05 from research pack art_zYCpqJCa Part B): a source about the maker establishing what it releases and under which license terms justifies the full 0–4, read directly off the adopted scale recorded in makers.json _meta.key_anchors.open_weights.",
+        "justifies_whole": true,
+        "justification_note": "The AlphaFold license split (code Apache 2.0, parameters CC BY 4.0) and the conditional Gemma terms are direct. Under the adopted open-weights scale (rubric.md §6) the verified conditional terms justify the whole score at 3 rather than 4.",
         "provenance": "automated_provisional",
-        "decision_eligible": false,
+        "decision_eligible": true,
         "entity_sources": [
           "https://github.com/google-deepmind/alphafold"
         ],
@@ -629,11 +629,11 @@
           "Sub-indicator — Grok 2.5's reported August 2025 weight publication: primary license text not verified in this pass",
           "Sub-indicator — flagship Grok models remain closed"
         ],
-        "scoring_rule": "No adopted rule. The 2026-10-30 research pack (art_zYCpqJCa Part B) proposes a whole-axis draft scale, recorded in makers.json _meta.key_anchors.open_weights, keyed on the license terms of released weights and code. rubric.md does not carry it yet, so draft-scale scores stay decision-ineligible until the team adopts the scale as a rubric rule.",
-        "justifies_whole": false,
-        "justification_note": "Grok-1's Apache 2.0 terms are direct; the one-off character of the release and the unverified Grok 2.5 license are why the draft-scale score stays below 4 and decision-ineligible.",
+        "scoring_rule": "rubric.md §6 — the adopted open-weights whole-axis rule (adopted 2026-11-05 from research pack art_zYCpqJCa Part B): a source about the maker establishing what it releases and under which license terms justifies the full 0–4, read directly off the adopted scale recorded in makers.json _meta.key_anchors.open_weights.",
+        "justifies_whole": true,
+        "justification_note": "Grok-1's Apache 2.0 terms are direct. Under the adopted open-weights scale (rubric.md §6) the verified terms justify the whole score; the one-off character of the release and the unverified Grok 2.5 license, carried in unsupported_clauses, are why it lands at 3.",
         "provenance": "automated_provisional",
-        "decision_eligible": false,
+        "decision_eligible": true,
         "entity_sources": [
           "https://github.com/xai-org/grok-1"
         ],
@@ -769,11 +769,11 @@
         "unsupported_clauses": [
           "Sub-indicator — the dataset's recorded April 2026 closed-weight 'Muse Spark' pivot, which this pass could not verify"
         ],
-        "scoring_rule": "No adopted rule. The 2026-10-30 research pack (art_zYCpqJCa Part B) proposes a whole-axis draft scale, recorded in makers.json _meta.key_anchors.open_weights, keyed on the license terms of released weights and code. rubric.md does not carry it yet, so draft-scale scores stay decision-ineligible until the team adopts the scale as a rubric rule.",
-        "justifies_whole": false,
-        "justification_note": "The Llama 4 Community License text is direct, including its conditionality. The 0–4 applies the draft scale — decision-ineligible until adopted; the pivot record stays unscored.",
+        "scoring_rule": "rubric.md §6 — the adopted open-weights whole-axis rule (adopted 2026-11-05 from research pack art_zYCpqJCa Part B): a source about the maker establishing what it releases and under which license terms justifies the full 0–4, read directly off the adopted scale recorded in makers.json _meta.key_anchors.open_weights.",
+        "justifies_whole": true,
+        "justification_note": "The Llama 4 Community License text is direct, including its conditionality. Under the adopted open-weights scale (rubric.md §6) the verified conditional terms justify the whole score at 3 rather than 4; the pivot record stays unscored.",
         "provenance": "automated_provisional",
-        "decision_eligible": false,
+        "decision_eligible": true,
         "entity_sources": [
           "https://dev.meta.ai/llama/llama4/license"
         ],
@@ -901,11 +901,11 @@
         "unsupported_clauses": [
           "Sub-indicator — per-checkpoint license sweep across the full model list"
         ],
-        "scoring_rule": "No adopted rule. The 2026-10-30 research pack (art_zYCpqJCa Part B) proposes a whole-axis draft scale, recorded in makers.json _meta.key_anchors.open_weights, keyed on the license terms of released weights and code. rubric.md does not carry it yet, so draft-scale scores stay decision-ineligible until the team adopts the scale as a rubric rule.",
-        "justifies_whole": false,
-        "justification_note": "The Apache 2.0 default and the modified-MIT revenue condition are direct from Mistral's own help center. The 0–4 applies the draft scale — decision-ineligible until adopted.",
+        "scoring_rule": "rubric.md §6 — the adopted open-weights whole-axis rule (adopted 2026-11-05 from research pack art_zYCpqJCa Part B): a source about the maker establishing what it releases and under which license terms justifies the full 0–4, read directly off the adopted scale recorded in makers.json _meta.key_anchors.open_weights.",
+        "justifies_whole": true,
+        "justification_note": "The Apache 2.0 default and the modified-MIT revenue condition are direct from Mistral's own help center. Under the adopted open-weights scale (rubric.md §6) the verified mostly-permissive terms justify the whole score at 4.",
         "provenance": "automated_provisional",
-        "decision_eligible": false,
+        "decision_eligible": true,
         "entity_sources": [
           "https://help.mistral.ai/en/articles/347393-under-which-license-are-mistral-s-open-models-available"
         ],
@@ -1037,11 +1037,11 @@
         "unsupported_clauses": [
           "Sub-indicator — per-checkpoint license sweep across the full model list"
         ],
-        "scoring_rule": "No adopted rule. The 2026-10-30 research pack (art_zYCpqJCa Part B) proposes a whole-axis draft scale, recorded in makers.json _meta.key_anchors.open_weights, keyed on the license terms of released weights and code. rubric.md does not carry it yet, so draft-scale scores stay decision-ineligible until the team adopts the scale as a rubric rule.",
-        "justifies_whole": false,
-        "justification_note": "The MIT license statement is direct from the release notice. The 0–4 applies the draft open-weights scale — decision-ineligible until adopted.",
+        "scoring_rule": "rubric.md §6 — the adopted open-weights whole-axis rule (adopted 2026-11-05 from research pack art_zYCpqJCa Part B): a source about the maker establishing what it releases and under which license terms justifies the full 0–4, read directly off the adopted scale recorded in makers.json _meta.key_anchors.open_weights.",
+        "justifies_whole": true,
+        "justification_note": "The MIT license statement is direct from the release notice. Under the adopted open-weights scale (rubric.md §6) the verified permissive MIT terms justify the whole score at 4.",
         "provenance": "automated_provisional",
-        "decision_eligible": false,
+        "decision_eligible": true,
         "entity_sources": [
           "https://www.deepseek.com/en/news/deepseek-r1/"
         ],
@@ -1170,11 +1170,11 @@
           "Sub-indicator — MAI models: no open-weight move established in this pass",
           "Sub-indicator — Copilot products remain closed"
         ],
-        "scoring_rule": "No adopted rule. The 2026-10-30 research pack (art_zYCpqJCa Part B) proposes a whole-axis draft scale, recorded in makers.json _meta.key_anchors.open_weights, keyed on the license terms of released weights and code. rubric.md does not carry it yet, so draft-scale scores stay decision-ineligible until the team adopts the scale as a rubric rule.",
-        "justifies_whole": false,
-        "justification_note": "The Phi-4 MIT license statement is direct. The 0–4 applies the draft scale — decision-ineligible until adopted; MAI availability stays a research gap.",
+        "scoring_rule": "rubric.md §6 — the adopted open-weights whole-axis rule (adopted 2026-11-05 from research pack art_zYCpqJCa Part B): a source about the maker establishing what it releases and under which license terms justifies the full 0–4, read directly off the adopted scale recorded in makers.json _meta.key_anchors.open_weights.",
+        "justifies_whole": true,
+        "justification_note": "The Phi-4 MIT license statement is direct. Under the adopted open-weights scale (rubric.md §6) the verified permissive terms justify the whole score; the closed Copilot line and the unestablished MAI position, carried in unsupported_clauses, are why it lands at 3 rather than 4.",
         "provenance": "automated_provisional",
-        "decision_eligible": false,
+        "decision_eligible": true,
         "entity_sources": [
           "https://www.microsoft.com/en-us/research/wp-content/uploads/2025/01/WEF-2025_Leave-Behind_Phi-4.pdf"
         ],
@@ -1951,11 +1951,11 @@
           "Sub-indicator — whether any Replit model weights are published",
           "Sub-indicator — license sweep across the remaining public repos"
         ],
-        "scoring_rule": "No adopted rule. The 2026-10-30 research pack (art_zYCpqJCa Part B) proposes a whole-axis draft scale, recorded in makers.json _meta.key_anchors.open_weights, keyed on the license terms of released weights and code. rubric.md does not carry it yet, so draft-scale scores stay decision-ineligible until the team adopts the scale as a rubric rule.",
-        "justifies_whole": false,
-        "justification_note": "The repository counts and tooling licenses are direct from the two org pages. The 0–4 applies the draft scale — decision-ineligible until adopted.",
+        "scoring_rule": "rubric.md §6 — the adopted open-weights whole-axis rule (adopted 2026-11-05 from research pack art_zYCpqJCa Part B): a source about the maker establishing what it releases and under which license terms justifies the full 0–4, read directly off the adopted scale recorded in makers.json _meta.key_anchors.open_weights.",
+        "justifies_whole": true,
+        "justification_note": "The repository counts and tooling licenses are direct from the two org pages. Under the adopted open-weights scale (rubric.md §6) the verified substantial-tooling/no-weights profile justifies the whole score at 2.",
         "provenance": "automated_provisional",
-        "decision_eligible": false,
+        "decision_eligible": true,
         "entity_sources": [
           "https://github.com/replit",
           "https://github.com/replit-agent"
@@ -2473,11 +2473,11 @@
         "unsupported_clauses": [
           "Sub-indicator — license sweep beyond the K2 family"
         ],
-        "scoring_rule": "No adopted rule. The 2026-10-30 research pack (art_zYCpqJCa Part B) proposes a whole-axis draft scale, recorded in makers.json _meta.key_anchors.open_weights, keyed on the license terms of released weights and code. rubric.md does not carry it yet, so draft-scale scores stay decision-ineligible until the team adopts the scale as a rubric rule.",
-        "justifies_whole": false,
-        "justification_note": "The Modified MIT terms are direct from the LICENSE text. The 0–4 applies the draft scale — decision-ineligible until adopted.",
+        "scoring_rule": "rubric.md §6 — the adopted open-weights whole-axis rule (adopted 2026-11-05 from research pack art_zYCpqJCa Part B): a source about the maker establishing what it releases and under which license terms justifies the full 0–4, read directly off the adopted scale recorded in makers.json _meta.key_anchors.open_weights.",
+        "justifies_whole": true,
+        "justification_note": "The Modified MIT terms are direct from the LICENSE text. Under the adopted open-weights scale (rubric.md §6) the verified conditioned terms justify the whole score at 3 rather than 4.",
         "provenance": "automated_provisional",
-        "decision_eligible": false,
+        "decision_eligible": true,
         "entity_sources": [
           "https://github.com/moonshotai/Kimi-K2/blob/main/LICENSE",
           "https://huggingface.co/moonshotai/Kimi-K2-Thinking/blob/main/LICENSE"
@@ -2606,11 +2606,11 @@
           "Sub-indicator — no model weights: StackBlitz is not a model developer",
           "Sub-indicator — WebContainer API commercial-license terms in detail"
         ],
-        "scoring_rule": "No adopted rule. The 2026-10-30 research pack (art_zYCpqJCa Part B) proposes a whole-axis draft scale, recorded in makers.json _meta.key_anchors.open_weights, keyed on the license terms of released weights and code. rubric.md does not carry it yet, so draft-scale scores stay decision-ineligible until the team adopts the scale as a rubric rule.",
-        "justifies_whole": false,
-        "justification_note": "bolt.diy's MIT license and the proprietary hosted-product terms are direct. The 0–4 applies the draft scale — decision-ineligible until adopted.",
+        "scoring_rule": "rubric.md §6 — the adopted open-weights whole-axis rule (adopted 2026-11-05 from research pack art_zYCpqJCa Part B): a source about the maker establishing what it releases and under which license terms justifies the full 0–4, read directly off the adopted scale recorded in makers.json _meta.key_anchors.open_weights.",
+        "justifies_whole": true,
+        "justification_note": "bolt.diy's MIT license and the proprietary hosted-product terms are direct. Under the adopted open-weights scale (rubric.md §6) the verified substantial-open-code/no-weights profile justifies the whole score at 2.",
         "provenance": "automated_provisional",
-        "decision_eligible": false,
+        "decision_eligible": true,
         "entity_sources": [
           "https://github.com/stackblitz-labs/bolt.diy/blob/main/README.md",
           "https://stackblitz.com/terms-of-service"
@@ -2745,11 +2745,11 @@
           "Sub-indicator — no model weights: Vercel is not a model developer",
           "Sub-indicator — license sweep across the remaining Vercel org repos"
         ],
-        "scoring_rule": "No adopted rule. The 2026-10-30 research pack (art_zYCpqJCa Part B) proposes a whole-axis draft scale, recorded in makers.json _meta.key_anchors.open_weights, keyed on the license terms of released weights and code. rubric.md does not carry it yet, so draft-scale scores stay decision-ineligible until the team adopts the scale as a rubric rule.",
-        "justifies_whole": false,
-        "justification_note": "The open-source infrastructure libraries and the closed v0 product line are direct from Vercel's own pages. The 0–4 applies the draft scale — decision-ineligible until adopted.",
+        "scoring_rule": "rubric.md §6 — the adopted open-weights whole-axis rule (adopted 2026-11-05 from research pack art_zYCpqJCa Part B): a source about the maker establishing what it releases and under which license terms justifies the full 0–4, read directly off the adopted scale recorded in makers.json _meta.key_anchors.open_weights.",
+        "justifies_whole": true,
+        "justification_note": "The open-source infrastructure libraries and the closed v0 product line are direct from Vercel's own pages. Under the adopted open-weights scale (rubric.md §6) the verified substantial-open-code/no-weights profile justifies the whole score at 2.",
         "provenance": "automated_provisional",
-        "decision_eligible": false,
+        "decision_eligible": true,
         "entity_sources": [
           "https://vercel.com/academy/ai-sdk",
           "https://v0.app/docs/faqs"
@@ -3007,11 +3007,11 @@
           "Sub-indicator — per-checkpoint license verification against primary Qwen license files",
           "Sub-indicator — transparency: FMTI 2025 scores Alibaba 26/100 despite these releases (separate axis)"
         ],
-        "scoring_rule": "No adopted rule. The 2026-10-30 research pack (art_zYCpqJCa Part B) proposes a whole-axis draft scale, recorded in makers.json _meta.key_anchors.open_weights, keyed on the license terms of released weights and code. rubric.md does not carry it yet, so draft-scale scores stay decision-ineligible until the team adopts the scale as a rubric rule.",
-        "justifies_whole": false,
-        "justification_note": "The Qwen licensing picture rests on a third-party index, flagged as such. The 0–4 applies the draft scale — decision-ineligible until adopted — and open weights remain a separate question from the FMTI-anchored transparency score.",
+        "scoring_rule": "rubric.md §6 — the adopted open-weights whole-axis rule (adopted 2026-11-05 from research pack art_zYCpqJCa Part B): a source about the maker establishing what it releases and under which license terms justifies the full 0–4, read directly off the adopted scale recorded in makers.json _meta.key_anchors.open_weights.",
+        "justifies_whole": true,
+        "justification_note": "The Qwen licensing picture rests on a third-party index, flagged as such (confidence C) with the per-checkpoint verification gap carried in unsupported_clauses. Under the adopted open-weights scale (rubric.md §6) the recorded Apache 2.0 releases justify the whole score; open weights remain a separate question from the FMTI-anchored transparency score.",
         "provenance": "automated_provisional",
-        "decision_eligible": false,
+        "decision_eligible": true,
         "entity_sources": [
           "https://ownershipindex.ai/library/models/qwen/"
         ],
@@ -3148,11 +3148,11 @@
         "unsupported_clauses": [
           "Sub-indicator — license sweep across the client/tooling repositories (e.g. AutoConsent)"
         ],
-        "scoring_rule": "No adopted rule. The 2026-10-30 research pack (art_zYCpqJCa Part B) proposes a whole-axis draft scale, recorded in makers.json _meta.key_anchors.open_weights, keyed on the license terms of released weights and code. rubric.md does not carry it yet, so draft-scale scores stay decision-ineligible until the team adopts the scale as a rubric rule.",
-        "justifies_whole": false,
-        "justification_note": "Serving third-party open-weight models is direct from the help pages; it is not a weight release by DuckDuckGo. The 0–4 applies the draft scale — decision-ineligible until adopted.",
+        "scoring_rule": "rubric.md §6 — the adopted open-weights whole-axis rule (adopted 2026-11-05 from research pack art_zYCpqJCa Part B): a source about the maker establishing what it releases and under which license terms justifies the full 0–4, read directly off the adopted scale recorded in makers.json _meta.key_anchors.open_weights.",
+        "justifies_whole": true,
+        "justification_note": "Serving third-party open-weight models is direct from the help pages; it is not a weight release by DuckDuckGo. Under the adopted open-weights scale (rubric.md §6) the verified open-client-code profile justifies the whole score at 2 (C confidence).",
         "provenance": "automated_provisional",
-        "decision_eligible": false,
+        "decision_eligible": true,
         "entity_sources": [
           "https://start.duckduckgo.com/duckduckgo-help-pages/duckai/chat-models"
         ],

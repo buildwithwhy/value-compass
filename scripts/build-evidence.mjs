@@ -109,11 +109,17 @@ const CONTEXTUAL = [
 // facts are preserved and displayed either way — they are the material a
 // narrower, conditional recommendation could later rest on.
 //
-// Only ONE axis carries an explicit whole-axis rule. rubric.md §1:
+// Two axes carry an explicit whole-axis rule. rubric.md §1 (transparency):
 //   "External anchor — Stanford FMTI 2025 (use directly where it exists) …
 //    Map FMTI/100 → 0–4"
 // with the bands recorded in makers.json _meta.key_anchors.transparency
 // (0=<=12, 1=13-29, 2=30-49, 3=50-74, 4=>=75).
+//
+// And rubric.md §6 (open weights / source availability), adopted 2026-11-05
+// from research pack art_zYCpqJCa Part B: a source about the maker that
+// establishes what it releases and under which license terms justifies the
+// full 0–4, read directly off the adopted scale recorded in makers.json
+// _meta.key_anchors.open_weights.
 //
 // No other axis has an aggregation rule. Culture/ESG, labour, wealth
 // dispersion and public sharing each list four or five sub-indicators and say
@@ -130,7 +136,7 @@ const NO_RULE =
 const FMTI_RULE =
   'rubric.md §1 — "External anchor: Stanford FMTI 2025 (use directly where it exists) … Map FMTI/100 → 0–4", with bands in makers.json _meta.key_anchors.transparency.'
 const OPEN_WEIGHTS_RULE =
-  'No adopted rule. The 2026-10-30 research pack (art_zYCpqJCa Part B) proposes a whole-axis draft scale, recorded in makers.json _meta.key_anchors.open_weights, keyed on the license terms of released weights and code. rubric.md does not carry it yet, so draft-scale scores stay decision-ineligible until the team adopts the scale as a rubric rule.'
+  'rubric.md §6 — the adopted open-weights whole-axis rule (adopted 2026-11-05 from research pack art_zYCpqJCa Part B): a source about the maker establishing what it releases and under which license terms justifies the full 0–4, read directly off the adopted scale recorded in makers.json _meta.key_anchors.open_weights.'
 const FMTI_DATE = '2025-12-11 (the 2025 Foundation Model Transparency Index)'
 const NOT_STATED = 'not stated in record'
 
@@ -474,11 +480,12 @@ const CLAIM_REVIEW = {
       'The reported rounds and tender-offer liquidity are sourced; the concentration measures a firmer score would rest on are not established.',
   }),
 
-  // ---- Open-weights axis (2026-10-30 research pack, Part B) ---------------
+  // ---- Open-weights axis (2026-10-30 research pack, Part B; adopted) ------
   // Scored entries: the license/release fact is directly verified against the
-  // primary source, but the 0-4 applies the pack's DRAFT whole-axis scale, so
-  // every score stays decision-ineligible until the rubric adopts it. Unscored
-  // entries for this axis live in the makers.json notes, not here.
+  // primary source, and the 0–4 reads those verified terms off the whole-axis
+  // scale the rubric adopted on 2026-11-05 (rubric.md §6) — so these scores
+  // are decision-eligible. Research-gap (n/a) entries for this axis stay
+  // ineligible and live in the makers.json notes, not here.
   'OpenAI/open_weights': R({
     claim_support: 'establishes_fact',
     supported_fact:
@@ -489,9 +496,9 @@ const CLAIM_REVIEW = {
       'Sub-indicator — peripheral open-source inventory (SDKs)',
     ],
     scoring_rule: OPEN_WEIGHTS_RULE,
-    justifies_whole: false,
+    justifies_whole: true,
     justification_note:
-      'The gpt-oss release terms are direct. The 0–4 applies the draft open-weights scale, so the score is recorded but stays decision-ineligible until the scale is adopted.',
+      'The gpt-oss release terms are direct. Under the adopted open-weights scale (rubric.md §6) the verified Apache 2.0 terms justify the whole score; the closed flagship GPT line, carried in unsupported_clauses, is why the scale lands at 3 rather than 4.',
   }),
   'Google DeepMind/open_weights': R({
     claim_support: 'establishes_fact',
@@ -503,9 +510,9 @@ const CLAIM_REVIEW = {
       'Sub-indicator — how much of the current product line has open artifacts',
     ],
     scoring_rule: OPEN_WEIGHTS_RULE,
-    justifies_whole: false,
+    justifies_whole: true,
     justification_note:
-      'The AlphaFold license split (code Apache 2.0, parameters CC BY 4.0) and the conditional Gemma terms are direct. The 0–4 applies the draft scale — decision-ineligible until adopted.',
+      'The AlphaFold license split (code Apache 2.0, parameters CC BY 4.0) and the conditional Gemma terms are direct. Under the adopted open-weights scale (rubric.md §6) the verified conditional terms justify the whole score at 3 rather than 4.',
   }),
   'xAI/open_weights': R({
     claim_support: 'establishes_fact',
@@ -517,9 +524,9 @@ const CLAIM_REVIEW = {
       'Sub-indicator — flagship Grok models remain closed',
     ],
     scoring_rule: OPEN_WEIGHTS_RULE,
-    justifies_whole: false,
+    justifies_whole: true,
     justification_note:
-      'Grok-1\'s Apache 2.0 terms are direct; the one-off character of the release and the unverified Grok 2.5 license are why the draft-scale score stays below 4 and decision-ineligible.',
+      'Grok-1\'s Apache 2.0 terms are direct. Under the adopted open-weights scale (rubric.md §6) the verified terms justify the whole score; the one-off character of the release and the unverified Grok 2.5 license, carried in unsupported_clauses, are why it lands at 3.',
   }),
   'Meta/open_weights': R({
     claim_support: 'establishes_fact',
@@ -530,9 +537,9 @@ const CLAIM_REVIEW = {
       "Sub-indicator — the dataset's recorded April 2026 closed-weight 'Muse Spark' pivot, which this pass could not verify",
     ],
     scoring_rule: OPEN_WEIGHTS_RULE,
-    justifies_whole: false,
+    justifies_whole: true,
     justification_note:
-      'The Llama 4 Community License text is direct, including its conditionality. The 0–4 applies the draft scale — decision-ineligible until adopted; the pivot record stays unscored.',
+      'The Llama 4 Community License text is direct, including its conditionality. Under the adopted open-weights scale (rubric.md §6) the verified conditional terms justify the whole score at 3 rather than 4; the pivot record stays unscored.',
   }),
   'Mistral/open_weights': R({
     claim_support: 'establishes_fact',
@@ -543,9 +550,9 @@ const CLAIM_REVIEW = {
       'Sub-indicator — per-checkpoint license sweep across the full model list',
     ],
     scoring_rule: OPEN_WEIGHTS_RULE,
-    justifies_whole: false,
+    justifies_whole: true,
     justification_note:
-      'The Apache 2.0 default and the modified-MIT revenue condition are direct from Mistral\'s own help center. The 0–4 applies the draft scale — decision-ineligible until adopted.',
+      'The Apache 2.0 default and the modified-MIT revenue condition are direct from Mistral\'s own help center. Under the adopted open-weights scale (rubric.md §6) the verified mostly-permissive terms justify the whole score at 4.',
   }),
   'DeepSeek/open_weights': R({
     claim_support: 'establishes_fact',
@@ -556,9 +563,9 @@ const CLAIM_REVIEW = {
       'Sub-indicator — per-checkpoint license sweep across the full model list',
     ],
     scoring_rule: OPEN_WEIGHTS_RULE,
-    justifies_whole: false,
+    justifies_whole: true,
     justification_note:
-      'The MIT license statement is direct from the release notice. The 0–4 applies the draft open-weights scale — decision-ineligible until adopted.',
+      'The MIT license statement is direct from the release notice. Under the adopted open-weights scale (rubric.md §6) the verified permissive MIT terms justify the whole score at 4.',
   }),
   'Microsoft/open_weights': R({
     claim_support: 'establishes_fact',
@@ -570,9 +577,9 @@ const CLAIM_REVIEW = {
       'Sub-indicator — Copilot products remain closed',
     ],
     scoring_rule: OPEN_WEIGHTS_RULE,
-    justifies_whole: false,
+    justifies_whole: true,
     justification_note:
-      'The Phi-4 MIT license statement is direct. The 0–4 applies the draft scale — decision-ineligible until adopted; MAI availability stays a research gap.',
+      'The Phi-4 MIT license statement is direct. Under the adopted open-weights scale (rubric.md §6) the verified permissive terms justify the whole score; the closed Copilot line and the unestablished MAI position, carried in unsupported_clauses, are why it lands at 3 rather than 4.',
   }),
   'Replit/open_weights': R({
     claim_support: 'establishes_fact',
@@ -584,9 +591,9 @@ const CLAIM_REVIEW = {
       'Sub-indicator — license sweep across the remaining public repos',
     ],
     scoring_rule: OPEN_WEIGHTS_RULE,
-    justifies_whole: false,
+    justifies_whole: true,
     justification_note:
-      'The repository counts and tooling licenses are direct from the two org pages. The 0–4 applies the draft scale — decision-ineligible until adopted.',
+      'The repository counts and tooling licenses are direct from the two org pages. Under the adopted open-weights scale (rubric.md §6) the verified substantial-tooling/no-weights profile justifies the whole score at 2.',
   }),
   'Moonshot/open_weights': R({
     claim_support: 'establishes_fact',
@@ -597,9 +604,9 @@ const CLAIM_REVIEW = {
       'Sub-indicator — license sweep beyond the K2 family',
     ],
     scoring_rule: OPEN_WEIGHTS_RULE,
-    justifies_whole: false,
+    justifies_whole: true,
     justification_note:
-      "The Modified MIT terms are direct from the LICENSE text. The 0–4 applies the draft scale — decision-ineligible until adopted.",
+      "The Modified MIT terms are direct from the LICENSE text. Under the adopted open-weights scale (rubric.md §6) the verified conditioned terms justify the whole score at 3 rather than 4.",
   }),
   'StackBlitz/open_weights': R({
     claim_support: 'establishes_fact',
@@ -611,9 +618,9 @@ const CLAIM_REVIEW = {
       'Sub-indicator — WebContainer API commercial-license terms in detail',
     ],
     scoring_rule: OPEN_WEIGHTS_RULE,
-    justifies_whole: false,
+    justifies_whole: true,
     justification_note:
-      'bolt.diy\'s MIT license and the proprietary hosted-product terms are direct. The 0–4 applies the draft scale — decision-ineligible until adopted.',
+      'bolt.diy\'s MIT license and the proprietary hosted-product terms are direct. Under the adopted open-weights scale (rubric.md §6) the verified substantial-open-code/no-weights profile justifies the whole score at 2.',
   }),
   'Vercel/open_weights': R({
     claim_support: 'establishes_fact',
@@ -625,9 +632,9 @@ const CLAIM_REVIEW = {
       'Sub-indicator — license sweep across the remaining Vercel org repos',
     ],
     scoring_rule: OPEN_WEIGHTS_RULE,
-    justifies_whole: false,
+    justifies_whole: true,
     justification_note:
-      'The open-source infrastructure libraries and the closed v0 product line are direct from Vercel\'s own pages. The 0–4 applies the draft scale — decision-ineligible until adopted.',
+      'The open-source infrastructure libraries and the closed v0 product line are direct from Vercel\'s own pages. Under the adopted open-weights scale (rubric.md §6) the verified substantial-open-code/no-weights profile justifies the whole score at 2.',
   }),
   'Alibaba/open_weights': R({
     claim_support: 'establishes_fact',
@@ -639,9 +646,9 @@ const CLAIM_REVIEW = {
       'Sub-indicator — transparency: FMTI 2025 scores Alibaba 26/100 despite these releases (separate axis)',
     ],
     scoring_rule: OPEN_WEIGHTS_RULE,
-    justifies_whole: false,
+    justifies_whole: true,
     justification_note:
-      "The Qwen licensing picture rests on a third-party index, flagged as such. The 0–4 applies the draft scale — decision-ineligible until adopted — and open weights remain a separate question from the FMTI-anchored transparency score.",
+      "The Qwen licensing picture rests on a third-party index, flagged as such (confidence C) with the per-checkpoint verification gap carried in unsupported_clauses. Under the adopted open-weights scale (rubric.md §6) the recorded Apache 2.0 releases justify the whole score; open weights remain a separate question from the FMTI-anchored transparency score.",
   }),
   'DuckDuckGo/open_weights': R({
     claim_support: 'establishes_fact',
@@ -652,9 +659,9 @@ const CLAIM_REVIEW = {
       'Sub-indicator — license sweep across the client/tooling repositories (e.g. AutoConsent)',
     ],
     scoring_rule: OPEN_WEIGHTS_RULE,
-    justifies_whole: false,
+    justifies_whole: true,
     justification_note:
-      'Serving third-party open-weight models is direct from the help pages; it is not a weight release by DuckDuckGo. The 0–4 applies the draft scale — decision-ineligible until adopted.',
+      'Serving third-party open-weight models is direct from the help pages; it is not a weight release by DuckDuckGo. Under the adopted open-weights scale (rubric.md §6) the verified open-client-code profile justifies the whole score at 2 (C confidence).',
   }),
 
   // ---- Partial claim support ---------------------------------------------
@@ -1191,7 +1198,7 @@ const out = {
       none: 'No source about this maker to review.',
     },
     score_justification_rule:
-      'A narrow fact justifies a whole 0–4 axis score only under a scoring rule that exists in the rubric. Transparency has one (the FMTI anchor and its band mapping). No other axis does: each lists sub-indicators and states no rule for combining them, so evidence for one sub-indicator cannot settle the axis. We do not write a rule after the fact to keep a score eligible.',
+      'A narrow fact justifies a whole 0–4 axis score only under a scoring rule that exists in the rubric. Two axes have one: transparency (the FMTI anchor and its band mapping) and open weights (the adopted license-terms scale, rubric.md §6, adopted 2026-11-05). No other axis does: each lists sub-indicators and states no rule for combining them, so evidence for one sub-indicator cannot settle the axis. We do not write a rule after the fact to keep a score eligible.',
     provenance_note:
       'Every classification here is automated_provisional: produced by reading the recorded rationale against the rubric, not by a human re-reading the sources. None is marked human-reviewed.',
     summary,

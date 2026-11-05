@@ -33,12 +33,12 @@
 
 **Weighting — equal to start, but exposed as adjustable.** Default each axis at 1.0. Your thesis may justify up-weighting Transparency and Public wealth-sharing later; keep the weights as a config, not hard-coded.
 
-**These axes are designed for MAKERS.** Scoring *funders* on the same five doesn't map cleanly (a VC has no data-labeling supply chain). Funder values are better read from *what else they fund* (your item 1 research) — treat as a separate, lighter lens. Flagged in Section 7.
+**These axes are designed for MAKERS.** Scoring *funders* on the same five doesn't map cleanly (a VC has no data-labeling supply chain). Funder values are better read from *what else they fund* (your item 1 research) — treat as a separate, lighter lens. Flagged in Section 8.
 
 ---
 
 ## 1. Transparency
-*(absorbs open-vs-closed weights, per your decision)*
+*(absorbs open-vs-closed weights, per your decision; weights later also became the standalone sixth axis, §6 — kept as a sub-indicator here, and the two are read separately)*
 
 **Definition:** How much the maker discloses about how its systems are built and operated — model access, training data, the human labour in the pipeline, compute/energy, evaluations, governance, and downstream impact.
 
@@ -111,7 +111,7 @@
 
 **Data source:** Your existing funder audit already supplies (1) and (2). This axis is the most *computable* of the five.
 
-**Caveats:** Employee-equity and pay-dispersion data is thin for private firms (confidence C for those sub-indicators). Don't double-count with the VC/independent tag (Section 6).
+**Caveats:** Employee-equity and pay-dispersion data is thin for private firms (confidence C for those sub-indicators). Don't double-count with the VC/independent tag (Section 7).
 
 ---
 
@@ -134,14 +134,43 @@
 
 ---
 
-## 6. Retained tag + factual descriptors (not 0–4 axes)
+## 6. Open weights / source availability
+*(the sixth axis, added after the first evidence pass; the draft scale from research pack art_zYCpqJCa Part B was adopted as a rubric rule on 2026-11-05)*
+
+**Definition:** What a maker actually releases, and under what license terms — its own model weights, or substantial product/client/tool source code where it ships no weights. A release axis, not a disclosure axis: it records what is given to the public, not how openly the maker documents itself (that is §1).
+
+**Whole-axis scoring rule — adopted.** Unlike the sub-indicator axes (§2–§5), this axis carries an explicit whole-axis rule, so a single authoritative source can license the full 0–4: **the score is justified when a source about the maker establishes what it releases and under which license terms, and the 0–4 is read directly off the scale below.** The scale is also recorded in `makers.json _meta.key_anchors.open_weights`.
+
+| Score | Anchor |
+|---|---|
+| 4 | Model weights under a permissive OSI-style license (Apache/MIT) — or flagship-adjacent weights plus meaningful code |
+| 3 | Weights released with conditions (community license, modified MIT, non-commercial CC) |
+| 2 | No own model weights, but substantial open product/client/tool code |
+| 1 | No weights; peripheral open-source artifacts only (SDKs, samples) |
+| 0 | No weights and no meaningful source code found — always scoped to a named research pass |
+| n/a | Not established — recorded with its note, shown as nothing, never decision-eligible |
+
+**Confidence handling.** The confidence flag follows §0 and, as everywhere, is never the eligibility gate:
+- **A** — the primary license file or release notice itself (repository LICENSE, official release announcement).
+- **B** — the maker's own published help page, model card, or documentation of the release terms.
+- **C** — a third-party license table or synthesis (e.g. the AI Ownership Index), or a scoped absence finding. The third-party or scoped character must be carried in the record's `unsupported_clauses`/note rather than smoothed over.
+
+**Caveats:**
+- **Open weights ≠ transparency.** FMTI 2025 scored Alibaba 26/100 despite Apache-2.0 Qwen releases. A maker can max this axis and stay opaque on §1; read the two axes separately and never let UI copy merge them.
+- **Openness can be a moment, not a policy.** One-off releases while flagships stay closed (Grok-1) and conditional licenses both cap below 4. Date-stamp every weight claim to the specific model and license file; licenses are per-checkpoint, not family-wide.
+- **Serving is not releasing.** A product that hosts third-party open-weight models does not score for a weight release on that account.
+- **Absence findings are scoped.** A 0 records what a named research pass found; a later release supersedes it. A research gap stays `n/a`.
+
+---
+
+## 7. Retained tag + factual descriptors (not 0–4 axes)
 
 - **VC-backed vs independent** — keep as a **binary/categorical tag** (your decision to retain it), e.g., `independent` (Midjourney), `VC-backed`, `corporate-owned` (DeepMind/Meta AI), `hedge-fund-parented` (DeepSeek). It correlates with Wealth dispersion but shouldn't be double-scored into it.
 - **Legal jurisdiction(s) / HQ** — factual metadata, listed not scored: e.g., US/Delaware PBC, France (Mistral), PRC (DeepSeek/Moonshot), Canada (Cohere), Australia (Canva), Sweden (Lovable), UK/US (ElevenLabs). Useful for the regulatory-exposure read.
 
 ---
 
-## 7. Open decisions to confirm before the evidence pass
+## 8. Open decisions to confirm before the evidence pass
 
 1. **Polarity reframes** — accept "Labour & supply-chain integrity" and "Wealth dispersion" (higher = better), or keep your original negative labels with inverted scoring noted?
 2. **Public wealth-sharing as its own 5th axis** — confirmed by "the new five"? (Assuming yes.)
@@ -153,8 +182,8 @@
 
 ---
 
-## 8. Sequenced next steps
-1. You confirm Section 7.
+## 9. Sequenced next steps
+1. You confirm Section 8.
 2. **Evidence pass A — makers:** pull FMTI scores, labour reporting, ESG/B-Corp signals, structures, pledges; score all 18 on the five axes with confidence flags.
 3. **Evidence pass B — funders:** the "what else they fund + key people" research (your item 1) → a separate funder-values read.
 4. Assemble into the scored dataset (extend the makers JSON with an `axes` block) for the prototype's compass view.

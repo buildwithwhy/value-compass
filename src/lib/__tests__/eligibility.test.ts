@@ -122,9 +122,11 @@ describe('comparison markers require support for the claim', () => {
       for (const axis of Object.keys(m.axes) as AxisKey[]) {
         const ev = axisEvidenceFor(m.id, axis)
         if (!ev.justifies_whole) continue
-        // The FMTI anchor is the only whole-axis rule in the rubric.
-        expect(axis).toBe('transparency')
-        expect(ev.scoring_rule).toMatch(/FMTI/)
+        // Two whole-axis rules exist in the rubric: the FMTI anchor
+        // (transparency) and the adopted open-weights scale (rubric.md §6).
+        if (axis === 'transparency') expect(ev.scoring_rule).toMatch(/FMTI/)
+        else if (axis === 'open_weights') expect(ev.scoring_rule).toMatch(/rubric\.md §6/)
+        else throw new Error(`unexpected whole-axis rule on ${axis}`)
       }
     }
   })
@@ -448,7 +450,59 @@ describe('unequal coverage is not presented as a definitive ordering', () => {
 })
 
 // ---------------------------------------------------------------------------
-// 5. Example / reset behaviour
+// 5. Adopted open-weights scale
+//
+// rubric.md §6, adopted 2026-11-05 from research pack art_zYCpqJCa Part B:
+// the 13 sourced scores pass the evidence gate; the 10 research gaps do not.
+// ---------------------------------------------------------------------------
+
+describe('adopted open-weights scale (rubric.md §6, 2026-11-05)', () => {
+  it('makes the 13 sourced open-weights scores decision-eligible under the adopted rule', () => {
+    const scored = makers.filter((m) => typeof m.axes.open_weights.score === 'number')
+    expect(scored).toHaveLength(13)
+    for (const m of scored) {
+      const ev = axisEvidenceFor(m.id, 'open_weights')
+      expect(ev.basis).toBe('sourced')
+      expect(ev.claim_support).toBe('establishes_fact')
+      expect(ev.justifies_whole).toBe(true)
+      expect(ev.decision_eligible).toBe(true)
+      expect(ev.scoring_rule).toMatch(/rubric\.md §6/)
+    }
+  })
+
+  it('keeps the 10 research-gap entries decision-ineligible', () => {
+    const gaps = makers.filter((m) => typeof m.axes.open_weights.score !== 'number')
+    expect(gaps).toHaveLength(10)
+    for (const m of gaps) {
+      const ev = axisEvidenceFor(m.id, 'open_weights')
+      expect(ev.decision_eligible).toBe(false)
+      // A gap shows nothing; the recorded 'n/a' stays on the maker record.
+      expect(displayScore(m, 'open_weights').value).toBeNull()
+      expect(m.axes.open_weights.score).toBe('n/a')
+    }
+  })
+
+  it('moves the tool finder only through the new axis', () => {
+    // Weighting open weights alone, exactly the 13 sourced makers place — and
+    // no other axis's eligibility changed, so any ordering shift runs through
+    // this axis and nothing else.
+    const openOnly: Priorities = {
+      weights: { ...EMPTY_WEIGHTS, open_weights: 2 },
+      capital: EMPTY_LENS,
+      mode: 'custom',
+    }
+    const { placed, unplaced } = orderByPriorities(makers, openOnly)
+    expect(placed).toHaveLength(13)
+    expect(unplaced).toHaveLength(10)
+    for (const row of placed) {
+      expect(typeof row.maker.axes.open_weights.score).toBe('number')
+    }
+    expect(orderingIntegrity(placed).uniform).toBe(true)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// 6. Example / reset behaviour
 // ---------------------------------------------------------------------------
 
 describe('examples are opt-in and stay labelled', () => {
