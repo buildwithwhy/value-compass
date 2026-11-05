@@ -148,9 +148,9 @@ export function AboutView({ draft = false }: { draft?: boolean }) {
         <p className="mt-1 text-sm leading-snug text-slate-600">
           The first five axes were worked out in an internal design document before any evidence
           was gathered. It is kept unedited, and marked as a working draft rather than as
-          methodology. A sixth axis, open weights / source availability, was added later from a
-          research pack whose draft scale is recorded in the data but not yet adopted as a rubric
-          rule.
+          methodology. A sixth axis, open weights / source availability, was added later from
+          the 2026-10-30 open-weights research pack; its 0–4 scale was adopted as a rubric rule
+          on 2026-11-05 (see the methodology above).
         </p>
         <Link
           to="/about/working-draft"

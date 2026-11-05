@@ -51,9 +51,9 @@ export const EXAMPLE_WEIGHTS: AxisWeights = {
   labour_integrity: 2,
   wealth_dispersion: 1,
   public_sharing: 1,
-  // Left at 0: the open-weights scale is a research-pack draft that no rubric
-  // rule has adopted yet, so no assessment on it can pass the evidence gate —
-  // weighting it in the example would only lower everyone's coverage.
+  // Left at 0: the open-weights scale is now adopted (rubric.md §6, 2026-11-05),
+  // but the example priorities stay frozen to the five original axes so the
+  // example ordering does not shift silently. Custom priorities can weight it.
   open_weights: 0,
 }
 

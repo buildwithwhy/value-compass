@@ -48,13 +48,13 @@ Open weights is deliberately **not** a transparency measure. Stanford's 2025 tra
 index scored Alibaba 26/100 despite its Apache-2.0 Qwen releases: shipping weights and
 documenting how a system is built are different acts. Read the two axes separately.
 
-### The open-weights scale (draft, pending rubric adoption)
+### The open-weights scale (adopted)
 
-The other axes score sub-indicators, and transparency anchors to the FMTI bands.
-The open-weights axis instead records the license terms of what a maker actually
-releases:
+Transparency anchors to the FMTI bands; the open-weights axis instead records the
+license terms of what a maker actually releases. The scale below was adopted into
+the rubric as a whole-axis rule on 2026-11-05 (rubric.md §6):
 
-| Score | Meaning (draft) |
+| Score | Meaning |
 |---|---|
 | 4 | Weights under a permissive OSI-style license (Apache/MIT) |
 | 3 | Weights with conditions (community license, modified MIT, non-commercial CC) |
@@ -63,11 +63,10 @@ releases:
 | 0 | No weights and no meaningful source found (scoped to a research pass) |
 | n/a | Not established |
 
-Scores on this axis are recorded with their sources, but they are
-**decision-ineligible**: no rubric rule has adopted the draft scale yet, so these scores
-cannot move a comparison marker or an ordering — the same rule that keeps the other
-four axes out of orderings. They become ranking-eligible when the rubric adopts the
-scale as a rule.
+Sourced, rule-backed scores on this axis can now move comparison markers, orderings
+and tool-finder recommendations, like the FMTI-anchored transparency scores. Scores
+recorded against a research gap (`n/a`) stay decision-ineligible, as everywhere:
+a gap in our research record is still not a finding about a company.
 
 ### The 0–4 scale
 

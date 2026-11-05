@@ -1,7 +1,7 @@
 {
   "_meta": {
     "title": "Value Compass - Scored Maker Dataset",
-    "version": "v4",
+    "version": "v5",
     "count": 23,
     "polarity": "ALL axes scored 0-4 where HIGHER = more pro-social (more transparent, better culture/ESG, more labour & supply-chain integrity, more dispersed ownership, more public wealth-sharing, more open weights and source availability). A high-scoring maker draws a large polygon on the compass.",
     "scale": {
@@ -29,7 +29,7 @@
       "transparency": "Stanford FMTI 2025 (avg 40.69/100; IBM 95 high; xAI & Midjourney 14 low). 0-4 mapping: 0=<=12, 1=13-29, 2=30-49, 3=50-74, 4=>=75.",
       "environmental_note": "FMTI 2025 found 10 of 13 firms disclose NOTHING on energy/carbon/water - the environmental sub-indicator is near-zero sector-wide.",
       "labour_benchmark": "Global-South data labelers commonly earn ~$1.50-2/hr; OpenAI/Sama Kenya is the canonical documented case.",
-      "open_weights": "DRAFT scale from the 2026-10-30 research pack (art_zYCpqJCa Part B), recorded for review: 4 = weights under a permissive OSI-style license (Apache/MIT); 3 = weights with conditions (community license, modified MIT, non-commercial CC); 2 = no own weights but substantial open product/client/tool code; 1 = no weights, peripheral open-source artifacts only; 0 = no weights and no meaningful source found (scoped to a research pass); n/a = not established. Independent of transparency BY DESIGN: FMTI 2025 scored Alibaba 26/100 despite Apache 2.0 Qwen releases — read the two axes separately. Scores on this axis are recorded against the draft scale and stay decision-ineligible until the rubric adopts the scale as a rule."
+      "open_weights": "ADOPTED scale (rubric.md §6, adopted 2026-11-05 from research pack art_zYCpqJCa Part B): 4 = weights under a permissive OSI-style license (Apache/MIT); 3 = weights with conditions (community license, modified MIT, non-commercial CC); 2 = no own weights but substantial open product/client/tool code; 1 = no weights, peripheral open-source artifacts only; 0 = no weights and no meaningful source found (scoped to a research pass); n/a = not established. Whole-axis rule: a source about the maker establishing its release terms and licenses justifies the full 0-4, read directly off this scale. Independent of transparency BY DESIGN: FMTI 2025 scored Alibaba 26/100 despite Apache 2.0 Qwen releases — read the two axes separately. Research-gap entries (n/a) stay decision-ineligible."
     },
     "products_note": "products_models are listed inside each maker node for filtering/comparison; they are NOT separate nodes.",
     "join_key": "Each maker has an 'id' (short name). funders[].makers_backed and owns_outright reference makers by this id. Join on id, NOT on display 'name'.",
